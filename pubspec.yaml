@@ -1,8 +1,8 @@
 name: fast_i18n
 description: Lightweight i18n solution.
 version: 0.0.1
-author:
-homepage:
+author: Tien Do Nam <dev.tien.donam@gmail.com>
+homepage: https://github.com/Tienisto/flutter-fast-i18n
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
