@@ -21,7 +21,6 @@ class ChildNode extends Value {
 }
 
 class Text extends Value {
-
   final String content;
   final List<String> params;
 
@@ -36,17 +35,15 @@ List<String> _findArguments(String content) {
   List<String> arguments = [];
   int indexStart = s.indexOf('\$');
   while (indexStart != -1) {
-
-    if (indexStart == s.length - 1)
-      break;
+    if (indexStart == s.length - 1) break;
 
     int indexEnd = s.indexOf(specialRegex, indexStart + 1);
     if (indexEnd != -1) {
-      arguments.add(s.substring(indexStart+1, indexEnd));
+      arguments.add(s.substring(indexStart + 1, indexEnd));
       s = s.substring(indexEnd);
       indexStart = s.indexOf('\$');
     } else {
-      arguments.add(s.substring(indexStart+1));
+      arguments.add(s.substring(indexStart + 1));
       break;
     }
   }
