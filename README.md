@@ -8,7 +8,7 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 ```yaml
 dependencies:
-  fast_i18n: ^1.1.0
+  fast_i18n: ^1.1.1
 
 dev_dependencies:
   build_runner: any
@@ -50,7 +50,29 @@ Create these files inside your `lib` directory. Preferably in one common package
 flutter packages pub run build_runner build
 ```
 
-### Step 4: Use your translations
+### Step 4: Initialize
+
+```dart
+
+Widget build(BuildContext context) {                                    
+
+    // a: use device locale (StatefulWidget for rerendering)
+    LocaleSettings.useDeviceLocale().then((_) {
+      setState((){});
+    });
+ 
+    // b: use specific locale
+    LocaleSettings.setLocale('de');
+ 
+    // c: use default locale
+    // *do nothing*
+
+    return MaterialApp(
+      // [...]
+    );
+```
+
+### Step 5: Use your translations
 
 ```dart
 
@@ -69,7 +91,7 @@ When the dart code has been generated, you will see some useful classes and func
 
 `LocaleSettings.useDeviceLocale()` - use the locale of the device
 
-`LocaleSettings.changeLocale('de')` - change the locale
+`LocaleSettings.setLocale('de')` - change the locale
 
 `LocaleSettings.currentLocale` - get the current locale
 
