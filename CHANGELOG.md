@@ -1,12 +1,16 @@
-## [1.1.1] - July 27, 2020.
+## [1.1.2]
+
+Fix iOS bug in `LocaleSettings.useDeviceLocale`
+
+## [1.1.1]
 
 Fix for `LocaleSettings.useDeviceLocale`
 
-## [1.1.0] - July 26, 2020.
+## [1.1.0]
 
 Add `LocaleSettings.useDeviceLocale()`
 
-## [1.0.0] - July 26, 2020.
+## [1.0.0]
 
 Initial Release
 - basic json support (no arrays)
