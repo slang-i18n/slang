@@ -1,3 +1,5 @@
+library fast_i18n;
+
 import 'dart:async';
 import 'package:build/build.dart';
 import 'package:fast_i18n/src/generator.dart';
