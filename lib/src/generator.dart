@@ -73,9 +73,11 @@ void _generateMain(StringBuffer buffer, String baseName, List<String> locales) {
   // settings
   buffer.writeln('\nclass $settingsClass {');
 
-  buffer.writeln('\n\t// use this to use the locale of the device, fallback to default locale');
+  buffer.writeln(
+      '\n\t// use this to use the locale of the device, fallback to default locale');
   buffer.writeln('\tstatic void useDeviceLocale() async {');
-  buffer.writeln('\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys);');
+  buffer.writeln(
+      '\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys);');
   buffer.writeln('\t}');
 
   buffer.writeln('\n\t// use this to change your locale');
