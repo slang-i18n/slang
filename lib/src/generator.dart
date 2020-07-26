@@ -38,6 +38,8 @@ void _generateMain(StringBuffer buffer, String baseName, List<String> locales) {
     if (locale.isNotEmpty)
       buffer.writeln('import \'${baseName}_$locale.g.dart\';');
   });
+  // import FastI18n
+  buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
 
   const String mapVar = '_strings';
   const String localeVar = '_locale';
@@ -70,10 +72,17 @@ void _generateMain(StringBuffer buffer, String baseName, List<String> locales) {
 
   // settings
   buffer.writeln('\nclass $settingsClass {');
+
+  buffer.writeln('\n\t// use this to use the locale of the device, fallback to default locale');
+  buffer.writeln('\tstatic void useDeviceLocale() async {');
+  buffer.writeln('\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys);');
+  buffer.writeln('\t}');
+
   buffer.writeln('\n\t// use this to change your locale');
   buffer.writeln('\tstatic void changeLocale(String locale) {');
   buffer.writeln('\t\t$localeVar = locale;');
   buffer.writeln('\t}');
+
   buffer.writeln(
       '\n\t// use this to get the current locale, an empty string is the default locale!');
   buffer.writeln('\tstatic String get currentLocale {');

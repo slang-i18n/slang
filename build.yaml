@@ -2,7 +2,7 @@
 builders:
 
   i18nBuilder:
-    import: "package:fast_i18n/fast_i18n.dart"
+    import: "package:fast_i18n/builder.dart"
     builder_factories: ["i18nBuilder"]
     build_extensions: {".i18n.json": [".g.dart"]}
     build_to: source

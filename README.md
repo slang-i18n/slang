@@ -8,7 +8,7 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 ```yaml
 dependencies:
-  fast_i18n: ^1.0.0
+  fast_i18n: ^1.1.0
 
 dev_dependencies:
   build_runner: any
@@ -66,6 +66,8 @@ Text(t.login.success)
 When the dart code has been generated, you will see some useful classes and functions
 
 `t` - the most important translate variable
+
+`LocaleSettings.useDeviceLocale()` - use the locale of the device
 
 `LocaleSettings.changeLocale('de')` - change the locale
 
