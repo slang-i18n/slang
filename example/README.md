@@ -4,7 +4,7 @@
 
 ```yaml
 dependencies:
-  fast_i18n: ^0.0.1
+  fast_i18n: ^1.0.0
 
 dev_dependencies:
   build_runner: any
