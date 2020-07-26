@@ -60,6 +60,9 @@ Text(t.login.success)
 ## Useful functions
 
 When the dart code has been generated, you will see some useful classes and functions
+
 `t` - the most important translate variable
+
 `LocaleSettings.changeLocale('de')` - change the locale
+
 `LocaleSettings.currentLocale` - get the current locale
