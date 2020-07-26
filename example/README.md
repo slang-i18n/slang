@@ -51,7 +51,7 @@ flutter packages pub run build_runner build
 ```dart
 
 // raw string
-String translated = t.hello('Tom');
+String translated = t.hello(name: 'Tom');
 
 // inside component
 Text(t.login.success)
