@@ -18,7 +18,7 @@ dev_dependencies:
 
 Create these files inside your `lib` directory. Preferably in one common package like `lib/i18n`.
 
-> messages.i18n.json
+> strings.i18n.json
 
 ```json
 {
@@ -31,7 +31,7 @@ Create these files inside your `lib` directory. Preferably in one common package
 }
 ```
 
-> messages_de.i18n.json
+> strings_de.i18n.json
 
 ```json
 {
