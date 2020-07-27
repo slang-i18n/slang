@@ -55,23 +55,21 @@ flutter packages pub run build_runner build
 ### Step 4: Initialize
 
 ```dart
+@override
+void initState() {
+  super.initState();
 
-Widget build(BuildContext context) {                                    
+  // a: use device locale
+  LocaleSettings.useDeviceLocale().whenComplete(() {
+    setState((){});
+  });
 
-    // a: use device locale (StatefulWidget for rerendering)
-    LocaleSettings.useDeviceLocale().then((_) {
-      setState((){});
-    });
- 
-    // b: use specific locale
-    LocaleSettings.setLocale('de');
- 
-    // c: use default locale
-    // *do nothing*
+  // b: use specific locale
+  LocaleSettings.setLocale('de');
 
-    return MaterialApp(
-      // [...]
-    );
+  // c: use default locale (default json locale)
+  // *do nothing*
+}
 ```
 
 ### Step 4b: iOS-only
@@ -89,7 +87,6 @@ File: ios/Runner/Info.plist
 ### Step 5: Use your translations
 
 ```dart
-
 // raw string
 String translated = t.hello(name: 'Tom');
 
