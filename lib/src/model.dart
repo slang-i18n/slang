@@ -24,7 +24,9 @@ class Text extends Value {
   final String content;
   final List<String> params;
 
-  Text(this.content) : params = _findArguments(content);
+  Text(String content)
+      : content = content.replaceAll('\r\n', '\\n').replaceAll('\n', '\\n'),
+        params = _findArguments(content);
 
   @override
   String toString() => '$params => $content';
