@@ -1,3 +1,7 @@
+## [1.2.0+1]
+
+Update README
+
 ## [1.2.0]
 
 Only one single `.g.dart` will be generated
