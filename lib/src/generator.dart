@@ -9,54 +9,39 @@ class Task {
   Task(this.className, this.map);
 }
 
-String generate(I18nData data, List<String> locales) {
+String generate(List<I18nData> allLocales) {
   StringBuffer buffer = StringBuffer();
-  buffer.writeln('\n// Generated file. Do not edit.');
-  buffer.writeln('\nimport \'package:flutter/foundation.dart\';');
+  buffer.writeln('\n// Generated file. Do not edit.\n');
+  buffer.writeln('import \'package:flutter/foundation.dart\';');
+  buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
 
-  if (data.base)
-    _generateMain(buffer, data.baseName, locales);
-  else
-    buffer.writeln('import \'${data.baseName}.g.dart\';');
+  _generateMain(buffer, allLocales);
 
-  Queue<Task> queue = Queue();
-  queue.add(Task(data.baseName.capitalize(), data.entries));
-  bool root = true;
-  do {
-    Task task = queue.removeFirst();
-    _generateClass(
-        data.base, data.locale, buffer, queue, task.className, task.map, root);
-    root = false;
-  } while (queue.isNotEmpty);
+  allLocales.forEach((localeData) {
+    _generateLocale(buffer, localeData);
+  });
 
   return buffer.toString();
 }
 
-void _generateMain(StringBuffer buffer, String baseName, List<String> locales) {
-  // add imports to other locales
-  locales.forEach((locale) {
-    if (locale.isNotEmpty)
-      buffer.writeln('import \'${baseName}_$locale.g.dart\';');
-  });
-  // import FastI18n
-  buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
-
+void _generateMain(StringBuffer buffer, List<I18nData> allLocales) {
   const String mapVar = '_strings';
   const String localeVar = '_locale';
   const String settingsClass = 'LocaleSettings';
   const String defaultLocale = '';
   bool defaultingToEn = false;
-  String className = baseName.capitalize();
+  String className = allLocales.first.baseName.capitalize();
 
   // current locale variable
   buffer.writeln('\nString $localeVar = \'$defaultLocale\';');
 
   // map
   buffer.writeln('Map<String, $className> $mapVar = {');
-  locales.forEach((locale) {
-    buffer.writeln('\t\'$locale\': $className${locale.capitalize()}.instance,');
+  allLocales.forEach((localeData) {
+    buffer.writeln(
+        '\t\'$localeData\': $className${localeData.locale.capitalize()}.instance,');
   });
-  if (locales.indexOf('en') == -1) {
+  if (allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
     buffer.writeln(
         '\t\'en\': $className.instance, // assume default locale is en, add a specific \'en\' locale to remove this');
     defaultingToEn = true;
@@ -93,6 +78,18 @@ void _generateMain(StringBuffer buffer, String baseName, List<String> locales) {
   buffer.writeln('\t\treturn $localeVar;');
   buffer.writeln('\t}');
   buffer.writeln('}');
+}
+
+void _generateLocale(StringBuffer buffer, I18nData localeData) {
+  Queue<Task> queue = Queue();
+  queue.add(Task(localeData.baseName.capitalize(), localeData.entries));
+  bool root = true;
+  do {
+    Task task = queue.removeFirst();
+    _generateClass(localeData.base, localeData.locale, buffer, queue,
+        task.className, task.map, root);
+    root = false;
+  } while (queue.isNotEmpty);
 }
 
 void _generateClass(bool base, String locale, StringBuffer buffer,
