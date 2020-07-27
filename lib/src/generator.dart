@@ -39,7 +39,7 @@ void _generateMain(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('Map<String, $className> $mapVar = {');
   allLocales.forEach((localeData) {
     buffer.writeln(
-        '\t\'$localeData\': $className${localeData.locale.capitalize()}.instance,');
+        '\t\'${localeData.locale}\': $className${localeData.locale.capitalize()}.instance,');
   });
   if (allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
     buffer.writeln(
