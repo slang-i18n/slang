@@ -2,20 +2,23 @@ import 'dart:collection';
 
 import 'package:fast_i18n/src/model.dart';
 
-class Task {
+/// decides which class should be generated
+class ClassTask {
   final String className;
-  final Map<String, Value> map;
+  final Map<String, Value> members;
 
-  Task(this.className, this.map);
+  ClassTask(this.className, this.members);
 }
 
+/// main generate function
+/// returns a string representing the content of the .g.dart file
 String generate(List<I18nData> allLocales) {
   StringBuffer buffer = StringBuffer();
   buffer.writeln('\n// Generated file. Do not edit.\n');
   buffer.writeln('import \'package:flutter/foundation.dart\';');
   buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
 
-  _generateMain(buffer, allLocales);
+  _generateHeader(buffer, allLocales);
 
   allLocales.forEach((localeData) {
     _generateLocale(buffer, localeData);
@@ -24,7 +27,9 @@ String generate(List<I18nData> allLocales) {
   return buffer.toString();
 }
 
-void _generateMain(StringBuffer buffer, List<I18nData> allLocales) {
+/// generates the header of the .g.dart file
+/// contains the t function, LocaleSettings class and some global variables
+void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   const String mapVar = '_strings';
   const String localeVar = '_locale';
   const String settingsClass = 'LocaleSettings';
@@ -80,20 +85,24 @@ void _generateMain(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('}');
 }
 
+/// generates all classes of one locale
+/// all non-default locales has a postfix of their locale code
+/// e.g. Strings, StringsDe, StringsFr
 void _generateLocale(StringBuffer buffer, I18nData localeData) {
-  Queue<Task> queue = Queue();
-  queue.add(Task(localeData.baseName.capitalize(), localeData.entries));
-  bool root = true;
+  Queue<ClassTask> queue = Queue();
+  queue.add(
+      ClassTask(localeData.baseName.capitalize(), localeData.root.entries));
   do {
-    Task task = queue.removeFirst();
+    ClassTask task = queue.removeFirst();
     _generateClass(localeData.base, localeData.locale, buffer, queue,
-        task.className, task.map, root);
-    root = false;
+        task.className, task.members);
   } while (queue.isNotEmpty);
 }
 
+/// generates a class and all of its members of ONE locale
+/// adds subclasses to the queue
 void _generateClass(bool base, String locale, StringBuffer buffer,
-    Queue<Task> queue, String className, Map<String, dynamic> map, bool root) {
+    Queue<ClassTask> queue, String className, Map<String, Value> currMembers) {
   String finalClassName = className + locale.capitalize();
 
   if (base)
@@ -104,36 +113,76 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
   buffer.writeln('\tstatic $finalClassName get instance => _instance;');
   buffer.writeln();
 
-  map.forEach((key, value) {
-    if (value is Text) {
+  currMembers.forEach((key, value) {
+    buffer.write('\t');
+    if (value is TextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('\tString get $key => \'${value.content}\';');
+        buffer.writeln('String get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
-            '\tString $key${_toParameterList(value.params)} => \'${value.content}\';');
+            'String $key${_toParameterList(value.params)} => \'${value.content}\';');
       }
-    } else if (value is ChildNode) {
+    } else if (value is ListNode) {
+      buffer.write('List<dynamic> get $key => ');
+      _generateList(base, locale, buffer, queue, className, value.entries, 0);
+    } else if (value is ObjectNode) {
       String childClassName = className + key.capitalize();
-      queue.add(Task(childClassName, value.entries));
+      queue.add(ClassTask(childClassName, value.entries));
 
       String finalChildClassName = childClassName + locale.capitalize();
       buffer.writeln(
-          '\t$finalChildClassName get $key => $finalChildClassName._instance;');
+          '$finalChildClassName get $key => $finalChildClassName._instance;');
     }
   });
 
   buffer.writeln('}');
 }
 
+/// generates a list
+void _generateList(bool base, String locale, StringBuffer buffer,
+    Queue<ClassTask> queue, String className, List<Value> currList, int depth) {
+  buffer.writeln('[');
+
+  for (int i = 0; i < currList.length; i++) {
+    Value value = currList[i];
+    _addTabs(buffer, depth + 2);
+    if (value is TextNode) {
+      if (value.params.isEmpty) {
+        buffer.writeln('\'${value.content}\',');
+      } else {
+        buffer.writeln(
+            '${_toParameterList(value.params)} => \'${value.content}\',');
+      }
+    } else if (value is ListNode) {
+      _generateList(
+          base, locale, buffer, queue, className, value.entries, depth + 1);
+    } else if (value is ObjectNode) {
+      String childClassName = className + depth.toString() + 'i' + i.toString();
+      queue.add(ClassTask(childClassName, value.entries));
+
+      String finalChildClassName = childClassName + locale.capitalize();
+      buffer.writeln('$finalChildClassName._instance,');
+    }
+  }
+
+  _addTabs(buffer, depth + 1);
+  buffer.write(']');
+  if (depth == 0)
+    buffer.writeln(';');
+  else
+    buffer.writeln(',');
+}
+
+/// returns the parameter list
+/// e.g. ({@required Object name, @required Object age}) for definition = true
+/// or (name, age) for definition = false
 String _toParameterList(List<String> params, {bool definition = true}) {
   StringBuffer buffer = StringBuffer();
   buffer.write('(');
   if (definition) buffer.write('{');
   for (int i = 0; i < params.length; i++) {
     if (i != 0) buffer.write(', ');
-
     if (definition) buffer.write('@required Object ');
-
     buffer.write(params[i]);
   }
   if (definition) buffer.write('}');
@@ -141,7 +190,19 @@ String _toParameterList(List<String> params, {bool definition = true}) {
   return buffer.toString();
 }
 
-extension StringExtension on String {
+/// writes count times \t to the buffer
+void _addTabs(StringBuffer buffer, int count) {
+  for (int i = 0; i < count; i++) {
+    buffer.write('\t');
+  }
+}
+
+extension on String {
+  /// capitalizes a given string
+  /// 'hello' => 'Hello'
+  /// 'heLLo' => 'HeLLo'
+  /// 'Hello' => 'Hello'
+  /// '' => ''
   String capitalize() {
     if (this.isEmpty) return '';
     return "${this[0].toUpperCase()}${this.substring(1)}";

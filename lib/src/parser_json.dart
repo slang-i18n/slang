@@ -5,18 +5,45 @@ import 'package:fast_i18n/src/model.dart';
 I18nData parseJSON(String baseName, String locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Value> destination = Map();
-  _parseJSON(map, destination);
-  return I18nData(baseName, locale, destination);
+  _parseJSONObject(map, destination);
+  return I18nData(baseName, locale, ObjectNode(destination));
 }
 
-void _parseJSON(Map<String, dynamic> curr, Map<String, Value> destination) {
+void _parseJSONObject(
+    Map<String, dynamic> curr, Map<String, Value> destination) {
   curr.forEach((key, value) {
     if (value is String) {
-      destination[key] = Text(value);
+      // key: 'value'
+      destination[key] = TextNode(value);
+    } else if (value is List) {
+      // key: [ ...value ]
+      List<Value> list = List();
+      destination[key] = ListNode(list);
+      _parseJSONArray(value, list);
     } else {
+      // key: { ...value }
       Map<String, Value> subDestination = Map();
-      destination[key] = ChildNode(subDestination);
-      _parseJSON(value, subDestination);
+      destination[key] = ObjectNode(subDestination);
+      _parseJSONObject(value, subDestination);
     }
   });
+}
+
+void _parseJSONArray(List<dynamic> curr, List<Value> destination) {
+  for (dynamic value in curr) {
+    if (value is String) {
+      // key: 'value'
+      destination.add(TextNode(value));
+    } else if (value is List) {
+      // key: [ ...value ]
+      List<Value> list = List();
+      destination.add(ListNode(list));
+      _parseJSONArray(value, list);
+    } else {
+      // key: { ...value }
+      Map<String, Value> subDestination = Map();
+      destination.add(ObjectNode(subDestination));
+      _parseJSONObject(value, subDestination);
+    }
+  }
 }

@@ -1,37 +1,59 @@
 final specialRegex = RegExp(r'[^a-zA-Z0-9]');
 
+/// represents one locale and its localized strings
 class I18nData {
-  final String baseName;
-  final bool base;
-  final String locale;
-  final Map<String, Value> entries;
+  final String baseName; // name of all i18n files, like strings or messages
+  final bool base; // whether or not this is the base locale
+  final String locale; // the locale code (the part after the underscore)
+  final ObjectNode root; // the actual strings
 
-  I18nData(this.baseName, this.locale, this.entries) : base = locale.isEmpty;
+  I18nData(this.baseName, this.locale, this.root) : base = locale.isEmpty;
 }
 
 class Value {}
 
-class ChildNode extends Value {
+class ObjectNode extends Value {
   final Map<String, Value> entries;
 
-  ChildNode(this.entries);
+  ObjectNode(this.entries);
 
   @override
   String toString() => entries.toString();
 }
 
-class Text extends Value {
+class ListNode extends Value {
+  final List<Value> entries;
+
+  ListNode(this.entries);
+
+  @override
+  String toString() => entries.toString();
+}
+
+class TextNode extends Value {
   final String content;
   final List<String> params;
 
-  Text(String content)
+  TextNode(String content)
       : content = content.replaceAll('\r\n', '\\n').replaceAll('\n', '\\n'),
         params = _findArguments(content);
 
   @override
-  String toString() => '$params => $content';
+  String toString() {
+    if (params.isEmpty)
+      return content;
+    else
+      return '$params => $content';
+  }
 }
 
+/// find arguments like $variableName in the given string
+/// the $ can be escaped via \$
+///
+/// examples:
+/// 'hello $name' => ['name']
+/// 'hello \$name => []
+/// 'my name is $name and I am $age years old' => ['name', 'age']
 List<String> _findArguments(String content) {
   String s = content.replaceAll('\\\$', ''); // remove \$
   List<String> arguments = [];
