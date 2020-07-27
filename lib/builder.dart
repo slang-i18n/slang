@@ -12,6 +12,10 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
+
+    if (buildStep.inputId.pathSegments.last.indexOf('_') != -1)
+      return;
+
     // only generate once
     if (!_generated) {
       _generated = true;
@@ -29,11 +33,6 @@ class I18nBuilder implements Builder {
           baseName = fileNameNoExtension;
         }
       });
-
-      if (baseName == null) {
-        print('no base locale file found');
-        return;
-      }
 
       // map each assetId to I18nData
       Map<AssetId, I18nData> localesWithData = Map();
