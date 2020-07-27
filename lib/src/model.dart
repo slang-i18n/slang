@@ -35,7 +35,7 @@ class TextNode extends Value {
   final List<String> params;
 
   TextNode(String content)
-      : content = content.replaceAll('\r\n', '\\n').replaceAll('\n', '\\n'),
+      : content = content.replaceAll('\r\n', '\\n').replaceAll('\n', '\\n').replaceAll('\'', '\\\''),
         params = _findArguments(content);
 
   @override
