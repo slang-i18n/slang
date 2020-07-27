@@ -1,3 +1,7 @@
+## [1.2.0]
+
+Only one single `.g.dart` will be generated
+
 ## [1.1.2]
 
 Fix iOS bug in `LocaleSettings.useDeviceLocale`

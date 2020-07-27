@@ -12,9 +12,7 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-
-    if (buildStep.inputId.pathSegments.last.indexOf('_') != -1)
-      return;
+    if (buildStep.inputId.pathSegments.last.indexOf('_') != -1) return;
 
     // only generate once
     if (!_generated) {

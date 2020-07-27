@@ -4,7 +4,7 @@
 
 ```yaml
 dependencies:
-  fast_i18n: ^1.1.2
+  fast_i18n: ^1.2.0
 
 dev_dependencies:
   build_runner: any
@@ -66,6 +66,18 @@ Widget build(BuildContext context) {
     return MaterialApp(
       // [...]
     );
+```
+
+### Step 4b: iOS-only
+
+```
+File: ios/Runner/Info.plist
+
+<key>CFBundleLocalizations</key>
+<array>
+   <string>en</string>
+   <string>de</string>
+</array>
 ```
 
 ## Step 5: Use your translations
