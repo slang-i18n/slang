@@ -1,3 +1,5 @@
+![featured](resources/featured.png)
+
 # fast_i18n
 
 Lightweight i18n solution. Use JSON files to create typesafe translations.
