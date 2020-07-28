@@ -115,6 +115,8 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
 
   currMembers.forEach((key, value) {
     buffer.write('\t');
+    if (!base) buffer.write('@override ');
+
     if (value is TextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('String get $key => \'${value.content}\';');
