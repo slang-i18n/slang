@@ -127,15 +127,71 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
       _generateList(base, locale, buffer, queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassName = className + key.capitalize();
-      queue.add(ClassTask(childClassName, value.entries));
-
-      String finalChildClassName = childClassName + locale.capitalize();
-      buffer.writeln(
-          '$finalChildClassName get $key => $finalChildClassName._instance;');
+      if (value.mapMode) {
+        // inline map
+        buffer.write('Map<String, dynamic> get $key => ');
+        _generateMap(
+            base, locale, buffer, queue, childClassName, value.entries, 0);
+      } else {
+        // generate a class later on
+        queue.add(ClassTask(childClassName, value.entries));
+        String finalChildClassName = childClassName + locale.capitalize();
+        buffer.writeln(
+            '$finalChildClassName get $key => $finalChildClassName._instance;');
+      }
     }
   });
 
   buffer.writeln('}');
+}
+
+/// generates a map of ONE locale
+/// similar to _generateClass but anonymous and accessible via key
+void _generateMap(
+    bool base,
+    String locale,
+    StringBuffer buffer,
+    Queue<ClassTask> queue,
+    String className,
+    Map<String, Value> currMembers,
+    int depth) {
+  buffer.writeln('{');
+
+  currMembers.forEach((key, value) {
+    _addTabs(buffer, depth + 2);
+    if (value is TextNode) {
+      if (value.params.isEmpty) {
+        buffer.writeln('\'$key\': \'${value.content}\',');
+      } else {
+        buffer.writeln(
+            '\'$key\': ${_toParameterList(value.params)} => \'${value.content}\',');
+      }
+    } else if (value is ListNode) {
+      buffer.write('\'$key\': ');
+      _generateList(
+          base, locale, buffer, queue, className, value.entries, depth + 1);
+    } else if (value is ObjectNode) {
+      String childClassName = className + key.capitalize();
+      if (value.mapMode) {
+        // inline map
+        buffer.write('\'$key\': ');
+        _generateMap(base, locale, buffer, queue, childClassName, value.entries,
+            depth + 1);
+      } else {
+        // generate a class later on
+        queue.add(ClassTask(childClassName, value.entries));
+        String finalChildClassName = childClassName + locale.capitalize();
+        buffer.writeln('\'$key\': $finalChildClassName._instance,');
+      }
+    }
+  });
+
+  _addTabs(buffer, depth + 1);
+  buffer.write('}');
+  if (depth == 0)
+    buffer.writeln(';');
+  else
+    buffer.writeln(',');
 }
 
 /// generates a list

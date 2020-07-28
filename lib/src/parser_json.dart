@@ -18,13 +18,13 @@ void _parseJSONObject(
     } else if (value is List) {
       // key: [ ...value ]
       List<Value> list = List();
-      destination[key] = ListNode(list);
       _parseJSONArray(value, list);
+      destination[key] = ListNode(list);
     } else {
       // key: { ...value }
       Map<String, Value> subDestination = Map();
-      destination[key] = ObjectNode(subDestination);
       _parseJSONObject(value, subDestination);
+      destination[key] = ObjectNode(subDestination);
     }
   });
 }

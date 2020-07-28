@@ -1,4 +1,5 @@
 final specialRegex = RegExp(r'[^a-zA-Z0-9]');
+const mapEscapeString = '#map';
 
 /// represents one locale and its localized strings
 class I18nData {
@@ -14,8 +15,11 @@ class Value {}
 
 class ObjectNode extends Value {
   final Map<String, Value> entries;
+  final bool mapMode;
 
-  ObjectNode(this.entries);
+  ObjectNode(Map<String, Value> entries)
+      : mapMode = entries.containsKey(mapEscapeString),
+        entries = entries..remove('#map');
 
   @override
   String toString() => entries.toString();
@@ -35,7 +39,10 @@ class TextNode extends Value {
   final List<String> params;
 
   TextNode(String content)
-      : content = content.replaceAll('\r\n', '\\n').replaceAll('\n', '\\n').replaceAll('\'', '\\\''),
+      : content = content
+            .replaceAll('\r\n', '\\n')
+            .replaceAll('\n', '\\n')
+            .replaceAll('\'', '\\\''),
         params = _findArguments(content);
 
   @override
