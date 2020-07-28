@@ -1,3 +1,8 @@
+## [1.3.0]
+
+- add support for lists.
+- add support for maps. Use `{ "#map": "" }` to enable map inlining
+
 ## [1.2.0+1]
 
 Update README

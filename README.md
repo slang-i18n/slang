@@ -106,6 +106,63 @@ When the dart code has been generated, you will see some useful classes and func
 
 `LocaleSettings.currentLocale` - get the current locale
 
+## Additional features
+
+### Maps
+
+Sometimes you need to access the translations via keys.
+A solution is to use a map. Add the `#map` as a key to enable this.
+Keep in mind that you use it rarely because all nice features like autocompletion are gone.
+
+```json
+{
+  "welcome": "Welcome",
+  "thisIsAMap": {
+    "#map": "", // value is not important here
+    "hello world": "hello"
+  },
+  "classicClass": {
+    "hello": "hello"
+  }
+}
+```
+
+Now you can access this via key:
+
+```dart
+String a = t.thisIsAMap['hello world'];
+String b = t.classicClass.hello; // the "classical" way
+```
+
+### Lists
+
+Lists are fully supported.
+
+```json
+{
+  "niceList": [
+    "hello",
+    "nice",
+    [
+      "nestedList"
+    ],
+    {
+      "wow": "wow"
+    },
+    {
+      "#map": "",
+      "cool": "cool"
+    }
+  ]
+}
+```
+
+```dart
+String a = t.niceList[1];
+String b = t.niceList[3].wow;
+String c = t.niceList[4]['cool'];
+```
+
 ## License
 
 MIT License
