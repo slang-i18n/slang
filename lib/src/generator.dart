@@ -44,7 +44,7 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('Map<String, $className> $mapVar = {');
   allLocales.forEach((localeData) {
     buffer.writeln(
-        '\t\'${localeData.locale}\': $className${localeData.locale.capitalize()}.instance,');
+        '\t\'${localeData.locale}\': $className${localeData.locale.capitalize().replaceAll('-', '')}.instance,');
   });
   if (allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
     buffer.writeln(
@@ -64,19 +64,20 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('\nclass $settingsClass {');
 
   buffer.writeln(
-      '\n\t// use this to use the locale of the device, fallback to default locale');
+      '\n\t/// use the locale of the device, fallback to default locale');
   buffer.writeln('\tstatic Future<void> useDeviceLocale() async {');
   buffer.writeln(
       '\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys.toList());');
   buffer.writeln('\t}');
 
-  buffer.writeln('\n\t// use this to change your locale');
+  buffer.writeln('\n\t/// set the locale, fallback to default locale');
   buffer.writeln('\tstatic void setLocale(String locale) {');
-  buffer.writeln('\t\t$localeVar = locale;');
+  buffer.writeln(
+      '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList());');
   buffer.writeln('\t}');
 
   buffer.writeln(
-      '\n\t// use this to get the current locale, an empty string is the default locale!');
+      '\n\t/// get the current locale, an empty string is the default locale!');
   buffer.writeln('\tstatic String get currentLocale {');
   if (defaultingToEn)
     buffer.writeln('\t\tif ($localeVar == \'en\') return \'\';');
@@ -103,7 +104,7 @@ void _generateLocale(StringBuffer buffer, I18nData localeData) {
 /// adds subclasses to the queue
 void _generateClass(bool base, String locale, StringBuffer buffer,
     Queue<ClassTask> queue, String className, Map<String, Value> currMembers) {
-  String finalClassName = className + locale.capitalize();
+  String finalClassName = className + locale.capitalize().replaceAll('-', '');
 
   if (base)
     buffer.writeln('\nclass $finalClassName {');
@@ -137,7 +138,7 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassName, value.entries));
-        String finalChildClassName = childClassName + locale.capitalize();
+        String finalChildClassName = childClassName + locale.capitalize().replaceAll('-', '');
         buffer.writeln(
             '$finalChildClassName get $key => $finalChildClassName._instance;');
       }
@@ -182,7 +183,7 @@ void _generateMap(
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassName, value.entries));
-        String finalChildClassName = childClassName + locale.capitalize();
+        String finalChildClassName = childClassName + locale.capitalize().replaceAll('-', '');
         buffer.writeln('\'$key\': $finalChildClassName._instance,');
       }
     }

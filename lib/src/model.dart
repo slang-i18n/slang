@@ -1,4 +1,5 @@
-final specialRegex = RegExp(r'[^a-zA-Z0-9]');
+import 'package:fast_i18n/utils.dart';
+
 const mapEscapeString = '#map';
 
 /// represents one locale and its localized strings
@@ -68,7 +69,7 @@ List<String> _findArguments(String content) {
   while (indexStart != -1) {
     if (indexStart == s.length - 1) break;
 
-    int indexEnd = s.indexOf(specialRegex, indexStart + 1);
+    int indexEnd = s.indexOf(Utils.specialRegex, indexStart + 1);
     if (indexEnd != -1) {
       arguments.add(s.substring(indexStart + 1, indexEnd));
       s = s.substring(indexEnd);

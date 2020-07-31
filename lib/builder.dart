@@ -3,6 +3,7 @@ import 'package:build/build.dart';
 import 'package:fast_i18n/src/generator.dart';
 import 'package:fast_i18n/src/model.dart';
 import 'package:fast_i18n/src/parser_json.dart';
+import 'package:fast_i18n/utils.dart';
 import 'package:glob/glob.dart';
 
 Builder i18nBuilder(BuilderOptions options) => I18nBuilder();
@@ -24,8 +25,16 @@ class I18nBuilder implements Builder {
       await buildStep.findAssets(Glob('**.i18n.json')).forEach((assetId) {
         String fileNameNoExtension =
             assetId.pathSegments.last.replaceAll('.i18n.json', '');
-        if (fileNameNoExtension.contains('_')) {
-          locales[assetId] = fileNameNoExtension.split('_').last;
+
+        RegExpMatch match = Utils.localeRegex.firstMatch(fileNameNoExtension);
+        if (match != null) {
+          String language = match.group(1);
+          String country = match.group(3);
+
+          if (country != null)
+            locales[assetId] = language + '-' + country.toLowerCase();
+          else
+            locales[assetId] = language;
         } else {
           locales[assetId] = '';
           baseName = fileNameNoExtension;

@@ -1,6 +1,7 @@
 library fast_i18n;
 
 import 'package:devicelocale/devicelocale.dart';
+import 'package:fast_i18n/utils.dart';
 
 class FastI18n {
   /// returns the locale string used by the device
@@ -9,13 +10,22 @@ class FastI18n {
   static Future<String> findDeviceLocale(List<String> supported) async {
     String deviceLocale = (await Devicelocale.currentAsLocale).toLanguageTag();
 
+    return selectLocale(deviceLocale, supported);
+  }
+
+  /// returns the candidate (or part of it) if it is supported
+  /// fallback to '' (default locale)
+  static String selectLocale(String candidate, List<String> supported) {
+    // normalize
+    candidate = Utils.normalize(candidate);
+
     // 1st try: match exactly
-    String selected = supported.firstWhere((element) => element == deviceLocale,
+    String selected = supported.firstWhere((element) => element == candidate,
         orElse: () => null);
     if (selected != null) return selected;
 
     // 2nd try: match the first or the second part
-    List<String> deviceLocaleParts = deviceLocale.split('-');
+    List<String> deviceLocaleParts = candidate.split('-');
     selected = supported.firstWhere(
         (element) =>
             element == deviceLocaleParts.first ||
