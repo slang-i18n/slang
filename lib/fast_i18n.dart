@@ -7,7 +7,7 @@ class FastI18n {
   /// it always matches one of the supported locales
   /// fallback to '' (default locale)
   static Future<String> findDeviceLocale(List<String> supported) async {
-    String deviceLocale = (await Devicelocale.currentAsLocale).toString();
+    String deviceLocale = (await Devicelocale.currentAsLocale).toLanguageTag();
 
     // 1st try: match exactly
     String selected = supported.firstWhere((element) => element == deviceLocale,
@@ -15,7 +15,7 @@ class FastI18n {
     if (selected != null) return selected;
 
     // 2nd try: match the first or the second part
-    List<String> deviceLocaleParts = deviceLocale.split('_');
+    List<String> deviceLocaleParts = deviceLocale.split('-');
     selected = supported.firstWhere(
         (element) =>
             element == deviceLocaleParts.first ||
