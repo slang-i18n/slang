@@ -4,7 +4,7 @@
 
 ```yaml
 dependencies:
-  fast_i18n: ^1.2.0
+  fast_i18n: ^1.4.0
 
 dev_dependencies:
   build_runner: any
@@ -14,7 +14,7 @@ dev_dependencies:
 
 Create these files inside your `lib` directory. Preferably in one common package like `lib/i18n`.
 
-> strings.i18n.json
+`strings.i18n.json`
 
 ```json
 {
@@ -27,7 +27,7 @@ Create these files inside your `lib` directory. Preferably in one common package
 }
 ```
 
-> strings_de.i18n.json
+`strings_de.i18n.json`
 
 ```json
 {
@@ -102,7 +102,7 @@ When the dart code has been generated, you will see some useful classes and func
 
 ## Additional features
 
-### Maps
+**Maps**
 
 Sometimes you need to access the translations via keys.
 A solution is to use a map. Add the `#map` as a key to enable this.
@@ -112,7 +112,7 @@ Keep in mind that you use it rarely because all nice features like autocompletio
 {
   "welcome": "Welcome",
   "thisIsAMap": {
-    "#map": "", // value is not important here
+    "#map": "value is not important here",
     "hello world": "hello"
   },
   "classicClass": {
@@ -128,7 +128,7 @@ String a = t.thisIsAMap['hello world'];
 String b = t.classicClass.hello; // the "classical" way
 ```
 
-### Lists
+**Lists**
 
 Lists are fully supported.
 
@@ -153,6 +153,7 @@ Lists are fully supported.
 
 ```dart
 String a = t.niceList[1];
-String b = t.niceList[3].wow;
-String c = t.niceList[4]['cool'];
+String b = t.niceList[2][0];
+String c = t.niceList[3].wow;
+String d = t.niceList[4]['cool'];
 ```

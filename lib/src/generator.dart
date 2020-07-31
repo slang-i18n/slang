@@ -138,7 +138,8 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassName, value.entries));
-        String finalChildClassName = childClassName + locale.capitalize().replaceAll('-', '');
+        String finalChildClassName =
+            childClassName + locale.capitalize().replaceAll('-', '');
         buffer.writeln(
             '$finalChildClassName get $key => $finalChildClassName._instance;');
       }
@@ -183,7 +184,8 @@ void _generateMap(
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassName, value.entries));
-        String finalChildClassName = childClassName + locale.capitalize().replaceAll('-', '');
+        String finalChildClassName =
+            childClassName + locale.capitalize().replaceAll('-', '');
         buffer.writeln('\'$key\': $finalChildClassName._instance,');
       }
     }

@@ -1,7 +1,14 @@
+## [1.4.0]
+
+Add support for country codes. Use e.g. `strings_en_US.i18n.json` or `strings_en-US.i18n.json`.
+
+Add fallback for `LocaleSettings.setLocale` if locale is not supported.
+
 ## [1.3.0]
 
-- add support for lists.
-- add support for maps. Use `{ "#map": "" }` to enable map inlining
+Add support for lists.
+
+Add support for maps. Use `{ "#map": "" }` to enable map inlining.
 
 ## [1.2.0+1]
 
