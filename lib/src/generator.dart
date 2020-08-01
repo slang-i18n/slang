@@ -60,7 +60,7 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
 
   // t getter
   buffer.writeln(
-      '\n// use this to get your translations, e.g. t.someKey.anotherKey');
+      '\n/// use this to get your translations, e.g. t.someKey.anotherKey');
   buffer.writeln('$className get t {');
   buffer.writeln('\treturn $mapVar[$localeVar];');
   buffer.writeln('}');
@@ -91,6 +91,11 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('\n\t/// get the base locale');
   buffer.writeln('\tstatic String get baseLocale {');
   buffer.writeln('\t\treturn $baseLocaleVar;');
+  buffer.writeln('\t}');
+
+  buffer.writeln('\n\t/// get the supported locales');
+  buffer.writeln('\tstatic List<String> get locales {');
+  buffer.writeln('\t\treturn $mapVar.keys.toList();');
   buffer.writeln('\t}');
 
   buffer.writeln('}');

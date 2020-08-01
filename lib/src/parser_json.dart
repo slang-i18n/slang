@@ -71,5 +71,7 @@ void _parseJSONArray(List<String> maps, List<dynamic> curr,
 }
 
 bool legacyMapMode(List<String> keys) {
-  return keys.contains('#map');
+  bool mapMode = keys.contains('#map');
+  if (mapMode) print('#map is deprecated, use config.i18n.json for that');
+  return mapMode;
 }

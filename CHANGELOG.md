@@ -1,3 +1,11 @@
+## [1.5.0]
+
+Define additional metadata in the `config.i18n.json` file.
+
+Maps defined with `#map` are now deprecated. Use `config.i18n.json` for that.
+
+Add `LocaleSettings.locales` to get the supported locales.
+
 ## [1.4.0]
 
 Add support for country codes. Use e.g. `strings_en_US.i18n.json` or `strings_en-US.i18n.json`.

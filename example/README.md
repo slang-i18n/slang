@@ -40,6 +40,14 @@ Create these files inside your `lib` directory. Preferably in one common package
 }
 ```
 
+`config.i18n.json (optional but recommended)`
+
+```json
+{
+  "baseLocale": "en"
+}
+```
+
 ## Step 3: Generate the dart code
 
 ```
@@ -100,24 +108,40 @@ When the dart code has been generated, you will see some useful classes and func
 
 `LocaleSettings.currentLocale` - get the current locale
 
+`LocaleSettings.locales` - get the supported locales
+
 ## Additional features
 
 **Maps**
 
 Sometimes you need to access the translations via keys.
-A solution is to use a map. Add the `#map` as a key to enable this.
-Keep in mind that you use it rarely because all nice features like autocompletion are gone.
+Define the maps in your `config.i18n.json`.
+Keep in mind that all nice features like autocompletion are gone.
 
+`strings.i18n.json`
 ```json
 {
   "welcome": "Welcome",
   "thisIsAMap": {
-    "#map": "value is not important here",
     "hello world": "hello"
   },
   "classicClass": {
-    "hello": "hello"
+    "hello": "hello",
+    "aMapInClass": {
+      "hi": "hi"
+    }
   }
+}
+```
+
+`config.i18n.json`
+```json
+{
+  "baseLocale": "en",
+  "maps": [
+    "thisIsAMap",
+    "classicClass.aMapInClass"
+  ]
 }
 ```
 
@@ -126,6 +150,7 @@ Now you can access this via key:
 ```dart
 String a = t.thisIsAMap['hello world'];
 String b = t.classicClass.hello; // the "classical" way
+String c = t.classicClass.aMapInClass['hi']; // nested
 ```
 
 **Lists**
@@ -144,8 +169,7 @@ Lists are fully supported.
       "wow": "wow"
     },
     {
-      "#map": "",
-      "cool": "cool"
+      "a map entry": "cool"
     }
   ]
 }
@@ -155,5 +179,5 @@ Lists are fully supported.
 String a = t.niceList[1];
 String b = t.niceList[2][0];
 String c = t.niceList[3].wow;
-String d = t.niceList[4]['cool'];
+String d = t.niceList[4]['a map entry'];
 ```
