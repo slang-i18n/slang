@@ -5,7 +5,7 @@ import 'package:fast_i18n/src/model.dart';
 I18nConfig parseConfig(String content) {
   Map<String, dynamic> map = json.decode(content);
   String baseLocale = map['baseLocale'] ?? '';
-  List<String> maps = map['maps'].cast<String>() ?? [];
+  List<String> maps = (map['maps'] ?? []).cast<String>();
   return I18nConfig(baseLocale, maps);
 }
 
@@ -13,12 +13,12 @@ I18nData parseJSON(
     I18nConfig config, String baseName, String locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Value> destination = Map();
-  _parseJSONObject(map, destination);
-  return I18nData(config, baseName, locale, ObjectNode(destination));
+  _parseJSONObject(config.maps, map, destination, []);
+  return I18nData(config, baseName, locale, ObjectNode(destination, false));
 }
 
-void _parseJSONObject(
-    Map<String, dynamic> curr, Map<String, Value> destination) {
+void _parseJSONObject(List<String> maps, Map<String, dynamic> curr,
+    Map<String, Value> destination, List<String> stack) {
   curr.forEach((key, value) {
     if (value is String) {
       // key: 'value'
@@ -26,18 +26,26 @@ void _parseJSONObject(
     } else if (value is List) {
       // key: [ ...value ]
       List<Value> list = List();
-      _parseJSONArray(value, list);
+      _parseJSONArray(maps, value, list, stack);
       destination[key] = ListNode(list);
     } else {
       // key: { ...value }
+      List<String> nextStack = [...stack, key];
+      String stackAsString = nextStack.join('.');
+      bool mapMode = maps.contains(stackAsString);
+      if (!mapMode && legacyMapMode(value.keys.toList())) {
+        mapMode = true;
+        value.remove('#map');
+      }
       Map<String, Value> subDestination = Map();
-      _parseJSONObject(value, subDestination);
-      destination[key] = ObjectNode(subDestination);
+      _parseJSONObject(maps, value, subDestination, nextStack);
+      destination[key] = ObjectNode(subDestination, mapMode);
     }
   });
 }
 
-void _parseJSONArray(List<dynamic> curr, List<Value> destination) {
+void _parseJSONArray(List<String> maps, List<dynamic> curr,
+    List<Value> destination, List<String> stack) {
   for (dynamic value in curr) {
     if (value is String) {
       // key: 'value'
@@ -45,13 +53,23 @@ void _parseJSONArray(List<dynamic> curr, List<Value> destination) {
     } else if (value is List) {
       // key: [ ...value ]
       List<Value> list = List();
+      _parseJSONArray(maps, value, list, stack);
       destination.add(ListNode(list));
-      _parseJSONArray(value, list);
     } else {
       // key: { ...value }
+      String stackAsString = stack.join('.');
+      bool mapMode = maps.contains(stackAsString);
+      if (!mapMode && legacyMapMode(value.keys.toList())) {
+        mapMode = true;
+        value.remove('#map');
+      }
       Map<String, Value> subDestination = Map();
-      destination.add(ObjectNode(subDestination));
-      _parseJSONObject(value, subDestination);
+      _parseJSONObject(maps, value, subDestination, stack);
+      destination.add(ObjectNode(subDestination, mapMode));
     }
   }
+}
+
+bool legacyMapMode(List<String> keys) {
+  return keys.contains('#map');
 }

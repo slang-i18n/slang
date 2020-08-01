@@ -1,7 +1,5 @@
 import 'package:fast_i18n/utils.dart';
 
-const mapEscapeString = '#map';
-
 class I18nConfig {
   final String baseLocale; // defaults to ''
   final List<String> maps; // list of entities treated as maps and not classes
@@ -30,9 +28,7 @@ class ObjectNode extends Value {
   final Map<String, Value> entries;
   final bool mapMode;
 
-  ObjectNode(Map<String, Value> entries)
-      : mapMode = entries.containsKey(mapEscapeString),
-        entries = entries..remove('#map');
+  ObjectNode(this.entries, this.mapMode);
 
   @override
   String toString() => entries.toString();
