@@ -1,3 +1,7 @@
+## [1.5.0+1]
+
+Update README
+
 ## [1.5.0]
 
 Define additional metadata in the `config.i18n.json` file.
