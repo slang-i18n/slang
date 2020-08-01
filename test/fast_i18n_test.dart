@@ -28,7 +28,7 @@ void testSelectLocale() {
     });
 
     test('fallback', () {
-      expect(FastI18n.selectLocale('fr', ['en', 'de']), '');
+      expect(FastI18n.selectLocale('fr', ['en', 'de'], 'cz'), 'cz');
     });
   });
 }

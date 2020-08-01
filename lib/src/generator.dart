@@ -31,24 +31,29 @@ String generate(List<I18nData> allLocales) {
 /// contains the t function, LocaleSettings class and some global variables
 void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   const String mapVar = '_strings';
+  const String baseLocaleVar = '_baseLocale';
   const String localeVar = '_locale';
   const String settingsClass = 'LocaleSettings';
-  const String defaultLocale = '';
+  final String baseLocale = allLocales.first.globalConfig.baseLocale;
+  final String className = allLocales.first.baseName.capitalize();
   bool defaultingToEn = false;
-  String className = allLocales.first.baseName.capitalize();
 
   // current locale variable
-  buffer.writeln('\nString $localeVar = \'$defaultLocale\';');
+  buffer.writeln('\nconst String $baseLocaleVar = \'$baseLocale\';');
+  buffer.writeln('String $localeVar = $baseLocaleVar;');
 
   // map
   buffer.writeln('Map<String, $className> $mapVar = {');
   allLocales.forEach((localeData) {
-    buffer.writeln(
-        '\t\'${localeData.locale}\': $className${localeData.locale.capitalize().replaceAll('-', '')}.instance,');
+    String finalClassName = localeData.base
+        ? className
+        : className + localeData.locale.capitalize().replaceAll('-', '');
+    buffer.writeln('\t\'${localeData.locale}\': $finalClassName.instance,');
   });
-  if (allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
+  if (baseLocale == '' &&
+      allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
     buffer.writeln(
-        '\t\'en\': $className.instance, // assume default locale is en, add a specific \'en\' locale to remove this');
+        '\t\'en\': $className.instance, // assume default locale is en, add a specific \'en\' locale to remove this or add config.i18n.json');
     defaultingToEn = true;
   }
   buffer.writeln('};');
@@ -67,22 +72,27 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
       '\n\t/// use the locale of the device, fallback to default locale');
   buffer.writeln('\tstatic Future<void> useDeviceLocale() async {');
   buffer.writeln(
-      '\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys.toList());');
+      '\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t}');
 
   buffer.writeln('\n\t/// set the locale, fallback to default locale');
   buffer.writeln('\tstatic void setLocale(String locale) {');
   buffer.writeln(
-      '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList());');
+      '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t}');
 
-  buffer.writeln(
-      '\n\t/// get the current locale, an empty string is the default locale!');
+  buffer.writeln('\n\t/// get the current locale');
   buffer.writeln('\tstatic String get currentLocale {');
   if (defaultingToEn)
-    buffer.writeln('\t\tif ($localeVar == \'en\') return \'\';');
+    buffer.writeln('\t\tif ($localeVar == \'en\') return \'$baseLocale\';');
   buffer.writeln('\t\treturn $localeVar;');
   buffer.writeln('\t}');
+
+  buffer.writeln('\n\t/// get the base locale');
+  buffer.writeln('\tstatic String get baseLocale {');
+  buffer.writeln('\t\treturn $baseLocaleVar;');
+  buffer.writeln('\t}');
+
   buffer.writeln('}');
 }
 
@@ -104,7 +114,8 @@ void _generateLocale(StringBuffer buffer, I18nData localeData) {
 /// adds subclasses to the queue
 void _generateClass(bool base, String locale, StringBuffer buffer,
     Queue<ClassTask> queue, String className, Map<String, Value> currMembers) {
-  String finalClassName = className + locale.capitalize().replaceAll('-', '');
+  String finalClassName =
+      base ? className : className + locale.capitalize().replaceAll('-', '');
 
   if (base)
     buffer.writeln('\nclass $finalClassName {');
@@ -138,8 +149,9 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassName, value.entries));
-        String finalChildClassName =
-            childClassName + locale.capitalize().replaceAll('-', '');
+        String finalChildClassName = base
+            ? childClassName
+            : childClassName + locale.capitalize().replaceAll('-', '');
         buffer.writeln(
             '$finalChildClassName get $key => $finalChildClassName._instance;');
       }

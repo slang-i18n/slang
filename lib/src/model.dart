@@ -2,14 +2,26 @@ import 'package:fast_i18n/utils.dart';
 
 const mapEscapeString = '#map';
 
+class I18nConfig {
+  final String baseLocale; // defaults to ''
+  final List<String> maps; // list of entities treated as maps and not classes
+
+  I18nConfig(this.baseLocale, this.maps);
+
+  @override
+  String toString() => '$baseLocale, maps: $maps';
+}
+
 /// represents one locale and its localized strings
 class I18nData {
+  final I18nConfig globalConfig; // config of all locales
   final String baseName; // name of all i18n files, like strings or messages
   final bool base; // whether or not this is the base locale
   final String locale; // the locale code (the part after the underscore)
   final ObjectNode root; // the actual strings
 
-  I18nData(this.baseName, this.locale, this.root) : base = locale.isEmpty;
+  I18nData(this.globalConfig, this.baseName, this.locale, this.root)
+      : base = locale == globalConfig.baseLocale;
 }
 
 class Value {}

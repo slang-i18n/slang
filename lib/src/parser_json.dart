@@ -2,11 +2,19 @@ import 'dart:convert';
 
 import 'package:fast_i18n/src/model.dart';
 
-I18nData parseJSON(String baseName, String locale, String content) {
+I18nConfig parseConfig(String content) {
+  Map<String, dynamic> map = json.decode(content);
+  String baseLocale = map['baseLocale'] ?? '';
+  List<String> maps = map['maps'].cast<String>() ?? [];
+  return I18nConfig(baseLocale, maps);
+}
+
+I18nData parseJSON(
+    I18nConfig config, String baseName, String locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Value> destination = Map();
   _parseJSONObject(map, destination);
-  return I18nData(baseName, locale, ObjectNode(destination));
+  return I18nData(config, baseName, locale, ObjectNode(destination));
 }
 
 void _parseJSONObject(
