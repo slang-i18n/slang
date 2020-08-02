@@ -116,6 +116,26 @@ When the dart code has been generated, you will see some useful classes and func
 
 `LocaleSettings.locales` - get the supported locales
 
+## Configuration
+
+All settings can be set in the `config.i18n.json` file. Place it anywhere in your lib directory
+
+```json
+{
+  "baseLocale": "en",
+  "maps": [
+    "a",
+    "b",
+    "c.d"
+  ]
+}
+```
+
+Key|Type|Usage|Default
+---|---|---|---
+baseLocale|`String`|assign the default json file to a locale|`''`
+maps|`List<String>`|entries which should be accessed via keys|`[]`
+
 ## Additional features
 
 **Maps**
