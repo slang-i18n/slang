@@ -118,7 +118,7 @@ When the dart code has been generated, you will see some useful classes and func
 
 ## Configuration
 
-All settings can be set in the `config.i18n.json` file. Place it anywhere in your lib directory
+All settings can be set in the `config.i18n.json` file. Place it anywhere inside your lib directory
 
 ```json
 {
