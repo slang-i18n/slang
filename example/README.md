@@ -14,7 +14,7 @@ dev_dependencies:
 
 Create these files inside your `lib` directory. Preferably in one common package like `lib/i18n`.
 
-`strings.i18n.json`
+`strings.i18n.json (default, fallback)`
 
 ```json
 {
