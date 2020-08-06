@@ -1,3 +1,9 @@
+## [1.6.0]
+
+Generates `List<String>` or `Map<String, String>` instead of `List<dynamic>` or `Map<String, dynamic>` if the children are only strings.
+
+You will experience a better autocompletion like `.substring`, `.indexOf`, etc. because of that.
+
 ## [1.5.0+2]
 
 Update README

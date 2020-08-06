@@ -142,13 +142,15 @@ void _generateClass(bool base, String locale, StringBuffer buffer,
             'String $key${_toParameterList(value.params)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
-      buffer.write('List<dynamic> get $key => ');
+      String type = value.plainStrings ? 'String' : 'dynamic';
+      buffer.write('List<$type> get $key => ');
       _generateList(base, locale, buffer, queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassName = className + key.capitalize();
       if (value.mapMode) {
         // inline map
-        buffer.write('Map<String, dynamic> get $key => ');
+        String type = value.plainStrings ? 'String' : 'dynamic';
+        buffer.write('Map<String, $type> get $key => ');
         _generateMap(
             base, locale, buffer, queue, childClassName, value.entries, 0);
       } else {

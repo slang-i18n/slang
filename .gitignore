@@ -1,3 +1,7 @@
+# testing
+*.i18n.json
+*.g.dart
+
 # Miscellaneous
 *.class
 *.log

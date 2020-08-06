@@ -27,8 +27,9 @@ class Value {}
 class ObjectNode extends Value {
   final Map<String, Value> entries;
   final bool mapMode;
+  final bool plainStrings;
 
-  ObjectNode(this.entries, this.mapMode);
+  ObjectNode(this.entries, this.mapMode) : plainStrings = entries.values.every((child) => child is TextNode && child.params.isEmpty);
 
   @override
   String toString() => entries.toString();
@@ -36,8 +37,9 @@ class ObjectNode extends Value {
 
 class ListNode extends Value {
   final List<Value> entries;
+  final bool plainStrings;
 
-  ListNode(this.entries);
+  ListNode(this.entries) : plainStrings = entries.every((child) => child is TextNode && child.params.isEmpty);
 
   @override
   String toString() => entries.toString();
