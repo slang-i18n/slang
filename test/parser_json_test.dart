@@ -27,7 +27,8 @@ void testParseConfig() {
     });
 
     test('full config', () {
-      I18nConfig config = parseConfig('{ "baseLocale": "de", "maps": [ "a", "b.c" ] }');
+      I18nConfig config =
+          parseConfig('{ "baseLocale": "de", "maps": [ "a", "b.c" ] }');
       expect(config.baseLocale, 'de');
       expect(config.maps, ['a', 'b.c']);
     });
