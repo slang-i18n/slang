@@ -57,7 +57,7 @@ Create these files inside your `lib` directory. Preferably in one common package
 **Step 3: Generate the dart code**
 
 ```
-flutter packages pub run build_runner build
+flutter pub run build_runner build
 ```
 
 **Step 4: Initialize**
