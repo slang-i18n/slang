@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:fast_i18n/src/model.dart';
 
+/// parses the config.i18n.json file
+/// returns an I18Config object
 I18nConfig parseConfig(String content) {
   Map<String, dynamic> map = json.decode(content);
   String baseLocale = map['baseLocale'] ?? '';
@@ -9,6 +11,8 @@ I18nConfig parseConfig(String content) {
   return I18nConfig(baseLocale, maps);
 }
 
+/// parses a json of one locale
+/// returns an I18nData object
 I18nData parseJSON(
     I18nConfig config, String baseName, String locale, String content) {
   Map<String, dynamic> map = json.decode(content);
@@ -33,7 +37,7 @@ void _parseJSONObject(List<String> maps, Map<String, dynamic> curr,
       List<String> nextStack = [...stack, key];
       String stackAsString = nextStack.join('.');
       bool mapMode = maps.contains(stackAsString);
-      if (!mapMode && legacyMapMode(value.keys.toList())) {
+      if (!mapMode && _legacyMapMode(value.keys.toList())) {
         mapMode = true;
         value.remove('#map');
       }
@@ -59,7 +63,7 @@ void _parseJSONArray(List<String> maps, List<dynamic> curr,
       // key: { ...value }
       String stackAsString = stack.join('.');
       bool mapMode = maps.contains(stackAsString);
-      if (!mapMode && legacyMapMode(value.keys.toList())) {
+      if (!mapMode && _legacyMapMode(value.keys.toList())) {
         mapMode = true;
         value.remove('#map');
       }
@@ -70,7 +74,7 @@ void _parseJSONArray(List<String> maps, List<dynamic> curr,
   }
 }
 
-bool legacyMapMode(List<String> keys) {
+bool _legacyMapMode(List<String> keys) {
   bool mapMode = keys.contains('#map');
   if (mapMode) print('#map is deprecated, use config.i18n.json for that');
   return mapMode;

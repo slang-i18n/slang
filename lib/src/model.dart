@@ -1,5 +1,6 @@
 import 'package:fast_i18n/utils.dart';
 
+/// represents the config.i18n.json file
 class I18nConfig {
   final String baseLocale; // defaults to ''
   final List<String> maps; // list of entities treated as maps and not classes
@@ -22,6 +23,7 @@ class I18nData {
       : base = locale == globalConfig.baseLocale;
 }
 
+/// the super class of every node
 class Value {}
 
 class ObjectNode extends Value {
