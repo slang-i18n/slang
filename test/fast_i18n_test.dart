@@ -23,6 +23,10 @@ void testSelectLocale() {
       expect(FastI18n.selectLocale('de_DE', ['en', 'de']), 'de');
     });
 
+    test('prefer first part over second part', () {
+      expect(FastI18n.selectLocale('en_DE', ['de', 'en']), 'en');
+    });
+
     test('match last part', () {
       expect(FastI18n.selectLocale('en_US', ['us', 'de']), 'us');
     });

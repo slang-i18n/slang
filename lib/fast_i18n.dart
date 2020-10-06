@@ -26,12 +26,16 @@ class FastI18n {
         orElse: () => null);
     if (selected != null) return selected;
 
-    // 2nd try: match the first or the second part
+    // 2nd try: match the first part (language)
     List<String> deviceLocaleParts = candidate.split('-');
     selected = supported.firstWhere(
-        (element) =>
-            element == deviceLocaleParts.first ||
-            element == deviceLocaleParts.last,
+        (element) => element == deviceLocaleParts.first,
+        orElse: () => null);
+    if (selected != null) return selected;
+
+    // 3rd try: match the second part (region)
+    selected = supported.firstWhere(
+        (element) => element == deviceLocaleParts.last,
         orElse: () => null);
     if (selected != null) return selected;
 

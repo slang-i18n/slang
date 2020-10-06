@@ -1,3 +1,7 @@
+## 1.7.0
+
+- Prefer language code over region code.
+
 ## 1.6.1
 
 - Add more unit tests.
