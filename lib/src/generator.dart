@@ -15,10 +15,12 @@ class ClassTask {
 String generate(List<I18nData> allLocales) {
   StringBuffer buffer = StringBuffer();
   buffer.writeln('\n// Generated file. Do not edit.\n');
-  buffer.writeln('import \'package:flutter/foundation.dart\';');
+  buffer.writeln('import \'package:flutter/material.dart\';');
   buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
 
   _generateHeader(buffer, allLocales);
+
+  buffer.writeln('\n// translations');
 
   allLocales.forEach((localeData) {
     _generateLocale(buffer, localeData);
@@ -30,12 +32,20 @@ String generate(List<I18nData> allLocales) {
 /// generates the header of the .g.dart file
 /// contains the t function, LocaleSettings class and some global variables
 void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
+  // identifiers
   const String mapVar = '_strings';
   const String baseLocaleVar = '_baseLocale';
   const String localeVar = '_locale';
+  const String translationsClass = 'Translations';
   const String settingsClass = 'LocaleSettings';
+  const String translationProviderKey = '_translationProviderKey';
+  const String translationProviderClass = 'TranslationProvider';
+  const String translationProviderStateClass = '_TranslationProviderState';
+  const String inheritedClass = '_InheritedLocaleData';
+
+  // constants
   final String baseLocale = allLocales.first.globalConfig.baseLocale;
-  final String className = allLocales.first.baseName.capitalize();
+  final String baseClassName = allLocales.first.baseName.capitalize();
   bool defaultingToEn = false;
 
   // current locale variable
@@ -43,42 +53,71 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('String $localeVar = $baseLocaleVar;');
 
   // map
-  buffer.writeln('Map<String, $className> $mapVar = {');
+  buffer.writeln('Map<String, $baseClassName> $mapVar = {');
   allLocales.forEach((localeData) {
     String finalClassName = localeData.base
-        ? className
-        : className + localeData.locale.capitalize().replaceAll('-', '');
+        ? baseClassName
+        : baseClassName + localeData.locale.capitalize().replaceAll('-', '');
     buffer.writeln('\t\'${localeData.locale}\': $finalClassName.instance,');
   });
   if (baseLocale == '' &&
       allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
     buffer.writeln(
-        '\t\'en\': $className.instance, // assume default locale is en, add a specific \'en\' locale to remove this or add config.i18n.json');
+        '\t\'en\': $baseClassName.instance, // assume default locale is en, add a specific \'en\' locale to remove this or add config.i18n.json');
     defaultingToEn = true;
   }
   buffer.writeln('};');
 
   // t getter
-  buffer.writeln(
-      '\n/// use this to get your translations, e.g. t.someKey.anotherKey');
-  buffer.writeln('$className get t {');
+  buffer.writeln('\n/// Method A: Simple');
+  buffer.writeln('///');
+  buffer.writeln('/// Just call t.someKey.anotherKey.');
+  buffer.writeln('/// The widget will be not updated when locale changes.');
+  buffer.writeln('/// Use this if you are sure that a widget will never receive locale changes.');
+  buffer.writeln('$baseClassName get t {');
   buffer.writeln('\treturn $mapVar[$localeVar];');
+  buffer.writeln('}');
+
+  // t getter (advanced)
+  buffer.writeln('\n/// Method B: Advanced');
+  buffer.writeln('///');
+  buffer.writeln('/// triggers a re-render on the widget when locale changes');
+  buffer.writeln('///');
+  buffer.writeln('/// step 1:');
+  buffer.writeln('/// wrap your App with');
+  buffer.writeln('/// TranslationProvider(');
+  buffer.writeln('/// \tchild: MyApp()');
+  buffer.writeln('/// );');
+  buffer.writeln('///');
+  buffer.writeln('/// step 2:');
+  buffer.writeln('/// final t = $translationsClass.of(context); // get t variable');
+  buffer.writeln('/// Text(t.someKey.anotherKey); // use t variable');
+  buffer.writeln('class $translationsClass {');
+  buffer.writeln('\t$translationsClass._(); // no constructor');
+  buffer.writeln('\n\tstatic $baseClassName of(BuildContext context) {');
+  buffer.writeln('\t\treturn context.dependOnInheritedWidgetOfExactType<$inheritedClass>().translations;');
+  buffer.writeln('\t}');
   buffer.writeln('}');
 
   // settings
   buffer.writeln('\nclass $settingsClass {');
+  buffer.writeln('\t$settingsClass._(); // no constructor');
 
   buffer.writeln(
       '\n\t/// use the locale of the device, fallback to default locale');
   buffer.writeln('\tstatic Future<void> useDeviceLocale() async {');
   buffer.writeln(
       '\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys.toList(), $baseLocaleVar);');
+  buffer.writeln('\n\t\tif ($translationProviderKey != null)');
+  buffer.writeln('\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');
   buffer.writeln('\t}');
 
   buffer.writeln('\n\t/// set the locale, fallback to default locale');
   buffer.writeln('\tstatic void setLocale(String locale) {');
   buffer.writeln(
       '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
+  buffer.writeln('\n\t\tif ($translationProviderKey != null)');
+  buffer.writeln('\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');
   buffer.writeln('\t}');
 
   buffer.writeln('\n\t/// get the current locale');
@@ -98,6 +137,42 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('\t\treturn $mapVar.keys.toList();');
   buffer.writeln('\t}');
 
+  buffer.writeln('}');
+
+  // TranslationProvider
+  buffer.writeln('\nGlobalKey<$translationProviderStateClass> $translationProviderKey = new GlobalKey<$translationProviderStateClass>();');
+  buffer.writeln('class $translationProviderClass extends StatefulWidget {');
+  buffer.writeln('\n\tfinal Widget child;');
+  buffer.writeln('\t$translationProviderClass({@required this.child}) : super(key: $translationProviderKey);');
+  buffer.writeln('\n\t@override');
+  buffer.writeln('\t$translationProviderStateClass createState() => $translationProviderStateClass();');
+  buffer.writeln('}');
+
+  // TranslationProviderState
+  buffer.writeln('\nclass $translationProviderStateClass extends State<$translationProviderClass> {');
+  buffer.writeln('\tString locale;');
+  buffer.writeln('\n\tvoid setLocale(String newLocale) {');
+  buffer.writeln('\t\tsetState(() {');
+  buffer.writeln('\t\t\tlocale = newLocale;');
+  buffer.writeln('\t\t});');
+  buffer.writeln('\t}');
+  buffer.writeln('\n\t@override');
+  buffer.writeln('\tWidget build(BuildContext context) {');
+  buffer.writeln('\t\treturn $inheritedClass(');
+  buffer.writeln('\t\t\ttranslations: $mapVar[locale],');
+  buffer.writeln('\t\t\tchild: widget.child,');
+  buffer.writeln('\t\t);');
+  buffer.writeln('\t}');
+  buffer.writeln('}');
+
+  // InheritedLocaleData
+  buffer.writeln('\nclass $inheritedClass extends InheritedWidget {');
+  buffer.writeln('\tfinal Strings translations;');
+  buffer.writeln('\t$inheritedClass({this.translations, Widget child}) : super(child: child);');
+  buffer.writeln('\n\t@override');
+  buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
+  buffer.writeln('\t\treturn oldWidget.translations != translations;');
+  buffer.writeln('\t}');
   buffer.writeln('}');
 }
 
