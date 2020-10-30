@@ -10,7 +10,7 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 ```yaml
 dependencies:
-  fast_i18n: ^1.7.0
+  fast_i18n: ^1.8.0
 
 dev_dependencies:
   build_runner: any
@@ -62,21 +62,22 @@ flutter pub run build_runner build
 
 **Step 4: Initialize**
 
+a) use device locale
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocaleSettings.useDeviceLocale();
+  runApp(MyApp());
+}
+```
+
+b) use specific locale
 ```dart
 @override
 void initState() {
   super.initState();
-
-  // a: use device locale
-  LocaleSettings.useDeviceLocale().whenComplete(() {
-    setState((){});
-  });
-
-  // b: use specific locale
-  LocaleSettings.setLocale('de');
-
-  // c: use default locale (default json locale)
-  // *do nothing*
+  String storedLocale = loadFromStorage(); // your logic here
+  LocaleSettings.setLocale(storedLocale);
 }
 ```
 
@@ -100,6 +101,10 @@ String translated = t.hello(name: 'Tom');
 
 // inside component
 Text(t.login.success)
+
+// advanced
+final t = Translations.of(context); // reacts on locale changes
+String translateAdvanced = t.hello(name: 'Tom');
 ```
 
 ## API

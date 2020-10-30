@@ -1,3 +1,7 @@
+## 1.8.0
+
+- New advanced mode: final t = Translations.of(context)
+
 ## 1.7.0
 
 - Prefer language code over region code.
