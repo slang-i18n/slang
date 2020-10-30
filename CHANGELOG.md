@@ -1,3 +1,7 @@
+## 1.8.1
+
+- Hotfix: possible NPE error when calling LocaleSettings.useDeviceLocale or LocaleSettings.setLocale
+
 ## 1.8.0
 
 - New advanced mode: final t = Translations.of(context)

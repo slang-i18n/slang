@@ -4,7 +4,7 @@
 
 ```yaml
 dependencies:
-  fast_i18n: ^1.8.0
+  fast_i18n: ^1.8.1
 
 dev_dependencies:
   build_runner: any
@@ -97,6 +97,7 @@ String translated = t.hello(name: 'Tom');
 Text(t.login.success)
 
 // advanced
+TranslationProvider(child: MyApp()); // wrap your app with the TranslationProvider
 final t = Translations.of(context); // reacts on locale changes
 String translateAdvanced = t.hello(name: 'Tom');
 ```
@@ -105,7 +106,11 @@ String translateAdvanced = t.hello(name: 'Tom');
 
 When the dart code has been generated, you will see some useful classes and functions
 
-`t` - the most important translate variable
+`t` - the translate variable for simple translations
+
+`Translations.of(context)` - translations which reacts to locale changes
+
+`TranslationProvider` - App wrapper, used for `Translations.of(context)`
 
 `LocaleSettings.useDeviceLocale()` - use the locale of the device
 
