@@ -71,9 +71,11 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   // t getter
   buffer.writeln('\n/// Method A: Simple');
   buffer.writeln('///');
-  buffer.writeln('/// Just call t.someKey.anotherKey.');
-  buffer.writeln('/// The widget will be not updated when locale changes.');
-  buffer.writeln('/// Use this if you are sure that a widget will never receive locale changes.');
+  buffer.writeln('/// Widgets using this method will not be updated after widget creation when locale changes.');
+  buffer.writeln('/// Translation happens during initialization of the widget (method call of t)');
+  buffer.writeln('///');
+  buffer.writeln('/// Usage:');
+  buffer.writeln('/// String translated = t.someKey.anotherKey;');
   buffer.writeln('$baseClassName get t {');
   buffer.writeln('\treturn $mapVar[$localeVar];');
   buffer.writeln('}');
@@ -81,17 +83,18 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   // t getter (advanced)
   buffer.writeln('\n/// Method B: Advanced');
   buffer.writeln('///');
-  buffer.writeln('/// triggers a re-render on the widget when locale changes');
+  buffer.writeln('/// Reacts on locale changes.');
+  buffer.writeln('/// Use this if you have e.g. a settings page where the user can select the locale during runtime.');
   buffer.writeln('///');
-  buffer.writeln('/// step 1:');
+  buffer.writeln('/// Step 1:');
   buffer.writeln('/// wrap your App with');
   buffer.writeln('/// TranslationProvider(');
   buffer.writeln('/// \tchild: MyApp()');
   buffer.writeln('/// );');
   buffer.writeln('///');
-  buffer.writeln('/// step 2:');
+  buffer.writeln('/// Step 2:');
   buffer.writeln('/// final t = $translationsClass.of(context); // get t variable');
-  buffer.writeln('/// Text(t.someKey.anotherKey); // use t variable');
+  buffer.writeln('/// String translated = t.someKey.anotherKey; // use t variable');
   buffer.writeln('class $translationsClass {');
   buffer.writeln('\t$translationsClass._(); // no constructor');
   buffer.writeln('\n\tstatic $baseClassName of(BuildContext context) {');
