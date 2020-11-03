@@ -1,3 +1,7 @@
+## 1.8.2
+
+- Hotfix: possible NPE when calling Translations.of(context)
+
 ## 1.8.1
 
 - Hotfix: possible NPE error when calling LocaleSettings.useDeviceLocale or LocaleSettings.setLocale
