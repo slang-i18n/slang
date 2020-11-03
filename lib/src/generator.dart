@@ -165,7 +165,7 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   // TranslationProviderState
   buffer.writeln(
       '\nclass $translationProviderStateClass extends State<$translationProviderClass> {');
-  buffer.writeln('\tString locale;');
+  buffer.writeln('\tString locale = $localeVar;');
   buffer.writeln('\n\tvoid setLocale(String newLocale) {');
   buffer.writeln('\t\tsetState(() {');
   buffer.writeln('\t\t\tlocale = newLocale;');
