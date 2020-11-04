@@ -1,12 +1,15 @@
 ## 2.0.0
 
-- Now its possible to set in and out directories for files.
+Thanks to @DenchikBY (https://github.com/DenchikBY).
+
+- Now it's possible to set in and out directories for files.
 - You can set the pattern by which to search for files.
 - Generated keys can be switched to another case in generated classes.
 - Removed dependency on devicelocale.
-- Configs with baseLocale and maps moved from config.i18.json to build.yaml
+- Configs with baseLocale and maps moved from config.i18n.json to build.yaml
 - Generators replaced with fields for keys with static values.
 - Arguments now can be wrapped with braces like ${key}.
+- Removed deprecated `#map` mode (deprecated in 1.5.0)
 
 Example of new config in build.yaml:
 ```yaml
@@ -15,15 +18,16 @@ targets:
     builders:
       fast_i18n:i18nBuilder:
         options:
-          directory_in: assets/locale
-          directory_out: lib/i18n
-          files_pattern: '.json'
           base_locale: en
+          input_directory: lib/i18n
+          input_file_pattern: .i18n.json
+          output_directory: lib/i18n
+          output_file_pattern: .g.dart
           key_case: snake
           maps:
-            - 'a'
-            - 'b'
-            - 'c.d'
+            - a
+            - b
+            - c.d
 ```
 
 ## 1.8.2

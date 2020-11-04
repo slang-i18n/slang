@@ -46,14 +46,6 @@ Create these files inside your `lib` directory. Preferably in one common package
 }
 ```
 
-`config.i18n.json (optional but recommended)`
-
-```json
-{
-  "baseLocale": "en"
-}
-```
-
 **Step 3: Generate the dart code**
 
 ```
@@ -128,22 +120,34 @@ When the dart code has been generated, you will see some useful classes and func
 
 ## Configuration
 
-All settings can be set in the `config.i18n.json` file. Place it anywhere inside your lib directory
+All settings can be set in the `build.yaml` file. Place it in the root directory.
 
-```json
-{
-  "baseLocale": "en",
-  "maps": [
-    "a",
-    "b",
-    "c.d"
-  ]
-}
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          base_locale: en
+          input_directory: lib/i18n
+          input_file_pattern: .i18n.json
+          output_directory: lib/i18n
+          output_file_pattern: .g.dart
+          key_case: snake
+          maps:
+            - a
+            - b
+            - c.d
 ```
 
 Key|Type|Usage|Default
 ---|---|---|---
-baseLocale|`String`|assign the default json file to a locale|`''`
+base_locale|`String`|locale of default json|`en`
+input_directory|`String`|path to input directory|`null (whole project)`
+input_file_pattern|`String`|input file pattern|`.i18n.json`
+output_directory|`String`|path to output directory|`null (whole project)`
+output_file_pattern|`String`|output file pattern|`.g.dart`
+key_case|`snake` or `camel`|transform keys to snake or camel case|`null (no transform)`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 
 ## Additional features
@@ -170,15 +174,16 @@ Keep in mind that all nice features like autocompletion are gone.
 }
 ```
 
-`config.i18n.json`
-```json
-{
-  "baseLocale": "en",
-  "maps": [
-    "thisIsAMap",
-    "classicClass.aMapInClass"
-  ]
-}
+`build.yaml`
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          maps:
+            - thisIsAMap
+            - classicClass.aMapInClass
 ```
 
 Now you can access this via key:
