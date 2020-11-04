@@ -1,3 +1,31 @@
+## 2.0.0
+
+- Now its possible to set in and out directories for files.
+- You can set the pattern by which to search for files.
+- Generated keys can be switched to another case in generated classes.
+- Removed dependency on devicelocale.
+- Configs with baseLocale and maps moved from config.i18.json to build.yaml
+- Generators replaced with fields for keys with static values.
+- Arguments now can be wrapped with braces like ${key}.
+
+Example of new config in build.yaml:
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          directory_in: assets/locale
+          directory_out: lib/i18n
+          files_pattern: '.json'
+          base_locale: en
+          key_case: snake
+          maps:
+            - 'a'
+            - 'b'
+            - 'c.d'
+```
+
 ## 1.8.2
 
 - Hotfix: possible NPE when calling Translations.of(context)

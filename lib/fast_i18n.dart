@@ -1,7 +1,7 @@
 library fast_i18n;
 
-import 'package:devicelocale/devicelocale.dart';
 import 'package:fast_i18n/utils.dart';
+import 'package:flutter/widgets.dart';
 
 class FastI18n {
   /// returns the locale string used by the device
@@ -9,7 +9,7 @@ class FastI18n {
   /// fallback to '' (default locale)
   static Future<String> findDeviceLocale(List<String> supported,
       [String baseLocale = '']) async {
-    String deviceLocale = (await Devicelocale.currentAsLocale).toLanguageTag();
+    String deviceLocale = WidgetsBinding.instance.window.locale.languageCode;
 
     return selectLocale(deviceLocale, supported, baseLocale);
   }
