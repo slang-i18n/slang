@@ -25,7 +25,7 @@ class I18nBuilder implements Builder {
   FutureOr<void> build(BuildStep buildStep) async {
     String directoryInPath = options.config['directory_in'];
     String baseLocale = options.config['base_locale'];
-    List<String> maps = options.config['maps'];
+    List<String> maps = options.config['maps'].cast<String>();
     String directoryOutPath = options.config['directory_out'];
     String keyCase = options.config['key_case'];
 
