@@ -13,25 +13,27 @@ Builder i18nBuilder(BuilderOptions options) => I18nBuilder(options);
 class I18nBuilder implements Builder {
   I18nBuilder(this.options);
 
-  static const String defaultFilePattern = '.i18n.json';
+  static const String defaultInputFilePattern = '.i18n.json';
+  static const String defaultOutputFilePattern = '.g.dart';
 
   final BuilderOptions options;
 
   bool _generated = false;
 
-  String get filesPattern => options.config['files_pattern'] ?? defaultFilePattern;
+  String get inputFilePattern => options.config['input_file_pattern'] ?? defaultInputFilePattern;
+  String get outputFilePattern => options.config['output_file_pattern'] ?? defaultOutputFilePattern;
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    String directoryInPath = options.config['directory_in'];
     String baseLocale = options.config['base_locale'] ?? 'en';
-    List<String> maps = options.config['maps']?.cast<String>() ?? [];
-    String directoryOutPath = options.config['directory_out'];
+    String inputDirectory = options.config['input_directory'];
+    String outputDirectory = options.config['output_directory'];
     String keyCase = options.config['key_case'];
+    List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
     I18nConfig config = I18nConfig(baseLocale, maps);
 
-    if (null != directoryInPath && !buildStep.inputId.path.contains(directoryInPath)) {
+    if (null != inputDirectory && !buildStep.inputId.path.contains(inputDirectory)) {
       return;
     }
 
@@ -43,12 +45,12 @@ class I18nBuilder implements Builder {
       Map<AssetId, String> locales = Map();
       String baseName = 'strings';
 
-      final Glob findAssetsPattern = null != directoryInPath
-          ? Glob('**$directoryInPath/*$filesPattern')
-          : Glob('**$filesPattern');
+      final Glob findAssetsPattern = null != inputDirectory
+          ? Glob('**$inputDirectory/*$inputFilePattern')
+          : Glob('**$inputFilePattern');
 
       await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
-        String fileNameNoExtension = assetId.pathSegments.last.replaceAll(filesPattern, '');
+        String fileNameNoExtension = assetId.pathSegments.last.replaceAll(inputFilePattern, '');
 
         RegExpMatch match = Utils.localeRegex.firstMatch(fileNameNoExtension);
 
@@ -95,11 +97,11 @@ class I18nBuilder implements Builder {
           .firstWhere((element) => element.value.base)
           .key;
 
-      if (null == directoryOutPath) {
-        directoryOutPath = (baseId.pathSegments..removeLast()).join('/');
+      if (null == outputDirectory) {
+        outputDirectory = (baseId.pathSegments..removeLast()).join('/');
       }
 
-      final String outFilePath = '$directoryOutPath/$baseName.g.dart';
+      final String outFilePath = '$outputDirectory/$baseName$outputFilePattern';
 
       File(outFilePath).writeAsStringSync(output);
     }
@@ -107,6 +109,6 @@ class I18nBuilder implements Builder {
 
   @override
   get buildExtensions => {
-    filesPattern: ['.g.dart'],
+    inputFilePattern: [outputFilePattern],
   };
 }
