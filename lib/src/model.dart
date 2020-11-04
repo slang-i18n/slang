@@ -78,23 +78,11 @@ class TextNode extends Value {
 /// 'hello $name' => ['name']
 /// 'hello \$name => []
 /// 'my name is $name and I am $age years old' => ['name', 'age']
+/// 'my name is ${name} and I am ${age} years old' => ['name', 'age']
 List<String> _findArguments(String content) {
-  String s = content.replaceAll('\\\$', ''); // remove \$
-  List<String> arguments = [];
-  int indexStart = s.indexOf('\$');
-  while (indexStart != -1) {
-    if (indexStart == s.length - 1) break;
-
-    int indexEnd = s.indexOf(Utils.specialRegex, indexStart + 1);
-    if (indexEnd != -1) {
-      arguments.add(s.substring(indexStart + 1, indexEnd));
-      s = s.substring(indexEnd);
-      indexStart = s.indexOf('\$');
-    } else {
-      arguments.add(s.substring(indexStart + 1));
-      break;
-    }
-  }
-
-  return arguments;
+  return Utils
+      .argumentsRegex
+      .allMatches(content)
+      .map((e) => e.group(2))
+      .toList();
 }
