@@ -37,10 +37,6 @@ void _parseJSONObject(List<String> maps, Map<String, dynamic> curr,
       List<String> nextStack = [...stack, key];
       String stackAsString = nextStack.join('.');
       bool mapMode = maps.contains(stackAsString);
-      if (!mapMode && _legacyMapMode(value.keys.toList())) {
-        mapMode = true;
-        value.remove('#map');
-      }
       Map<String, Value> subDestination = Map();
       _parseJSONObject(maps, value, subDestination, nextStack);
       destination[key] = ObjectNode(subDestination, mapMode);
@@ -63,19 +59,9 @@ void _parseJSONArray(List<String> maps, List<dynamic> curr,
       // key: { ...value }
       String stackAsString = stack.join('.');
       bool mapMode = maps.contains(stackAsString);
-      if (!mapMode && _legacyMapMode(value.keys.toList())) {
-        mapMode = true;
-        value.remove('#map');
-      }
       Map<String, Value> subDestination = Map();
       _parseJSONObject(maps, value, subDestination, stack);
       destination.add(ObjectNode(subDestination, mapMode));
     }
   }
-}
-
-bool _legacyMapMode(List<String> keys) {
-  bool mapMode = keys.contains('#map');
-  if (mapMode) print('#map is deprecated, use config.i18n.json for that');
-  return mapMode;
 }
