@@ -24,12 +24,12 @@ class I18nBuilder implements Builder {
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     String directoryInPath = options.config['directory_in'];
-    String baseLocale = options.config['base_locale'];
-    List<String> maps = options.config['maps']?.cast<String>();
+    String baseLocale = options.config['base_locale'] ?? 'en';
+    List<String> maps = options.config['maps']?.cast<String>() ?? [];
     String directoryOutPath = options.config['directory_out'];
     String keyCase = options.config['key_case'];
 
-    I18nConfig config = I18nConfig(baseLocale ?? '', maps ?? []);
+    I18nConfig config = I18nConfig(baseLocale, maps);
 
     if (null != directoryInPath && !buildStep.inputId.path.contains(directoryInPath)) {
       return;

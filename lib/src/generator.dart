@@ -51,7 +51,6 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   // constants
   final String baseLocale = allLocales.first.globalConfig.baseLocale;
   final String baseClassName = allLocales.first.baseName.capitalize();
-  bool defaultingToEn = false;
 
   // current locale variable
   buffer.writeln();
@@ -70,11 +69,6 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
 
     buffer.writeln('\t\'${localeData.locale}\': $finalClassName.instance,');
   });
-
-  if (baseLocale == '' && allLocales.indexWhere((locale) => locale.locale == 'en') == -1) {
-    buffer.writeln('\t\'en\': $baseClassName.instance, // assume default locale is en, add a specific \'en\' locale to remove this or add config.i18n.json');
-    defaultingToEn = true;
-  }
 
   buffer.writeln('};');
 
@@ -143,9 +137,6 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln();
   buffer.writeln('\t/// get the current locale');
   buffer.writeln('\tstatic String get currentLocale {');
-  if (defaultingToEn) {
-    buffer.writeln('\t\tif ($localeVar == \'en\') return \'$baseLocale\';');
-  }
   buffer.writeln('\t\treturn $localeVar;');
   buffer.writeln('\t}');
 
