@@ -114,8 +114,8 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
 
   buffer.writeln();
   buffer.writeln('\t/// use the locale of the device, fallback to default locale');
-  buffer.writeln('\tstatic Future<void> useDeviceLocale() async {');
-  buffer.writeln('\t\t$localeVar = await FastI18n.findDeviceLocale($mapVar.keys.toList(), $baseLocaleVar);');
+  buffer.writeln('\tstatic void useDeviceLocale() {');
+  buffer.writeln('\t\t$localeVar = FastI18n.findDeviceLocale($mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t\tt = $mapVar[$localeVar];');
   buffer.writeln();
   buffer.writeln('\t\tif ($translationProviderKey.currentState != null) {');

@@ -7,17 +7,14 @@ class FastI18n {
   /// returns the locale string used by the device
   /// it always matches one of the supported locales
   /// fallback to '' (default locale)
-  static Future<String> findDeviceLocale(List<String> supported,
-      [String baseLocale = '']) async {
+  static String findDeviceLocale(List<String> supported, String baseLocale) {
     String deviceLocale = WidgetsBinding.instance.window.locale.languageCode;
-
     return selectLocale(deviceLocale, supported, baseLocale);
   }
 
   /// returns the candidate (or part of it) if it is supported
   /// fallback to '' (default locale)
-  static String selectLocale(String candidate, List<String> supported,
-      [String baseLocale = '']) {
+  static String selectLocale(String candidate, List<String> supported, String baseLocale) {
     // normalize
     candidate = Utils.normalize(candidate);
 
