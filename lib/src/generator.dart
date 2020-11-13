@@ -116,18 +116,12 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('\t/// Use locale of the device, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\tstatic String useDeviceLocale() {');
-  buffer.writeln('\t\t$localeVar = FastI18n.findDeviceLocale($mapVar.keys.toList(), $baseLocaleVar);');
-  buffer.writeln('\t\tt = $mapVar[$localeVar];');
-  buffer.writeln();
-  buffer.writeln('\t\tif ($translationProviderKey.currentState != null) {');
-  buffer.writeln('\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');
-  buffer.writeln('\t\t}');
-  buffer.writeln();
-  buffer.writeln('\t\treturn $localeVar;');
+  buffer.writeln('\t\tString deviceLocale = FastI18n.getDeviceLocale();');
+  buffer.writeln('\t\treturn setLocale(deviceLocale);');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Set locale. Fallbacks to base locale.');
+  buffer.writeln('\t/// Set locale, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\tstatic String setLocale(String locale) {');
   buffer.writeln('\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');

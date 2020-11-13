@@ -4,16 +4,14 @@ import 'package:fast_i18n/utils.dart';
 import 'package:flutter/widgets.dart';
 
 class FastI18n {
+
   /// returns the locale string used by the device
-  /// it always matches one of the supported locales
-  /// fallback to '' (default locale)
-  static String findDeviceLocale(List<String> supported, String baseLocale) {
-    String deviceLocale = WidgetsBinding.instance.window.locale.languageCode;
-    return selectLocale(deviceLocale, supported, baseLocale);
+  static String getDeviceLocale() {
+    return WidgetsBinding.instance.window.locale.languageCode;
   }
 
   /// returns the candidate (or part of it) if it is supported
-  /// fallback to '' (default locale)
+  /// fallback to base locale
   static String selectLocale(String candidate, List<String> supported, String baseLocale) {
     // normalize
     candidate = Utils.normalize(candidate);
