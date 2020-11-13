@@ -1,3 +1,13 @@
+## 2.1.0
+
+A rebuild is needed: `flutter pub run build_runner build`.
+
+- API change: LocaleSettings.useDeviceLocale() is no longer asynchronous and now returns the new locale (was `Future<void>`)
+- API change: LocaleSettings.setLocale(locale) now also returns the new locale (was `void`)
+
+Just in case you use internal API:
+FastI18n.findDeviceLocale has been renamed to FastI18n.getDeviceLocale
+
 ## 2.0.0
 
 Thanks to @DenchikBY (https://github.com/DenchikBY).

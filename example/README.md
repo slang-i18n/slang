@@ -4,7 +4,7 @@
 
 ```yaml
 dependencies:
-  fast_i18n: ^2.0.0
+  fast_i18n: ^2.1.0
 
 dev_dependencies:
   build_runner: any
@@ -50,9 +50,9 @@ flutter pub run build_runner build
 
 a) use device locale
 ```dart
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocaleSettings.useDeviceLocale();
+  LocaleSettings.useDeviceLocale();
   runApp(MyApp());
 }
 ```
