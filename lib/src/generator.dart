@@ -76,8 +76,8 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln();
   buffer.writeln('/// Method A: Simple');
   buffer.writeln('///');
-  buffer.writeln('/// Widgets using this method will not be updated after widget creation when locale changes.');
-  buffer.writeln('/// Translation happens during initialization of the widget (method call of t)');
+  buffer.writeln('/// Widgets using this method will not be updated when locale changes during runtime.');
+  buffer.writeln('/// Translation happens during initialization of the widget (call of t).');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String translated = t.someKey.anotherKey;');
@@ -87,7 +87,7 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln();
   buffer.writeln('/// Method B: Advanced');
   buffer.writeln('///');
-  buffer.writeln('/// Reacts on locale changes.');
+  buffer.writeln('/// All widgets using this method will trigger a rebuild when locale changes.');
   buffer.writeln('/// Use this if you have e.g. a settings page where the user can select the locale during runtime.');
   buffer.writeln('///');
   buffer.writeln('/// Step 1:');
@@ -113,7 +113,7 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('\t$settingsClass._(); // no constructor');
 
   buffer.writeln();
-  buffer.writeln('\t/// use the locale of the device, fallback to default locale');
+  buffer.writeln('\t/// use the locale of the device, fallback to base locale');
   buffer.writeln('\tstatic void useDeviceLocale() {');
   buffer.writeln('\t\t$localeVar = FastI18n.findDeviceLocale($mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t\tt = $mapVar[$localeVar];');
@@ -124,7 +124,7 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// set the locale, fallback to default locale');
+  buffer.writeln('\t/// set the locale, fallback to base locale');
   buffer.writeln('\tstatic void setLocale(String locale) {');
   buffer.writeln('\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t\tt = $mapVar[$localeVar];');
