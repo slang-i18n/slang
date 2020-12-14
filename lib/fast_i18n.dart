@@ -1,13 +1,14 @@
 library fast_i18n;
 
+import 'dart:io';
+
 import 'package:fast_i18n/utils.dart';
-import 'package:flutter/widgets.dart';
 
 class FastI18n {
 
   /// returns the locale string used by the device
   static String getDeviceLocale() {
-    return WidgetsBinding.instance.window.locale.languageCode;
+    return Platform.localeName;
   }
 
   /// returns the candidate (or part of it) if it is supported
