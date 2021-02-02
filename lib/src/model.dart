@@ -6,8 +6,9 @@ class I18nConfig {
   final String baseLocale; // defaults to 'en'
   final List<String> maps; // list of entities treated as maps and not classes
   final String keyCase;
+  final String translateVariable;
 
-  I18nConfig({this.baseName, this.baseLocale, this.maps, this.keyCase});
+  I18nConfig({this.baseName, this.baseLocale, this.maps, this.keyCase, this.translateVariable});
 
   @override
   String toString() => '$baseLocale, maps: $maps';

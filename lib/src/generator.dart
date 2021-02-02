@@ -49,6 +49,7 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   const String inheritedClass = '_InheritedLocaleData';
 
   // constants
+  final String translateVar = config.translateVariable;
   final String baseLocale = config.baseLocale;
   final String baseClassName = config.baseName.capitalize();
 
@@ -81,7 +82,7 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String translated = t.someKey.anotherKey;');
-  buffer.writeln('$baseClassName t = $mapVar[$localeVar];');
+  buffer.writeln('$baseClassName $translateVar = $mapVar[$localeVar];');
 
   // t getter (advanced)
   buffer.writeln();
@@ -125,7 +126,7 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\tstatic String setLocale(String locale) {');
   buffer.writeln('\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
-  buffer.writeln('\t\tt = $mapVar[$localeVar];');
+  buffer.writeln('\t\t$translateVar = $mapVar[$localeVar];');
   buffer.writeln();
   buffer.writeln('\t\tif ($translationProviderKey.currentState != null) {');
   buffer.writeln('\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');

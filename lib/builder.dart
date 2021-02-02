@@ -15,6 +15,7 @@ class I18nBuilder implements Builder {
 
   static const String defaultBaseLocale = 'en';
   static const String defaultBaseName = 'strings';
+  static const String defaultTranslateVar = 't';
   static const String defaultInputFilePattern = '.i18n.json';
   static const String defaultOutputFilePattern = '.g.dart';
 
@@ -30,6 +31,7 @@ class I18nBuilder implements Builder {
     final String baseLocale = options.config['base_locale'] ?? defaultBaseLocale;
     final String inputDirectory = options.config['input_directory'];
     final String outputDirectory = options.config['output_directory'];
+    final String translateVar = options.config['output_translate_var'] ?? defaultTranslateVar;
     final String keyCase = options.config['key_case'];
     final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
@@ -78,7 +80,8 @@ class I18nBuilder implements Builder {
       baseName: baseName ?? defaultBaseName,
       baseLocale: baseLocale,
       maps: maps,
-      keyCase: keyCase
+      keyCase: keyCase,
+      translateVariable: translateVar
     );
 
     // map each assetId to I18nData
