@@ -1,3 +1,8 @@
+## 2.2.0
+
+- new config: `output_translate_var`, renames default `t` variable
+- internal: device locale now fetched via `Platform.localeName`
+
 ## 2.1.0
 
 A rebuild is needed: `flutter pub run build_runner build`.
