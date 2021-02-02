@@ -1,5 +1,4 @@
 import 'package:fast_i18n/utils.dart';
-import 'package:flutter/material.dart';
 
 /// general config, applies to all locales
 class I18nConfig {
@@ -8,7 +7,7 @@ class I18nConfig {
   final List<String> maps; // list of entities treated as maps and not classes
   final String keyCase;
 
-  I18nConfig({@required this.baseName, @required this.baseLocale, @required this.maps, @required this.keyCase});
+  I18nConfig({this.baseName, this.baseLocale, this.maps, this.keyCase});
 
   @override
   String toString() => '$baseLocale, maps: $maps';
@@ -20,7 +19,7 @@ class I18nData {
   final String locale; // the locale code (the part after the underscore)
   final ObjectNode root; // the actual strings
 
-  I18nData({@required this.base, @required this.locale, @required this.root});
+  I18nData({this.base, this.locale, this.root});
 }
 
 /// the super class of every node

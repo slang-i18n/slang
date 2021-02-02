@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:fast_i18n/src/model.dart';
-import 'package:flutter/material.dart';
 import 'package:recase/recase.dart';
 
 /// decides which class should be generated
@@ -14,7 +13,7 @@ class ClassTask {
 
 /// main generate function
 /// returns a string representing the content of the .g.dart file
-String generate({@required I18nConfig config, @required List<I18nData> translations}) {
+String generate({I18nConfig config, List<I18nData> translations}) {
   StringBuffer buffer = StringBuffer();
 
   buffer.writeln();
