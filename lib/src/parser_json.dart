@@ -23,7 +23,7 @@ void _parseJSONObject(List<String> maps, Map<String, dynamic> curr, Map<String, 
       destination[key] = TextNode(value);
     } else if (value is List) {
       // key: [ ...value ]
-      List<Value> list = List();
+      List<Value> list = List.empty(growable: true);
       _parseJSONArray(maps, value, list, stack);
       destination[key] = ListNode(list);
     } else {
@@ -45,7 +45,7 @@ void _parseJSONArray(List<String> maps, List<dynamic> curr, List<Value> destinat
       destination.add(TextNode(value));
     } else if (value is List) {
       // key: [ ...value ]
-      List<Value> list = List();
+      List<Value> list = List.empty(growable: true);
       _parseJSONArray(maps, value, list, stack);
       destination.add(ListNode(list));
     } else {
