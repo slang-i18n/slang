@@ -1,11 +1,14 @@
 import 'package:fast_i18n/utils.dart';
+import 'package:flutter/material.dart';
 
-/// represents the config.i18n.json file
+/// general config, applies to all locales
 class I18nConfig {
-  final String baseLocale; // defaults to ''
+  final String baseName; // name of all i18n files, like strings or messages
+  final String baseLocale; // defaults to 'en'
   final List<String> maps; // list of entities treated as maps and not classes
+  final String keyCase;
 
-  I18nConfig(this.baseLocale, this.maps);
+  I18nConfig({@required this.baseName, @required this.baseLocale, @required this.maps, @required this.keyCase});
 
   @override
   String toString() => '$baseLocale, maps: $maps';
@@ -13,14 +16,11 @@ class I18nConfig {
 
 /// represents one locale and its localized strings
 class I18nData {
-  final I18nConfig globalConfig; // config of all locales
-  final String baseName; // name of all i18n files, like strings or messages
   final bool base; // whether or not this is the base locale
   final String locale; // the locale code (the part after the underscore)
   final ObjectNode root; // the actual strings
 
-  I18nData(this.globalConfig, this.baseName, this.locale, this.root)
-      : base = locale == globalConfig.baseLocale;
+  I18nData({@required this.base, @required this.locale, @required this.root});
 }
 
 /// the super class of every node

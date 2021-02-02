@@ -13,6 +13,8 @@ Builder i18nBuilder(BuilderOptions options) => I18nBuilder(options);
 class I18nBuilder implements Builder {
   I18nBuilder(this.options);
 
+  static const String defaultBaseLocale = 'en';
+  static const String defaultBaseName = 'strings';
   static const String defaultInputFilePattern = '.i18n.json';
   static const String defaultOutputFilePattern = '.g.dart';
 
@@ -25,86 +27,85 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    String baseLocale = options.config['base_locale'] ?? 'en';
-    String inputDirectory = options.config['input_directory'];
-    String outputDirectory = options.config['output_directory'];
-    String keyCase = options.config['key_case'];
-    List<String> maps = options.config['maps']?.cast<String>() ?? [];
+    final String baseLocale = options.config['base_locale'] ?? defaultBaseLocale;
+    final String inputDirectory = options.config['input_directory'];
+    final String outputDirectory = options.config['output_directory'];
+    final String keyCase = options.config['key_case'];
+    final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
-    I18nConfig config = I18nConfig(baseLocale, maps);
-
-    if (null != inputDirectory && !buildStep.inputId.path.contains(inputDirectory)) {
+    if (inputDirectory != null && !buildStep.inputId.path.contains(inputDirectory))
       return;
-    }
 
     // only generate once
-    if (!_generated) {
-      _generated = true;
+    if (_generated)
+      return;
 
-      // detect all locales, their assetId and the baseName
-      Map<AssetId, String> locales = Map();
-      String baseName = 'strings';
+    _generated = true;
 
-      final Glob findAssetsPattern = null != inputDirectory
-          ? Glob('**$inputDirectory/*$inputFilePattern')
-          : Glob('**$inputFilePattern');
+    // detect all locales, their assetId and the baseName
+    final Map<AssetId, String> locales = Map();
+    String baseName;
 
-      await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
-        String fileNameNoExtension = assetId.pathSegments.last.replaceAll(inputFilePattern, '');
+    final Glob findAssetsPattern = inputDirectory != null
+        ? Glob('**$inputDirectory/*$inputFilePattern')
+        : Glob('**$inputFilePattern');
 
-        RegExpMatch match = Utils.localeRegex.firstMatch(fileNameNoExtension);
+    await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
+      final fileNameNoExtension = assetId.pathSegments.last.replaceAll(inputFilePattern, '');
+      final match = Utils.localeRegex.firstMatch(fileNameNoExtension);
 
-        if (match != null) {
-          if (null != match.group(2)) {
-            baseName = match.group(2);
-          }
-
-          String language = match.group(3);
-          String country = match.group(5);
-
-          if (country != null) {
-            locales[assetId] = language + '-' + country.toLowerCase();
-          } else {
-            locales[assetId] = language;
-          }
-        } else {
-          locales[assetId] = '';
-          baseName = fileNameNoExtension;
+      if (match != null) {
+        if (match.group(2) != null) {
+          baseName = match.group(2);
         }
-      });
 
-      // map each assetId to I18nData
-      Map<AssetId, I18nData> localesWithData = Map();
+        final language = match.group(3);
+        final country = match.group(5);
 
-      for (AssetId assetId in locales.keys) {
-        String locale = locales[assetId];
-        if (locale == '') locale = config.baseLocale;
-
-        String content = await buildStep.readAsString(assetId);
-        I18nData representation = parseJSON(config, baseName, locale, content);
-        localesWithData[assetId] = representation;
+        if (country != null) {
+          locales[assetId] = (language + '-' + country).toLowerCase();
+        } else {
+          locales[assetId] = language.toLowerCase();
+        }
+      } else {
+        locales[assetId] = baseLocale;
+        baseName = fileNameNoExtension;
       }
+    });
 
-      // generate
-      String output = generate(
-        localesWithData.values.toList()
-          ..sort((a, b) => a.locale.compareTo(b.locale)),
-        keyCase,
-      );
+    // build config which applies to all locales
+    final config = I18nConfig(
+      baseName: baseName ?? defaultBaseName,
+      baseLocale: baseLocale,
+      maps: maps,
+      keyCase: keyCase
+    );
 
-      // write only to main locale
-      AssetId baseId = localesWithData.entries
-          .firstWhere((element) => element.value.base)
-          .key;
+    // map each assetId to I18nData
+    final localesWithData = Map<AssetId, I18nData>();
 
-      if (null == outputDirectory) {
-        outputDirectory = (baseId.pathSegments..removeLast()).join('/');
-      }
-
-      final String outFilePath = '$outputDirectory/$baseName$outputFilePattern';
-
-      File(outFilePath).writeAsStringSync(output);
+    for (AssetId assetId in locales.keys) {
+      String locale = locales[assetId];
+      String content = await buildStep.readAsString(assetId);
+      I18nData representation = parseJSON(config, baseName, locale, content);
+      localesWithData[assetId] = representation;
     }
+
+    // generate
+    final String output = generate(
+      config: config,
+      translations: localesWithData.values.toList()..sort((a, b) => a.locale.compareTo(b.locale))
+    );
+
+    // write only to main locale
+    final AssetId baseId = localesWithData.entries
+        .firstWhere((element) => element.value.base)
+        .key;
+
+    final finalOutputDirectory = outputDirectory ?? (baseId.pathSegments..removeLast()).join('/');
+    final String outFilePath = '$finalOutputDirectory/$baseName$outputFilePattern';
+
+    File(outFilePath).writeAsStringSync(output);
   }
 
   @override

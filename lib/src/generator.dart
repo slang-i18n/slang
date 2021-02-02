@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:fast_i18n/src/model.dart';
+import 'package:flutter/material.dart';
 import 'package:recase/recase.dart';
 
 /// decides which class should be generated
@@ -13,7 +14,7 @@ class ClassTask {
 
 /// main generate function
 /// returns a string representing the content of the .g.dart file
-String generate(List<I18nData> allLocales, String keyCase) {
+String generate({@required I18nConfig config, @required List<I18nData> translations}) {
   StringBuffer buffer = StringBuffer();
 
   buffer.writeln();
@@ -22,13 +23,13 @@ String generate(List<I18nData> allLocales, String keyCase) {
   buffer.writeln('import \'package:flutter/material.dart\';');
   buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
 
-  _generateHeader(buffer, allLocales);
+  _generateHeader(buffer, config, translations);
 
   buffer.writeln();
   buffer.writeln('// translations');
 
-  allLocales.forEach((localeData) {
-    _generateLocale(buffer, localeData, keyCase);
+  translations.forEach((localeData) {
+    _generateLocale(buffer, config, localeData);
   });
 
   return buffer.toString();
@@ -36,7 +37,7 @@ String generate(List<I18nData> allLocales, String keyCase) {
 
 /// generates the header of the .g.dart file
 /// contains the t function, LocaleSettings class and some global variables
-void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
+void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allLocales) {
   // identifiers
   const String mapVar = '_strings';
   const String baseLocaleVar = '_baseLocale';
@@ -49,8 +50,8 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
   const String inheritedClass = '_InheritedLocaleData';
 
   // constants
-  final String baseLocale = allLocales.first.globalConfig.baseLocale;
-  final String baseClassName = allLocales.first.baseName.capitalize();
+  final String baseLocale = config.baseLocale;
+  final String baseClassName = config.baseName.capitalize();
 
   // current locale variable
   buffer.writeln();
@@ -202,11 +203,11 @@ void _generateHeader(StringBuffer buffer, List<I18nData> allLocales) {
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-void _generateLocale(StringBuffer buffer, I18nData localeData, String keyCase) {
+void _generateLocale(StringBuffer buffer, I18nConfig config, I18nData localeData) {
   Queue<ClassTask> queue = Queue();
 
   queue.add(ClassTask(
-    localeData.baseName.capitalize(),
+    config.baseName.capitalize(),
     localeData.root.entries,
   ));
 
@@ -214,13 +215,13 @@ void _generateLocale(StringBuffer buffer, I18nData localeData, String keyCase) {
     ClassTask task = queue.removeFirst();
 
     _generateClass(
+      config,
       localeData.base,
       localeData.locale,
       buffer,
       queue,
       task.className,
-      task.members,
-      keyCase,
+      task.members
     );
   } while (queue.isNotEmpty);
 }
@@ -228,13 +229,13 @@ void _generateLocale(StringBuffer buffer, I18nData localeData, String keyCase) {
 /// generates a class and all of its members of ONE locale
 /// adds subclasses to the queue
 void _generateClass(
+  I18nConfig config,
   bool base,
   String locale,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
-  Map<String, Value> currMembers,
-  String keyCase,
+  Map<String, Value> currMembers
 ) {
   String finalClassName = base
       ? className
@@ -255,7 +256,7 @@ void _generateClass(
   buffer.writeln();
 
   currMembers.forEach((key, value) {
-    key = key.toCase(keyCase);
+    key = key.toCase(config.keyCase);
 
     buffer.write('\t');
     if (!base) buffer.write('@override ');
