@@ -190,7 +190,7 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   // InheritedLocaleData
   buffer.writeln();
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
-  buffer.writeln('\tfinal Strings translations;');
+  buffer.writeln('\tfinal $baseClassName translations;');
   buffer.writeln('\t$inheritedClass({this.translations, Widget child}) : super(child: child);');
   buffer.writeln();
   buffer.writeln('\t@override');
