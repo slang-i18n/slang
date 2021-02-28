@@ -1,3 +1,7 @@
+## 2.2.1
+
+- Fix compilation error occurring when non-standard name (not 'strings.i18n.json') is used for json files.
+
 ## 2.2.0
 
 - new config: `output_translate_var`, renames default `t` variable
