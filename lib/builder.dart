@@ -28,7 +28,7 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final String baseLocale = options.config['base_locale'] ?? defaultBaseLocale;
+    final String baseLocale = Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale);
     final String inputDirectory = options.config['input_directory'];
     final String outputDirectory = options.config['output_directory'];
     final String translateVar = options.config['output_translate_var'] ?? defaultTranslateVar;
