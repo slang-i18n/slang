@@ -41,7 +41,8 @@ void testSelectLocale() {
       final localesAsStrings = ['en-us', 'ru-RU', 'de-de', 'zh-Hans-CN'];
       final baseLocaleString = 'ru-RU';
 
-      final locales = FastI18n.convertToLocales(localesAsStrings, baseLocaleString);
+      final locales =
+          FastI18n.convertToLocales(localesAsStrings, baseLocaleString);
 
       expect(locales.length, 4);
       expect(locales[0].toLanguageTag(), 'ru-RU');
@@ -54,7 +55,8 @@ void testSelectLocale() {
       final localesAsStrings = ['en', 'ru-RU', 'de'];
       final baseLocaleString = 'de';
 
-      final locales = FastI18n.convertToLocales(localesAsStrings, baseLocaleString);
+      final locales =
+          FastI18n.convertToLocales(localesAsStrings, baseLocaleString);
 
       expect(locales.length, 3);
       expect(locales[0].toLanguageTag(), 'de');
@@ -62,7 +64,9 @@ void testSelectLocale() {
       expect(locales[2].toLanguageTag(), 'ru-RU');
     });
 
-    test("throws Exception if a locale with '-' delimiter doesn't have 2+ non-empty parts", () {
+    test(
+        "throws Exception if a locale with '-' delimiter doesn't have 2+ non-empty parts",
+        () {
       final localesAsStrings = ['ru-', 'de'];
       final baseLocaleString = 'de';
 
@@ -84,7 +88,8 @@ void testSelectLocale() {
       );
     });
 
-    test('throws AssertionError if primary language subtag is not present in the provided locales',
+    test(
+        'throws AssertionError if primary language subtag is not present in the provided locales',
         () {
       final localesAsStrings = ['en-us', ''];
       final baseLocaleString = 'en-US';

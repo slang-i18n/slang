@@ -23,24 +23,27 @@ class I18nBuilder implements Builder {
 
   bool _generated = false;
 
-  String get inputFilePattern => options.config['input_file_pattern'] ?? defaultInputFilePattern;
-  String get outputFilePattern => options.config['output_file_pattern'] ?? defaultOutputFilePattern;
+  String get inputFilePattern =>
+      options.config['input_file_pattern'] ?? defaultInputFilePattern;
+  String get outputFilePattern =>
+      options.config['output_file_pattern'] ?? defaultOutputFilePattern;
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final String baseLocale = Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale);
+    final String baseLocale =
+        Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale);
     final String inputDirectory = options.config['input_directory'];
     final String outputDirectory = options.config['output_directory'];
-    final String translateVar = options.config['output_translate_var'] ?? defaultTranslateVar;
+    final String translateVar =
+        options.config['output_translate_var'] ?? defaultTranslateVar;
     final String keyCase = options.config['key_case'];
     final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
-    if (inputDirectory != null && !buildStep.inputId.path.contains(inputDirectory))
-      return;
+    if (inputDirectory != null &&
+        !buildStep.inputId.path.contains(inputDirectory)) return;
 
     // only generate once
-    if (_generated)
-      return;
+    if (_generated) return;
 
     _generated = true;
 
@@ -53,7 +56,8 @@ class I18nBuilder implements Builder {
         : Glob('**$inputFilePattern');
 
     await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
-      final fileNameNoExtension = assetId.pathSegments.last.replaceAll(inputFilePattern, '');
+      final fileNameNoExtension =
+          assetId.pathSegments.last.replaceAll(inputFilePattern, '');
       final match = Utils.localeRegex.firstMatch(fileNameNoExtension);
 
       if (match != null) {
@@ -77,12 +81,11 @@ class I18nBuilder implements Builder {
 
     // build config which applies to all locales
     final config = I18nConfig(
-      baseName: baseName ?? defaultBaseName,
-      baseLocale: baseLocale,
-      maps: maps,
-      keyCase: keyCase,
-      translateVariable: translateVar
-    );
+        baseName: baseName ?? defaultBaseName,
+        baseLocale: baseLocale,
+        maps: maps,
+        keyCase: keyCase,
+        translateVariable: translateVar);
 
     // map each assetId to I18nData
     final localesWithData = Map<AssetId, I18nData>();
@@ -96,23 +99,24 @@ class I18nBuilder implements Builder {
 
     // generate
     final String output = generate(
-      config: config,
-      translations: localesWithData.values.toList()..sort((a, b) => a.locale.compareTo(b.locale))
-    );
+        config: config,
+        translations: localesWithData.values.toList()
+          ..sort((a, b) => a.locale.compareTo(b.locale)));
 
     // write only to main locale
-    final AssetId baseId = localesWithData.entries
-        .firstWhere((element) => element.value.base)
-        .key;
+    final AssetId baseId =
+        localesWithData.entries.firstWhere((element) => element.value.base).key;
 
-    final finalOutputDirectory = outputDirectory ?? (baseId.pathSegments..removeLast()).join('/');
-    final String outFilePath = '$finalOutputDirectory/$baseName$outputFilePattern';
+    final finalOutputDirectory =
+        outputDirectory ?? (baseId.pathSegments..removeLast()).join('/');
+    final String outFilePath =
+        '$finalOutputDirectory/$baseName$outputFilePattern';
 
     File(outFilePath).writeAsStringSync(output);
   }
 
   @override
   get buildExtensions => {
-    inputFilePattern: [outputFilePattern],
-  };
+        inputFilePattern: [outputFilePattern],
+      };
 }

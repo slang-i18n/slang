@@ -13,23 +13,27 @@ class FastI18n {
 
   /// Returns the candidate (or part of it) if it is supported.
   /// Fallbacks to base locale.
-  static String selectLocale(String candidate, List<String> supported, String baseLocale) {
+  static String selectLocale(
+      String candidate, List<String> supported, String baseLocale) {
     // normalize
     candidate = Utils.normalize(candidate);
 
     // 1st try: match exactly
-    String selected = supported.firstWhere((element) => element == candidate, orElse: () => null);
+    String selected = supported.firstWhere((element) => element == candidate,
+        orElse: () => null);
     if (selected != null) return selected;
 
     // 2nd try: match the first part (language)
     List<String> deviceLocaleParts = candidate.split(_localePartsDelimiter);
-    selected =
-        supported.firstWhere((element) => element == deviceLocaleParts.first, orElse: () => null);
+    selected = supported.firstWhere(
+        (element) => element == deviceLocaleParts.first,
+        orElse: () => null);
     if (selected != null) return selected;
 
     // 3rd try: match the second part (region)
-    selected =
-        supported.firstWhere((element) => element == deviceLocaleParts.last, orElse: () => null);
+    selected = supported.firstWhere(
+        (element) => element == deviceLocaleParts.last,
+        orElse: () => null);
     if (selected != null) return selected;
 
     // fallback: default locale
@@ -38,7 +42,8 @@ class FastI18n {
 
   /// Converts the passed locales from [String] to [Locale].
   /// Puts the [baseLocale] into the the beginning of the list.
-  static List<Locale> convertToLocales(List<String> locales, String baseLocale) {
+  static List<Locale> convertToLocales(
+      List<String> locales, String baseLocale) {
     final rawSupportedLocales = [
       baseLocale,
       ...locales.where((locale) => locale != baseLocale),
@@ -46,10 +51,13 @@ class FastI18n {
 
     final supportedLocales = rawSupportedLocales.map((rawLocale) {
       if (rawLocale.contains(_localePartsDelimiter)) {
-        final localeParts =
-            rawLocale.split(_localePartsDelimiter).where((part) => part.isNotEmpty).toList();
+        final localeParts = rawLocale
+            .split(_localePartsDelimiter)
+            .where((part) => part.isNotEmpty)
+            .toList();
         if (localeParts.length == 2) {
-          return Locale.fromSubtags(languageCode: localeParts[0], countryCode: localeParts[1]);
+          return Locale.fromSubtags(
+              languageCode: localeParts[0], countryCode: localeParts[1]);
         } else if (localeParts.length == 3) {
           return Locale.fromSubtags(
             languageCode: localeParts[0],

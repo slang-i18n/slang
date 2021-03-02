@@ -3,7 +3,8 @@ class Utils {
 
   /// finds the parts of the locale
   /// must start with an underscore
-  static RegExp localeRegex = RegExp(r'^((\w+)_)?([a-z]{2})([-_]([a-zA-Z]{2}))?$');
+  static RegExp localeRegex =
+      RegExp(r'^((\w+)_)?([a-z]{2})([-_]([a-zA-Z]{2}))?$');
 
   /// returns the locale with the following syntax:
   /// - all lowercase
