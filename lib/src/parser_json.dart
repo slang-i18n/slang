@@ -4,7 +4,8 @@ import 'package:fast_i18n/src/model.dart';
 
 /// parses a json of one locale
 /// returns an I18nData object
-I18nData parseJSON(I18nConfig config, String baseName, String locale, String content) {
+I18nData parseJSON(
+    I18nConfig config, String baseName, String locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Value> destination = Map();
   _parseJSONObject(config.maps, map, destination, []);
@@ -12,11 +13,16 @@ I18nData parseJSON(I18nConfig config, String baseName, String locale, String con
   return I18nData(
     base: config.baseLocale == locale,
     locale: locale,
-    root: ObjectNode(destination, false)
+    root: ObjectNode(destination, false),
   );
 }
 
-void _parseJSONObject(List<String> maps, Map<String, dynamic> curr, Map<String, Value> destination, List<String> stack) {
+void _parseJSONObject(
+  List<String> maps,
+  Map<String, dynamic> curr,
+  Map<String, Value> destination,
+  List<String> stack,
+) {
   curr.forEach((key, value) {
     if (value is String) {
       // key: 'value'
@@ -38,7 +44,12 @@ void _parseJSONObject(List<String> maps, Map<String, dynamic> curr, Map<String, 
   });
 }
 
-void _parseJSONArray(List<String> maps, List<dynamic> curr, List<Value> destination, List<String> stack) {
+void _parseJSONArray(
+  List<String> maps,
+  List<dynamic> curr,
+  List<Value> destination,
+  List<String> stack,
+) {
   for (dynamic value in curr) {
     if (value is String) {
       // key: 'value'

@@ -36,7 +36,8 @@ String generate({I18nConfig config, List<I18nData> translations}) {
 
 /// generates the header of the .g.dart file
 /// contains the t function, LocaleSettings class and some global variables
-void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allLocales) {
+void _generateHeader(
+    StringBuffer buffer, I18nConfig config, List<I18nData> allLocales) {
   // identifiers
   const String mapVar = '_strings';
   const String baseLocaleVar = '_baseLocale';
@@ -77,8 +78,10 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln();
   buffer.writeln('/// Method A: Simple');
   buffer.writeln('///');
-  buffer.writeln('/// Widgets using this method will not be updated when locale changes during runtime.');
-  buffer.writeln('/// Translation happens during initialization of the widget (call of t).');
+  buffer.writeln(
+      '/// Widgets using this method will not be updated when locale changes during runtime.');
+  buffer.writeln(
+      '/// Translation happens during initialization of the widget (call of t).');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String translated = t.someKey.anotherKey;');
@@ -88,8 +91,10 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln();
   buffer.writeln('/// Method B: Advanced');
   buffer.writeln('///');
-  buffer.writeln('/// All widgets using this method will trigger a rebuild when locale changes.');
-  buffer.writeln('/// Use this if you have e.g. a settings page where the user can select the locale during runtime.');
+  buffer.writeln(
+      '/// All widgets using this method will trigger a rebuild when locale changes.');
+  buffer.writeln(
+      '/// Use this if you have e.g. a settings page where the user can select the locale during runtime.');
   buffer.writeln('///');
   buffer.writeln('/// Step 1:');
   buffer.writeln('/// wrap your App with');
@@ -98,13 +103,16 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln('/// );');
   buffer.writeln('///');
   buffer.writeln('/// Step 2:');
-  buffer.writeln('/// final t = $translationsClass.of(context); // get t variable');
-  buffer.writeln('/// String translated = t.someKey.anotherKey; // use t variable');
+  buffer.writeln(
+      '/// final t = $translationsClass.of(context); // get t variable');
+  buffer.writeln(
+      '/// String translated = t.someKey.anotherKey; // use t variable');
   buffer.writeln('class $translationsClass {');
   buffer.writeln('\t$translationsClass._(); // no constructor');
   buffer.writeln();
   buffer.writeln('\tstatic $baseClassName of(BuildContext context) {');
-  buffer.writeln('\t\treturn context.dependOnInheritedWidgetOfExactType<$inheritedClass>().translations;');
+  buffer.writeln(
+      '\t\treturn context.dependOnInheritedWidgetOfExactType<$inheritedClass>().translations;');
   buffer.writeln('\t}');
   buffer.writeln('}');
 
@@ -114,7 +122,7 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln('\t$settingsClass._(); // no constructor');
 
   buffer.writeln();
-  buffer.writeln('\t/// Use locale of the device, fallbacks to base locale.');
+  buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\tstatic String useDeviceLocale() {');
   buffer.writeln('\t\tString deviceLocale = FastI18n.getDeviceLocale();');
@@ -122,54 +130,67 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Set locale, fallbacks to base locale.');
+  buffer.writeln('\t/// Sets locale, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\tstatic String setLocale(String locale) {');
-  buffer.writeln('\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
+  buffer.writeln(
+      '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t\t$translateVar = $mapVar[$localeVar];');
   buffer.writeln();
   buffer.writeln('\t\tif ($translationProviderKey.currentState != null) {');
-  buffer.writeln('\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');
+  buffer.writeln(
+      '\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');
   buffer.writeln('\t\t}');
   buffer.writeln();
   buffer.writeln('\t\treturn $localeVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Get current locale.');
+  buffer.writeln('\t/// Gets current locale.');
   buffer.writeln('\tstatic String get currentLocale {');
   buffer.writeln('\t\treturn $localeVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Get base locale.');
+  buffer.writeln('\t/// Gets base locale.');
   buffer.writeln('\tstatic String get baseLocale {');
   buffer.writeln('\t\treturn $baseLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Get supported locales.');
+  buffer.writeln('\t/// Gets supported locales.');
   buffer.writeln('\tstatic List<String> get locales {');
   buffer.writeln('\t\treturn $mapVar.keys.toList();');
+  buffer.writeln('\t}');
+
+  buffer.writeln();
+  buffer.writeln('\t/// Get supported locales with base locale sorted first.');
+  buffer.writeln('\tstatic List<Locale> get supportedLocales {');
+  buffer.writeln(
+      '\t\treturn FastI18n.convertToLocales($mapVar.keys.toList(), $baseLocaleVar);');
   buffer.writeln('\t}');
 
   buffer.writeln('}');
 
   // TranslationProvider
   buffer.writeln();
-  buffer.writeln('GlobalKey<$translationProviderStateClass> $translationProviderKey = new GlobalKey<$translationProviderStateClass>();');
+  buffer.writeln(
+      'GlobalKey<$translationProviderStateClass> $translationProviderKey = new GlobalKey<$translationProviderStateClass>();');
   buffer.writeln();
   buffer.writeln('class $translationProviderClass extends StatefulWidget {');
-  buffer.writeln('\t$translationProviderClass({@required this.child}) : super(key: $translationProviderKey);');
+  buffer.writeln(
+      '\t$translationProviderClass({@required this.child}) : super(key: $translationProviderKey);');
   buffer.writeln();
   buffer.writeln('\tfinal Widget child;');
   buffer.writeln();
   buffer.writeln('\t@override');
-  buffer.writeln('\t$translationProviderStateClass createState() => $translationProviderStateClass();');
+  buffer.writeln(
+      '\t$translationProviderStateClass createState() => $translationProviderStateClass();');
   buffer.writeln('}');
 
   buffer.writeln();
-  buffer.writeln('class $translationProviderStateClass extends State<$translationProviderClass> {');
+  buffer.writeln(
+      'class $translationProviderStateClass extends State<$translationProviderClass> {');
   buffer.writeln('\tString locale = $localeVar;');
   buffer.writeln();
   buffer.writeln('\tvoid setLocale(String newLocale) {');
@@ -191,7 +212,8 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
   buffer.writeln();
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
   buffer.writeln('\tfinal $baseClassName translations;');
-  buffer.writeln('\t$inheritedClass({this.translations, Widget child}) : super(child: child);');
+  buffer.writeln(
+      '\t$inheritedClass({this.translations, Widget child}) : super(child: child);');
   buffer.writeln();
   buffer.writeln('\t@override');
   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
@@ -203,7 +225,8 @@ void _generateHeader(StringBuffer buffer, I18nConfig config, List<I18nData> allL
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-void _generateLocale(StringBuffer buffer, I18nConfig config, I18nData localeData) {
+void _generateLocale(
+    StringBuffer buffer, I18nConfig config, I18nData localeData) {
   Queue<ClassTask> queue = Queue();
 
   queue.add(ClassTask(
@@ -221,7 +244,7 @@ void _generateLocale(StringBuffer buffer, I18nConfig config, I18nData localeData
       buffer,
       queue,
       task.className,
-      task.members
+      task.members,
     );
   } while (queue.isNotEmpty);
 }
@@ -235,11 +258,10 @@ void _generateClass(
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
-  Map<String, Value> currMembers
+  Map<String, Value> currMembers,
 ) {
-  String finalClassName = base
-      ? className
-      : className + locale.capitalize().replaceAll('-', '');
+  String finalClassName =
+      base ? className : className + locale.capitalize().replaceAll('-', '');
 
   buffer.writeln();
 
@@ -265,7 +287,8 @@ void _generateClass(
       if (value.params.isEmpty) {
         buffer.writeln('String $key = \'${value.content}\';');
       } else {
-        buffer.writeln('String $key${_toParameterList(value.params)} => \'${value.content}\';');
+        buffer.writeln(
+            'String $key${_toParameterList(value.params)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
       String type = value.plainStrings ? 'String' : 'dynamic';
@@ -287,7 +310,8 @@ void _generateClass(
             ? childClassName
             : childClassName + locale.capitalize().replaceAll('-', '');
 
-        buffer.writeln('$finalChildClassName get $key => $finalChildClassName._instance;');
+        buffer.writeln(
+            '$finalChildClassName get $key => $finalChildClassName._instance;');
       }
     }
   });
@@ -298,13 +322,14 @@ void _generateClass(
 /// generates a map of ONE locale
 /// similar to _generateClass but anonymous and accessible via key
 void _generateMap(
-    bool base,
-    String locale,
-    StringBuffer buffer,
-    Queue<ClassTask> queue,
-    String className,
-    Map<String, Value> currMembers,
-    int depth) {
+  bool base,
+  String locale,
+  StringBuffer buffer,
+  Queue<ClassTask> queue,
+  String className,
+  Map<String, Value> currMembers,
+  int depth,
+) {
   buffer.writeln('{');
 
   currMembers.forEach((key, value) {
@@ -313,17 +338,20 @@ void _generateMap(
       if (value.params.isEmpty) {
         buffer.writeln('\'$key\': \'${value.content}\',');
       } else {
-        buffer.writeln('\'$key\': ${_toParameterList(value.params)} => \'${value.content}\',');
+        buffer.writeln(
+            '\'$key\': ${_toParameterList(value.params)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
-      _generateList(base, locale, buffer, queue, className, value.entries, depth + 1);
+      _generateList(
+          base, locale, buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String childClassName = className + key.capitalize();
       if (value.mapMode) {
         // inline map
         buffer.write('\'$key\': ');
-        _generateMap(base, locale, buffer, queue, childClassName, value.entries, depth + 1);
+        _generateMap(base, locale, buffer, queue, childClassName, value.entries,
+            depth + 1);
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassName, value.entries));
@@ -349,8 +377,15 @@ void _generateMap(
 }
 
 /// generates a list
-void _generateList(bool base, String locale, StringBuffer buffer,
-    Queue<ClassTask> queue, String className, List<Value> currList, int depth) {
+void _generateList(
+  bool base,
+  String locale,
+  StringBuffer buffer,
+  Queue<ClassTask> queue,
+  String className,
+  List<Value> currList,
+  int depth,
+) {
   buffer.writeln('[');
 
   for (int i = 0; i < currList.length; i++) {
@@ -360,10 +395,12 @@ void _generateList(bool base, String locale, StringBuffer buffer,
       if (value.params.isEmpty) {
         buffer.writeln('\'${value.content}\',');
       } else {
-        buffer.writeln('${_toParameterList(value.params)} => \'${value.content}\',');
+        buffer.writeln(
+            '${_toParameterList(value.params)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
-      _generateList(base, locale, buffer, queue, className, value.entries, depth + 1);
+      _generateList(
+          base, locale, buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String childClassName = className + depth.toString() + 'i' + i.toString();
       queue.add(ClassTask(childClassName, value.entries));
@@ -421,8 +458,10 @@ extension on String {
 
   String toCase(String caseName) {
     switch (caseName) {
-      case 'snake': return snakeCase;
-      case 'camel': return camelCase;
+      case 'snake':
+        return snakeCase;
+      case 'camel':
+        return camelCase;
       default:
         return this;
     }

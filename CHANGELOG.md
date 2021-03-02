@@ -1,3 +1,7 @@
+## 2.3.0
+
+- Add `supportedLocales` property that can be used to fill `MaterialApp`'s `supportedLocales` argument.
+
 ## 2.2.1
 
 - Fix compilation error occurring when non-standard name (not 'strings.i18n.json') is used for json files.

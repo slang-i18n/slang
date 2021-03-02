@@ -4,7 +4,7 @@
 
 ```yaml
 dependencies:
-  fast_i18n: ^2.2.1
+  fast_i18n: ^2.3.0
 
 dev_dependencies:
   build_runner: any
@@ -65,6 +65,19 @@ void initState() {
   String storedLocale = loadFromStorage(); // your logic here
   LocaleSettings.setLocale(storedLocale);
 }
+```
+
+## Step 4a: Override 'supportedLocales'
+
+```dart
+MaterialApp(
+  localizationsDelegates: const [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+  supportedLocales: LocaleSettings.supportedLocales, // <---
+)
 ```
 
 ## Step 4b: iOS-only

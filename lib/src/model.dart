@@ -8,7 +8,13 @@ class I18nConfig {
   final String keyCase;
   final String translateVariable;
 
-  I18nConfig({this.baseName, this.baseLocale, this.maps, this.keyCase, this.translateVariable});
+  I18nConfig({
+    this.baseName,
+    this.baseLocale,
+    this.maps,
+    this.keyCase,
+    this.translateVariable,
+  });
 
   @override
   String toString() => '$baseLocale, maps: $maps';
@@ -80,8 +86,7 @@ class TextNode extends Value {
 /// 'my name is $name and I am $age years old' => ['name', 'age']
 /// 'my name is ${name} and I am ${age} years old' => ['name', 'age']
 List<String> _findArguments(String content) {
-  return Utils
-      .argumentsRegex
+  return Utils.argumentsRegex
       .allMatches(content)
       .map((e) => e.group(2))
       .toList();
