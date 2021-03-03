@@ -75,6 +75,10 @@ void initState() {
 
 **Step 4a: Override 'supportedLocales'**
 
+This is optional but recommended.
+
+Standard flutter controls (e.g. back button's tooltip) will also pick the right locale.
+
 ```dart
 MaterialApp(
   localizationsDelegates: const [
