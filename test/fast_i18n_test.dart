@@ -16,19 +16,15 @@ void testSelectLocale() {
     });
 
     test('match exactly but need normalizing', () {
-      expect(FastI18n.selectLocale('en_US', ['en-us', 'de-de'], ''), 'en-us');
+      expect(FastI18n.selectLocale('en_US', ['en-US', 'de-DE'], ''), 'en-US');
     });
 
-    test('match first part', () {
+    test('match first part (language)', () {
       expect(FastI18n.selectLocale('de_DE', ['en', 'de'], ''), 'de');
     });
 
-    test('prefer first part over second part', () {
+    test('prefer first part (language) over second part (country)', () {
       expect(FastI18n.selectLocale('en_DE', ['de', 'en'], ''), 'en');
-    });
-
-    test('match last part', () {
-      expect(FastI18n.selectLocale('en_US', ['us', 'de'], ''), 'us');
     });
 
     test('fallback', () {

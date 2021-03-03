@@ -69,9 +69,9 @@ class I18nBuilder implements Builder {
         final country = match.group(5);
 
         if (country != null) {
-          locales[assetId] = (language + '-' + country).toLowerCase();
+          locales[assetId] = '$language-$country';
         } else {
-          locales[assetId] = language.toLowerCase();
+          locales[assetId] = language;
         }
       } else {
         locales[assetId] = baseLocale;

@@ -13,6 +13,7 @@ class FastI18n {
 
   /// Returns the candidate (or part of it) if it is supported.
   /// Fallbacks to base locale.
+  /// Please note that locales are case sensitive.
   static String selectLocale(
       String candidate, List<String> supported, String baseLocale) {
     // normalize
@@ -25,14 +26,9 @@ class FastI18n {
 
     // 2nd try: match the first part (language)
     List<String> deviceLocaleParts = candidate.split(_localePartsDelimiter);
+    String deviceLocaleLanguage = deviceLocaleParts.first;
     selected = supported.firstWhere(
-        (element) => element == deviceLocaleParts.first,
-        orElse: () => null);
-    if (selected != null) return selected;
-
-    // 3rd try: match the second part (region)
-    selected = supported.firstWhere(
-        (element) => element == deviceLocaleParts.last,
+        (element) => element.startsWith(deviceLocaleLanguage),
         orElse: () => null);
     if (selected != null) return selected;
 

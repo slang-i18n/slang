@@ -44,15 +44,15 @@ void testNormalize() {
     });
 
     test('en_US', () {
-      expect(Utils.normalize('en_US'), 'en-us');
+      expect(Utils.normalize('en_US'), 'en-US');
     });
 
     test('en-US', () {
-      expect(Utils.normalize('en-US'), 'en-us');
+      expect(Utils.normalize('en-US'), 'en-US');
     });
 
     test('enUS', () {
-      expect(Utils.normalize('enUS'), 'enus');
+      expect(Utils.normalize('enUS'), 'enUS');
     });
   });
 }

@@ -124,6 +124,7 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
+  buffer.writeln('\t/// Be aware that the locales are case sensitive.');
   buffer.writeln('\tstatic String useDeviceLocale() {');
   buffer.writeln('\t\tString deviceLocale = FastI18n.getDeviceLocale();');
   buffer.writeln('\t\treturn setLocale(deviceLocale);');
@@ -132,6 +133,7 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('\t/// Sets locale, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
+  buffer.writeln('\t/// Be aware that the locales are case sensitive.');
   buffer.writeln('\tstatic String setLocale(String locale) {');
   buffer.writeln(
       '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
