@@ -19,8 +19,12 @@ void testSelectLocale() {
       expect(FastI18n.selectLocale('en_US', ['en-US', 'de-DE'], ''), 'en-US');
     });
 
-    test('match first part (language)', () {
+    test('match first part (language) of candidate', () {
       expect(FastI18n.selectLocale('de_DE', ['en', 'de'], ''), 'de');
+    });
+
+    test('match first part (language) of supported', () {
+      expect(FastI18n.selectLocale('de', ['en-US', 'de-DE'], ''), 'de-DE');
     });
 
     test('prefer first part (language) over second part (country)', () {
