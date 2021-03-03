@@ -73,6 +73,19 @@ void initState() {
 }
 ```
 
+**Step 4a: Override 'supportedLocales'**
+
+```dart
+MaterialApp(
+  localizationsDelegates: const [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+  supportedLocales: LocaleSettings.supportedLocales, // <---
+)
+```
+
 **Step 4b: iOS-only**
 
 ```
