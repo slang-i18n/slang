@@ -90,7 +90,7 @@ MaterialApp(
 )
 ```
 
-**Step 4b: iOS-only**
+**Step 4b: iOS configuration**
 
 ```
 File: ios/Runner/Info.plist
