@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:fast_i18n/src/model.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:recase/recase.dart';
 
 /// decides which class should be generated
@@ -13,7 +14,8 @@ class ClassTask {
 
 /// main generate function
 /// returns a string representing the content of the .g.dart file
-String generate({I18nConfig config, List<I18nData> translations}) {
+String generate(
+    {required I18nConfig config, required List<I18nData> translations}) {
   StringBuffer buffer = StringBuffer();
 
   buffer.writeln();
@@ -50,6 +52,7 @@ void _generateHeader(
   const String inheritedClass = '_InheritedLocaleData';
 
   // constants
+  final String translateVarInternal = '_${config.translateVariable}';
   final String translateVar = config.translateVariable;
   final String baseLocale = config.baseLocale;
   final String baseClassName = config.baseName.capitalize();
@@ -85,7 +88,9 @@ void _generateHeader(
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String translated = t.someKey.anotherKey;');
-  buffer.writeln('$baseClassName $translateVar = $mapVar[$localeVar];');
+  buffer
+      .writeln('$baseClassName $translateVarInternal = $mapVar[$localeVar]!;');
+  buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
 
   // t getter (advanced)
   buffer.writeln();
@@ -112,7 +117,7 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('\tstatic $baseClassName of(BuildContext context) {');
   buffer.writeln(
-      '\t\treturn context.dependOnInheritedWidgetOfExactType<$inheritedClass>().translations;');
+      '\t\treturn context.dependOnInheritedWidgetOfExactType<$inheritedClass>()!.translations;');
   buffer.writeln('\t}');
   buffer.writeln('}');
 
@@ -137,11 +142,11 @@ void _generateHeader(
   buffer.writeln('\tstatic String setLocale(String locale) {');
   buffer.writeln(
       '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
-  buffer.writeln('\t\t$translateVar = $mapVar[$localeVar];');
+  buffer.writeln('\t\t$translateVarInternal = $mapVar[$localeVar]!;');
   buffer.writeln();
-  buffer.writeln('\t\tif ($translationProviderKey.currentState != null) {');
-  buffer.writeln(
-      '\t\t\t$translationProviderKey.currentState.setLocale($localeVar);');
+  buffer.writeln('\t\tfinal state = $translationProviderKey.currentState;');
+  buffer.writeln('\t\tif (state != null) {');
+  buffer.writeln('\t\t\tstate.setLocale($localeVar);');
   buffer.writeln('\t\t}');
   buffer.writeln();
   buffer.writeln('\t\treturn $localeVar;');
@@ -181,7 +186,7 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('class $translationProviderClass extends StatefulWidget {');
   buffer.writeln(
-      '\t$translationProviderClass({@required this.child}) : super(key: $translationProviderKey);');
+      '\t$translationProviderClass({required this.child}) : super(key: $translationProviderKey);');
   buffer.writeln();
   buffer.writeln('\tfinal Widget child;');
   buffer.writeln();
@@ -204,7 +209,7 @@ void _generateHeader(
   buffer.writeln('\t@override');
   buffer.writeln('\tWidget build(BuildContext context) {');
   buffer.writeln('\t\treturn $inheritedClass(');
-  buffer.writeln('\t\t\ttranslations: $mapVar[locale],');
+  buffer.writeln('\t\t\ttranslations: $mapVar[locale]!,');
   buffer.writeln('\t\t\tchild: widget.child,');
   buffer.writeln('\t\t);');
   buffer.writeln('\t}');
@@ -215,7 +220,7 @@ void _generateHeader(
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
   buffer.writeln('\tfinal $baseClassName translations;');
   buffer.writeln(
-      '\t$inheritedClass({this.translations, Widget child}) : super(child: child);');
+      '\t$inheritedClass({required this.translations, required Widget child}) : super(child: child);');
   buffer.writeln();
   buffer.writeln('\t@override');
   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
@@ -424,7 +429,7 @@ void _generateList(
 }
 
 /// returns the parameter list
-/// e.g. ({@required Object name, @required Object age}) for definition = true
+/// e.g. ({required Object name, required Object age}) for definition = true
 /// or (name, age) for definition = false
 String _toParameterList(List<String> params, {bool definition = true}) {
   StringBuffer buffer = StringBuffer();
@@ -432,7 +437,7 @@ String _toParameterList(List<String> params, {bool definition = true}) {
   if (definition) buffer.write('{');
   for (int i = 0; i < params.length; i++) {
     if (i != 0) buffer.write(', ');
-    if (definition) buffer.write('@required Object ');
+    if (definition) buffer.write('required Object ');
     buffer.write(params[i]);
   }
   if (definition) buffer.write('}');
@@ -458,7 +463,7 @@ extension on String {
     return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 
-  String toCase(String caseName) {
+  String toCase(String? caseName) {
     switch (caseName) {
       case 'snake':
         return snakeCase;

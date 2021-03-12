@@ -5,15 +5,15 @@ class I18nConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final String baseLocale; // defaults to 'en'
   final List<String> maps; // list of entities treated as maps and not classes
-  final String keyCase;
+  final String? keyCase;
   final String translateVariable;
 
   I18nConfig({
-    this.baseName,
-    this.baseLocale,
-    this.maps,
-    this.keyCase,
-    this.translateVariable,
+    required this.baseName,
+    required this.baseLocale,
+    required this.maps,
+    required this.keyCase,
+    required this.translateVariable,
   });
 
   @override
@@ -26,7 +26,7 @@ class I18nData {
   final String locale; // the locale code (the part after the underscore)
   final ObjectNode root; // the actual strings
 
-  I18nData({this.base, this.locale, this.root});
+  I18nData({required this.base, required this.locale, required this.root});
 }
 
 /// the super class of every node
@@ -89,5 +89,7 @@ List<String> _findArguments(String content) {
   return Utils.argumentsRegex
       .allMatches(content)
       .map((e) => e.group(2))
+      .where((e) => e != null)
+      .cast<String>()
       .toList();
 }

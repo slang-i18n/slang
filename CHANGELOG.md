@@ -1,3 +1,11 @@
+## 3.0.0-nullsafety.0
+
+- null safety support
+
+## 2.3.1
+
+- Make locales case sensitive to comply with `MaterialApp`'s `supportedLocales`.
+
 ## 2.3.1
 
 - Make locales case sensitive to comply with `MaterialApp`'s `supportedLocales`.

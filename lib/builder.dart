@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:build/build.dart';
 import 'package:fast_i18n/src/generator.dart';
 import 'package:fast_i18n/src/model.dart';
@@ -32,11 +33,11 @@ class I18nBuilder implements Builder {
   FutureOr<void> build(BuildStep buildStep) async {
     final String baseLocale =
         Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale);
-    final String inputDirectory = options.config['input_directory'];
-    final String outputDirectory = options.config['output_directory'];
+    final String? inputDirectory = options.config['input_directory'];
+    final String? outputDirectory = options.config['output_directory'];
     final String translateVar =
         options.config['output_translate_var'] ?? defaultTranslateVar;
-    final String keyCase = options.config['key_case'];
+    final String? keyCase = options.config['key_case'];
     final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
     if (inputDirectory != null &&
@@ -49,7 +50,7 @@ class I18nBuilder implements Builder {
 
     // detect all locales, their assetId and the baseName
     final Map<AssetId, String> locales = Map();
-    String baseName;
+    String? baseName;
 
     final Glob findAssetsPattern = inputDirectory != null
         ? Glob('**$inputDirectory/*$inputFilePattern')
@@ -70,7 +71,7 @@ class I18nBuilder implements Builder {
 
         if (country != null) {
           locales[assetId] = '$language-$country';
-        } else {
+        } else if (language != null) {
           locales[assetId] = language;
         }
       } else {
@@ -79,9 +80,11 @@ class I18nBuilder implements Builder {
       }
     });
 
+    if (baseName == null) baseName = defaultBaseName;
+
     // build config which applies to all locales
     final config = I18nConfig(
-        baseName: baseName ?? defaultBaseName,
+        baseName: baseName!,
         baseLocale: baseLocale,
         maps: maps,
         keyCase: keyCase,
@@ -90,11 +93,11 @@ class I18nBuilder implements Builder {
     // map each assetId to I18nData
     final localesWithData = Map<AssetId, I18nData>();
 
-    for (AssetId assetId in locales.keys) {
-      String locale = locales[assetId];
-      String content = await buildStep.readAsString(assetId);
-      I18nData representation = parseJSON(config, baseName, locale, content);
-      localesWithData[assetId] = representation;
+    for (MapEntry<AssetId, String> asset in locales.entries) {
+      String locale = asset.value;
+      String content = await buildStep.readAsString(asset.key);
+      I18nData representation = parseJSON(config, baseName!, locale, content);
+      localesWithData[asset.key] = representation;
     }
 
     // generate

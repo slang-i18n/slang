@@ -20,15 +20,16 @@ class FastI18n {
     candidate = Utils.normalize(candidate);
 
     // 1st try: match exactly
-    String selected = supported.firstWhere((element) => element == candidate,
-        orElse: () => null);
+    String? selected = supported
+        .cast<String?>()
+        .firstWhere((element) => element == candidate, orElse: () => null);
     if (selected != null) return selected;
 
     // 2nd try: match the first part (language)
     List<String> deviceLocaleParts = candidate.split(_localePartsDelimiter);
     String deviceLocaleLanguage = deviceLocaleParts.first;
-    selected = supported.firstWhere(
-        (element) => element.startsWith(deviceLocaleLanguage),
+    selected = supported.cast<String?>().firstWhere(
+        (element) => element?.startsWith(deviceLocaleLanguage) == true,
         orElse: () => null);
     if (selected != null) return selected;
 
