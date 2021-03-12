@@ -125,9 +125,15 @@ When the dart code has been generated, you will see some useful classes and func
 
 `LocaleSettings.setLocale('de')` - change the locale
 
+`LocaleSettings.setLocaleTyped(AppLocale.en)` - change the locale (typed version)
+
 `LocaleSettings.currentLocale` - get the current locale
 
+`LocaleSettings.currentLocaleTyped` - get the current locale (typed version)
+
 `LocaleSettings.locales` - get the supported locales
+
+`LocaleSettings.supportedLocales` - see step 4a
 
 ## Configuration
 
@@ -145,6 +151,7 @@ targets:
           output_directory: lib/i18n
           output_file_pattern: .g.dart
           output_translate_var: t
+          output_enum_name: AppLocale
           key_case: snake
           maps:
             - a
@@ -160,6 +167,7 @@ input_file_pattern|`String`|input file pattern|`.i18n.json`
 output_directory|`String`|path to output directory|`null (whole project)`
 output_file_pattern|`String`|output file pattern|`.g.dart`
 output_translate_var|`String`|translate variable name|`t`
+output_enum_name|`String`|enum name|`AppLocale`
 key_case|`snake` or `camel`|transform keys to snake or camel case|`null (no transform)`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 

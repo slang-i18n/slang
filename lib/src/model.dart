@@ -7,14 +7,15 @@ class I18nConfig {
   final List<String> maps; // list of entities treated as maps and not classes
   final String? keyCase;
   final String translateVariable;
+  final String enumName;
 
-  I18nConfig({
-    required this.baseName,
-    required this.baseLocale,
-    required this.maps,
-    required this.keyCase,
-    required this.translateVariable,
-  });
+  I18nConfig(
+      {required this.baseName,
+      required this.baseLocale,
+      required this.maps,
+      required this.keyCase,
+      required this.translateVariable,
+      required this.enumName});
 
   @override
   String toString() => '$baseLocale, maps: $maps';

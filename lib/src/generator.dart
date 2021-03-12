@@ -29,9 +29,9 @@ String generate(
   buffer.writeln();
   buffer.writeln('// translations');
 
-  translations.forEach((localeData) {
+  for (I18nData localeData in translations) {
     _generateLocale(buffer, config, localeData);
-  });
+  }
 
   return buffer.toString();
 }
@@ -54,6 +54,7 @@ void _generateHeader(
   // constants
   final String translateVarInternal = '_${config.translateVariable}';
   final String translateVar = config.translateVariable;
+  final String enumName = config.enumName;
   final String baseLocale = config.baseLocale;
   final String baseClassName = config.baseName.capitalize();
 
@@ -121,6 +122,21 @@ void _generateHeader(
   buffer.writeln('\t}');
   buffer.writeln('}');
 
+  // enum
+  buffer.writeln();
+  buffer.writeln('/// Type-safe locales');
+  buffer.writeln('///');
+  buffer.writeln('/// Usage:');
+  buffer.writeln(
+      '/// - LocaleSettings.setLocaleTyped($enumName.${baseLocale.toEnumConstant()})');
+  buffer.writeln(
+      '/// - if (LocaleSettings.currentLocaleTyped == $enumName.${baseLocale.toEnumConstant()})');
+  buffer.writeln('enum $enumName {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln('\t${locale.locale.toEnumConstant()},');
+  }
+  buffer.writeln('}');
+
   // settings
   buffer.writeln();
   buffer.writeln('class $settingsClass {');
@@ -154,9 +170,22 @@ void _generateHeader(
   buffer.writeln('\t}');
 
   buffer.writeln();
+  buffer.writeln('\t/// Typed version of [setLocale]');
+  buffer.writeln('\tstatic $enumName setLocaleTyped($enumName locale) {');
+  buffer
+      .writeln('\t\treturn setLocale(locale.toLanguageTag()).to$enumName()!;');
+  buffer.writeln('\t}');
+
+  buffer.writeln();
   buffer.writeln('\t/// Gets current locale.');
   buffer.writeln('\tstatic String get currentLocale {');
   buffer.writeln('\t\treturn $localeVar;');
+  buffer.writeln('\t}');
+
+  buffer.writeln();
+  buffer.writeln('\t/// Typed version of [currentLocale]');
+  buffer.writeln('\tstatic $enumName get currentLocaleTyped {');
+  buffer.writeln('\t\treturn $localeVar.to$enumName()!;');
   buffer.writeln('\t}');
 
   buffer.writeln();
@@ -179,6 +208,37 @@ void _generateHeader(
   buffer.writeln('\t}');
 
   buffer.writeln('}');
+
+  // enum extension
+  buffer.writeln();
+  buffer.writeln('// extensions for $enumName');
+  buffer.writeln();
+  buffer.writeln('extension ${enumName}Extensions on $enumName {');
+  buffer.writeln('\tString toLanguageTag() {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln(
+        '\t\t\tcase $enumName.${locale.locale.toEnumConstant()}: return \'${locale.locale}\';');
+  }
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+  buffer.writeln('}');
+
+  // string extension
+  buffer.writeln('extension String${enumName}Extensions on String {');
+  buffer.writeln('\t$enumName? to$enumName() {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln(
+        '\t\t\tcase \'${locale.locale}\': return $enumName.${locale.locale.toEnumConstant()};');
+  }
+  buffer.writeln('\t\t\tdefault: return null;');
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+  buffer.writeln('}');
+
+  buffer.writeln();
+  buffer.writeln('// wrappers');
 
   // TranslationProvider
   buffer.writeln();
@@ -473,5 +533,9 @@ extension on String {
       default:
         return this;
     }
+  }
+
+  String toEnumConstant() {
+    return this.toLowerCase().camelCase;
   }
 }
