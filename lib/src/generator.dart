@@ -131,7 +131,8 @@ void _generateHeader(
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\t/// Be aware that the locales are case sensitive.');
   buffer.writeln('\tstatic String useDeviceLocale() {');
-  buffer.writeln('\t\tString deviceLocale = FastI18n.getDeviceLocale();');
+  buffer.writeln(
+      '\t\tString deviceLocale = FastI18n.getDeviceLocale() ?? $baseLocaleVar;');
   buffer.writeln('\t\treturn setLocale(deviceLocale);');
   buffer.writeln('\t}');
 

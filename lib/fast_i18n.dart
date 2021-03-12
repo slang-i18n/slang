@@ -1,6 +1,6 @@
 library fast_i18n;
 
-import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'dart:ui';
 
 import 'package:fast_i18n/utils.dart';
@@ -9,7 +9,8 @@ class FastI18n {
   static const _localePartsDelimiter = '-';
 
   /// Returns the locale string used by the device.
-  static String getDeviceLocale() => Platform.localeName;
+  static String? getDeviceLocale() =>
+      WidgetsBinding.instance?.window.locale.toLanguageTag();
 
   /// Returns the candidate (or part of it) if it is supported.
   /// Fallbacks to base locale.
