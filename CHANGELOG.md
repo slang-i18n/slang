@@ -8,10 +8,6 @@
 
 - Make locales case sensitive to comply with `MaterialApp`'s `supportedLocales`.
 
-## 2.3.1
-
-- Make locales case sensitive to comply with `MaterialApp`'s `supportedLocales`.
-
 ## 2.3.0
 
 - Add `supportedLocales` property that can be used to fill `MaterialApp`'s `supportedLocales` argument.
