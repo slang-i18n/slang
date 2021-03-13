@@ -1,4 +1,4 @@
-## 3.0.0-nullsafety.1
+## 3.0.0-nullsafety.2
 
 - null safety support
 - add type-safe functions using enums
