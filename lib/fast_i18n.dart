@@ -10,7 +10,7 @@ class FastI18n {
 
   /// Returns the locale string used by the device.
   static String? getDeviceLocale() =>
-      WidgetsBinding.instance?.window.locale.toLanguageTag();
+      WidgetsBinding.instance?.window?.locale?.toLanguageTag();
 
   /// Returns the candidate (or part of it) if it is supported.
   /// Fallbacks to base locale.
