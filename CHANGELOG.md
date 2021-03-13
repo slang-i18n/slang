@@ -1,4 +1,4 @@
-## 3.0.0-nullsafety.4
+## 3.0.0
 
 - null safety support
 - add type-safe functions `LocaleSettings.setLocaleTyped` and `LocaleSettings.currentLocaleTyped`

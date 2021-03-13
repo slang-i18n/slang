@@ -38,8 +38,7 @@ class I18nBuilder implements Builder {
     final String? outputDirectory = options.config['output_directory'];
     final String translateVar =
         options.config['translate_var'] ?? defaultTranslateVar;
-    final String enumName =
-        options.config['enum_name'] ?? defaultEnumName;
+    final String enumName = options.config['enum_name'] ?? defaultEnumName;
     final String? keyCase = options.config['key_case'];
     final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
