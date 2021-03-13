@@ -150,8 +150,8 @@ targets:
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
           output_file_pattern: .g.dart
-          output_translate_var: t
-          output_enum_name: AppLocale
+          translate_var: t
+          enum_name: AppLocale
           key_case: snake
           maps:
             - a
@@ -166,8 +166,8 @@ input_directory|`String`|path to input directory|`null (whole project)`
 input_file_pattern|`String`|input file pattern|`.i18n.json`
 output_directory|`String`|path to output directory|`null (whole project)`
 output_file_pattern|`String`|output file pattern|`.g.dart`
-output_translate_var|`String`|translate variable name|`t`
-output_enum_name|`String`|enum name|`AppLocale`
+translate_var|`String`|translate variable name|`t`
+enum_name|`String`|enum name|`AppLocale`
 key_case|`snake` or `camel`|transform keys to snake or camel case|`null (no transform)`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 

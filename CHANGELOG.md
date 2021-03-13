@@ -1,7 +1,8 @@
-## 3.0.0-nullsafety.3
+## 3.0.0-nullsafety.4
 
 - null safety support
-- add type-safe functions using enums
+- add type-safe functions `LocaleSettings.setLocaleTyped` and `LocaleSettings.currentLocaleTyped`
+- **Breaking:** `output_translate_var` renamed to `translate_var` in `build.yaml`
 
 ## 2.3.1
 
