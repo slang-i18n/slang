@@ -177,12 +177,29 @@ enum_name|`String`|enum name|`AppLocale`
 key_case|`snake` or `camel`|transform keys to snake or camel case|`null (no transform)`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 
-## Additional features
+## FAQ
 
-**Maps**
+**How do I add arguments?**
 
-Sometimes you need to access the translations via keys.
-Define the maps in your `config.i18n.json`.
+Use the `$` prefix.
+
+In edge cases you can also wrap it with `${...}`.
+
+```json
+{
+  "greeting": "Hello $name",
+  "distance": "${distance}m"
+}
+```
+
+```dart
+t.greeting(name: 'Tom'); // Hello Tom
+t.distance(distance: 4.5); // 4.5m
+```
+
+**How can I access translations using maps?**
+
+Define the maps in your `build.yaml`.
 Keep in mind that all nice features like autocompletion are gone.
 
 `strings.i18n.json`
@@ -213,7 +230,7 @@ targets:
             - classicClass.aMapInClass
 ```
 
-Now you can access this via key:
+Now you can access the translations via keys:
 
 ```dart
 String a = t.thisIsAMap['hello world'];
@@ -221,7 +238,7 @@ String b = t.classicClass.hello; // the "classical" way
 String c = t.classicClass.aMapInClass['hi']; // nested
 ```
 
-**Lists**
+**Can I use lists?**
 
 Lists are fully supported.
 
