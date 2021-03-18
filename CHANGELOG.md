@@ -1,3 +1,9 @@
+## 3.0.1-dev.0
+
+- add real project example
+- update FAQ in README
+- depend on null-safety version of recase package
+
 ## 3.0.0
 
 - null safety support
