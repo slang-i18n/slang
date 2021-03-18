@@ -1,4 +1,4 @@
-## 3.0.1-dev.0
+## 3.0.1
 
 - add real project example
 - update FAQ in README
