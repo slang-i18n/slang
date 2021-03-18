@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          base_locale: en
+          maps:
+            - locales

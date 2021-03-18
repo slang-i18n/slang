@@ -1,0 +1,11 @@
+{
+  "mainScreen": {
+    "title": "An English Title",
+    "counter": "You pressed $count times.",
+    "tapMe": "Tap me"
+  },
+  "locales": {
+    "en": "English",
+    "de": "German"
+  }
+}

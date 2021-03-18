@@ -1,6 +1,5 @@
 # testing
-*.i18n.json
-*.g.dart
+/lib/src/i18n/
 
 # Miscellaneous
 *.class
