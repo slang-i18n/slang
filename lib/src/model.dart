@@ -10,7 +10,7 @@ extension KeyCaseParser on String? {
       case 'snake':
         return KeyCase.snake;
       case 'pascal':
-        return KeyCase.snake;
+        return KeyCase.pascal;
       default:
         return null;
     }
