@@ -117,7 +117,12 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('\tstatic $baseClassName of(BuildContext context) {');
   buffer.writeln(
-      '\t\treturn context.dependOnInheritedWidgetOfExactType<$inheritedClass>()!.translations;');
+      '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
+  buffer.writeln('\t\tif (inheritedWidget == null) {');
+  buffer.writeln(
+      '\t\t\tthrow(\'Please wrap your app with "TranslationProvider".\');');
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t\treturn $mapVar[inheritedWidget.locale]!;');
   buffer.writeln('\t}');
   buffer.writeln('}');
 
@@ -269,7 +274,7 @@ void _generateHeader(
   buffer.writeln('\t@override');
   buffer.writeln('\tWidget build(BuildContext context) {');
   buffer.writeln('\t\treturn $inheritedClass(');
-  buffer.writeln('\t\t\ttranslations: $mapVar[locale]!,');
+  buffer.writeln('\t\t\tlocale: locale,');
   buffer.writeln('\t\t\tchild: widget.child,');
   buffer.writeln('\t\t);');
   buffer.writeln('\t}');
@@ -278,13 +283,13 @@ void _generateHeader(
   // InheritedLocaleData
   buffer.writeln();
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
-  buffer.writeln('\tfinal $baseClassName translations;');
+  buffer.writeln('\tfinal String locale;');
   buffer.writeln(
-      '\t$inheritedClass({required this.translations, required Widget child}) : super(child: child);');
+      '\t$inheritedClass({required this.locale, required Widget child}) : super(child: child);');
   buffer.writeln();
   buffer.writeln('\t@override');
   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
-  buffer.writeln('\t\treturn oldWidget.translations != translations;');
+  buffer.writeln('\t\treturn oldWidget.locale != locale;');
   buffer.writeln('\t}');
   buffer.writeln('}');
 }
