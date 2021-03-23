@@ -55,7 +55,7 @@ void _generateHeader(
   final String translateVar = config.translateVariable;
   final String enumName = config.enumName;
   final String baseLocale = config.baseLocale;
-  final String baseClassName = config.baseName.capitalize();
+  final String baseClassName = config.baseName.toCase(KeyCase.pascal);
 
   // current locale variable
   buffer.writeln();
@@ -70,7 +70,7 @@ void _generateHeader(
   allLocales.forEach((localeData) {
     String finalClassName = localeData.base
         ? baseClassName
-        : baseClassName + localeData.locale.capitalize().replaceAll('-', '');
+        : baseClassName + localeData.locale.toLowerCase().toCase(KeyCase.pascal);
 
     buffer.writeln('\t\'${localeData.locale}\': $finalClassName.instance,');
   });
@@ -302,7 +302,7 @@ void _generateLocale(
   Queue<ClassTask> queue = Queue();
 
   queue.add(ClassTask(
-    config.baseName.capitalize(),
+    config.baseName.toCase(KeyCase.pascal),
     localeData.root.entries,
   ));
 
@@ -333,7 +333,7 @@ void _generateClass(
   Map<String, Node> currMembers,
 ) {
   String finalClassName =
-      base ? className : className + locale.capitalize().replaceAll('-', '');
+      base ? className : className + locale.toLowerCase().toCase(KeyCase.pascal);
 
   buffer.writeln();
 
@@ -367,7 +367,7 @@ void _generateClass(
       buffer.write('List<$type> get $key => ');
       _generateList(base, locale, buffer, queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
-      String childClassName = className + key.capitalize();
+      String childClassName = className + key.toCase(KeyCase.pascal);
       if (value.mapMode) {
         // inline map
         String type = value.plainStrings ? 'String' : 'dynamic';
@@ -380,7 +380,7 @@ void _generateClass(
 
         String finalChildClassName = base
             ? childClassName
-            : childClassName + locale.capitalize().replaceAll('-', '');
+            : childClassName + locale.toLowerCase().toCase(KeyCase.pascal);
 
         buffer.writeln(
             '$finalChildClassName get $key => $finalChildClassName._instance;');
@@ -418,7 +418,7 @@ void _generateMap(
       _generateList(
           base, locale, buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
-      String childClassName = className + key.capitalize();
+      String childClassName = className + key.toCase(KeyCase.pascal);
       if (value.mapMode) {
         // inline map
         buffer.write('\'$key\': ');
@@ -430,7 +430,7 @@ void _generateMap(
 
         String finalChildClassName = base
             ? childClassName
-            : childClassName + locale.capitalize().replaceAll('-', '');
+            : childClassName + locale.toLowerCase().toCase(KeyCase.pascal);
 
         buffer.writeln('\'$key\': $finalChildClassName._instance,');
       }
@@ -477,7 +477,7 @@ void _generateList(
       String childClassName = className + depth.toString() + 'i' + i.toString();
       queue.add(ClassTask(childClassName, value.entries));
 
-      String finalChildClassName = childClassName + locale.capitalize();
+      String finalChildClassName = childClassName + locale.toLowerCase().toCase(KeyCase.pascal);
       buffer.writeln('$finalChildClassName._instance,');
     }
   }

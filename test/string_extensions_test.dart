@@ -42,6 +42,14 @@ void main() {
       expect('HelloWorldCool'.toCase(KeyCase.camel), 'helloWorldCool');
     });
 
+    test('camel to pascal', () {
+      expect('helloWorldCool'.toCase(KeyCase.pascal), 'HelloWorldCool');
+    });
+
+    test('snake to pascal', () {
+      expect('hello_world_cool'.toCase(KeyCase.pascal), 'HelloWorldCool');
+    });
+
     test('mix to snake', () {
       expect(
           'hello_worldCool-lol'.toCase(KeyCase.snake), 'hello_world_cool_lol');

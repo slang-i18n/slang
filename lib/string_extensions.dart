@@ -19,6 +19,8 @@ extension StringExtensions on String {
             .mapIndexed((index, word) =>
                 index == 0 ? word.toLowerCase() : word.capitalize())
             .join('');
+      case KeyCase.pascal:
+        return _getWords(this).map((word) => word.capitalize()).join('');
       case KeyCase.snake:
         return _getWords(this).map((word) => word.toLowerCase()).join('_');
       case null:

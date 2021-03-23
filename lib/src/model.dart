@@ -1,6 +1,6 @@
 import 'package:fast_i18n/utils.dart';
 
-enum KeyCase { camel, snake }
+enum KeyCase { camel, pascal, snake }
 
 extension KeyCaseParser on String? {
   KeyCase? toKeyCase() {
@@ -8,6 +8,8 @@ extension KeyCaseParser on String? {
       case 'camel':
         return KeyCase.camel;
       case 'snake':
+        return KeyCase.snake;
+      case 'pascal':
         return KeyCase.snake;
       default:
         return null;
