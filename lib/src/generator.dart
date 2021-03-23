@@ -70,7 +70,8 @@ void _generateHeader(
   allLocales.forEach((localeData) {
     String finalClassName = localeData.base
         ? baseClassName
-        : baseClassName + localeData.locale.toLowerCase().toCase(KeyCase.pascal);
+        : baseClassName +
+            localeData.locale.toLowerCase().toCase(KeyCase.pascal);
 
     buffer.writeln('\t\'${localeData.locale}\': $finalClassName.instance,');
   });
@@ -332,8 +333,9 @@ void _generateClass(
   String className,
   Map<String, Node> currMembers,
 ) {
-  String finalClassName =
-      base ? className : className + locale.toLowerCase().toCase(KeyCase.pascal);
+  String finalClassName = base
+      ? className
+      : className + locale.toLowerCase().toCase(KeyCase.pascal);
 
   buffer.writeln();
 
@@ -477,7 +479,8 @@ void _generateList(
       String childClassName = className + depth.toString() + 'i' + i.toString();
       queue.add(ClassTask(childClassName, value.entries));
 
-      String finalChildClassName = childClassName + locale.toLowerCase().toCase(KeyCase.pascal);
+      String finalChildClassName =
+          childClassName + locale.toLowerCase().toCase(KeyCase.pascal);
       buffer.writeln('$finalChildClassName._instance,');
     }
   }

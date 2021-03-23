@@ -1,3 +1,9 @@
+## 3.0.2
+
+- new optional case transformation: `pascal`
+- remove recase dependency
+- code changes in generated .g.dart file
+
 ## 3.0.1
 
 - add real project example

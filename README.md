@@ -10,7 +10,7 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 ```yaml
 dependencies:
-  fast_i18n: ^3.0.1
+  fast_i18n: ^3.0.2
 
 dev_dependencies:
   build_runner: any
@@ -168,13 +168,13 @@ targets:
 Key|Type|Usage|Default
 ---|---|---|---
 base_locale|`String`|locale of default json|`en`
-input_directory|`String`|path to input directory|`null (whole project)`
+input_directory|`String`|path to input directory|`null`
 input_file_pattern|`String`|input file pattern|`.i18n.json`
-output_directory|`String`|path to output directory|`null (whole project)`
+output_directory|`String`|path to output directory|`null`
 output_file_pattern|`String`|output file pattern|`.g.dart`
 translate_var|`String`|translate variable name|`t`
 enum_name|`String`|enum name|`AppLocale`
-key_case|`snake` or `camel`|transform keys to snake or camel case|`null (no transform)`
+key_case|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 
 ## FAQ
