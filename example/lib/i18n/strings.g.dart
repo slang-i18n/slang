@@ -41,7 +41,11 @@ class Translations {
 	Translations._(); // no constructor
 
 	static Strings of(BuildContext context) {
-		return context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>()!.translations;
+		final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
+		if (inheritedWidget == null) {
+			throw('Please wrap your app with "TranslationProvider".');
+		}
+		return _strings[inheritedWidget.locale]!;
 	}
 }
 
@@ -157,19 +161,19 @@ class _TranslationProviderState extends State<TranslationProvider> {
 	@override
 	Widget build(BuildContext context) {
 		return _InheritedLocaleData(
-			translations: _strings[locale]!,
+			locale: locale,
 			child: widget.child,
 		);
 	}
 }
 
 class _InheritedLocaleData extends InheritedWidget {
-	final Strings translations;
-	_InheritedLocaleData({required this.translations, required Widget child}) : super(child: child);
+	final String locale;
+	_InheritedLocaleData({required this.locale, required Widget child}) : super(child: child);
 
 	@override
 	bool updateShouldNotify(_InheritedLocaleData oldWidget) {
-		return oldWidget.translations != translations;
+		return oldWidget.locale != locale;
 	}
 }
 
