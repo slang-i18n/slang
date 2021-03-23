@@ -2,10 +2,6 @@ import 'package:fast_i18n/fast_i18n.dart';
 import 'package:test/test.dart';
 
 void main() {
-  testSelectLocale();
-}
-
-void testSelectLocale() {
   group('selectLocale', () {
     test('match exactly', () {
       expect(FastI18n.selectLocale('en-us', ['en-us', 'de-de'], ''), 'en-us');

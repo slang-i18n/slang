@@ -89,7 +89,7 @@ class I18nBuilder implements Builder {
         baseName: baseName!,
         baseLocale: baseLocale,
         maps: maps,
-        keyCase: keyCase,
+        keyCase: keyCase.toKeyCase(),
         translateVariable: translateVar,
         enumName: enumName);
 

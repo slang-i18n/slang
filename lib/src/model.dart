@@ -1,11 +1,26 @@
 import 'package:fast_i18n/utils.dart';
 
+enum KeyCase { camel, snake }
+
+extension KeyCaseParser on String? {
+  KeyCase? toKeyCase() {
+    switch (this) {
+      case 'camel':
+        return KeyCase.camel;
+      case 'snake':
+        return KeyCase.snake;
+      default:
+        return null;
+    }
+  }
+}
+
 /// general config, applies to all locales
 class I18nConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final String baseLocale; // defaults to 'en'
   final List<String> maps; // list of entities treated as maps and not classes
-  final String? keyCase;
+  final KeyCase? keyCase;
   final String translateVariable;
   final String enumName;
 
@@ -31,10 +46,10 @@ class I18nData {
 }
 
 /// the super class of every node
-class Value {}
+class Node {}
 
-class ObjectNode extends Value {
-  final Map<String, Value> entries;
+class ObjectNode extends Node {
+  final Map<String, Node> entries;
   final bool mapMode;
   final bool plainStrings;
 
@@ -46,8 +61,8 @@ class ObjectNode extends Value {
   String toString() => entries.toString();
 }
 
-class ListNode extends Value {
-  final List<Value> entries;
+class ListNode extends Node {
+  final List<Node> entries;
   final bool plainStrings;
 
   ListNode(this.entries)
@@ -58,7 +73,7 @@ class ListNode extends Value {
   String toString() => entries.toString();
 }
 
-class TextNode extends Value {
+class TextNode extends Node {
   final String content;
   final List<String> params;
 

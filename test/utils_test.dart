@@ -2,11 +2,6 @@ import 'package:fast_i18n/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  testLocaleRegex();
-  testNormalize();
-}
-
-void testLocaleRegex() {
   group('localeRegex', () {
     RegExp regex = Utils.localeRegex;
 
@@ -35,9 +30,7 @@ void testLocaleRegex() {
       expect(match, null);
     });
   });
-}
 
-void testNormalize() {
   group('normalize', () {
     test('en', () {
       expect(Utils.normalize('en'), 'en');

@@ -1,13 +1,12 @@
 import 'dart:collection';
 
+import 'package:fast_i18n/string_extensions.dart';
 import 'package:fast_i18n/src/model.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:recase/recase.dart';
 
 /// decides which class should be generated
 class ClassTask {
   final String className;
-  final Map<String, Value> members;
+  final Map<String, Node> members;
 
   ClassTask(this.className, this.members);
 }
@@ -326,7 +325,7 @@ void _generateClass(
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
-  Map<String, Value> currMembers,
+  Map<String, Node> currMembers,
 ) {
   String finalClassName =
       base ? className : className + locale.capitalize().replaceAll('-', '');
@@ -395,7 +394,7 @@ void _generateMap(
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
-  Map<String, Value> currMembers,
+  Map<String, Node> currMembers,
   int depth,
 ) {
   buffer.writeln('{');
@@ -451,13 +450,13 @@ void _generateList(
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
-  List<Value> currList,
+  List<Node> currList,
   int depth,
 ) {
   buffer.writeln('[');
 
   for (int i = 0; i < currList.length; i++) {
-    Value value = currList[i];
+    Node value = currList[i];
     _addTabs(buffer, depth + 2);
     if (value is TextNode) {
       if (value.params.isEmpty) {
@@ -510,32 +509,5 @@ String _toParameterList(List<String> params, {bool definition = true}) {
 void _addTabs(StringBuffer buffer, int count) {
   for (int i = 0; i < count; i++) {
     buffer.write('\t');
-  }
-}
-
-extension on String {
-  /// capitalizes a given string
-  /// 'hello' => 'Hello'
-  /// 'heLLo' => 'HeLLo'
-  /// 'Hello' => 'Hello'
-  /// '' => ''
-  String capitalize() {
-    if (this.isEmpty) return '';
-    return "${this[0].toUpperCase()}${this.substring(1)}";
-  }
-
-  String toCase(String? caseName) {
-    switch (caseName) {
-      case 'snake':
-        return snakeCase;
-      case 'camel':
-        return camelCase;
-      default:
-        return this;
-    }
-  }
-
-  String toEnumConstant() {
-    return this.toLowerCase().camelCase;
   }
 }
