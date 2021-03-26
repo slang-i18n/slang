@@ -240,7 +240,7 @@ String c = t.classicClass.aMapInClass['hi']; // nested
 
 **Can I use lists?**
 
-Lists are fully supported.
+Lists are fully supported. You can also put lists or maps inside lists!
 
 ```json
 {
@@ -248,23 +248,26 @@ Lists are fully supported.
     "hello",
     "nice",
     [
-      "nestedList"
+      "first item in nested list",
+      "second item in nested list"
     ],
     {
-      "wow": "wow"
+      "wow": "WOW!",
+      "ok": "OK!"
     },
     {
-      "a map entry": "cool"
+      "a map entry": "access via key",
+      "another entry": "access via second key"
     }
   ]
 }
 ```
 
 ```dart
-String a = t.niceList[1];
-String b = t.niceList[2][0];
-String c = t.niceList[3].wow;
-String d = t.niceList[4]['a map entry'];
+String a = t.niceList[1]; // "nice"
+String b = t.niceList[2][0]; // "first item in nested list"
+String c = t.niceList[3].ok; // "OK!"
+String d = t.niceList[4]['a map entry']; // "access via key"
 ```
 
 ## License
