@@ -1,3 +1,9 @@
+## 3.0.3
+
+- docs: add hint for `.i18n.json` extension
+- docs: update code examples
+- docs: update image
+
 ## 3.0.2
 
 - new optional case transformation: `pascal`

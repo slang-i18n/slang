@@ -10,7 +10,7 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 ```yaml
 dependencies:
-  fast_i18n: ^3.0.2
+  fast_i18n: ^3.0.3
 
 dev_dependencies:
   build_runner: any
