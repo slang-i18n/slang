@@ -1,4 +1,4 @@
-![featured](resources/featured.png)
+![featured](resources/featured.svg)
 
 # fast_i18n
 
@@ -19,6 +19,7 @@ dev_dependencies:
 **Step 2: Create JSON files**
 
 Create these files inside your `lib` directory. Preferably in one common package like `lib/i18n`.
+Only files having the `.i18n.json` file extension will be detected. You can [configure it](#Configuration).
 
 `strings.i18n.json (default, fallback)`
 
@@ -57,8 +58,8 @@ flutter pub run build_runner build
 a) use device locale
 ```dart
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  LocaleSettings.useDeviceLocale();
+  WidgetsFlutterBinding.ensureInitialized(); // add this
+  LocaleSettings.useDeviceLocale(); // and this
   runApp(MyApp());
 }
 ```
@@ -105,15 +106,15 @@ File: ios/Runner/Info.plist
 **Step 5: Use your translations**
 
 ```dart
-// raw string
-String translated = t.hello(name: 'Tom');
-
-// inside component
-Text(t.login.success)
+Text(t.login.success); // plain
+Text(t.hello(name: 'Tom')); // with argument
+Text(t.step[3]); // with index (for arrays)
+Text(t.type['WARNING']); // with key (for maps)
 
 // advanced
-TranslationProvider(child: MyApp()); // wrap your app with the TranslationProvider
-final t = Translations.of(context); // reacts on locale changes
+TranslationProvider(child: MyApp()); // wrap your app with TranslationProvider
+// [...]
+final t = Translations.of(context); // forces a rebuild on locale change
 String translateAdvanced = t.hello(name: 'Tom');
 ```
 
