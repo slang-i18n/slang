@@ -1,3 +1,7 @@
+## 3.0.4-dev.0
+
+- fix `LocaleSettings.useDeviceLocale()` causing compilation error (Flutter Web)
+
 ## 3.0.3
 
 - docs: add hint for `.i18n.json` extension
