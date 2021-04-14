@@ -1,4 +1,4 @@
-## 3.0.4-dev.0
+## 3.0.4
 
 - fix `LocaleSettings.useDeviceLocale()` causing compilation error (Flutter Web)
 
