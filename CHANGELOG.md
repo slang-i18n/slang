@@ -4,8 +4,8 @@
 - **Breaking:** `setLocale` -> `setLocaleRaw`, `setLocaleTyped` -> `setLocale`
 - **Breaking:** `locales` -> `supportedLocalesRaw`
 - **Breaking:** `AppLocale.toLanguageTag` -> `AppLocale.languageTag`
-
-- plain strings are now implemented as getters, hence `edit -> rebuild i18n -> hot reload` works now for faster development
+- **Breaking:** translation classes are now private by default, you can configure it via `translation_class_visibility` in `build.yaml` (in most cases just keep it private!)
+- plain strings are now implemented as getters, `edit -> rebuild i18n -> hot reload` works now for faster development
 
 ## 3.0.4
 

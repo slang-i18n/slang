@@ -138,6 +138,7 @@ targets:
           output_file_pattern: .g.dart
           translate_var: t
           enum_name: AppLocale
+          translation_class_visibility: private
           key_case: snake
           maps:
             - a
@@ -154,6 +155,7 @@ output_directory|`String`|path to output directory|`null`
 output_file_pattern|`String`|output file pattern|`.g.dart`
 translate_var|`String`|translate variable name|`t`
 enum_name|`String`|enum name|`AppLocale`
+translation_class_visibility|`private`, `public`|class visibility|`private`
 key_case|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 
