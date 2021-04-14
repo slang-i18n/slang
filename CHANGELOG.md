@@ -1,3 +1,10 @@
+## 4.0.0
+
+**The typed version is now first class.**
+- **Breaking:** `setLocale` -> `setLocaleRaw`, `setLocaleTyped` -> `setLocale`
+- **Breaking:** `locales` -> `supportedLocalesRaw`
+- **Breaking:** `AppLocale.toLanguageTag` -> `AppLocale.languageTag`
+
 ## 3.0.4
 
 - fix `LocaleSettings.useDeviceLocale()` causing compilation error (Flutter Web)

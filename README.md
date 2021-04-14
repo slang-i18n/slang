@@ -4,13 +4,16 @@
 
 Lightweight i18n solution. Use JSON files to create typesafe translations.
 
+**For Flutter Web users:** version 3.0.4 contains the workaround for [#79555](https://github.com/flutter/flutter/issues/79555).
+Version 4.x.x is web compatible as soon as the Flutter team merged this fix into the stable branch.
+
 ## Getting Started
 
 **Step 1: Add dependencies**
 
 ```yaml
 dependencies:
-  fast_i18n: ^3.0.4
+  fast_i18n: ^4.0.0
 
 dev_dependencies:
   build_runner: any
@@ -70,7 +73,7 @@ b) use specific locale
 void initState() {
   super.initState();
   String storedLocale = loadFromStorage(); // your logic here
-  LocaleSettings.setLocale(storedLocale);
+  LocaleSettings.setLocaleRaw(storedLocale);
 }
 ```
 
@@ -106,10 +109,10 @@ File: ios/Runner/Info.plist
 **Step 5: Use your translations**
 
 ```dart
-Text(t.login.success); // plain
-Text(t.hello(name: 'Tom')); // with argument
-Text(t.step[3]); // with index (for arrays)
-Text(t.type['WARNING']); // with key (for maps)
+String a = t.login.success; // plain
+String b = t.hello(name: 'Tom'); // with argument
+String c = t.step[3]; // with index (for arrays)
+String d = t.type['WARNING']; // with key (for maps)
 
 // advanced
 TranslationProvider(child: MyApp()); // wrap your app with TranslationProvider
@@ -117,30 +120,6 @@ TranslationProvider(child: MyApp()); // wrap your app with TranslationProvider
 final t = Translations.of(context); // forces a rebuild on locale change
 String translateAdvanced = t.hello(name: 'Tom');
 ```
-
-## API
-
-When the dart code has been generated, you will see some useful classes and functions
-
-`t` - the translate variable for simple translations
-
-`Translations.of(context)` - translations which reacts to locale changes
-
-`TranslationProvider` - App wrapper, used for `Translations.of(context)`
-
-`LocaleSettings.useDeviceLocale()` - use the locale of the device
-
-`LocaleSettings.setLocale('de')` - change the locale
-
-`LocaleSettings.setLocaleTyped(AppLocale.en)` - change the locale (typed version)
-
-`LocaleSettings.currentLocale` - get the current locale
-
-`LocaleSettings.currentLocaleTyped` - get the current locale (typed version)
-
-`LocaleSettings.locales` - get the supported locales
-
-`LocaleSettings.supportedLocales` - see step 4a
 
 ## Configuration
 
@@ -177,6 +156,30 @@ translate_var|`String`|translate variable name|`t`
 enum_name|`String`|enum name|`AppLocale`
 key_case|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
+
+## API
+
+When the dart code has been generated, you will see some useful classes and functions
+
+`t` - the translate variable for simple translations
+
+`Translations.of(context)` - translations which reacts to locale changes
+
+`TranslationProvider` - App wrapper, used for `Translations.of(context)`
+
+`LocaleSettings.useDeviceLocale()` - use the locale of the device
+
+`LocaleSettings.setLocale(AppLocale.en)` - change the locale
+
+`LocaleSettings.setLocaleRaw('de')` - change the locale
+
+`LocaleSettings.currentLocale` - get the current locale
+
+`LocaleSettings.baseLocale` - get the base locale
+
+`LocaleSettings.supportedLocalesRaw` - get the supported locales
+
+`LocaleSettings.supportedLocales` - see step 4a
 
 ## FAQ
 
@@ -241,7 +244,7 @@ String c = t.classicClass.aMapInClass['hi']; // nested
 
 **Can I use lists?**
 
-Lists are fully supported. You can also put lists or maps inside lists!
+Lists are fully supported. No configuration needed. You can also put lists or maps inside lists!
 
 ```json
 {

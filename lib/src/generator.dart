@@ -40,9 +40,8 @@ String generate(
 void _generateHeader(
     StringBuffer buffer, I18nConfig config, List<I18nData> allLocales) {
   // identifiers
-  const String mapVar = '_strings';
   const String baseLocaleVar = '_baseLocale';
-  const String localeVar = '_locale';
+  const String currLocaleVar = '_currLocale';
   const String translationsClass = 'Translations';
   const String settingsClass = 'LocaleSettings';
   const String translationProviderKey = '_translationProviderKey';
@@ -59,24 +58,23 @@ void _generateHeader(
 
   // current locale variable
   buffer.writeln();
-  buffer.writeln('const String $baseLocaleVar = \'$baseLocale\';');
+  buffer.writeln('const $enumName $baseLocaleVar = $enumName.${baseLocale.toEnumConstant()};');
+  buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
+
+  // enum
   buffer.writeln();
-  buffer.writeln('String $localeVar = $baseLocaleVar;');
-
-  // map
-  buffer.writeln();
-  buffer.writeln('Map<String, $baseClassName> $mapVar = {');
-
-  allLocales.forEach((localeData) {
-    String finalClassName = localeData.base
-        ? baseClassName
-        : baseClassName +
-            localeData.locale.toLowerCase().toCase(KeyCase.pascal);
-
-    buffer.writeln('\t\'${localeData.locale}\': $finalClassName.instance,');
-  });
-
-  buffer.writeln('};');
+  buffer.writeln('/// Supported locales, see extension methods below.');
+  buffer.writeln('///');
+  buffer.writeln('/// Usage:');
+  buffer.writeln(
+      '/// - LocaleSettings.setLocaleTyped($enumName.${baseLocale.toEnumConstant()})');
+  buffer.writeln(
+      '/// - if (LocaleSettings.currentLocaleTyped == $enumName.${baseLocale.toEnumConstant()})');
+  buffer.writeln('enum $enumName {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln('\t${locale.locale.toEnumConstant()}, // ${locale.locale} ${locale.base ? '(base locale, fallback)' : ''}');
+  }
+  buffer.writeln('}');
 
   // t getter
   buffer.writeln();
@@ -90,7 +88,7 @@ void _generateHeader(
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String translated = t.someKey.anotherKey;');
   buffer
-      .writeln('$baseClassName $translateVarInternal = $mapVar[$localeVar]!;');
+      .writeln('$baseClassName $translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
 
   // t getter (advanced)
@@ -123,23 +121,8 @@ void _generateHeader(
   buffer.writeln(
       '\t\t\tthrow(\'Please wrap your app with "TranslationProvider".\');');
   buffer.writeln('\t\t}');
-  buffer.writeln('\t\treturn $mapVar[inheritedWidget.locale]!;');
+  buffer.writeln('\t\treturn inheritedWidget.locale.translations;');
   buffer.writeln('\t}');
-  buffer.writeln('}');
-
-  // enum
-  buffer.writeln();
-  buffer.writeln('/// Type-safe locales');
-  buffer.writeln('///');
-  buffer.writeln('/// Usage:');
-  buffer.writeln(
-      '/// - LocaleSettings.setLocaleTyped($enumName.${baseLocale.toEnumConstant()})');
-  buffer.writeln(
-      '/// - if (LocaleSettings.currentLocaleTyped == $enumName.${baseLocale.toEnumConstant()})');
-  buffer.writeln('enum $enumName {');
-  for (I18nData locale in allLocales) {
-    buffer.writeln('\t${locale.locale.toEnumConstant()},');
-  }
   buffer.writeln('}');
 
   // settings
@@ -150,66 +133,69 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\t/// Be aware that the locales are case sensitive.');
-  buffer.writeln('\tstatic String useDeviceLocale() {');
+  buffer.writeln('\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag');
+  buffer.writeln('\tstatic $enumName useDeviceLocale() {');
   buffer.writeln(
-      '\t\tString deviceLocale = FastI18n.getDeviceLocale() ?? $baseLocaleVar;');
-  buffer.writeln('\t\treturn setLocale(deviceLocale);');
+      '\t\tString? deviceLocale = FastI18n.getDeviceLocale();');
+  buffer.writeln('\t\tif (deviceLocale != null)');
+  buffer.writeln('\t\t\treturn setLocaleRaw(deviceLocale);');
+  buffer.writeln('\t\telse');
+  buffer.writeln('\t\t\treturn setLocale($baseLocaleVar);');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Sets locale, fallbacks to base locale.');
+  buffer.writeln('\t/// Sets locale');
   buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\t/// Be aware that the locales are case sensitive.');
-  buffer.writeln('\tstatic String setLocale(String locale) {');
-  buffer.writeln(
-      '\t\t$localeVar = FastI18n.selectLocale(locale, $mapVar.keys.toList(), $baseLocaleVar);');
-  buffer.writeln('\t\t$translateVarInternal = $mapVar[$localeVar]!;');
+  buffer.writeln('\tstatic $enumName setLocale($enumName locale) {');
+  buffer.writeln('\t\t$currLocaleVar = locale;');
+  buffer.writeln('\t\t$translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln();
   buffer.writeln('\t\tfinal state = $translationProviderKey.currentState;');
   buffer.writeln('\t\tif (state != null) {');
-  buffer.writeln('\t\t\tstate.setLocale($localeVar);');
+  buffer.writeln('\t\t\t// force rebuild if TranslationProvider is used');
+  buffer.writeln('\t\t\tstate.setLocale($currLocaleVar);');
   buffer.writeln('\t\t}');
   buffer.writeln();
-  buffer.writeln('\t\treturn $localeVar;');
+  buffer.writeln('\t\treturn $currLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Typed version of [setLocale]');
-  buffer.writeln('\tstatic $enumName setLocaleTyped($enumName locale) {');
-  buffer
-      .writeln('\t\treturn setLocale(locale.toLanguageTag()).to$enumName()!;');
+  buffer.writeln('\t/// Sets locale using string tag (e.g. en_US, de-DE, fr)');
+  buffer.writeln('\t/// Fallbacks to base locale.');
+  buffer.writeln('\t/// Returns the locale which has been set.');
+  buffer.writeln('\tstatic $enumName setLocaleRaw(String locale) {');
+  buffer.writeln(
+      '\t\tString selectedLocale = FastI18n.selectLocale(locale, supportedLocalesRaw, $baseLocaleVar.languageTag);');
+  buffer.writeln('\t\treturn setLocale(selectedLocale.to$enumName()!);');
   buffer.writeln('\t}');
 
   buffer.writeln();
   buffer.writeln('\t/// Gets current locale.');
-  buffer.writeln('\tstatic String get currentLocale {');
-  buffer.writeln('\t\treturn $localeVar;');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Typed version of [currentLocale]');
-  buffer.writeln('\tstatic $enumName get currentLocaleTyped {');
-  buffer.writeln('\t\treturn $localeVar.to$enumName()!;');
+  buffer.writeln('\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.currentLocale.languageTag');
+  buffer.writeln('\tstatic $enumName get currentLocale {');
+  buffer.writeln('\t\treturn $currLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
   buffer.writeln('\t/// Gets base locale.');
-  buffer.writeln('\tstatic String get baseLocale {');
+  buffer.writeln('\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.baseLocale.languageTag');
+  buffer.writeln('\tstatic $enumName get baseLocale {');
   buffer.writeln('\t\treturn $baseLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Gets supported locales.');
-  buffer.writeln('\tstatic List<String> get locales {');
-  buffer.writeln('\t\treturn $mapVar.keys.toList();');
+  buffer.writeln('\t/// Gets supported locales in string format.');
+  buffer.writeln('\tstatic List<String> get supportedLocalesRaw {');
+  buffer.writeln('\t\treturn $enumName.values');
+  buffer.writeln('\t\t\t.map((locale) => locale.languageTag)');
+  buffer.writeln('\t\t\t.toList();');
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Get supported locales with base locale sorted first.');
+  buffer.writeln('\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
   buffer.writeln('\tstatic List<Locale> get supportedLocales {');
   buffer.writeln(
-      '\t\treturn FastI18n.convertToLocales($mapVar.keys.toList(), $baseLocaleVar);');
+      '\t\treturn FastI18n.convertToLocales(supportedLocalesRaw, $baseLocaleVar.languageTag);');
   buffer.writeln('\t}');
 
   buffer.writeln('}');
@@ -219,7 +205,20 @@ void _generateHeader(
   buffer.writeln('// extensions for $enumName');
   buffer.writeln();
   buffer.writeln('extension ${enumName}Extensions on $enumName {');
-  buffer.writeln('\tString toLanguageTag() {');
+  buffer.writeln('\t$baseClassName get translations {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    final finalClassName = locale.base
+        ? baseClassName
+        : baseClassName +
+        locale.locale.toLowerCase().toCase(KeyCase.pascal);
+    buffer.writeln(
+        '\t\t\tcase $enumName.${locale.locale.toEnumConstant()}: return $finalClassName.instance;');
+  }
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+  buffer.writeln();
+  buffer.writeln('\tString get languageTag {');
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
@@ -228,6 +227,7 @@ void _generateHeader(
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
   buffer.writeln('}');
+  buffer.writeln();
 
   // string extension
   buffer.writeln('extension String${enumName}Extensions on String {');
@@ -264,9 +264,9 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln(
       'class $translationProviderStateClass extends State<$translationProviderClass> {');
-  buffer.writeln('\tString locale = $localeVar;');
+  buffer.writeln('\t$enumName locale = $currLocaleVar;');
   buffer.writeln();
-  buffer.writeln('\tvoid setLocale(String newLocale) {');
+  buffer.writeln('\tvoid setLocale($enumName newLocale) {');
   buffer.writeln('\t\tsetState(() {');
   buffer.writeln('\t\t\tlocale = newLocale;');
   buffer.writeln('\t\t});');
@@ -284,7 +284,7 @@ void _generateHeader(
   // InheritedLocaleData
   buffer.writeln();
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
-  buffer.writeln('\tfinal String locale;');
+  buffer.writeln('\tfinal $enumName locale;');
   buffer.writeln(
       '\t$inheritedClass({required this.locale, required Widget child}) : super(child: child);');
   buffer.writeln();
