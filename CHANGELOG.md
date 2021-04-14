@@ -5,6 +5,8 @@
 - **Breaking:** `locales` -> `supportedLocalesRaw`
 - **Breaking:** `AppLocale.toLanguageTag` -> `AppLocale.languageTag`
 
+- plain strings are now implemented as getters, hence `edit -> rebuild i18n -> hot reload` works now for faster development
+
 ## 3.0.4
 
 - fix `LocaleSettings.useDeviceLocale()` causing compilation error (Flutter Web)

@@ -359,7 +359,7 @@ void _generateClass(
 
     if (value is TextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('String $key = \'${value.content}\';');
+        buffer.writeln('String get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
             'String $key${_toParameterList(value.params)} => \'${value.content}\';');
