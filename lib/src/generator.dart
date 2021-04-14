@@ -72,9 +72,9 @@ void _generateHeader(
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln(
-      '/// - LocaleSettings.setLocaleTyped($enumName.${baseLocale.toEnumConstant()})');
+      '/// - LocaleSettings.setLocale($enumName.${baseLocale.toEnumConstant()})');
   buffer.writeln(
-      '/// - if (LocaleSettings.currentLocaleTyped == $enumName.${baseLocale.toEnumConstant()})');
+      '/// - if (LocaleSettings.currentLocale == $enumName.${baseLocale.toEnumConstant()})');
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
