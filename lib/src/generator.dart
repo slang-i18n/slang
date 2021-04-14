@@ -54,11 +54,16 @@ void _generateHeader(
   final String translateVar = config.translateVariable;
   final String enumName = config.enumName;
   final String baseLocale = config.baseLocale;
-  final String baseClassName = _getClassNameRoot(baseName: config.baseName.toCase(KeyCase.pascal), visibility: config.translationClassVisibility, locale: '', base: true);
+  final String baseClassName = _getClassNameRoot(
+      baseName: config.baseName.toCase(KeyCase.pascal),
+      visibility: config.translationClassVisibility,
+      locale: '',
+      base: true);
 
   // current locale variable
   buffer.writeln();
-  buffer.writeln('const $enumName $baseLocaleVar = $enumName.${baseLocale.toEnumConstant()};');
+  buffer.writeln(
+      'const $enumName $baseLocaleVar = $enumName.${baseLocale.toEnumConstant()};');
   buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
 
   // enum
@@ -72,7 +77,8 @@ void _generateHeader(
       '/// - if (LocaleSettings.currentLocaleTyped == $enumName.${baseLocale.toEnumConstant()})');
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
-    buffer.writeln('\t${locale.locale.toEnumConstant()}, // ${locale.locale} ${locale.base ? '(base locale, fallback)' : ''}');
+    buffer.writeln(
+        '\t${locale.locale.toEnumConstant()}, // ${locale.locale} ${locale.base ? '(base locale, fallback)' : ''}');
   }
   buffer.writeln('}');
 
@@ -87,8 +93,8 @@ void _generateHeader(
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String translated = t.someKey.anotherKey;');
-  buffer
-      .writeln('$baseClassName $translateVarInternal = $currLocaleVar.translations;');
+  buffer.writeln(
+      '$baseClassName $translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
 
   // t getter (advanced)
@@ -133,10 +139,10 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag');
-  buffer.writeln('\tstatic $enumName useDeviceLocale() {');
   buffer.writeln(
-      '\t\tString? deviceLocale = FastI18n.getDeviceLocale();');
+      '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag');
+  buffer.writeln('\tstatic $enumName useDeviceLocale() {');
+  buffer.writeln('\t\tString? deviceLocale = FastI18n.getDeviceLocale();');
   buffer.writeln('\t\tif (deviceLocale != null)');
   buffer.writeln('\t\t\treturn setLocaleRaw(deviceLocale);');
   buffer.writeln('\t\telse');
@@ -171,14 +177,16 @@ void _generateHeader(
 
   buffer.writeln();
   buffer.writeln('\t/// Gets current locale.');
-  buffer.writeln('\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.currentLocale.languageTag');
+  buffer.writeln(
+      '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.currentLocale.languageTag');
   buffer.writeln('\tstatic $enumName get currentLocale {');
   buffer.writeln('\t\treturn $currLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
   buffer.writeln('\t/// Gets base locale.');
-  buffer.writeln('\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.baseLocale.languageTag');
+  buffer.writeln(
+      '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.baseLocale.languageTag');
   buffer.writeln('\tstatic $enumName get baseLocale {');
   buffer.writeln('\t\treturn $baseLocaleVar;');
   buffer.writeln('\t}');
@@ -192,7 +200,8 @@ void _generateHeader(
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln('\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
+  buffer.writeln(
+      '\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
   buffer.writeln('\tstatic List<Locale> get supportedLocales {');
   buffer.writeln(
       '\t\treturn FastI18n.convertToLocales(supportedLocalesRaw, $baseLocaleVar.languageTag);');
@@ -208,7 +217,11 @@ void _generateHeader(
   buffer.writeln('\t$baseClassName get translations {');
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
-    String className = _getClassNameRoot(baseName: config.baseName.toCase(KeyCase.pascal), locale: locale.locale, base: locale.base, visibility: config.translationClassVisibility);
+    String className = _getClassNameRoot(
+        baseName: config.baseName.toCase(KeyCase.pascal),
+        locale: locale.locale,
+        base: locale.base,
+        visibility: config.translationClassVisibility);
     buffer.writeln(
         '\t\t\tcase $enumName.${locale.locale.toEnumConstant()}: return $className._instance;');
   }
@@ -300,7 +313,11 @@ void _generateLocale(
   Queue<ClassTask> queue = Queue();
 
   queue.add(ClassTask(
-    _getClassNameRoot(baseName: config.baseName.toCase(KeyCase.pascal), visibility: config.translationClassVisibility, locale: '', base: true),
+    _getClassNameRoot(
+        baseName: config.baseName.toCase(KeyCase.pascal),
+        visibility: config.translationClassVisibility,
+        locale: '',
+        base: true),
     localeData.root.entries,
   ));
 
@@ -367,7 +384,8 @@ void _generateClass(
       buffer.write('List<$type> get $key => ');
       _generateList(base, locale, buffer, queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
-      String childClassNoLocale = _getClassName(parentName: className, childName: key, locale: locale, base: true);
+      String childClassNoLocale = _getClassName(
+          parentName: className, childName: key, locale: locale, base: true);
       if (value.mapMode) {
         // inline map
         String type = value.plainStrings ? 'String' : 'dynamic';
@@ -377,8 +395,10 @@ void _generateClass(
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value.entries));
-        String childClassWithLocale = _getClassName(parentName: className, childName: key, locale: locale, base: base);
-        buffer.writeln('$childClassWithLocale get $key => $childClassWithLocale._instance;');
+        String childClassWithLocale = _getClassName(
+            parentName: className, childName: key, locale: locale, base: base);
+        buffer.writeln(
+            '$childClassWithLocale get $key => $childClassWithLocale._instance;');
       }
     }
   });
@@ -413,16 +433,18 @@ void _generateMap(
       _generateList(
           base, locale, buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
-      String childClassNoLocale = _getClassName(parentName: className, childName: key, locale: locale, base: true);
+      String childClassNoLocale = _getClassName(
+          parentName: className, childName: key, locale: locale, base: true);
       if (value.mapMode) {
         // inline map
         buffer.write('\'$key\': ');
-        _generateMap(base, locale, buffer, queue, childClassNoLocale, value.entries,
-            depth + 1);
+        _generateMap(base, locale, buffer, queue, childClassNoLocale,
+            value.entries, depth + 1);
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value.entries));
-        String childClassWithLocale = _getClassName(parentName: className, childName: key, locale: locale, base: base);
+        String childClassWithLocale = _getClassName(
+            parentName: className, childName: key, locale: locale, base: base);
         buffer.writeln('\'$key\': $childClassWithLocale._instance,');
       }
     }
@@ -466,10 +488,12 @@ void _generateList(
           base, locale, buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String child = depth.toString() + 'i' + i.toString();
-      String childClassNoLocale = _getClassName(parentName: className, childName: child, locale: locale, base: true);
+      String childClassNoLocale = _getClassName(
+          parentName: className, childName: child, locale: locale, base: true);
       queue.add(ClassTask(childClassNoLocale, value.entries));
 
-      String childClassWithLocale = _getClassName(parentName: className, childName: child, locale: locale, base: base);
+      String childClassWithLocale = _getClassName(
+          parentName: className, childName: child, locale: locale, base: base);
       buffer.writeln('$childClassWithLocale._instance,');
     }
   }
@@ -509,21 +533,30 @@ void _addTabs(StringBuffer buffer, int count) {
   }
 }
 
-String _getClassNameRoot({required String baseName, required String locale, required bool base, required TranslationClassVisibility visibility}) {
+String _getClassNameRoot(
+    {required String baseName,
+    required String locale,
+    required bool base,
+    required TranslationClassVisibility visibility}) {
   String result = baseName;
 
   if (!base)
-    result = result + locale.toLowerCase().toCase(KeyCase.pascal); // append locale
+    result =
+        result + locale.toLowerCase().toCase(KeyCase.pascal); // append locale
 
-  if (visibility == TranslationClassVisibility.private)
-    result = '_' + result;
+  if (visibility == TranslationClassVisibility.private) result = '_' + result;
 
   return result;
 }
 
-String _getClassName({required String parentName, required String childName, required String locale, required bool base}) {
+String _getClassName(
+    {required String parentName,
+    required String childName,
+    required String locale,
+    required bool base}) {
   String child = parentName + childName.toCase(KeyCase.pascal);
   if (!base)
-    child = child + locale.toLowerCase().toCase(KeyCase.pascal); // append locale
+    child =
+        child + locale.toLowerCase().toCase(KeyCase.pascal); // append locale
   return child;
 }
