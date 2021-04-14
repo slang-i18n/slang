@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:build/build.dart';
 import 'package:fast_i18n/src/generator.dart';
 import 'package:fast_i18n/src/model.dart';
@@ -112,7 +111,10 @@ class I18nBuilder implements Builder {
     final String output = generate(
         config: config,
         translations: localesWithData.values.toList()
-          ..sort((a, b) => a.locale.compareTo(b.locale)));
+          ..sort((a, b) => a.base
+              ? -1
+              : a.locale
+                  .compareTo(b.locale))); // base locale, then all other locales
 
     // write only to main locale
     final AssetId baseId =
