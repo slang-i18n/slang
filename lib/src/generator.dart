@@ -77,7 +77,7 @@ void _generateHeader(
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t${locale.locale.toEnumConstant()}, // ${locale.locale} ${locale.base ? '(base locale, fallback)' : ''}');
+        '\t${locale.locale.toEnumConstant()}, // \'${locale.locale}\'${locale.base ? ' (base locale, fallback)' : ''}');
   }
   buffer.writeln('}');
 
@@ -88,10 +88,10 @@ void _generateHeader(
   buffer.writeln(
       '/// Widgets using this method will not be updated when locale changes during runtime.');
   buffer.writeln(
-      '/// Translation happens during initialization of the widget (call of t).');
+      '/// Translation happens during initialization of the widget (call of $translateVar).');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
-  buffer.writeln('/// String translated = t.someKey.anotherKey;');
+  buffer.writeln('/// String translated = $translateVar.someKey.anotherKey;');
   buffer.writeln(
       '$baseClassName $translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
@@ -113,9 +113,9 @@ void _generateHeader(
   buffer.writeln('///');
   buffer.writeln('/// Step 2:');
   buffer.writeln(
-      '/// final t = $translationsClass.of(context); // get t variable');
+      '/// final $translateVar = $translationsClass.of(context); // get $translateVar variable');
   buffer.writeln(
-      '/// String translated = t.someKey.anotherKey; // use t variable');
+      '/// String translated = $translateVar.someKey.anotherKey; // use $translateVar variable');
   buffer.writeln('class $translationsClass {');
   buffer.writeln('\t$translationsClass._(); // no constructor');
   buffer.writeln();
