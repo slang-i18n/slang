@@ -4,14 +4,18 @@
 import 'package:flutter/material.dart';
 import 'package:fast_i18n/fast_i18n.dart';
 
-const String _baseLocale = 'en';
+const AppLocale _baseLocale = AppLocale.en;
+AppLocale _currLocale = _baseLocale;
 
-String _locale = _baseLocale;
-
-Map<String, Strings> _strings = {
-	'de': StringsDe.instance,
-	'en': Strings.instance,
-};
+/// Supported locales, see extension methods below.
+///
+/// Usage:
+/// - LocaleSettings.setLocale(AppLocale.en)
+/// - if (LocaleSettings.currentLocale == AppLocale.en)
+enum AppLocale {
+	de, // de 
+	en, // en (base locale, fallback)
+}
 
 /// Method A: Simple
 ///
@@ -20,8 +24,8 @@ Map<String, Strings> _strings = {
 ///
 /// Usage:
 /// String translated = t.someKey.anotherKey;
-Strings _t = _strings[_locale]!;
-Strings get t => _t;
+_Strings _t = _currLocale.translations;
+_Strings get t => _t;
 
 /// Method B: Advanced
 ///
@@ -40,23 +44,13 @@ Strings get t => _t;
 class Translations {
 	Translations._(); // no constructor
 
-	static Strings of(BuildContext context) {
+	static _Strings of(BuildContext context) {
 		final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
 		if (inheritedWidget == null) {
 			throw('Please wrap your app with "TranslationProvider".');
 		}
-		return _strings[inheritedWidget.locale]!;
+		return inheritedWidget.locale.translations;
 	}
-}
-
-/// Type-safe locales
-///
-/// Usage:
-/// - LocaleSettings.setLocaleTyped(AppLocale.en)
-/// - if (LocaleSettings.currentLocaleTyped == AppLocale.en)
-enum AppLocale {
-	de,
-	en,
 }
 
 class LocaleSettings {
@@ -64,68 +58,81 @@ class LocaleSettings {
 
 	/// Uses locale of the device, fallbacks to base locale.
 	/// Returns the locale which has been set.
-	/// Be aware that the locales are case sensitive.
-	static String useDeviceLocale() {
-		String deviceLocale = FastI18n.getDeviceLocale() ?? _baseLocale;
-		return setLocale(deviceLocale);
+	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag
+	static AppLocale useDeviceLocale() {
+		String? deviceLocale = FastI18n.getDeviceLocale();
+		if (deviceLocale != null)
+			return setLocaleRaw(deviceLocale);
+		else
+			return setLocale(_baseLocale);
 	}
 
-	/// Sets locale, fallbacks to base locale.
+	/// Sets locale
 	/// Returns the locale which has been set.
-	/// Be aware that the locales are case sensitive.
-	static String setLocale(String locale) {
-		_locale = FastI18n.selectLocale(locale, _strings.keys.toList(), _baseLocale);
-		_t = _strings[_locale]!;
+	static AppLocale setLocale(AppLocale locale) {
+		_currLocale = locale;
+		_t = _currLocale.translations;
 
 		final state = _translationProviderKey.currentState;
 		if (state != null) {
-			state.setLocale(_locale);
+			// force rebuild if TranslationProvider is used
+			state.setLocale(_currLocale);
 		}
 
-		return _locale;
+		return _currLocale;
 	}
 
-	/// Typed version of [setLocale]
-	static AppLocale setLocaleTyped(AppLocale locale) {
-		return setLocale(locale.toLanguageTag()).toAppLocale()!;
+	/// Sets locale using string tag (e.g. en_US, de-DE, fr)
+	/// Fallbacks to base locale.
+	/// Returns the locale which has been set.
+	static AppLocale setLocaleRaw(String locale) {
+		String selectedLocale = FastI18n.selectLocale(locale, supportedLocalesRaw, _baseLocale.languageTag);
+		return setLocale(selectedLocale.toAppLocale()!);
 	}
 
 	/// Gets current locale.
-	static String get currentLocale {
-		return _locale;
-	}
-
-	/// Typed version of [currentLocale]
-	static AppLocale get currentLocaleTyped {
-		return _locale.toAppLocale()!;
+	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.currentLocale.languageTag
+	static AppLocale get currentLocale {
+		return _currLocale;
 	}
 
 	/// Gets base locale.
-	static String get baseLocale {
+	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.baseLocale.languageTag
+	static AppLocale get baseLocale {
 		return _baseLocale;
 	}
 
-	/// Gets supported locales.
-	static List<String> get locales {
-		return _strings.keys.toList();
+	/// Gets supported locales in string format.
+	static List<String> get supportedLocalesRaw {
+		return AppLocale.values
+			.map((locale) => locale.languageTag)
+			.toList();
 	}
 
-	/// Get supported locales with base locale sorted first.
+	/// Gets supported locales (as Locale objects) with base locale sorted first.
 	static List<Locale> get supportedLocales {
-		return FastI18n.convertToLocales(_strings.keys.toList(), _baseLocale);
+		return FastI18n.convertToLocales(supportedLocalesRaw, _baseLocale.languageTag);
 	}
 }
 
 // extensions for AppLocale
 
 extension AppLocaleExtensions on AppLocale {
-	String toLanguageTag() {
+	_Strings get translations {
+		switch (this) {
+			case AppLocale.de: return _StringsDe._instance;
+			case AppLocale.en: return _Strings._instance;
+		}
+	}
+
+	String get languageTag {
 		switch (this) {
 			case AppLocale.de: return 'de';
 			case AppLocale.en: return 'en';
 		}
 	}
 }
+
 extension StringAppLocaleExtensions on String {
 	AppLocale? toAppLocale() {
 		switch (this) {
@@ -150,9 +157,9 @@ class TranslationProvider extends StatefulWidget {
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
-	String locale = _locale;
+	AppLocale locale = _currLocale;
 
-	void setLocale(String newLocale) {
+	void setLocale(AppLocale newLocale) {
 		setState(() {
 			locale = newLocale;
 		});
@@ -168,7 +175,7 @@ class _TranslationProviderState extends State<TranslationProvider> {
 }
 
 class _InheritedLocaleData extends InheritedWidget {
-	final String locale;
+	final AppLocale locale;
 	_InheritedLocaleData({required this.locale, required Widget child}) : super(child: child);
 
 	@override
@@ -179,50 +186,46 @@ class _InheritedLocaleData extends InheritedWidget {
 
 // translations
 
-class StringsDe implements Strings {
-	StringsDe._(); // no constructor
+class _StringsDe implements _Strings {
+	_StringsDe._(); // no constructor
 
-	static StringsDe _instance = StringsDe._();
-	static StringsDe get instance => _instance;
+	static _StringsDe _instance = _StringsDe._();
 
-	@override StringsMainScreenDe get mainScreen => StringsMainScreenDe._instance;
+	@override _StringsMainScreenDe get mainScreen => _StringsMainScreenDe._instance;
 	@override Map<String, String> get locales => {
 		'en': 'Englisch',
 		'de': 'Deutsch',
 	};
 }
 
-class StringsMainScreenDe implements StringsMainScreen {
-	StringsMainScreenDe._(); // no constructor
+class _StringsMainScreenDe implements _StringsMainScreen {
+	_StringsMainScreenDe._(); // no constructor
 
-	static StringsMainScreenDe _instance = StringsMainScreenDe._();
-	static StringsMainScreenDe get instance => _instance;
+	static _StringsMainScreenDe _instance = _StringsMainScreenDe._();
 
-	@override String title = 'Ein deutscher Titel';
+	@override String get title => 'Ein deutscher Titel';
 	@override String counter({required Object count}) => 'Du hast $count mal gedrückt.';
-	@override String tapMe = 'Drück mich';
+	@override String get tapMe => 'Drück mich';
 }
 
-class Strings {
-	Strings._(); // no constructor
+class _Strings {
+	_Strings._(); // no constructor
 
-	static Strings _instance = Strings._();
-	static Strings get instance => _instance;
+	static _Strings _instance = _Strings._();
 
-	StringsMainScreen get mainScreen => StringsMainScreen._instance;
+	_StringsMainScreen get mainScreen => _StringsMainScreen._instance;
 	Map<String, String> get locales => {
 		'en': 'English',
 		'de': 'German',
 	};
 }
 
-class StringsMainScreen {
-	StringsMainScreen._(); // no constructor
+class _StringsMainScreen {
+	_StringsMainScreen._(); // no constructor
 
-	static StringsMainScreen _instance = StringsMainScreen._();
-	static StringsMainScreen get instance => _instance;
+	static _StringsMainScreen _instance = _StringsMainScreen._();
 
-	String title = 'An English Title';
+	String get title => 'An English Title';
 	String counter({required Object count}) => 'You pressed $count times.';
-	String tapMe = 'Tap me';
+	String get tapMe => 'Tap me';
 }

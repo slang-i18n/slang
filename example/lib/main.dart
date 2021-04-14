@@ -57,13 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
               // lets loop over all supported locales
               children: AppLocale.values.map((locale) {
 
-                // some locale variables (some redundancy here, but this is a tutorial)
-                AppLocale activeLocale = LocaleSettings.currentLocaleTyped; // active locale (typed version)
-                String activeLocaleString = LocaleSettings.currentLocale; // active locale (string version)
-                String activeLocaleStringAlternative = activeLocale.toLanguageTag(); // active locale (string version)
-                AppLocale loopLocale = locale; // current locale in loop (typed version)
-                String loopLocaleString = loopLocale.toLanguageTag(); // current locale in loop (string version)
-                bool active = activeLocale == loopLocale; // typed version is preferred to avoid typos
+                AppLocale activeLocale = LocaleSettings.currentLocale; // active locale (typed version)
+                bool active = activeLocale == locale; // typed version is preferred to avoid typos
 
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -71,9 +66,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: OutlinedButton.styleFrom(backgroundColor: active ? Colors.blue.shade100 : null),
                     onPressed: () {
                       // locale change, will trigger a rebuild (no setState needed)
-                      LocaleSettings.setLocaleTyped(locale);
+                      LocaleSettings.setLocale(locale);
                     },
-                    child: Text(t.locales[loopLocaleString]!),
+                    child: Text(t.locales[locale.languageTag]!),
                   ),
                 );
               }).toList(),
