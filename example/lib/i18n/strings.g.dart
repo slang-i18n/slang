@@ -13,8 +13,8 @@ AppLocale _currLocale = _baseLocale;
 /// - LocaleSettings.setLocale(AppLocale.en)
 /// - if (LocaleSettings.currentLocale == AppLocale.en)
 enum AppLocale {
-	de, // de 
-	en, // en (base locale, fallback)
+	en, // 'en' (base locale, fallback)
+	de, // 'de'
 }
 
 /// Method A: Simple
@@ -24,8 +24,8 @@ enum AppLocale {
 ///
 /// Usage:
 /// String translated = t.someKey.anotherKey;
-_Strings _t = _currLocale.translations;
-_Strings get t => _t;
+_StringsEn _t = _currLocale.translations;
+_StringsEn get t => _t;
 
 /// Method B: Advanced
 ///
@@ -44,7 +44,7 @@ _Strings get t => _t;
 class Translations {
 	Translations._(); // no constructor
 
-	static _Strings of(BuildContext context) {
+	static _StringsEn of(BuildContext context) {
 		final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
 		if (inheritedWidget == null) {
 			throw('Please wrap your app with "TranslationProvider".');
@@ -118,17 +118,17 @@ class LocaleSettings {
 // extensions for AppLocale
 
 extension AppLocaleExtensions on AppLocale {
-	_Strings get translations {
+	_StringsEn get translations {
 		switch (this) {
+			case AppLocale.en: return _StringsEn._instance;
 			case AppLocale.de: return _StringsDe._instance;
-			case AppLocale.en: return _Strings._instance;
 		}
 	}
 
 	String get languageTag {
 		switch (this) {
-			case AppLocale.de: return 'de';
 			case AppLocale.en: return 'en';
+			case AppLocale.de: return 'de';
 		}
 	}
 }
@@ -136,8 +136,8 @@ extension AppLocaleExtensions on AppLocale {
 extension StringAppLocaleExtensions on String {
 	AppLocale? toAppLocale() {
 		switch (this) {
-			case 'de': return AppLocale.de;
 			case 'en': return AppLocale.en;
+			case 'de': return AppLocale.de;
 			default: return null;
 		}
 	}
@@ -186,7 +186,29 @@ class _InheritedLocaleData extends InheritedWidget {
 
 // translations
 
-class _StringsDe implements _Strings {
+class _StringsEn {
+	_StringsEn._(); // no constructor
+
+	static _StringsEn _instance = _StringsEn._();
+
+	_StringsMainScreenEn get mainScreen => _StringsMainScreenEn._instance;
+	Map<String, String> get locales => {
+		'en': 'English',
+		'de': 'German',
+	};
+}
+
+class _StringsMainScreenEn {
+	_StringsMainScreenEn._(); // no constructor
+
+	static _StringsMainScreenEn _instance = _StringsMainScreenEn._();
+
+	String get title => 'An English Title';
+	String counter({required Object count}) => 'You pressed $count times.';
+	String get tapMe => 'Tap me';
+}
+
+class _StringsDe implements _StringsEn {
 	_StringsDe._(); // no constructor
 
 	static _StringsDe _instance = _StringsDe._();
@@ -198,7 +220,7 @@ class _StringsDe implements _Strings {
 	};
 }
 
-class _StringsMainScreenDe implements _StringsMainScreen {
+class _StringsMainScreenDe implements _StringsMainScreenEn {
 	_StringsMainScreenDe._(); // no constructor
 
 	static _StringsMainScreenDe _instance = _StringsMainScreenDe._();
@@ -206,26 +228,4 @@ class _StringsMainScreenDe implements _StringsMainScreen {
 	@override String get title => 'Ein deutscher Titel';
 	@override String counter({required Object count}) => 'Du hast $count mal gedrückt.';
 	@override String get tapMe => 'Drück mich';
-}
-
-class _Strings {
-	_Strings._(); // no constructor
-
-	static _Strings _instance = _Strings._();
-
-	_StringsMainScreen get mainScreen => _StringsMainScreen._instance;
-	Map<String, String> get locales => {
-		'en': 'English',
-		'de': 'German',
-	};
-}
-
-class _StringsMainScreen {
-	_StringsMainScreen._(); // no constructor
-
-	static _StringsMainScreen _instance = _StringsMainScreen._();
-
-	String get title => 'An English Title';
-	String counter({required Object count}) => 'You pressed $count times.';
-	String get tapMe => 'Tap me';
 }
