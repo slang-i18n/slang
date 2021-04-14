@@ -39,6 +39,7 @@ class I18nBuilder implements Builder {
     final String translateVar =
         options.config['translate_var'] ?? defaultTranslateVar;
     final String enumName = options.config['enum_name'] ?? defaultEnumName;
+    final String? translationClassVisibility = options.config['translation_class_visibility'];
     final String? keyCase = options.config['key_case'];
     final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
@@ -91,7 +92,9 @@ class I18nBuilder implements Builder {
         maps: maps,
         keyCase: keyCase.toKeyCase(),
         translateVariable: translateVar,
-        enumName: enumName);
+        enumName: enumName,
+        translationClassVisibility: translationClassVisibility.toTranslationClassVisibility() ?? TranslationClassVisibility.private
+    );
 
     // map each assetId to I18nData
     final localesWithData = Map<AssetId, I18nData>();

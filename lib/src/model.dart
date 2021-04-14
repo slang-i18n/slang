@@ -1,8 +1,20 @@
 import 'package:fast_i18n/utils.dart';
 
+enum TranslationClassVisibility { private, public }
 enum KeyCase { camel, pascal, snake }
 
-extension KeyCaseParser on String? {
+extension EnumParser on String? {
+  TranslationClassVisibility? toTranslationClassVisibility() {
+    switch (this) {
+      case 'private':
+        return TranslationClassVisibility.private;
+      case 'public':
+        return TranslationClassVisibility.public;
+      default:
+        return null;
+    }
+  }
+
   KeyCase? toKeyCase() {
     switch (this) {
       case 'camel':
@@ -25,6 +37,7 @@ class I18nConfig {
   final KeyCase? keyCase;
   final String translateVariable;
   final String enumName;
+  final TranslationClassVisibility translationClassVisibility;
 
   I18nConfig(
       {required this.baseName,
@@ -32,7 +45,8 @@ class I18nConfig {
       required this.maps,
       required this.keyCase,
       required this.translateVariable,
-      required this.enumName});
+      required this.enumName,
+      required this.translationClassVisibility});
 
   @override
   String toString() => '$baseLocale, maps: $maps';
