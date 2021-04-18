@@ -5,7 +5,7 @@
 Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 **For Flutter Web users:** version 3.0.4 contains the workaround for [#79555](https://github.com/flutter/flutter/issues/79555).
-Version 4.x.x is web compatible as soon as the Flutter team merged this fix into the stable branch.
+Version 4.x.x is web compatible as soon as the Flutter team merge this fix into the stable branch.
 
 ## Getting Started
 
