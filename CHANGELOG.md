@@ -1,5 +1,6 @@
 ## 4.0.1
 
+- documentation updates in generated file
 - docs: update README
 
 ## 4.0.0

@@ -86,7 +86,7 @@ void _generateHeader(
   buffer.writeln('/// Method A: Simple');
   buffer.writeln('///');
   buffer.writeln(
-      '/// Widgets using this method will not be updated when locale changes during runtime.');
+      '/// No rebuild after locale change.');
   buffer.writeln(
       '/// Translation happens during initialization of the widget (call of $translateVar).');
   buffer.writeln('///');
