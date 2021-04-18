@@ -1,3 +1,7 @@
+## 4.0.1
+
+- docs: add more FAQ entries
+
 ## 4.0.0
 
 **The typed version is now first class.**

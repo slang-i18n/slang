@@ -203,9 +203,10 @@ t.greeting(name: 'Tom'); // Hello Tom
 t.distance(distance: 4.5); // 4.5m
 ```
 
-**How can I access translations using maps?**
+**How can I access translations using string keys?**
 
-Define the maps in your `build.yaml`.
+Define the maps in your `build.yaml`. Each configuration item represents the translation tree separated with dots.
+
 Keep in mind that all nice features like autocompletion are gone.
 
 `strings.i18n.json`
@@ -215,8 +216,8 @@ Keep in mind that all nice features like autocompletion are gone.
   "thisIsAMap": {
     "hello world": "hello"
   },
-  "classicClass": {
-    "hello": "hello",
+  "notAMapParent": {
+    "notAMap": "hello",
     "aMapInClass": {
       "hi": "hi"
     }
@@ -233,15 +234,15 @@ targets:
         options:
           maps:
             - thisIsAMap
-            - classicClass.aMapInClass
+            - notAMapParent.aMapInClass
 ```
 
 Now you can access the translations via keys:
 
 ```dart
 String a = t.thisIsAMap['hello world'];
-String b = t.classicClass.hello; // the "classical" way
-String c = t.classicClass.aMapInClass['hi']; // nested
+String b = t.notAMapParent.notAMap; // the "classical" way
+String c = t.notAMapParent.aMapInClass['hi']; // nested
 ```
 
 **Can I use lists?**
@@ -275,6 +276,13 @@ String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
+
+**Why setLocale doesn't work?**
+
+In most cases you forgot the `setState` call.
+
+A more elegant solution is to use `TranslationProvider(child: MyApp())` and then get you translation variable with `final t = Translations.of(context)`.
+It will automatically trigger a rebuild on `setLocale` for all affected widgets.
 
 ## License
 
