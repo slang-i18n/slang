@@ -22,9 +22,11 @@ dev_dependencies:
 **Step 2: Create JSON files**
 
 Create these files inside your `lib` directory. Preferably in one common package like `lib/i18n`.
-Only files having the `.i18n.json` file extension will be detected. You can [configure it](#Configuration).
+Only files having the `.i18n.json` file extension will be detected.
+The part after the underscore `_` is the actual locale (e.g. en_US, en-US, fr).
+You **must** provide the default translation file (the file without locale extension).
 
-`strings.i18n.json (default, fallback)`
+`strings.i18n.json (mandatory, default, fallback)`
 
 ```json
 {

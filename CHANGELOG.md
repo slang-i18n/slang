@@ -1,6 +1,6 @@
 ## 4.0.1
 
-- docs: add more FAQ entries
+- docs: update README
 
 ## 4.0.0
 
