@@ -187,6 +187,14 @@ When the dart code has been generated, you will see some useful classes and func
 
 ## FAQ
 
+**Why I cannot rebuild i18n translations?**
+
+For some reason, build_runner requires you to delete the old output.
+
+````sh
+flutter pub run build_runner build --delete-conflicting-outputs
+````
+
 **How do I add arguments?**
 
 Use the `$` prefix.
