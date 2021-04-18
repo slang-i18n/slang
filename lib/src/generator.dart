@@ -85,8 +85,7 @@ void _generateHeader(
   buffer.writeln();
   buffer.writeln('/// Method A: Simple');
   buffer.writeln('///');
-  buffer.writeln(
-      '/// No rebuild after locale change.');
+  buffer.writeln('/// No rebuild after locale change.');
   buffer.writeln(
       '/// Translation happens during initialization of the widget (call of $translateVar).');
   buffer.writeln('///');
@@ -126,7 +125,7 @@ void _generateHeader(
   buffer.writeln(
       '\t\t\tthrow(\'Please wrap your app with "TranslationProvider".\');');
   buffer.writeln('\t\t}');
-  buffer.writeln('\t\treturn inheritedWidget.locale.translations;');
+  buffer.writeln('\t\treturn inheritedWidget.translations;');
   buffer.writeln('\t}');
   buffer.writeln('}');
 
@@ -294,7 +293,11 @@ void _generateHeader(
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
   buffer.writeln('\tfinal $enumName locale;');
   buffer.writeln(
-      '\t$inheritedClass({required this.locale, required Widget child}) : super(child: child);');
+      '\tfinal $baseClassName translations; // store translations to avoid switch call');
+  buffer.writeln(
+      '\t$inheritedClass({required this.locale, required Widget child})');
+  buffer.writeln(
+      '\t\t: translations = locale.translations, super(child: child);');
   buffer.writeln();
   buffer.writeln('\t@override');
   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');

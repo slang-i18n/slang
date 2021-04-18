@@ -1,6 +1,7 @@
 ## 4.0.1
 
-- documentation updates in generated file
+- perf: remove switch call in `Translations.of(context)`.
+- docs: updates in generated file
 - docs: update README
 
 ## 4.0.0
@@ -10,7 +11,7 @@
 - **Breaking:** `locales` -> `supportedLocalesRaw`
 - **Breaking:** `AppLocale.toLanguageTag` -> `AppLocale.languageTag`
 - **Breaking:** translation classes are now private by default, you can configure it via `translation_class_visibility` in `build.yaml` (in most cases just keep it private!)
-- plain strings are now implemented as getters, `edit -> rebuild i18n -> hot reload` works now for faster development
+- plain strings are now implemented via getters, `edit json -> rebuild i18n -> hot reload` works now for faster development
 
 ## 3.0.4
 
