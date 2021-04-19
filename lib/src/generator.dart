@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:fast_i18n/string_extensions.dart';
+import 'package:fast_i18n/src/string_extensions.dart';
 import 'package:fast_i18n/src/model.dart';
 
 /// decides which class should be generated
@@ -20,8 +20,8 @@ String generate(
   buffer.writeln();
   buffer.writeln('// Generated file. Do not edit.');
   buffer.writeln();
-  buffer.writeln('import \'package:flutter/material.dart\';');
   buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
+  buffer.writeln('import \'package:flutter/widgets.dart\';');
 
   _generateHeader(buffer, config, translations);
 
@@ -201,8 +201,17 @@ void _generateHeader(
   buffer.writeln(
       '\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
   buffer.writeln('\tstatic List<Locale> get supportedLocales {');
-  buffer.writeln(
-      '\t\treturn FastI18n.convertToLocales(supportedLocalesRaw, $baseLocaleVar.languageTag);');
+  buffer.writeln('\t\treturn [');
+  for (I18nData locale in allLocales) {
+    buffer.write(
+        '\t\t\tLocale.fromSubtags(languageCode: \'${locale.localeTyped.language}\'');
+    if (locale.localeTyped.script != null)
+      buffer.write(', scriptCode: \'${locale.localeTyped.script}\'');
+    if (locale.localeTyped.country != null)
+      buffer.write(', countryCode: \'${locale.localeTyped.country}\'');
+    buffer.writeln('),');
+  }
+  buffer.writeln('\t\t];');
   buffer.writeln('\t}');
 
   buffer.writeln('}');

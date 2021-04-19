@@ -1,5 +1,5 @@
 import 'package:fast_i18n/src/model.dart';
-import 'package:fast_i18n/string_extensions.dart';
+import 'package:fast_i18n/src/string_extensions.dart';
 import 'package:test/test.dart';
 
 void main() {

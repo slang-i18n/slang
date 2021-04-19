@@ -62,24 +62,34 @@ class I18nBuilder implements Builder {
     await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
       final fileNameNoExtension =
           assetId.pathSegments.last.replaceAll(inputFilePattern, '');
-      final match = Utils.localeRegex.firstMatch(fileNameNoExtension);
 
-      if (match != null) {
-        if (match.group(2) != null) {
-          baseName = match.group(2);
-        }
-
-        final language = match.group(3);
-        final country = match.group(5);
-
-        if (country != null) {
-          locales[assetId] = '$language-$country';
-        } else if (language != null) {
-          locales[assetId] = language;
-        }
-      } else {
+      final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
+      if (baseFile != null) {
+        // base file
         locales[assetId] = baseLocale;
         baseName = fileNameNoExtension;
+      } else {
+        // secondary files (strings_x)
+        final match = Utils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
+        if (match != null) {
+          final language = match.group(3);
+          final script = match.group(5);
+          final country = match.group(7);
+
+          if (language != null && script != null && country != null) {
+            // 3 parts
+            locales[assetId] = '$language-$script-$country';
+          } else if (language != null) {
+            final secondPart = script ?? country;
+            if (secondPart != null) {
+              // 2 parts
+              locales[assetId] = '$language-$secondPart';
+            } else {
+              // 1 part (language only)
+              locales[assetId] = language;
+            }
+          }
+        }
       }
     });
 

@@ -1,5 +1,8 @@
 ## 4.0.1
 
+- fix: parse files with underscore only (e.g. `strings_en_US`)
+- fix: parse files with script tag (e.g. `strings_zh-Hant-TW`)
+- perf: generate `LocaleSettings.supportedLocales` statically without library call
 - perf: remove switch call in `Translations.of(context)`.
 - docs: updates in generated file
 - docs: update README

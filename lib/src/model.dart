@@ -56,9 +56,20 @@ class I18nConfig {
 class I18nData {
   final bool base; // whether or not this is the base locale
   final String locale; // the locale code (the part after the underscore)
+  final I18nLocale localeTyped; // the parsed locale code
   final ObjectNode root; // the actual strings
 
-  I18nData({required this.base, required this.locale, required this.root});
+  I18nData({required this.base, required this.locale, required this.root})
+      : localeTyped = _toI18nLocale(locale);
+}
+
+/// own Locale type to decouple from dart:ui package
+class I18nLocale {
+  final String language;
+  final String? script;
+  final String? country;
+
+  I18nLocale({required this.language, this.script, this.country});
 }
 
 /// the super class of every node
@@ -124,4 +135,28 @@ List<String> _findArguments(String content) {
       .where((e) => e != null)
       .cast<String>()
       .toList();
+}
+
+const _localePartsDelimiter = '-';
+I18nLocale _toI18nLocale(String localeRaw) {
+  if (localeRaw.contains(_localePartsDelimiter)) {
+    final localeParts = localeRaw
+        .split(_localePartsDelimiter)
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (localeParts.length == 2) {
+      return I18nLocale(language: localeParts[0], country: localeParts[1]);
+    } else if (localeParts.length == 3) {
+      return I18nLocale(
+        language: localeParts[0],
+        script: localeParts[1],
+        country: localeParts[2],
+      );
+    } else {
+      throw Exception(
+          "The locale '$localeRaw' is not in a supported format. Examples of the supported formats: 'en', 'en-US', 'zh-Hans-CN'.");
+    }
+  } else {
+    return I18nLocale(language: localeRaw);
+  }
 }
