@@ -7,13 +7,21 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 **For Flutter Web users:** version 3.0.4 contains the workaround for [#79555](https://github.com/flutter/flutter/issues/79555).
 Version 4.x.x is web compatible as soon as the Flutter team merge this fix into the stable branch.
 
+## Features
+
+- 🚀 Generate a translation solution using json files only
+- 📦 Self-contained, you can remove this library after generation
+- 🐞 Bug-resistant, no typos or missing arguments possible due to static checking
+
+You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
+
 ## Getting Started
 
 **Step 1: Add dependencies**
 
 ```yaml
 dependencies:
-  fast_i18n: ^4.0.0
+  fast_i18n: ^4.1.0
 
 dev_dependencies:
   build_runner: any
