@@ -34,6 +34,34 @@ void main() {
     });
   });
 
+  group('localeRegex', () {
+    RegExp regex = Utils.localeRegex;
+
+    test('en', () {
+      RegExpMatch? match = regex.firstMatch('en');
+      expect(match?.group(1), 'en');
+    });
+
+    test('en_US', () {
+      RegExpMatch? match = regex.firstMatch('en_US');
+      expect(match?.group(1), 'en');
+      expect(match?.group(5), 'US');
+    });
+
+    test('en-US', () {
+      RegExpMatch? match = regex.firstMatch('en-US');
+      expect(match?.group(1), 'en');
+      expect(match?.group(5), 'US');
+    });
+
+    test('zh-Hant-TW', () {
+      RegExpMatch? match = regex.firstMatch('zh-Hant-TW');
+      expect(match?.group(1), 'zh');
+      expect(match?.group(3), 'Hant');
+      expect(match?.group(5), 'TW');
+    });
+  });
+
   group('baseFileRegex', () {
     RegExp regex = Utils.baseFileRegex;
 
@@ -50,24 +78,6 @@ void main() {
     test('strings_', () {
       RegExpMatch? match = regex.firstMatch('strings_');
       expect(match?.group(1), null);
-    });
-  });
-
-  group('normalize', () {
-    test('en', () {
-      expect(Utils.normalize('en'), 'en');
-    });
-
-    test('en_US', () {
-      expect(Utils.normalize('en_US'), 'en-US');
-    });
-
-    test('en-US', () {
-      expect(Utils.normalize('en-US'), 'en-US');
-    });
-
-    test('enUS', () {
-      expect(Utils.normalize('enUS'), 'enUS');
     });
   });
 }

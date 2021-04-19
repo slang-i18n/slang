@@ -25,11 +25,11 @@ class I18nLocale {
   }
 
   static I18nLocale fromString(String localeRaw) {
-    final match = Utils.fileWithLocaleRegex.firstMatch(localeRaw);
+    final match = Utils.localeRegex.firstMatch(localeRaw);
     if (match != null) {
-      final language = match.group(3);
-      final script = match.group(5);
-      final country = match.group(7);
+      final language = match.group(1);
+      final script = match.group(3);
+      final country = match.group(5);
       return I18nLocale(
           language: language ?? '', script: script, country: country);
     }
