@@ -19,6 +19,8 @@ I18nData parseJSON(I18nConfig config, I18nLocale locale, String content) {
   );
 }
 
+/// parses one json object { a : b }
+/// writes result to [destination]
 void _parseJSONObject(
   List<String> maps,
   Map<String, dynamic> curr,
@@ -46,6 +48,8 @@ void _parseJSONObject(
   });
 }
 
+/// parses one json list [a, b, c]
+/// writes result to [destination]
 void _parseJSONArray(
   List<String> maps,
   List<dynamic> curr,
