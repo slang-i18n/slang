@@ -1,4 +1,4 @@
-## 4.1.0-dev.3
+## 4.1.0
 
 A rebuild is needed: `flutter pub run build_runner build`.
 
