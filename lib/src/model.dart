@@ -137,26 +137,13 @@ List<String> _findArguments(String content) {
       .toList();
 }
 
-const _localePartsDelimiter = '-';
 I18nLocale _toI18nLocale(String localeRaw) {
-  if (localeRaw.contains(_localePartsDelimiter)) {
-    final localeParts = localeRaw
-        .split(_localePartsDelimiter)
-        .where((part) => part.isNotEmpty)
-        .toList();
-    if (localeParts.length == 2) {
-      return I18nLocale(language: localeParts[0], country: localeParts[1]);
-    } else if (localeParts.length == 3) {
-      return I18nLocale(
-        language: localeParts[0],
-        script: localeParts[1],
-        country: localeParts[2],
-      );
-    } else {
-      throw Exception(
-          "The locale '$localeRaw' is not in a supported format. Examples of the supported formats: 'en', 'en-US', 'zh-Hans-CN'.");
-    }
-  } else {
-    return I18nLocale(language: localeRaw);
+  final match = Utils.fileWithLocaleRegex.firstMatch(localeRaw);
+  if (match != null) {
+    final language = match.group(3);
+    final script = match.group(5);
+    final country = match.group(7);
+    return I18nLocale(language: language ?? '', script: script, country: country);
   }
+  return I18nLocale(language: localeRaw);
 }
