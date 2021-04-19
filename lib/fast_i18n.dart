@@ -1,7 +1,7 @@
 library fast_i18n;
 
 import 'package:flutter/widgets.dart';
-import 'package:fast_i18n/utils.dart';
+import 'package:fast_i18n/src/utils.dart';
 
 class FastI18n {
   static const _localePartsDelimiter = '-';

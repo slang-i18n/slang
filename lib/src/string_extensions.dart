@@ -1,4 +1,4 @@
-import 'package:fast_i18n/src/model.dart';
+import 'package:fast_i18n/src/model/i18n_config.dart';
 
 extension StringExtensions on String {
   /// capitalizes a given string

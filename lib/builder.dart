@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:build/build.dart';
-import 'package:fast_i18n/src/generator.dart';
-import 'package:fast_i18n/src/model.dart';
+import 'package:fast_i18n/src/generator/generate.dart';
+import 'package:fast_i18n/src/model/i18n_config.dart';
+import 'package:fast_i18n/src/model/i18n_data.dart';
+import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/parser_json.dart';
-import 'package:fast_i18n/utils.dart';
+import 'package:fast_i18n/src/utils.dart';
 import 'package:glob/glob.dart';
 
 Builder i18nBuilder(BuilderOptions options) => I18nBuilder(options);
