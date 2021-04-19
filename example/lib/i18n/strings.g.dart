@@ -1,8 +1,8 @@
 
 // Generated file. Do not edit.
 
-import 'package:flutter/material.dart';
 import 'package:fast_i18n/fast_i18n.dart';
+import 'package:flutter/widgets.dart';
 
 const AppLocale _baseLocale = AppLocale.en;
 AppLocale _currLocale = _baseLocale;
@@ -19,7 +19,7 @@ enum AppLocale {
 
 /// Method A: Simple
 ///
-/// Widgets using this method will not be updated when locale changes during runtime.
+/// No rebuild after locale change.
 /// Translation happens during initialization of the widget (call of t).
 ///
 /// Usage:
@@ -49,7 +49,7 @@ class Translations {
 		if (inheritedWidget == null) {
 			throw('Please wrap your app with "TranslationProvider".');
 		}
-		return inheritedWidget.locale.translations;
+		return inheritedWidget.translations;
 	}
 }
 
@@ -111,7 +111,10 @@ class LocaleSettings {
 
 	/// Gets supported locales (as Locale objects) with base locale sorted first.
 	static List<Locale> get supportedLocales {
-		return FastI18n.convertToLocales(supportedLocalesRaw, _baseLocale.languageTag);
+		return [
+			Locale.fromSubtags(languageCode: 'en'),
+			Locale.fromSubtags(languageCode: 'de'),
+		];
 	}
 }
 
@@ -176,7 +179,9 @@ class _TranslationProviderState extends State<TranslationProvider> {
 
 class _InheritedLocaleData extends InheritedWidget {
 	final AppLocale locale;
-	_InheritedLocaleData({required this.locale, required Widget child}) : super(child: child);
+	final _StringsEn translations; // store translations to avoid switch call
+	_InheritedLocaleData({required this.locale, required Widget child})
+		: translations = locale.translations, super(child: child);
 
 	@override
 	bool updateShouldNotify(_InheritedLocaleData oldWidget) {
