@@ -65,7 +65,7 @@ void _generateHeaderComment(
     {required StringBuffer buffer,
     required I18nConfig config,
     required List<I18nData> translations}) {
-  final now = DateTime.now();
+  final now = DateTime.now().toUtc();
   final int translationCount = translations.fold(
       0, (prev, curr) => prev + _countTranslations(curr.root));
 
@@ -78,7 +78,7 @@ void _generateHeaderComment(
       ' * Strings: $translationCount ${translations.length != 1 ? '(${(translationCount / translations.length).toStringAsFixed(1)} per locale)' : ''}');
   buffer.writeln(' * ');
   buffer.writeln(
-      ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+      ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} UTC');
   buffer.writeln(' */');
 }
 
