@@ -1,7 +1,13 @@
 
-// Generated file. Do not edit.
+/*
+ * Generated file. Do not edit.
+ * 
+ * Locales: 2
+ * Strings: 10 (5.0 per locale)
+ * 
+ * Built on 2021-04-19 at 22:16 UTC
+ */
 
-import 'package:fast_i18n/fast_i18n.dart';
 import 'package:flutter/widgets.dart';
 
 const AppLocale _baseLocale = AppLocale.en;
@@ -60,7 +66,7 @@ class LocaleSettings {
 	/// Returns the locale which has been set.
 	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag
 	static AppLocale useDeviceLocale() {
-		String? deviceLocale = FastI18n.getDeviceLocale();
+		String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
 		if (deviceLocale != null)
 			return setLocaleRaw(deviceLocale);
 		else
@@ -85,9 +91,9 @@ class LocaleSettings {
 	/// Sets locale using string tag (e.g. en_US, de-DE, fr)
 	/// Fallbacks to base locale.
 	/// Returns the locale which has been set.
-	static AppLocale setLocaleRaw(String locale) {
-		String selectedLocale = FastI18n.selectLocale(locale, supportedLocalesRaw, _baseLocale.languageTag);
-		return setLocale(selectedLocale.toAppLocale()!);
+	static AppLocale setLocaleRaw(String localeRaw) {
+		final selected = _selectLocale(localeRaw);
+		return setLocale(selected ?? _baseLocale);
 	}
 
 	/// Gets current locale.
@@ -187,6 +193,30 @@ class _InheritedLocaleData extends InheritedWidget {
 	bool updateShouldNotify(_InheritedLocaleData oldWidget) {
 		return oldWidget.locale != locale;
 	}
+}
+
+// helpers
+
+final _localeRegex = RegExp(r'^([A-Za-z]{2,4})([_-]([A-Za-z]{4}))?([_-]([A-Za-z]{2}|[0-9]{3}))?$');
+AppLocale? _selectLocale(String localeRaw) {
+	final match = _localeRegex.firstMatch(localeRaw);
+	AppLocale? selected;
+	if (match != null) {
+		final language = match.group(1);
+
+		// match exactly
+		selected = AppLocale.values
+			.cast<AppLocale?>()
+			.firstWhere((supported) => supported?.languageTag == localeRaw, orElse: () => null);
+
+		if (selected == null && language != null) {
+			// match language
+			selected = AppLocale.values
+				.cast<AppLocale?>()
+				.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);
+		}
+	}
+	return selected;
 }
 
 // translations
