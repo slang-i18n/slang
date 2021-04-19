@@ -1,3 +1,3 @@
-/*
- * this library does not have any public API
- */
+///
+/// this library does not have any public API
+///
