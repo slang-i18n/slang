@@ -31,8 +31,9 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final String baseLocale =
-        Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale);
+    final String baseLocale = I18nLocale.fromString(
+            Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale))
+        .toLanguageTag();
     final String? inputDirectory = options.config['input_directory'];
     final String? outputDirectory = options.config['output_directory'];
     final String translateVar =
@@ -52,7 +53,7 @@ class I18nBuilder implements Builder {
     _generated = true;
 
     // detect all locales, their assetId and the baseName
-    final Map<AssetId, String> locales = Map();
+    final Map<AssetId, I18nLocale> assetMap = Map();
     String? baseName;
 
     final Glob findAssetsPattern = inputDirectory != null
@@ -66,7 +67,7 @@ class I18nBuilder implements Builder {
       final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
       if (baseFile != null) {
         // base file
-        locales[assetId] = baseLocale;
+        assetMap[assetId] = I18nLocale.fromString(baseLocale);
         baseName = fileNameNoExtension;
       } else {
         // secondary files (strings_x)
@@ -75,20 +76,8 @@ class I18nBuilder implements Builder {
           final language = match.group(3);
           final script = match.group(5);
           final country = match.group(7);
-
-          if (language != null && script != null && country != null) {
-            // 3 parts
-            locales[assetId] = '$language-$script-$country';
-          } else if (language != null) {
-            final secondPart = script ?? country;
-            if (secondPart != null) {
-              // 2 parts
-              locales[assetId] = '$language-$secondPart';
-            } else {
-              // 1 part (language only)
-              locales[assetId] = language;
-            }
-          }
+          assetMap[assetId] = I18nLocale(
+              language: language ?? '', script: script, country: country);
         }
       }
     });
@@ -110,10 +99,10 @@ class I18nBuilder implements Builder {
     // map each assetId to I18nData
     final localesWithData = Map<AssetId, I18nData>();
 
-    for (MapEntry<AssetId, String> asset in locales.entries) {
-      String locale = asset.value;
+    for (MapEntry<AssetId, I18nLocale> asset in assetMap.entries) {
+      I18nLocale locale = asset.value;
       String content = await buildStep.readAsString(asset.key);
-      I18nData representation = parseJSON(config, baseName!, locale, content);
+      I18nData representation = parseJSON(config, locale, content);
       localesWithData[asset.key] = representation;
     }
 
@@ -123,8 +112,8 @@ class I18nBuilder implements Builder {
         translations: localesWithData.values.toList()
           ..sort((a, b) => a.base
               ? -1
-              : a.locale
-                  .compareTo(b.locale))); // base locale, then all other locales
+              : a.localeTag.compareTo(
+                  b.localeTag))); // base locale, then all other locales
 
     // write only to main locale
     final AssetId baseId =

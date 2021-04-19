@@ -55,12 +55,12 @@ class I18nConfig {
 /// represents one locale and its localized strings
 class I18nData {
   final bool base; // whether or not this is the base locale
-  final String locale; // the locale code (the part after the underscore)
-  final I18nLocale localeTyped; // the parsed locale code
+  final I18nLocale locale; // the locale (the part after the underscore)
+  final String localeTag; // the locale code tag
   final ObjectNode root; // the actual strings
 
   I18nData({required this.base, required this.locale, required this.root})
-      : localeTyped = _toI18nLocale(locale);
+      : localeTag = locale.toLanguageTag();
 }
 
 /// own Locale type to decouple from dart:ui package
@@ -70,6 +70,34 @@ class I18nLocale {
   final String? country;
 
   I18nLocale({required this.language, this.script, this.country});
+
+  String toLanguageTag() {
+    if (script != null && country != null) {
+      // 3 parts
+      return '$language-$script-$country';
+    } else {
+      final secondPart = script ?? country;
+      if (secondPart != null) {
+        // 2 parts
+        return '$language-$secondPart';
+      } else {
+        // 1 part (language only)
+        return language;
+      }
+    }
+  }
+
+  static I18nLocale fromString(String localeRaw) {
+    final match = Utils.fileWithLocaleRegex.firstMatch(localeRaw);
+    if (match != null) {
+      final language = match.group(3);
+      final script = match.group(5);
+      final country = match.group(7);
+      return I18nLocale(
+          language: language ?? '', script: script, country: country);
+    }
+    return I18nLocale(language: localeRaw);
+  }
 }
 
 /// the super class of every node
@@ -135,15 +163,4 @@ List<String> _findArguments(String content) {
       .where((e) => e != null)
       .cast<String>()
       .toList();
-}
-
-I18nLocale _toI18nLocale(String localeRaw) {
-  final match = Utils.fileWithLocaleRegex.firstMatch(localeRaw);
-  if (match != null) {
-    final language = match.group(3);
-    final script = match.group(5);
-    final country = match.group(7);
-    return I18nLocale(language: language ?? '', script: script, country: country);
-  }
-  return I18nLocale(language: localeRaw);
 }

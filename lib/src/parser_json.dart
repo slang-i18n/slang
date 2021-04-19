@@ -4,14 +4,13 @@ import 'package:fast_i18n/src/model.dart';
 
 /// parses a json of one locale
 /// returns an I18nData object
-I18nData parseJSON(
-    I18nConfig config, String baseName, String locale, String content) {
+I18nData parseJSON(I18nConfig config, I18nLocale locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Node> destination = Map();
   _parseJSONObject(config.maps, map, destination, []);
 
   return I18nData(
-    base: config.baseLocale == locale,
+    base: config.baseLocale == locale.toLanguageTag(),
     locale: locale,
     root: ObjectNode(destination, false),
   );

@@ -77,7 +77,7 @@ void _generateHeader(
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t${locale.locale.toEnumConstant()}, // \'${locale.locale}\'${locale.base ? ' (base locale, fallback)' : ''}');
+        '\t${locale.localeTag.toEnumConstant()}, // \'${locale.localeTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
   }
   buffer.writeln('}');
 
@@ -204,11 +204,11 @@ void _generateHeader(
   buffer.writeln('\t\treturn [');
   for (I18nData locale in allLocales) {
     buffer.write(
-        '\t\t\tLocale.fromSubtags(languageCode: \'${locale.localeTyped.language}\'');
-    if (locale.localeTyped.script != null)
-      buffer.write(', scriptCode: \'${locale.localeTyped.script}\'');
-    if (locale.localeTyped.country != null)
-      buffer.write(', countryCode: \'${locale.localeTyped.country}\'');
+        '\t\t\tLocale.fromSubtags(languageCode: \'${locale.locale.language}\'');
+    if (locale.locale.script != null)
+      buffer.write(', scriptCode: \'${locale.locale.script}\'');
+    if (locale.locale.country != null)
+      buffer.write(', countryCode: \'${locale.locale.country}\'');
     buffer.writeln('),');
   }
   buffer.writeln('\t\t];');
@@ -226,10 +226,10 @@ void _generateHeader(
   for (I18nData locale in allLocales) {
     String className = _getClassNameRoot(
         baseName: config.baseName,
-        locale: locale.locale,
+        locale: locale.localeTag,
         visibility: config.translationClassVisibility);
     buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.toEnumConstant()}: return $className._instance;');
+        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return $className._instance;');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
@@ -238,7 +238,7 @@ void _generateHeader(
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.toEnumConstant()}: return \'${locale.locale}\';');
+        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return \'${locale.localeTag}\';');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
@@ -251,7 +251,7 @@ void _generateHeader(
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t\t\tcase \'${locale.locale}\': return $enumName.${locale.locale.toEnumConstant()};');
+        '\t\t\tcase \'${locale.localeTag}\': return $enumName.${locale.localeTag.toEnumConstant()};');
   }
   buffer.writeln('\t\t\tdefault: return null;');
   buffer.writeln('\t\t}');
@@ -335,7 +335,7 @@ void _generateLocale(
     _generateClass(
       config,
       localeData.base,
-      localeData.locale,
+      localeData.localeTag,
       buffer,
       queue,
       task.className,
