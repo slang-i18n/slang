@@ -61,8 +61,8 @@ void _generateClass(
   if (base) {
     buffer.writeln('class $finalClassName {');
   } else {
-    final baseClassName =
-        getClassName(parentName: className, locale: config.baseLocale);
+    final baseClassName = getClassName(
+        parentName: className, locale: config.baseLocale.toLanguageTag());
     buffer.writeln('class $finalClassName implements $baseClassName {');
   }
 

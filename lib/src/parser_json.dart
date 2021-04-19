@@ -13,7 +13,7 @@ I18nData parseJSON(I18nConfig config, I18nLocale locale, String content) {
   _parseJSONObject(config.maps, map, destination, []);
 
   return I18nData(
-    base: config.baseLocale == locale.toLanguageTag(),
+    base: config.baseLocale == locale,
     locale: locale,
     root: ObjectNode(destination, false),
   );

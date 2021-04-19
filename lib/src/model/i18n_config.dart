@@ -1,7 +1,9 @@
+import 'package:fast_i18n/src/model/i18n_locale.dart';
+
 /// general config, applies to all locales
 class I18nConfig {
   final String baseName; // name of all i18n files, like strings or messages
-  final String baseLocale; // defaults to 'en'
+  final I18nLocale baseLocale; // defaults to 'en'
   final List<String> maps; // list of entities treated as maps and not classes
   final KeyCase? keyCase;
   final String translateVariable;

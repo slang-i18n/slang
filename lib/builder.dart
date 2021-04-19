@@ -33,9 +33,8 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final String baseLocale = I18nLocale.fromString(
-            Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale))
-        .toLanguageTag();
+    final I18nLocale baseLocale = I18nLocale.fromString(
+        Utils.normalize(options.config['base_locale'] ?? defaultBaseLocale));
     final String? inputDirectory = options.config['input_directory'];
     final String? outputDirectory = options.config['output_directory'];
     final String translateVar =
@@ -69,7 +68,7 @@ class I18nBuilder implements Builder {
       final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
       if (baseFile != null) {
         // base file
-        assetMap[assetId] = I18nLocale.fromString(baseLocale);
+        assetMap[assetId] = baseLocale;
         baseName = fileNameNoExtension;
       } else {
         // secondary files (strings_x)

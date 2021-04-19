@@ -19,11 +19,11 @@ void generateHeader(
   final String translateVarInternal = '_${config.translateVariable}';
   final String translateVar = config.translateVariable;
   final String enumName = config.enumName;
-  final String baseLocale = config.baseLocale;
+  final String baseLocale = config.baseLocale.toLanguageTag();
   final String baseClassName = getClassNameRoot(
       baseName: config.baseName,
       visibility: config.translationClassVisibility,
-      locale: config.baseLocale);
+      locale: config.baseLocale.toLanguageTag());
 
   buffer.writeln();
   buffer.writeln('// Generated file. Do not edit.');
