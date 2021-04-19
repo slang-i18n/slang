@@ -2,6 +2,7 @@
 
 A rebuild is needed: `flutter pub run build_runner build`.
 
+- the generated file is now self-contained, it works even if you remove this library!
 - fix: parse files with underscore only (e.g. `strings_en_US`)
 - fix: parse files with script tag (e.g. `strings_zh-Hant-TW`)
 - perf: generate `LocaleSettings.supportedLocales` statically without library call
