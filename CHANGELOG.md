@@ -1,8 +1,9 @@
-## 4.1.0-dev.0
+## 4.1.0-dev.1
 
 A rebuild is needed: `flutter pub run build_runner build`.
 
-- the generated file is now self-contained, it works even if you remove this library!
+- feat: the generated file is now self-contained, it works even if you remove this library!
+- feat: add stats and timestamp to the generated file
 - fix: parse files with underscore only (e.g. `strings_en_US`)
 - fix: parse files with script tag (e.g. `strings_zh-Hant-TW`)
 - perf: generate `LocaleSettings.supportedLocales` statically without library call

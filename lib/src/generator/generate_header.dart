@@ -1,6 +1,7 @@
 import 'package:fast_i18n/src/generator/helper.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
+import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 import 'package:fast_i18n/src/utils.dart';
 
@@ -16,7 +17,7 @@ void generateHeader(
       locale: config.baseLocale.toLanguageTag());
 
   _generateHeaderComment(
-      buffer: buffer, config: config, allLocales: allLocales);
+      buffer: buffer, config: config, translations: allLocales);
 
   _generateImports(buffer);
 
@@ -63,9 +64,22 @@ void generateHeader(
 void _generateHeaderComment(
     {required StringBuffer buffer,
     required I18nConfig config,
-    required List<I18nData> allLocales}) {
+    required List<I18nData> translations}) {
+  final now = DateTime.now();
+  final int translationCount = translations.fold(
+      0, (prev, curr) => prev + _countTranslations(curr.root));
+
   buffer.writeln();
-  buffer.writeln('// Generated file. Do not edit.');
+  buffer.writeln('/*');
+  buffer.writeln(' * Generated file. Do not edit.');
+  buffer.writeln(' * ');
+  buffer.writeln(' * Locales: ${translations.length}');
+  buffer.writeln(
+      ' * Strings: $translationCount ${translations.length != 1 ? '(${(translationCount / translations.length).toStringAsFixed(1)} per locale)' : ''}');
+  buffer.writeln(' * ');
+  buffer.writeln(
+      ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+  buffer.writeln(' */');
 }
 
 void _generateImports(StringBuffer buffer) {
@@ -412,4 +426,24 @@ void _generateHelpers(
   buffer.writeln('\t}');
   buffer.writeln('\treturn selected;');
   buffer.writeln('}');
+}
+
+int _countTranslations(Node node) {
+  if (node is TextNode) {
+    return 1;
+  } else if (node is ListNode) {
+    int sum = 0;
+    for (Node entry in node.entries) {
+      sum += _countTranslations(entry);
+    }
+    return sum;
+  } else if (node is ObjectNode) {
+    int sum = 0;
+    for (Node entry in node.entries.values) {
+      sum += _countTranslations(entry);
+    }
+    return sum;
+  } else {
+    return 0;
+  }
 }

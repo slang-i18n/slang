@@ -41,7 +41,7 @@ class I18nBuilder implements Builder {
         options.config['translate_var'] ?? defaultTranslateVar;
     final String enumName = options.config['enum_name'] ?? defaultEnumName;
     final String? translationClassVisibility =
-    options.config['translation_class_visibility'];
+        options.config['translation_class_visibility'];
     final String? keyCase = options.config['key_case'];
     final List<String> maps = options.config['maps']?.cast<String>() ?? [];
 
@@ -63,7 +63,7 @@ class I18nBuilder implements Builder {
 
     await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
       final fileNameNoExtension =
-      assetId.pathSegments.last.replaceAll(inputFilePattern, '');
+          assetId.pathSegments.last.replaceAll(inputFilePattern, '');
 
       final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
       if (baseFile != null) {
@@ -94,8 +94,8 @@ class I18nBuilder implements Builder {
         translateVariable: translateVar,
         enumName: enumName,
         translationClassVisibility:
-        translationClassVisibility.toTranslationClassVisibility() ??
-            TranslationClassVisibility.private);
+            translationClassVisibility.toTranslationClassVisibility() ??
+                TranslationClassVisibility.private);
 
     // map each assetId to I18nData
     final localesWithData = Map<AssetId, I18nData>();
@@ -114,7 +114,7 @@ class I18nBuilder implements Builder {
           ..sort((a, b) => a.base
               ? -1
               : a.localeTag.compareTo(
-              b.localeTag))); // base locale, then all other locales
+                  b.localeTag))); // base locale, then all other locales
 
     // write only to main locale
     final AssetId baseId =
@@ -130,6 +130,6 @@ class I18nBuilder implements Builder {
 
   @override
   get buildExtensions => {
-    inputFilePattern: [outputFilePattern],
-  };
+        inputFilePattern: [outputFilePattern],
+      };
 }
