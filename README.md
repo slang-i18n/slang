@@ -9,9 +9,11 @@ Version 4.x.x is web compatible as soon as the Flutter team merge this fix into 
 
 ## Features
 
-- 🚀 Generate a translation solution using json files only
+- 🚀 Minimal setup, create JSON files and get started! No configuration needed.
 - 📦 Self-contained, you can remove this library after generation
 - 🐞 Bug-resistant, no typos or missing arguments possible due to static checking
+- ⚡ Fast, you get translations using native dart method calls, zero parsing!
+- ⚙ Configurable, English is not the default language? Configure it in `build.yaml`!
 
 You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
 
@@ -195,14 +197,6 @@ When the dart code has been generated, you will see some useful classes and func
 
 ## FAQ
 
-**Why I cannot rebuild i18n translations?**
-
-For some reason, build_runner requires you to delete the old output.
-
-````sh
-flutter pub run build_runner build --delete-conflicting-outputs
-````
-
 **How do I add arguments?**
 
 Use the `$` prefix.
@@ -223,7 +217,7 @@ t.distance(distance: 4.5); // 4.5m
 
 **How can I access translations using string keys?**
 
-Define the maps in your `build.yaml`. Each configuration item represents the translation tree separated with dots.
+Define the maps in your `build.yaml`. Each configuration item represents the translation tree separated by dots.
 
 Keep in mind that all nice features like autocompletion are gone.
 
@@ -294,6 +288,14 @@ String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
+
+**Why I cannot rebuild i18n translations?**
+
+For some reason, build_runner requires you to delete the old output.
+
+````sh
+flutter pub run build_runner build --delete-conflicting-outputs
+````
 
 **Why setLocale doesn't work?**
 
