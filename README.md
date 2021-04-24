@@ -121,6 +121,8 @@ File: ios/Runner/Info.plist
 **Step 5: Use your translations**
 
 ```dart
+import 'package:my_app/i18n/strings.g.dart'; // import
+
 String a = t.login.success; // plain
 String b = t.hello(name: 'Tom'); // with argument
 String c = t.step[3]; // with index (for arrays)
@@ -135,7 +137,9 @@ String translateAdvanced = t.hello(name: 'Tom');
 
 ## Configuration
 
-All settings can be set in the `build.yaml` file. Place it in the root directory.
+This is **optional**. This library works without any configuration (in most cases).
+
+For customization, you can create the `build.yaml` file. Place it in the root directory.
 
 ```yaml
 targets:
@@ -143,7 +147,7 @@ targets:
     builders:
       fast_i18n:i18nBuilder:
         options:
-          base_locale: en
+          base_locale: fr
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
@@ -153,9 +157,9 @@ targets:
           translation_class_visibility: private
           key_case: snake
           maps:
-            - a
-            - b
-            - c.d
+            - error.codes
+            - category
+            - iconNames
 ```
 
 Key|Type|Usage|Default
