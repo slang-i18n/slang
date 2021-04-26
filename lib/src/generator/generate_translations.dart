@@ -17,7 +17,7 @@ class ClassTask {
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-void generateLocale(
+void generateTranslations(
     StringBuffer buffer, I18nConfig config, I18nData localeData) {
   Queue<ClassTask> queue = Queue<ClassTask>();
 

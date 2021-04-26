@@ -15,7 +15,7 @@ String generate(
   buffer.writeln('// translations');
 
   for (I18nData localeData in translations) {
-    generateLocale(buffer, config, localeData);
+    generateTranslations(buffer, config, localeData);
   }
 
   return buffer.toString();
