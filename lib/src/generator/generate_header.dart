@@ -414,7 +414,7 @@ void _generateHelpers(
   buffer.writeln('\t\tselected = $enumName.values');
   buffer.writeln('\t\t\t.cast<$enumName?>()');
   buffer.writeln(
-      '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw, orElse: () => null);');
+      '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll(\'_\', \'-\'), orElse: () => null);');
   buffer.writeln();
   buffer.writeln('\t\tif (selected == null && language != null) {');
   buffer.writeln('\t\t\t// match language');
