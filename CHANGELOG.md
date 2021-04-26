@@ -1,3 +1,8 @@
+## 4.1.1
+
+- fix: `LocaleSettings.setLocaleRaw` for locales encoded with underscore `_`
+- docs: update README
+
 ## 4.1.0
 
 A rebuild is needed: `flutter pub run build_runner build`.
