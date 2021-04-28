@@ -10,10 +10,10 @@ Version 4.x.x is web compatible as soon as the Flutter team merge this fix into 
 ## Features
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
-- 📦 Self-contained, you can remove this library after generation
-- 🐞 Bug-resistant, no typos or missing arguments possible due to static checking
+- 📦 Self-contained, you can remove this library after generation.
+- 🐞 Bug-resistant, no typos or missing arguments possible due to compiler errors.
 - ⚡ Fast, you get translations using native dart method calls, zero parsing!
-- ⚙ Configurable, English is not the default language? Configure it in `build.yaml`!
+- 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
 You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
 
@@ -65,7 +65,11 @@ You **must** provide the default translation file (the file without locale exten
 **Step 3: Generate the dart code**
 
 ```
-flutter pub run build_runner build
+flutter pub run fast_i18n:build
+```
+which is an alias for
+```
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
 **Step 4: Initialize**
@@ -292,14 +296,6 @@ String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
-
-**Why I cannot rebuild i18n translations?**
-
-For some reason, build_runner requires you to delete the old output.
-
-````sh
-flutter pub run build_runner build --delete-conflicting-outputs
-````
 
 **Why setLocale doesn't work?**
 
