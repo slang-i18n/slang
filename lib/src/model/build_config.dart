@@ -1,5 +1,5 @@
-import 'i18n_config.dart';
-import 'i18n_locale.dart';
+import 'package:fast_i18n/src/model/i18n_config.dart';
+import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 /// represents a build.yaml
 class BuildConfig {

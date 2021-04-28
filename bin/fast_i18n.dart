@@ -13,8 +13,9 @@ void main() async {
   final stopwatch = Stopwatch()..start();
   print('Generating translations...\n');
 
-  final files = (await Directory.current.list(recursive: true).toList())
-      .where((item) => FileSystemEntity.isFileSync(item.path));
+  Iterable<FileSystemEntity> files =
+      (await Directory.current.list(recursive: true).toList())
+          .where((item) => FileSystemEntity.isFileSync(item.path));
 
   // build config
   BuildConfig? buildConfig;
@@ -36,25 +37,35 @@ void main() async {
 
   print('');
   print(' -> baseLocale: ${buildConfig.baseLocale.toLanguageTag()}');
-  print(' -> inputDirectory: ${buildConfig.inputDirectory}');
+  print(
+      ' -> inputDirectory: ${buildConfig.inputDirectory != null ? buildConfig.inputDirectory : 'null (everywhere)'}');
   print(' -> inputFilePattern: ${buildConfig.inputFilePattern}');
-  print(' -> outputDirectory: ${buildConfig.outputDirectory}');
+  print(
+      ' -> outputDirectory: ${buildConfig.outputDirectory != null ? buildConfig.outputDirectory : 'null (directory of input)'}');
   print(' -> outputFilePattern: ${buildConfig.outputFilePattern}');
   print(' -> translateVar: ${buildConfig.translateVar}');
   print(' -> enumName: ${buildConfig.enumName}');
   print(
-      ' -> translationClassVisibility: ${buildConfig.translationClassVisibility}');
-  print(' -> keyCase: ${buildConfig.keyCase}');
+      ' -> translationClassVisibility: ${(buildConfig.translationClassVisibility.toString().split('.').last)}');
+  print(
+      ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
   print(' -> maps: ${buildConfig.maps}');
   print('');
+
+  // filter files according to build config
+  files = files.where((file) {
+    if (!file.path.endsWith(buildConfig!.inputFilePattern)) return false;
+
+    if (buildConfig.inputDirectory != null &&
+        !file.path.contains(buildConfig.inputDirectory!)) return false;
+
+    return true;
+  });
 
   // base name
   String? baseName;
   for (final file in files) {
     final fileName = file.path.getFileName();
-
-    if (!fileName.endsWith(buildConfig.inputFilePattern))
-      continue; // ignore files not having specific file extension
 
     final fileNameNoExtension =
         fileName.replaceAll(buildConfig.inputFilePattern, '');
@@ -77,9 +88,6 @@ void main() async {
   String? resultPath;
   for (final file in files) {
     final fileName = file.path.getFileName();
-
-    if (!fileName.endsWith(buildConfig.inputFilePattern))
-      continue; // ignore files not having specific file extension
 
     final fileNameNoExtension =
         fileName.replaceAll(buildConfig.inputFilePattern, '');
@@ -112,6 +120,13 @@ void main() async {
         print('${locale.toLanguageTag().padLeft(12)} -> ${file.path}');
       }
     }
+  }
+
+  if (buildConfig.outputDirectory != null) {
+    resultPath = buildConfig.outputDirectory! +
+        Platform.pathSeparator +
+        baseName +
+        buildConfig.outputFilePattern;
   }
 
   if (resultPath == null) {

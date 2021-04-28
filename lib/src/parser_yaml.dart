@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
@@ -13,12 +15,14 @@ BuildConfig parseBuildYaml(String? content) {
 
   final baseLocale = I18nLocale.fromString(
       config?['base_locale'] ?? BuildConfig.defaultBaseLocale);
-  final inputDirectory =
-      config?['input_directory'] ?? BuildConfig.defaultInputDirectory;
+  final inputDirectory = ((config?['input_directory'] as String?) ??
+          BuildConfig.defaultInputDirectory)
+      ?.normalizePath();
   final inputFilePattern =
       config?['input_file_pattern'] ?? BuildConfig.defaultInputFilePattern;
-  final outputDirectory =
-      config?['output_directory'] ?? BuildConfig.defaultOutputDirectory;
+  final outputDirectory = ((config?['output_directory'] as String?) ??
+          BuildConfig.defaultOutputDirectory)
+      ?.normalizePath();
   final outputFilePattern =
       config?['output_file_pattern'] ?? BuildConfig.defaultOutputFilePattern;
   final translateVar =
@@ -58,5 +62,22 @@ YamlMap? _findConfigEntry(YamlMap parent) {
         return result; // found
       }
     }
+  }
+}
+
+extension on String {
+  String normalizePath() {
+    String result = this
+        .replaceAll('/', Platform.pathSeparator)
+        .replaceAll('\\', Platform.pathSeparator);
+
+    if (result.startsWith(Platform.pathSeparator))
+      result = result.substring(Platform.pathSeparator.length);
+
+    if (result.endsWith(Platform.pathSeparator))
+      result =
+          result.substring(0, result.length - Platform.pathSeparator.length);
+
+    return Directory.current.path + Platform.pathSeparator + result;
   }
 }
