@@ -22,7 +22,7 @@ void main() async {
     final fileName = file.path.getFileName();
 
     if (fileName == 'build.yaml') {
-      print('Found build.yaml!');
+      print('Found build.yaml in ${file.path}');
       final content = await File(file.path).readAsString();
       buildConfig = parseBuildYaml(content);
       break;
@@ -96,7 +96,7 @@ void main() async {
               baseName +
               buildConfig.outputFilePattern;
       print(
-          '${(buildConfig.baseLocale.toLanguageTag() + ' (base)').padLeft(12)} -> ${file.path}');
+          '${('(base) ' + buildConfig.baseLocale.toLanguageTag()).padLeft(12)} -> ${file.path}');
     } else {
       // secondary files (strings_x)
       final match = Utils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
