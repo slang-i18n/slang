@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 10 (5.0 per locale)
  * 
- * Built on 2021-04-19 at 22:16 UTC
+ * Built on 2021-04-28 at 21:41 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -207,7 +207,7 @@ AppLocale? _selectLocale(String localeRaw) {
 		// match exactly
 		selected = AppLocale.values
 			.cast<AppLocale?>()
-			.firstWhere((supported) => supported?.languageTag == localeRaw, orElse: () => null);
+			.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll('_', '-'), orElse: () => null);
 
 		if (selected == null && language != null) {
 			// match language
