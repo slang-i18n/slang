@@ -1,4 +1,4 @@
-## 4.2.0
+## 4.2.0-dev.0
 
 - new command: `flutter pub run fast_i18n` which is much faster than `flutter pub run build_runner build --delete-conflicting-outputs`
 
