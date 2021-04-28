@@ -4,7 +4,6 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 class I18nConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
-  final List<String> maps; // list of entities treated as maps and not classes
   final KeyCase? keyCase;
   final String translateVariable;
   final String enumName;
@@ -13,14 +12,10 @@ class I18nConfig {
   I18nConfig(
       {required this.baseName,
       required this.baseLocale,
-      required this.maps,
       required this.keyCase,
       required this.translateVariable,
       required this.enumName,
       required this.translationClassVisibility});
-
-  @override
-  String toString() => '$baseLocale, maps: $maps';
 }
 
 enum TranslationClassVisibility { private, public }

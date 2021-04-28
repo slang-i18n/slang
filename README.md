@@ -67,7 +67,7 @@ You **must** provide the default translation file (the file without locale exten
 ```
 flutter pub run fast_i18n
 ```
-which is an alias for
+alternative (but slower):
 ```
 flutter pub run build_runner build --delete-conflicting-outputs
 ```

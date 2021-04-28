@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:fast_i18n/src/model/i18n_config.dart';
+import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
 
 /// parses a json of one locale
 /// returns an I18nData object
-I18nData parseJSON(I18nConfig config, I18nLocale locale, String content) {
+I18nData parseJSON(BuildConfig config, I18nLocale locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Node> destination = Map();
   _parseJSONObject(config.maps, map, destination, []);

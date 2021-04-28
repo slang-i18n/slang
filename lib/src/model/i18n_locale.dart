@@ -24,6 +24,19 @@ class I18nLocale {
     }
   }
 
+  @override
+  bool operator ==(Object other) {
+    return other is I18nLocale &&
+        language == other.language &&
+        script == other.script &&
+        country == other.country;
+  }
+
+  @override
+  int get hashCode {
+    return language.hashCode * script.hashCode * country.hashCode;
+  }
+
   static I18nLocale fromString(String localeRaw) {
     final match = Utils.localeRegex.firstMatch(localeRaw);
     if (match != null) {
