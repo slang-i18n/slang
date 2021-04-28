@@ -62,7 +62,7 @@ void main() async {
     return true;
   });
 
-  // base name
+  // find base name
   String? baseName;
   for (final file in files) {
     final fileName = file.path.getFileName();
@@ -72,7 +72,9 @@ void main() async {
     final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
     if (baseFile != null) {
       baseName = fileNameNoExtension;
-      print('Found base file name: "$baseName"');
+      print(
+          'Found base name: "$baseName" (used for output file name and class names)');
+      break;
     }
   }
 
