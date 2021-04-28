@@ -13,8 +13,8 @@ dependencies:
   glob: ^2.0.1
 
 dev_dependencies:
-  build_runner: any
-  test: any
+  build_runner: ^2.0.1
+  test: ^1.16.5
   flutter_test:
     sdk: flutter
 
