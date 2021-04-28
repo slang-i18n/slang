@@ -65,7 +65,7 @@ You **must** provide the default translation file (the file without locale exten
 **Step 3: Generate the dart code**
 
 ```
-flutter pub run fast_i18n:build
+flutter pub run fast_i18n
 ```
 which is an alias for
 ```
