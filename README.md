@@ -297,6 +297,20 @@ String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
 
+**Can I write the json files in the asset folder?**
+
+Yes. Specify `input_directory` and `output_directory` in `build.yaml`.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          input_directory: assets/i18n
+          output_directory: lib/i18n
+```
+
 **Why setLocale doesn't work?**
 
 In most cases you forgot the `setState` call.
