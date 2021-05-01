@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-01 at 15:18 UTC
+ * Built on 2021-05-01 at 15:48 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -124,6 +124,7 @@ class LocaleSettings {
 
 	/// Sets plural resolver for languages which are not yet supported by library
 	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
+	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
 	/// Only language part matters, script and country parts are ignored
 	static final _renderedResolvers = ['de','en',];
 	static void setPluralResolver({required String language, required PluralResolver cardinalResolver, required PluralResolver ordinalResolver}) {
