@@ -157,10 +157,15 @@ void main() async {
           enumName: buildConfig.enumName,
           translationClassVisibility: buildConfig.translationClassVisibility),
       translations: translationList
-        ..sort((a, b) => a.base
-            ? -1
-            : a.localeTag.compareTo(
-                b.localeTag))); // base locale, then all other locales
+        ..sort((a, b) {
+          if (!a.base && !b.base) {
+            return a.localeTag.compareTo(b.localeTag);
+          } else if (!a.base && b.base) {
+            return 1; // move non-base to the right
+          } else {
+            return -1; // move base to the left
+          }
+        })); // base locale, then all other locales
 
   await File(resultPath).writeAsString(output);
 

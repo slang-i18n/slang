@@ -127,10 +127,15 @@ class I18nBuilder implements Builder {
             enumName: buildConfig.enumName,
             translationClassVisibility: buildConfig.translationClassVisibility),
         translations: localesWithData.values.toList()
-          ..sort((a, b) => a.base
-              ? -1
-              : a.localeTag.compareTo(
-                  b.localeTag))); // base locale, then all other locales
+          ..sort((a, b) {
+            if (!a.base && !b.base) {
+              return a.localeTag.compareTo(b.localeTag);
+            } else if (!a.base && b.base) {
+              return 1; // move non-base to the right
+            } else {
+              return -1; // move base to the left
+            }
+          })); // base locale, then all other locales
 
     // write only to main locale
     final AssetId baseId =
