@@ -176,6 +176,11 @@ targets:
             - error.codes
             - category
             - iconNames
+          pluralization:
+            cardinal:
+              - someKey.apple
+            ordinal:
+              - someKey.place
 ```
 
 Key|Type|Usage|Default
@@ -190,6 +195,8 @@ enum_name|`String`|enum name|`AppLocale`
 translation_class_visibility|`private`, `public`|class visibility|`private`
 key_case|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
+pluralization/cardinal|`List<String>`|entries which have cardinals|`[]`
+pluralization/ordinal|`List<String>`|entries which have ordinals|`[]`
 
 ## API
 
@@ -214,6 +221,8 @@ When the dart code has been generated, you will see some useful classes and func
 `LocaleSettings.supportedLocalesRaw` - get the supported locales
 
 `LocaleSettings.supportedLocales` - see step 4a
+
+`LocaleSettings.setPluralResolver` - set pluralization resolver for unsupported languages
 
 ## Features
 
@@ -276,9 +285,32 @@ targets:
               - someKey.place
 ```
 
+Now you can access them.
 ```dart
 String a = t.someKey.apple(count: 1); // I have 1 apple.
 String b = t.someKey.apple(count: 2); // I have 2 apples.
+```
+
+In case your language is not supported, you must provide a custom pluralization resolver:
+```dart
+// add this before you call the pluralization strings. Otherwise an exception will be thrown.
+LocaleSettings.setPluralResolver(
+  language: 'en',
+  cardinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+    if (n == 1)
+      return one!;
+    return other!;
+  },
+  ordinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+    if (n % 10 == 1 && n % 100 != 11)
+      return one!;
+    if (n % 10 == 2 && n % 100 != 12)
+      return two!;
+    if (n % 10 == 3 && n % 100 != 13)
+      return few!;
+    return other!;
+  },
+);
 ```
 
 ### Maps
