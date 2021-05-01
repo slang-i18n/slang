@@ -7,6 +7,7 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
 import 'package:fast_i18n/src/parser_json.dart';
 import 'package:fast_i18n/src/utils.dart';
 import 'package:glob/glob.dart';
@@ -32,9 +33,11 @@ class I18nBuilder implements Builder {
     final buildConfig = BuildConfig(
         baseLocale: I18nLocale.fromString(
             options.config['base_locale'] ?? BuildConfig.defaultBaseLocale),
-        inputDirectory: options.config['input_directory'],
+        inputDirectory: options.config['input_directory'] ??
+            BuildConfig.defaultInputDirectory,
         inputFilePattern: inputFilePattern,
-        outputDirectory: options.config['output_directory'],
+        outputDirectory: options.config['output_directory'] ??
+            BuildConfig.defaultOutputDirectory,
         outputFilePattern: outputFilePattern,
         translateVar:
             options.config['translate_var'] ?? BuildConfig.defaultTranslateVar,
@@ -45,7 +48,13 @@ class I18nBuilder implements Builder {
                 BuildConfig.defaultTranslationClassVisibility,
         keyCase: (options.config['key_case'] as String?).toKeyCase() ??
             BuildConfig.defaultKeyCase,
-        maps: options.config['maps']?.cast<String>() ?? []);
+        maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
+        pluralCardinal:
+            options.config['pluralization']?['cardinal']?.cast<String>() ??
+                BuildConfig.defaultCardinal,
+        pluralOrdinal:
+            options.config['pluralization']?['ordinal']?.cast<String>() ??
+                BuildConfig.defaultOrdinal);
 
     if (buildConfig.inputDirectory != null &&
         !buildStep.inputId.path.contains(buildConfig.inputDirectory!)) return;
@@ -105,6 +114,14 @@ class I18nBuilder implements Builder {
         config: I18nConfig(
             baseName: baseName!,
             baseLocale: buildConfig.baseLocale,
+            renderedPluralizationResolvers: buildConfig
+                        .pluralCardinal.isNotEmpty ||
+                    buildConfig.pluralOrdinal.isNotEmpty
+                ? PLURALIZATION_RESOLVERS
+                    .where((resolver) => assetMap.values
+                        .any((locale) => locale.language == resolver.language))
+                    .toList()
+                : [],
             keyCase: buildConfig.keyCase,
             translateVariable: buildConfig.translateVar,
             enumName: buildConfig.enumName,

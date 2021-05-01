@@ -10,19 +10,20 @@ import 'package:fast_i18n/src/model/node.dart';
 I18nData parseJSON(BuildConfig config, I18nLocale locale, String content) {
   Map<String, dynamic> map = json.decode(content);
   Map<String, Node> destination = Map();
-  _parseJSONObject(config.maps, map, destination, []);
+  _parseJSONObject(config, map, destination, []);
 
   return I18nData(
     base: config.baseLocale == locale,
     locale: locale,
-    root: ObjectNode(destination, false),
+    root: ObjectNode(destination, ObjectNodeType.classType),
   );
 }
 
 /// parses one json object { a : b }
 /// writes result to [destination]
+/// each new layer will be put into the [stack], e.g. [welcome, title] would be { welcome { title: Hello } }
 void _parseJSONObject(
-  List<String> maps,
+  BuildConfig config,
   Map<String, dynamic> curr,
   Map<String, Node> destination,
   List<String> stack,
@@ -34,16 +35,24 @@ void _parseJSONObject(
     } else if (value is List) {
       // key: [ ...value ]
       List<Node> list = List.empty(growable: true);
-      _parseJSONArray(maps, value, list, stack);
+      _parseJSONArray(config, value, list, stack);
       destination[key] = ListNode(list);
     } else {
       // key: { ...value }
       List<String> nextStack = [...stack, key];
       String stackAsString = nextStack.join('.');
-      bool mapMode = maps.contains(stackAsString);
+      ObjectNodeType nodeType;
+      if (config.maps.contains(stackAsString))
+        nodeType = ObjectNodeType.map;
+      else if (config.pluralCardinal.contains(stackAsString))
+        nodeType = ObjectNodeType.pluralCardinal;
+      else if (config.pluralOrdinal.contains(stackAsString))
+        nodeType = ObjectNodeType.pluralOrdinal;
+      else
+        nodeType = ObjectNodeType.classType;
       Map<String, Node> subDestination = Map();
-      _parseJSONObject(maps, value, subDestination, nextStack);
-      destination[key] = ObjectNode(subDestination, mapMode);
+      _parseJSONObject(config, value, subDestination, nextStack);
+      destination[key] = ObjectNode(subDestination, nodeType);
     }
   });
 }
@@ -51,7 +60,7 @@ void _parseJSONObject(
 /// parses one json list [a, b, c]
 /// writes result to [destination]
 void _parseJSONArray(
-  List<String> maps,
+  BuildConfig config,
   List<dynamic> curr,
   List<Node> destination,
   List<String> stack,
@@ -63,15 +72,23 @@ void _parseJSONArray(
     } else if (value is List) {
       // key: [ ...value ]
       List<Node> list = List.empty(growable: true);
-      _parseJSONArray(maps, value, list, stack);
+      _parseJSONArray(config, value, list, stack);
       destination.add(ListNode(list));
     } else {
       // key: { ...value }
       String stackAsString = stack.join('.');
-      bool mapMode = maps.contains(stackAsString);
+      ObjectNodeType nodeType;
+      if (config.maps.contains(stackAsString))
+        nodeType = ObjectNodeType.map;
+      else if (config.pluralCardinal.contains(stackAsString))
+        nodeType = ObjectNodeType.pluralCardinal;
+      else if (config.pluralOrdinal.contains(stackAsString))
+        nodeType = ObjectNodeType.pluralOrdinal;
+      else
+        nodeType = ObjectNodeType.classType;
       Map<String, Node> subDestination = Map();
-      _parseJSONObject(maps, value, subDestination, stack);
-      destination.add(ObjectNode(subDestination, mapMode));
+      _parseJSONObject(config, value, subDestination, stack);
+      destination.add(ObjectNode(subDestination, nodeType));
     }
   }
 }

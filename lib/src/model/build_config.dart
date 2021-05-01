@@ -14,6 +14,8 @@ class BuildConfig {
       TranslationClassVisibility.private;
   static const KeyCase? defaultKeyCase = null;
   static const List<String> defaultMaps = <String>[];
+  static const List<String> defaultCardinal = <String>[];
+  static const List<String> defaultOrdinal = <String>[];
 
   final I18nLocale baseLocale;
   final String? inputDirectory;
@@ -25,6 +27,8 @@ class BuildConfig {
   final TranslationClassVisibility translationClassVisibility;
   final KeyCase? keyCase;
   final List<String> maps;
+  final List<String> pluralCardinal;
+  final List<String> pluralOrdinal;
 
   BuildConfig(
       {required this.baseLocale,
@@ -36,5 +40,7 @@ class BuildConfig {
       required this.enumName,
       required this.translationClassVisibility,
       required this.keyCase,
-      required this.maps});
+      required this.maps,
+      required this.pluralCardinal,
+      required this.pluralOrdinal});
 }

@@ -2,6 +2,7 @@ import 'package:fast_i18n/src/generator/helper.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/node.dart';
+import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 import 'package:fast_i18n/src/utils.dart';
 
@@ -15,6 +16,9 @@ void generateHeader(
       baseName: config.baseName,
       visibility: config.translationClassVisibility,
       locale: config.baseLocale.toLanguageTag());
+  const String pluralResolverType = 'PluralResolver';
+  const String pluralResolverMapCardinal = '_pluralResolversCardinal';
+  const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
 
   _generateHeaderComment(
       buffer: buffer, config: config, translations: allLocales);
@@ -43,7 +47,10 @@ void generateHeader(
       baseLocaleVar: baseLocaleVar,
       currLocaleVar: currLocaleVar,
       translateVarInternal: translateVarInternal,
-      translationProviderKey: translationProviderKey);
+      translationProviderKey: translationProviderKey,
+      pluralResolverType: pluralResolverType,
+      pluralResolverCardinal: pluralResolverMapCardinal,
+      pluralResolverOrdinal: pluralResolverMapOrdinal);
 
   _generateExtensions(
       buffer: buffer,
@@ -57,6 +64,14 @@ void generateHeader(
       baseClassName: baseClassName,
       translationProviderKey: translationProviderKey,
       currLocaleVar: currLocaleVar);
+
+  _generatePluralResolvers(
+      buffer: buffer,
+      config: config,
+      languageRules: config.renderedPluralizationResolvers,
+      pluralResolverType: pluralResolverType,
+      pluralResolverCardinal: pluralResolverMapCardinal,
+      pluralResolverOrdinal: pluralResolverMapOrdinal);
 
   _generateHelpers(buffer: buffer, config: config);
 }
@@ -189,7 +204,10 @@ void _generateLocaleSettings(
     required String baseLocaleVar,
     required String currLocaleVar,
     required String translateVarInternal,
-    required String translationProviderKey}) {
+    required String translationProviderKey,
+    required String pluralResolverType,
+    required String pluralResolverCardinal,
+    required String pluralResolverOrdinal}) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
 
@@ -264,18 +282,35 @@ void _generateLocaleSettings(
   buffer.writeln(
       '\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
   buffer.writeln('\tstatic List<Locale> get supportedLocales {');
-  buffer.writeln('\t\treturn [');
-  for (I18nData locale in allLocales) {
-    buffer.write(
-        '\t\t\tLocale.fromSubtags(languageCode: \'${locale.locale.language}\'');
-    if (locale.locale.script != null)
-      buffer.write(', scriptCode: \'${locale.locale.script}\'');
-    if (locale.locale.country != null)
-      buffer.write(', countryCode: \'${locale.locale.country}\'');
-    buffer.writeln('),');
-  }
-  buffer.writeln('\t\t];');
+  buffer.writeln('\t\treturn $enumName.values');
+  buffer.writeln('\t\t\t.map((locale) => locale.flutterLocale)');
+  buffer.writeln('\t\t\t.toList();');
   buffer.writeln('\t}');
+
+  buffer.writeln();
+  buffer.writeln(
+      '\t/// Sets plural resolver for languages which are not yet supported by library');
+  buffer.writeln(
+      '\t/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html');
+  buffer.writeln(
+      '\t/// Only language part matters, script and country parts are ignored');
+  buffer.write('\tstatic final _renderedResolvers = [');
+  for (final rendered in config.renderedPluralizationResolvers)
+    buffer.write('\'${rendered.language}\',');
+  buffer.writeln('];');
+  buffer.writeln(
+      '\tstatic void setPluralResolver({required String language, required $pluralResolverType resolver, required bool cardinal}) {');
+  buffer.writeln('\t\tif (_renderedResolvers.contains(language)) {');
+  buffer.writeln(
+      '\t\t\tprint(\'Resolver already specified by library. No effect.\');');
+  buffer.writeln('\t\t\treturn;');
+  buffer.writeln('\t\t}');
+  buffer.writeln(
+      '\t\tfinal map = (cardinal ? $pluralResolverCardinal : $pluralResolverOrdinal);');
+  buffer.writeln('\t\tmap[language] = resolver;');
+  buffer.writeln('\t}');
+  buffer.writeln();
+
   buffer.writeln('}');
 }
 
@@ -309,6 +344,21 @@ void _generateExtensions(
   for (I18nData locale in allLocales) {
     buffer.writeln(
         '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return \'${locale.localeTag}\';');
+  }
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+
+  buffer.writeln();
+  buffer.writeln('\tLocale get flutterLocale {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    buffer.write(
+        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return Locale.fromSubtags(languageCode: \'${locale.locale.language}\'');
+    if (locale.locale.script != null)
+      buffer.write(', scriptCode: \'${locale.locale.script}\'');
+    if (locale.locale.country != null)
+      buffer.write(', countryCode: \'${locale.locale.country}\'');
+    buffer.writeln(');');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
@@ -393,6 +443,79 @@ void _generateTranslationWrapper(
   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
   buffer.writeln('\t\treturn oldWidget.locale != locale;');
   buffer.writeln('\t}');
+  buffer.writeln('}');
+}
+
+void _generatePluralResolvers(
+    {required StringBuffer buffer,
+    required I18nConfig config,
+    required List<PluralizationResolver> languageRules,
+    required String pluralResolverType,
+    required String pluralResolverCardinal,
+    required String pluralResolverOrdinal}) {
+  buffer.writeln();
+  buffer.writeln('// pluralization resolvers');
+
+  buffer.writeln();
+  buffer.writeln('// for unsupported languages');
+  buffer.writeln('// map: language -> resolver');
+  buffer.writeln(
+      'typedef String $pluralResolverType(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
+  buffer.writeln(
+      'Map<String, $pluralResolverType> $pluralResolverCardinal = {};');
+  buffer
+      .writeln('Map<String, $pluralResolverType> $pluralResolverOrdinal = {};');
+  buffer.writeln();
+  buffer.writeln(
+      'String _pluralCustom(String language, bool cardinal, num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {');
+  buffer.writeln(
+      '\tfinal resolver = (cardinal ? $pluralResolverCardinal : $pluralResolverOrdinal)[language];');
+  buffer.writeln('\tif (resolver == null)');
+  buffer.writeln(
+      '\t\tthrow(\'Resolver for <lang = \$language, \${cardinal ? \'cardinal\' : \'ordinal\'}> not specified\');');
+  buffer.writeln(
+      '\treturn resolver(n, zero: zero, one: one, two: two, few: few, many: many, other: other);');
+  buffer.writeln('}');
+
+  buffer.writeln();
+  buffer.writeln('// prepared by fast_i18n');
+  if (languageRules.isEmpty) {
+    buffer.writeln();
+    buffer.writeln(
+        '// No language with pluralization support available or no pluralization configured.');
+  }
+  for (final setting in languageRules) {
+    // cardinal
+    buffer.writeln();
+    _generatePluralFunction(
+        buffer: buffer,
+        ruleSet: setting.cardinal,
+        functionName: '_pluralCardinal${setting.language.capitalize()}');
+
+    // ordinal
+    buffer.writeln();
+    _generatePluralFunction(
+        buffer: buffer,
+        ruleSet: setting.ordinal,
+        functionName: '_pluralOrdinal${setting.language.capitalize()}');
+  }
+}
+
+/// generates the function without function name
+void _generatePluralFunction(
+    {required StringBuffer buffer,
+    required RuleSet ruleSet,
+    required functionName}) {
+  buffer.write('String $functionName(num n, {');
+  for (final quantity in ruleSet.getQuantities()) {
+    buffer.write('required String ${quantity.paramName()}, ');
+  }
+  buffer.writeln('}) {');
+  for (final rule in ruleSet.rules) {
+    buffer.writeln('\tif (${rule.condition})');
+    buffer.writeln('\t\treturn ${rule.result.paramName()};');
+  }
+  buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()};');
   buffer.writeln('}');
 }
 

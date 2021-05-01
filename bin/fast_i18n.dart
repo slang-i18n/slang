@@ -5,6 +5,7 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
 import 'package:fast_i18n/src/parser_json.dart';
 import 'package:fast_i18n/src/parser_yaml.dart';
 import 'package:fast_i18n/src/utils.dart';
@@ -50,6 +51,8 @@ void main() async {
   print(
       ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
   print(' -> maps: ${buildConfig.maps}');
+  print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
+  print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
   print('');
 
   // filter files according to build config
@@ -141,6 +144,14 @@ void main() async {
       config: I18nConfig(
           baseName: baseName,
           baseLocale: buildConfig.baseLocale,
+          renderedPluralizationResolvers: buildConfig
+                      .pluralCardinal.isNotEmpty ||
+                  buildConfig.pluralOrdinal.isNotEmpty
+              ? PLURALIZATION_RESOLVERS
+                  .where((resolver) => translationList.any(
+                      (locale) => locale.locale.language == resolver.language))
+                  .toList()
+              : [],
           keyCase: buildConfig.keyCase,
           translateVariable: buildConfig.translateVar,
           enumName: buildConfig.enumName,
@@ -152,6 +163,21 @@ void main() async {
                 b.localeTag))); // base locale, then all other locales
 
   await File(resultPath).writeAsString(output);
+
+  if (buildConfig.pluralCardinal.isNotEmpty ||
+      buildConfig.pluralOrdinal.isNotEmpty) {
+    final languages =
+        translationList.map((locale) => locale.locale.language).toSet();
+    final rendered = PLURALIZATION_RESOLVERS
+        .map((resolver) => resolver.language)
+        .toSet()
+        .intersection(languages);
+    final missing = languages.difference(rendered);
+    print('');
+    print('Pluralization:');
+    print(' -> rendered resolvers: ${rendered.toList()}');
+    print(' -> you must implement these resolvers: ${missing.toList()}');
+  }
 
   print('');
   print('Output: $resultPath');

@@ -35,6 +35,11 @@ BuildConfig parseBuildYaml(String? content) {
   final keyCase = (config?['key_case'] as String?)?.toKeyCase() ??
       BuildConfig.defaultKeyCase;
   final maps = config?['maps']?.cast<String>() ?? BuildConfig.defaultMaps;
+  final pluralCardinal =
+      config?['pluralization']?['cardinal']?.cast<String>() ??
+          BuildConfig.defaultCardinal;
+  final pluralOrdinal = config?['pluralization']?['ordinal']?.cast<String>() ??
+      BuildConfig.defaultOrdinal;
 
   return BuildConfig(
       baseLocale: baseLocale,
@@ -46,7 +51,9 @@ BuildConfig parseBuildYaml(String? content) {
       enumName: enumName,
       translationClassVisibility: translationClassVisibility,
       keyCase: keyCase,
-      maps: maps);
+      maps: maps,
+      pluralCardinal: pluralCardinal,
+      pluralOrdinal: pluralOrdinal);
 }
 
 YamlMap? _findConfigEntry(YamlMap parent) {

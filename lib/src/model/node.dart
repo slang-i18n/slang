@@ -3,12 +3,19 @@ import 'package:fast_i18n/src/utils.dart';
 /// the super class of every node
 class Node {}
 
+enum ObjectNodeType {
+  classType, // represent this object as class
+  map, // as Map<String,dynamic>
+  pluralCardinal, // as function
+  pluralOrdinal, // as function
+}
+
 class ObjectNode extends Node {
   final Map<String, Node> entries;
-  final bool mapMode;
+  final ObjectNodeType type;
   final bool plainStrings;
 
-  ObjectNode(this.entries, this.mapMode)
+  ObjectNode(this.entries, this.type)
       : plainStrings = entries.values
             .every((child) => child is TextNode && child.params.isEmpty);
 
