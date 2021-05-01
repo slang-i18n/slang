@@ -293,6 +293,8 @@ void _generateLocaleSettings(
   buffer.writeln(
       '\t/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html');
   buffer.writeln(
+      '\t/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart');
+  buffer.writeln(
       '\t/// Only language part matters, script and country parts are ignored');
   buffer.write('\tstatic final _renderedResolvers = [');
   for (final rendered in config.renderedPluralizationResolvers)
