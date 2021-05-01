@@ -1,4 +1,4 @@
-## 4.2.0-dev.2
+## 4.2.0-dev.3
 
 - feat: add pluralization support
 - feat: `AppLocale` has a new property called `flutterLocale`
