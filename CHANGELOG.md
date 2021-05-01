@@ -1,5 +1,7 @@
-## 4.2.0-dev.1
+## 4.2.0-dev.2
 
+- feat: add pluralization support
+- feat: `AppLocale` has a new property called `flutterLocale`
 - new command: `flutter pub run fast_i18n` which is much faster than `flutter pub run build_runner build --delete-conflicting-outputs`
 
 ## 4.1.1
