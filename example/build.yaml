@@ -6,3 +6,6 @@ targets:
           base_locale: en
           maps:
             - locales
+          pluralization:
+            cardinal:
+              - mainScreen.counter

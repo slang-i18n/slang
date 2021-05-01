@@ -3,9 +3,9 @@
  * Generated file. Do not edit.
  * 
  * Locales: 2
- * Strings: 10 (5.0 per locale)
+ * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-04-28 at 21:41 UTC
+ * Built on 2021-05-01 at 15:18 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -117,11 +117,24 @@ class LocaleSettings {
 
 	/// Gets supported locales (as Locale objects) with base locale sorted first.
 	static List<Locale> get supportedLocales {
-		return [
-			Locale.fromSubtags(languageCode: 'en'),
-			Locale.fromSubtags(languageCode: 'de'),
-		];
+		return AppLocale.values
+			.map((locale) => locale.flutterLocale)
+			.toList();
 	}
+
+	/// Sets plural resolver for languages which are not yet supported by library
+	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
+	/// Only language part matters, script and country parts are ignored
+	static final _renderedResolvers = ['de','en',];
+	static void setPluralResolver({required String language, required PluralResolver cardinalResolver, required PluralResolver ordinalResolver}) {
+		if (_renderedResolvers.contains(language)) {
+			print('Resolver already specified by library. No effect.');
+			return;
+		}
+		_pluralResolversCardinal[language] = cardinalResolver;
+		_pluralResolversOrdinal[language] = ordinalResolver;
+	}
+
 }
 
 // extensions for AppLocale
@@ -138,6 +151,13 @@ extension AppLocaleExtensions on AppLocale {
 		switch (this) {
 			case AppLocale.en: return 'en';
 			case AppLocale.de: return 'de';
+		}
+	}
+
+	Locale get flutterLocale {
+		switch (this) {
+			case AppLocale.en: return Locale.fromSubtags(languageCode: 'en');
+			case AppLocale.de: return Locale.fromSubtags(languageCode: 'de');
 		}
 	}
 }
@@ -195,6 +215,49 @@ class _InheritedLocaleData extends InheritedWidget {
 	}
 }
 
+// pluralization resolvers
+
+// for unsupported languages
+// map: language -> resolver
+typedef String PluralResolver(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
+Map<String, PluralResolver> _pluralResolversCardinal = {};
+Map<String, PluralResolver> _pluralResolversOrdinal = {};
+
+String _pluralCustom(String language, bool cardinal, num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	final resolver = (cardinal ? _pluralResolversCardinal : _pluralResolversOrdinal)[language];
+	if (resolver == null)
+		throw('Resolver for <lang = $language, ${cardinal ? 'cardinal' : 'ordinal'}> not specified');
+	return resolver(n, zero: zero, one: one, two: two, few: few, many: many, other: other);
+}
+
+// prepared by fast_i18n
+
+String _pluralCardinalDe(num n, {required String one, required String other, }) {
+	if (n == 1)
+		return one;
+	return other;
+}
+
+String _pluralOrdinalDe(num n, {required String other, }) {
+	return other;
+}
+
+String _pluralCardinalEn(num n, {required String one, required String other, }) {
+	if (n == 1)
+		return one;
+	return other;
+}
+
+String _pluralOrdinalEn(num n, {required String one, required String two, required String few, required String other, }) {
+	if (n % 10 == 1 && n % 100 != 11)
+		return one;
+	if (n % 10 == 2 && n % 100 != 12)
+		return two;
+	if (n % 10 == 3 && n % 100 != 13)
+		return few;
+	return other;
+}
+
 // helpers
 
 final _localeRegex = RegExp(r'^([A-Za-z]{2,4})([_-]([A-Za-z]{4}))?([_-]([A-Za-z]{2}|[0-9]{3}))?$');
@@ -239,7 +302,10 @@ class _StringsMainScreenEn {
 	static _StringsMainScreenEn _instance = _StringsMainScreenEn._();
 
 	String get title => 'An English Title';
-	String counter({required Object count}) => 'You pressed $count times.';
+	String counter({required num count}) => _pluralCardinalEn(count,
+		one: 'You pressed $count time.',
+		other: 'You pressed $count times.',
+	);
 	String get tapMe => 'Tap me';
 }
 
@@ -261,6 +327,9 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 	static _StringsMainScreenDe _instance = _StringsMainScreenDe._();
 
 	@override String get title => 'Ein deutscher Titel';
-	@override String counter({required Object count}) => 'Du hast $count mal gedrückt.';
+	@override String counter({required num count}) => _pluralCardinalDe(count,
+		one: 'Du hast einmal gedrückt.',
+		other: 'Du hast $count mal gedrückt.',
+	);
 	@override String get tapMe => 'Drück mich';
 }

@@ -1,7 +1,10 @@
 {
   "mainScreen": {
     "title": "An English Title",
-    "counter": "You pressed $count times.",
+    "counter": {
+      "one": "You pressed $count time.",
+      "other": "You pressed $count times."
+    },
     "tapMe": "Tap me"
   },
   "locales": {
