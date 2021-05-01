@@ -7,6 +7,7 @@ import 'package:fast_i18n/src/model/pluralization.dart';
 ///
 /// Contribution would be nice!
 const List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
+  // Czech
   PluralizationResolver(
       language: 'cs',
       cardinal: RuleSet(rules: [
@@ -14,12 +15,14 @@ const List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
         Rule('n >= 2 && n <= 4', Quantity.few)
       ], defaultQuantity: Quantity.other),
       ordinal: RuleSet(rules: [], defaultQuantity: Quantity.other)),
+  // German
   PluralizationResolver(
       language: 'de',
       cardinal: RuleSet(
           rules: [Rule('n == 1', Quantity.one)],
           defaultQuantity: Quantity.other),
       ordinal: RuleSet(rules: [], defaultQuantity: Quantity.other)),
+  // English
   PluralizationResolver(
       language: 'en',
       cardinal: RuleSet(
@@ -30,6 +33,7 @@ const List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
         Rule('n % 10 == 2 && n % 100 != 12', Quantity.two),
         Rule('n % 10 == 3 && n % 100 != 13', Quantity.few),
       ], defaultQuantity: Quantity.other)),
+  // Vietnamese
   PluralizationResolver(
     language: 'vi',
     cardinal: RuleSet(rules: [], defaultQuantity: Quantity.other),
