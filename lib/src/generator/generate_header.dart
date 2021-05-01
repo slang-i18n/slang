@@ -299,15 +299,14 @@ void _generateLocaleSettings(
     buffer.write('\'${rendered.language}\',');
   buffer.writeln('];');
   buffer.writeln(
-      '\tstatic void setPluralResolver({required String language, required $pluralResolverType resolver, required bool cardinal}) {');
+      '\tstatic void setPluralResolver({required String language, required $pluralResolverType cardinalResolver, required $pluralResolverType ordinalResolver}) {');
   buffer.writeln('\t\tif (_renderedResolvers.contains(language)) {');
   buffer.writeln(
       '\t\t\tprint(\'Resolver already specified by library. No effect.\');');
   buffer.writeln('\t\t\treturn;');
   buffer.writeln('\t\t}');
-  buffer.writeln(
-      '\t\tfinal map = (cardinal ? $pluralResolverCardinal : $pluralResolverOrdinal);');
-  buffer.writeln('\t\tmap[language] = resolver;');
+  buffer.writeln('\t\t$pluralResolverCardinal[language] = cardinalResolver;');
+  buffer.writeln('\t\t$pluralResolverOrdinal[language] = ordinalResolver;');
   buffer.writeln('\t}');
   buffer.writeln();
 
