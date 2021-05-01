@@ -7,7 +7,7 @@ Lightweight i18n solution. Use JSON files to create typesafe translations.
 **For Flutter Web users:** version 3.0.4 contains the workaround for [#79555](https://github.com/flutter/flutter/issues/79555).
 Version 4.x.x is web compatible as soon as the Flutter team merge this fix into the stable branch.
 
-## Features
+## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
 - 📦 Self-contained, you can remove this library after generation.
@@ -16,6 +16,18 @@ Version 4.x.x is web compatible as soon as the Flutter team merge this fix into 
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
 You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [API](#api)
+- [Features](#features)
+    - [String Interpolation](#string-interpolation)
+    - [Pluralization](#pluralization)
+    - [Maps](#maps)
+    - [Lists](#lists)
+- [FAQ](#faq)
 
 ## Getting Started
 
@@ -203,9 +215,9 @@ When the dart code has been generated, you will see some useful classes and func
 
 `LocaleSettings.supportedLocales` - see step 4a
 
-## FAQ
+## Features
 
-**How do I add arguments?**
+### String Interpolation
 
 Use the `$` prefix.
 
@@ -223,7 +235,55 @@ t.greeting(name: 'Tom'); // Hello Tom
 t.distance(distance: 4.5); // 4.5m
 ```
 
-**How can I access translations using string keys?**
+### Pluralization
+
+This library uses the concept defined [here](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
+
+Some languages have support out of the box. See [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart).
+
+In order to use plurals, please add the key paths to `build.yaml`.
+Next, add the required quantities to the translation file. You can access the `num count` but it is optional.
+
+`strings.i18n.json`
+```json
+{
+  "someKey": {
+    "apple": {
+      "one": "I have $count apple.",
+      "other": "I have $count apples."
+    },
+    "place": {
+      "one": "${count}st place.",
+      "two": "${count}nd place.",
+      "few": "${count}rd place.",
+      "other": "${count}th place."
+    }
+  }
+}
+```
+
+`build.yaml`
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          pluralization:
+            cardinal:
+              - someKey.apple
+            ordinal:
+              - someKey.place
+```
+
+```dart
+String a = t.someKey.apple(count: 1); // I have 1 apple.
+String b = t.someKey.apple(count: 2); // I have 2 apples.
+```
+
+### Maps
+
+You can access each translation via string keys by defining maps.
 
 Define the maps in your `build.yaml`. Each configuration item represents the translation tree separated by dots.
 
@@ -265,7 +325,7 @@ String b = t.notAMapParent.notAMap; // the "classical" way
 String c = t.notAMapParent.aMapInClass['hi']; // nested
 ```
 
-**Can I use lists?**
+### Lists
 
 Lists are fully supported. No configuration needed. You can also put lists or maps inside lists!
 
@@ -296,6 +356,8 @@ String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
+
+## FAQ
 
 **Can I write the json files in the asset folder?**
 
