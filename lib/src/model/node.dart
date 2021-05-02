@@ -44,7 +44,7 @@ class TextNode extends Node {
             .replaceAll('\r\n', '\\n')
             .replaceAll('\n', '\\n')
             .replaceAll('\'', '\\\''),
-        params = _findArguments(content);
+        params = _findArguments(content).toSet().toList();
 
   @override
   String toString() {
