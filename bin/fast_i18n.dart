@@ -10,10 +10,16 @@ import 'package:fast_i18n/src/parser_json.dart';
 import 'package:fast_i18n/src/parser_yaml.dart';
 import 'package:fast_i18n/src/utils.dart';
 
+/// To run this:
+/// -> flutter pub run fast_i18n
+///
+/// Scans translation files and builds the dart file.
+/// This is usually faster than the build_runner implementation.
 void main() async {
   final stopwatch = Stopwatch()..start();
   print('Generating translations...\n');
 
+  // get all files recursively (no directories)
   Iterable<FileSystemEntity> files =
       (await Directory.current.list(recursive: true).toList())
           .where((item) => FileSystemEntity.isFileSync(item.path));
@@ -36,6 +42,7 @@ void main() async {
     print('No build.yaml, use default settings.');
   }
 
+  // show build config
   print('');
   print(' -> baseLocale: ${buildConfig.baseLocale.toLanguageTag()}');
   print(
@@ -93,7 +100,6 @@ void main() async {
   String? resultPath;
   for (final file in files) {
     final fileName = file.path.getFileName();
-
     final fileNameNoExtension =
         fileName.replaceAll(buildConfig.inputFilePattern, '');
     final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
@@ -128,6 +134,7 @@ void main() async {
   }
 
   if (buildConfig.outputDirectory != null) {
+    // output directory specified, use this path instead
     resultPath = buildConfig.outputDirectory! +
         Platform.pathSeparator +
         baseName +
@@ -160,10 +167,12 @@ void main() async {
         ..sort(I18nData
             .generationComparator)); // base locale, then all other locales
 
+  // write output
   await File(resultPath).writeAsString(output);
 
   if (buildConfig.pluralCardinal.isNotEmpty ||
       buildConfig.pluralOrdinal.isNotEmpty) {
+    // show pluralization hints if pluralization is configured
     final languages =
         translationList.map((locale) => locale.locale.language).toSet();
     final rendered = PLURALIZATION_RESOLVERS
