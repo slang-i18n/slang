@@ -286,14 +286,18 @@ void _addPluralizationCall(
     required String key,
     required Map<String, Node> children,
     required int depth}) {
-  final ruleSet = cardinal ? resolver?.cardinal : resolver?.ordinal;
-  final textList = children.values.cast<TextNode>().toList();
+  final textNodeList = children.values.cast<TextNode>().toList();
 
-  if (textList.isEmpty) {
+  if (textNodeList.isEmpty) {
     throw ('$key is empty but it is marked for pluralization.');
   }
 
-  final params = textList.first.params.where((p) => p != 'count').toList();
+  // parameters are union sets over all plural forms
+  final paramSet = <String>{};
+  for (final textNode in textNodeList) {
+    paramSet.addAll(textNode.params);
+  }
+  final params = paramSet.where((p) => p != 'count').toList();
 
   // parameters with count as first number
   buffer.write('({required num count');
@@ -318,9 +322,9 @@ void _addPluralizationCall(
   }
 
   final keys = children.keys.toList();
-  for (int i = 0; i < textList.length; i++) {
+  for (int i = 0; i < textNodeList.length; i++) {
     _addTabs(buffer, depth + 2);
-    buffer.writeln('${keys[i]}: \'${textList[i].content}\',');
+    buffer.writeln('${keys[i]}: \'${textNodeList[i].content}\',');
   }
 
   _addTabs(buffer, depth + 1);
