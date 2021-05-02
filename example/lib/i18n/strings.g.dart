@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-01 at 15:48 UTC
+ * Built on 2021-05-02 at 21:08 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -129,8 +129,7 @@ class LocaleSettings {
 	static final _renderedResolvers = ['de','en',];
 	static void setPluralResolver({required String language, required PluralResolver cardinalResolver, required PluralResolver ordinalResolver}) {
 		if (_renderedResolvers.contains(language)) {
-			print('Resolver already specified by library. No effect.');
-			return;
+			print('Hint: You are overwriting the preconfigured plural resolver for <lang = $language>');
 		}
 		_pluralResolversCardinal[language] = cardinalResolver;
 		_pluralResolversOrdinal[language] = ordinalResolver;
@@ -224,39 +223,36 @@ typedef String PluralResolver(num n, {String? zero, String? one, String? two, St
 Map<String, PluralResolver> _pluralResolversCardinal = {};
 Map<String, PluralResolver> _pluralResolversOrdinal = {};
 
-String _pluralCustom(String language, bool cardinal, num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	final resolver = (cardinal ? _pluralResolversCardinal : _pluralResolversOrdinal)[language];
-	if (resolver == null)
-		throw('Resolver for <lang = $language, ${cardinal ? 'cardinal' : 'ordinal'}> not specified');
-	return resolver(n, zero: zero, one: one, two: two, few: few, many: many, other: other);
+PluralResolver _missingPluralResolver(String language) {
+	throw('Resolver for <lang = $language> not specified');
 }
 
 // prepared by fast_i18n
 
-String _pluralCardinalDe(num n, {required String one, required String other, }) {
+String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
 	if (n == 1)
-		return one;
-	return other;
+		return one!;
+	return other!;
 }
 
-String _pluralOrdinalDe(num n, {required String other, }) {
-	return other;
+String _pluralOrdinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	return other!;
 }
 
-String _pluralCardinalEn(num n, {required String one, required String other, }) {
+String _pluralCardinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
 	if (n == 1)
-		return one;
-	return other;
+		return one!;
+	return other!;
 }
 
-String _pluralOrdinalEn(num n, {required String one, required String two, required String few, required String other, }) {
+String _pluralOrdinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
 	if (n % 10 == 1 && n % 100 != 11)
-		return one;
+		return one!;
 	if (n % 10 == 2 && n % 100 != 12)
-		return two;
+		return two!;
 	if (n % 10 == 3 && n % 100 != 13)
-		return few;
-	return other;
+		return few!;
+	return other!;
 }
 
 // helpers
@@ -303,7 +299,7 @@ class _StringsMainScreenEn {
 	static _StringsMainScreenEn _instance = _StringsMainScreenEn._();
 
 	String get title => 'An English Title';
-	String counter({required num count}) => _pluralCardinalEn(count,
+	String counter({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
 		one: 'You pressed $count time.',
 		other: 'You pressed $count times.',
 	);
@@ -328,7 +324,7 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 	static _StringsMainScreenDe _instance = _StringsMainScreenDe._();
 
 	@override String get title => 'Ein deutscher Titel';
-	@override String counter({required num count}) => _pluralCardinalDe(count,
+	@override String counter({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
 		one: 'Du hast einmal gedrückt.',
 		other: 'Du hast $count mal gedrückt.',
 	);
