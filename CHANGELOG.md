@@ -1,3 +1,7 @@
+## 4.2.1
+
+- fix: sort locales correctly (base first, then alphabetically)
+
 ## 4.2.0
 
 - feat: add pluralization support
