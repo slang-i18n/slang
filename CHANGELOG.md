@@ -94,7 +94,7 @@ FastI18n.findDeviceLocale has been renamed to FastI18n.getDeviceLocale
 
 ## 2.0.0
 
-Thanks to @DenchikBY (https://github.com/DenchikBY).
+Thanks to @DenchikBY ([https://github.com/DenchikBY](https://github.com/DenchikBY)).
 
 - Now it's possible to set in and out directories for files.
 - You can set the pattern by which to search for files.
@@ -150,37 +150,21 @@ targets:
 - Generates `List<String>` or `Map<String, String>` instead of `List<dynamic>` or `Map<String, dynamic>` if the children are only strings.
 - You will experience a better autocompletion like `.substring`, `.indexOf`, etc. because of that.
 
-## 1.5.0+2
-
-- Update README
-
-## 1.5.0+1
-
-- Update README
-
 ## 1.5.0
 
 - Define additional metadata in the `config.i18n.json` file.
-
 - Maps defined with `#map` are now deprecated. Use `config.i18n.json` for that.
-
 - Add `LocaleSettings.locales` to get the supported locales.
 
 ## 1.4.0
 
 - Add support for country codes. Use e.g. `strings_en_US.i18n.json` or `strings_en-US.i18n.json`.
-
 - Add fallback for `LocaleSettings.setLocale` if locale is not supported.
 
 ## 1.3.0
 
 - Add support for lists.
-
 - Add support for maps. Use `{ "#map": "" }` to enable map inlining.
-
-## 1.2.0+1
-
-- Update README
 
 ## 1.2.0
 
