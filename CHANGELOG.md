@@ -1,5 +1,7 @@
-## 4.2.1
+## 4.3.0
 
+- feat: plural resolvers can now be overwritten
+- fix: make params distinct
 - fix: sort locales correctly (base first, then alphabetically)
 
 ## 4.2.0
