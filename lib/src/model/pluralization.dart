@@ -12,15 +12,6 @@ class RuleSet {
   final Quantity defaultQuantity;
 
   const RuleSet({required this.rules, required this.defaultQuantity});
-
-  // only a few languages use ALL quantities
-  // we can reduce the amount of parameters by leaving out unused quantities
-  List<Quantity> getQuantities() {
-    return Quantity.values
-        .where((q) =>
-            rules.any((rule) => q == rule.result) || q == defaultQuantity)
-        .toList();
-  }
 }
 
 class Rule {

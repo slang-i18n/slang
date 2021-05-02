@@ -293,20 +293,6 @@ void _addPluralizationCall(
     throw ('$key is empty but it is marked for pluralization.');
   }
 
-  if (ruleSet != null) {
-    // check if all required quantities exists
-    final requiredQuantities = ruleSet.getQuantities();
-
-    // first check specific ones for better error messages
-    for (final quantity in requiredQuantities) {
-      if (children.keys.every((key) => key != quantity.paramName()))
-        throw ('"$key" misses quantity "${quantity.paramName()}" because it is required for <lang = ${resolver?.language}, pluralization = ${cardinal ? 'cardinal' : 'ordinal'}>');
-    }
-
-    if (requiredQuantities.length != children.keys.length)
-      throw ('"$key" has ${children.keys.length} quantity types, but <lang = ${resolver?.language}, pluralization = ${cardinal ? 'cardinal' : 'ordinal'}> requires ${requiredQuantities.length}, which are [${requiredQuantities.map((i) => i.paramName()).join(', ')}]. Given: ${children.keys.toList()}');
-  }
-
   final params = textList.first.params.where((p) => p != 'count').toList();
 
   // parameters with count as first number
@@ -315,17 +301,20 @@ void _addPluralizationCall(
     buffer.write(', required Object ');
     buffer.write(params[i]);
   }
-  buffer.write('}) => ');
+
+  // custom resolver has precedence
+  buffer.write(
+      '}) => (_pluralResolvers${cardinal ? 'Cardinal' : 'Ordinal'}[\'$language\'] ?? ');
 
   if (resolver != null) {
     // call predefined resolver
     if (cardinal)
-      buffer.writeln('_pluralCardinal${language.capitalize()}(count,');
+      buffer.writeln('_pluralCardinal${language.capitalize()})(count,');
     else
-      buffer.writeln('_pluralOrdinal${language.capitalize()}(count,');
+      buffer.writeln('_pluralOrdinal${language.capitalize()})(count,');
   } else {
-    // fallback
-    buffer.writeln('_pluralCustom(\'$language\', $cardinal, count,');
+    // throw error
+    buffer.writeln('_missingPluralResolver(\'$language\'))(count,');
   }
 
   final keys = children.keys.toList();

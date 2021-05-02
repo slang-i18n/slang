@@ -304,8 +304,7 @@ void _generateLocaleSettings(
       '\tstatic void setPluralResolver({required String language, required $pluralResolverType cardinalResolver, required $pluralResolverType ordinalResolver}) {');
   buffer.writeln('\t\tif (_renderedResolvers.contains(language)) {');
   buffer.writeln(
-      '\t\t\tprint(\'Resolver already specified by library. No effect.\');');
-  buffer.writeln('\t\t\treturn;');
+      '\t\t\tprint(\'Hint: You are overwriting the preconfigured plural resolver for <lang = \$language>\');');
   buffer.writeln('\t\t}');
   buffer.writeln('\t\t$pluralResolverCardinal[language] = cardinalResolver;');
   buffer.writeln('\t\t$pluralResolverOrdinal[language] = ordinalResolver;');
@@ -467,15 +466,9 @@ void _generatePluralResolvers(
   buffer
       .writeln('Map<String, $pluralResolverType> $pluralResolverOrdinal = {};');
   buffer.writeln();
-  buffer.writeln(
-      'String _pluralCustom(String language, bool cardinal, num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {');
-  buffer.writeln(
-      '\tfinal resolver = (cardinal ? $pluralResolverCardinal : $pluralResolverOrdinal)[language];');
-  buffer.writeln('\tif (resolver == null)');
-  buffer.writeln(
-      '\t\tthrow(\'Resolver for <lang = \$language, \${cardinal ? \'cardinal\' : \'ordinal\'}> not specified\');');
-  buffer.writeln(
-      '\treturn resolver(n, zero: zero, one: one, two: two, few: few, many: many, other: other);');
+  buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
+  buffer
+      .writeln('\tthrow(\'Resolver for <lang = \$language> not specified\');');
   buffer.writeln('}');
 
   buffer.writeln();
@@ -508,15 +501,16 @@ void _generatePluralFunction(
     required RuleSet ruleSet,
     required functionName}) {
   buffer.write('String $functionName(num n, {');
-  for (final quantity in ruleSet.getQuantities()) {
-    buffer.write('required String ${quantity.paramName()}, ');
+  for (int i = 0; i < Quantity.values.length; i++) {
+    if (i != 0) buffer.write(', ');
+    buffer.write('String? ${Quantity.values[i].paramName()}');
   }
   buffer.writeln('}) {');
   for (final rule in ruleSet.rules) {
     buffer.writeln('\tif (${rule.condition})');
-    buffer.writeln('\t\treturn ${rule.result.paramName()};');
+    buffer.writeln('\t\treturn ${rule.result.paramName()}!;');
   }
-  buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()};');
+  buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()}!;');
   buffer.writeln('}');
 }
 
