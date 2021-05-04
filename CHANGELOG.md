@@ -1,3 +1,7 @@
+## 4.4.0
+
+- feat: add Flutter 1.x.x support, build_runner detects this automatically, otherwise set `null_safety: false` in `build.yaml`
+
 ## 4.3.0
 
 - feat: plural resolvers can now be overwritten

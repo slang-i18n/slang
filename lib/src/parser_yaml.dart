@@ -41,7 +41,15 @@ BuildConfig parseBuildYaml(String? content) {
   final pluralOrdinal = config?['pluralization']?['ordinal']?.cast<String>() ??
       BuildConfig.defaultOrdinal;
 
+  final bool nullSafety;
+  if (config?['null_safety'] != null) {
+    nullSafety = config?['null_safety'] == 'true';
+  } else {
+    nullSafety = BuildConfig.defaultNullSafety;
+  }
+
   return BuildConfig(
+      nullSafety: nullSafety,
       baseLocale: baseLocale,
       inputDirectory: inputDirectory,
       inputFilePattern: inputFilePattern,

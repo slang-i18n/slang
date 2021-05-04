@@ -17,3 +17,17 @@ String getClassName(
       childName.toCase(KeyCase.pascal) +
       locale.toLowerCase().toCase(KeyCase.pascal);
 }
+
+// null safety (ns) helpers
+
+String nsOpt(I18nConfig config) {
+  return config.nullSafety ? '?' : '';
+}
+
+String nsReq(I18nConfig config) {
+  return config.nullSafety ? '' : '@';
+}
+
+String nsExl(I18nConfig config) {
+  return config.nullSafety ? '!' : '';
+}

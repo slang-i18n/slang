@@ -44,6 +44,7 @@ void main() async {
 
   // show build config
   print('');
+  print(' -> null safety: ${buildConfig.nullSafety}');
   print(' -> baseLocale: ${buildConfig.baseLocale.toLanguageTag()}');
   print(
       ' -> inputDirectory: ${buildConfig.inputDirectory != null ? buildConfig.inputDirectory : 'null (everywhere)'}');
@@ -149,6 +150,7 @@ void main() async {
   // generate
   final String output = generate(
       config: I18nConfig(
+          nullSafety: buildConfig.nullSafety,
           baseName: baseName,
           baseLocale: buildConfig.baseLocale,
           renderedPluralizationResolvers: buildConfig

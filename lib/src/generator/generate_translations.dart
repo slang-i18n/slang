@@ -94,12 +94,12 @@ void _generateClass(
         buffer.writeln('String get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
-            'String $key${_toParameterList(value.params)} => \'${value.content}\';');
+            'String $key${_toParameterList(value.params, config)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
       String type = value.plainStrings ? 'String' : 'dynamic';
       buffer.write('List<$type> get $key => ');
-      _generateList(base, locale, pluralizationResolver, buffer, queue,
+      _generateList(config, base, locale, pluralizationResolver, buffer, queue,
           className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
@@ -118,8 +118,8 @@ void _generateClass(
           // inline map
           String type = value.plainStrings ? 'String' : 'dynamic';
           buffer.write('Map<String, $type> get $key => ');
-          _generateMap(base, language, locale, pluralizationResolver, buffer,
-              queue, childClassNoLocale, value.entries, 0);
+          _generateMap(config, base, language, locale, pluralizationResolver,
+              buffer, queue, childClassNoLocale, value.entries, 0);
           break;
         case ObjectNodeType.pluralCardinal:
         case ObjectNodeType.pluralOrdinal:
@@ -127,6 +127,7 @@ void _generateClass(
           buffer.write('String $key');
           _addPluralizationCall(
               buffer: buffer,
+              config: config,
               resolver: pluralizationResolver,
               language: language,
               cardinal: value.type == ObjectNodeType.pluralCardinal,
@@ -144,6 +145,7 @@ void _generateClass(
 /// generates a map of ONE locale
 /// similar to _generateClass but anonymous and accessible via key
 void _generateMap(
+  I18nConfig config,
   bool base,
   String language,
   String locale,
@@ -163,11 +165,11 @@ void _generateMap(
         buffer.writeln('\'$key\': \'${value.content}\',');
       } else {
         buffer.writeln(
-            '\'$key\': ${_toParameterList(value.params)} => \'${value.content}\',');
+            '\'$key\': ${_toParameterList(value.params, config)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
-      _generateList(base, locale, pluralizationResolver, buffer, queue,
+      _generateList(config, base, locale, pluralizationResolver, buffer, queue,
           className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
@@ -184,8 +186,8 @@ void _generateMap(
         case ObjectNodeType.map:
           // inline map
           buffer.write('\'$key\': ');
-          _generateMap(base, language, locale, pluralizationResolver, buffer,
-              queue, childClassNoLocale, value.entries, depth + 1);
+          _generateMap(config, base, language, locale, pluralizationResolver,
+              buffer, queue, childClassNoLocale, value.entries, depth + 1);
           break;
         case ObjectNodeType.pluralCardinal:
         case ObjectNodeType.pluralOrdinal:
@@ -193,6 +195,7 @@ void _generateMap(
           buffer.write('\'$key\': ');
           _addPluralizationCall(
               buffer: buffer,
+              config: config,
               resolver: pluralizationResolver,
               language: language,
               cardinal: value.type == ObjectNodeType.pluralCardinal,
@@ -217,6 +220,7 @@ void _generateMap(
 
 /// generates a list
 void _generateList(
+  I18nConfig config,
   bool base,
   String locale,
   PluralizationResolver? pluralizationResolver,
@@ -236,10 +240,10 @@ void _generateList(
         buffer.writeln('\'${value.content}\',');
       } else {
         buffer.writeln(
-            '${_toParameterList(value.params)} => \'${value.content}\',');
+            '${_toParameterList(value.params, config)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
-      _generateList(base, locale, pluralizationResolver, buffer, queue,
+      _generateList(config, base, locale, pluralizationResolver, buffer, queue,
           className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String child = depth.toString() + 'i' + i.toString();
@@ -266,12 +270,12 @@ void _generateList(
 
 /// returns the parameter list
 /// e.g. ({required Object name, required Object age})
-String _toParameterList(List<String> params) {
+String _toParameterList(List<String> params, I18nConfig config) {
   StringBuffer buffer = StringBuffer();
   buffer.write('({');
   for (int i = 0; i < params.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('required Object ');
+    buffer.write('${nsOpt(config)}required Object ');
     buffer.write(params[i]);
   }
   buffer.write('})');
@@ -280,6 +284,7 @@ String _toParameterList(List<String> params) {
 
 void _addPluralizationCall(
     {required StringBuffer buffer,
+    required I18nConfig config,
     required PluralizationResolver? resolver,
     required String language,
     required bool cardinal,
@@ -300,9 +305,9 @@ void _addPluralizationCall(
   final params = paramSet.where((p) => p != 'count').toList();
 
   // parameters with count as first number
-  buffer.write('({required num count');
+  buffer.write('({${nsReq(config)}required num count');
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', required Object ');
+    buffer.write(', ${nsReq(config)}required Object ');
     buffer.write(params[i]);
   }
 

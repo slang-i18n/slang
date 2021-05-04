@@ -3,6 +3,7 @@ import 'package:fast_i18n/src/model/pluralization.dart';
 
 /// general config, applies to all locales
 class I18nConfig {
+  final bool nullSafety; // whether or not apply new null safety version
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
   final List<PluralizationResolver> renderedPluralizationResolvers;
@@ -12,7 +13,8 @@ class I18nConfig {
   final TranslationClassVisibility translationClassVisibility;
 
   I18nConfig(
-      {required this.baseName,
+      {required this.nullSafety,
+      required this.baseName,
       required this.baseLocale,
       required this.renderedPluralizationResolvers,
       required this.keyCase,
