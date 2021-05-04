@@ -45,7 +45,7 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
 
   final bool nullSafety;
   if (configEntry?['null_safety'] != null) {
-    nullSafety = configEntry?['null_safety'] == 'true';
+    nullSafety = configEntry?['null_safety'] == true;
   } else {
     nullSafety = BuildConfig.defaultNullSafety;
   }

@@ -1,7 +1,13 @@
+## 4.4.1
+
+- fix: `@` for `required` missing (Flutter 1.x.x)
+- fix: `null_safety` is `true` by default (as intended in 4.4.0)
+
 ## 4.4.0
 
 - feat: add Flutter 1.x.x support, build_runner detects this automatically, otherwise set `null_safety: false` in `build.yaml`
 - feat: `flutter pub run fast_i18n` ignores `build.yaml` files without fast_i18n entry
+- fix: add type hint for `_renderedResolvers`
 
 ## 4.3.0
 

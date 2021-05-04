@@ -32,7 +32,7 @@ class I18nBuilder implements Builder {
   FutureOr<void> build(BuildStep buildStep) async {
     final bool nullSafety;
     if (options.config['null_safety'] != null) {
-      nullSafety = options.config['null_safety'] == 'true';
+      nullSafety = options.config['null_safety'] == true;
     } else {
       nullSafety = (await buildStep.inputLibrary).isNonNullableByDefault;
     }

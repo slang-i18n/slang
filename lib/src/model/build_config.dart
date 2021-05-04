@@ -3,7 +3,7 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 /// represents a build.yaml
 class BuildConfig {
-  static const bool defaultNullSafety = false;
+  static const bool defaultNullSafety = true;
   static const String defaultBaseLocale = 'en';
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
