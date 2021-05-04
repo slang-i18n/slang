@@ -275,7 +275,7 @@ String _toParameterList(List<String> params, I18nConfig config) {
   buffer.write('({');
   for (int i = 0; i < params.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('${nsOpt(config)}required Object ');
+    buffer.write('${nsReq(config)}required Object ');
     buffer.write(params[i]);
   }
   buffer.write('})');
