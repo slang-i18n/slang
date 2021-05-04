@@ -35,7 +35,7 @@ You can see an example of the generated file [here](https://github.com/Tienisto/
 
 ```yaml
 dependencies:
-  fast_i18n: ^4.3.0
+  fast_i18n: ^4.4.0
 
 dev_dependencies:
   build_runner: any
