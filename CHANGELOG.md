@@ -1,6 +1,7 @@
 ## 4.4.0
 
 - feat: add Flutter 1.x.x support, build_runner detects this automatically, otherwise set `null_safety: false` in `build.yaml`
+- feat: `flutter pub run fast_i18n` ignores `build.yaml` files without fast_i18n entry
 
 ## 4.3.0
 

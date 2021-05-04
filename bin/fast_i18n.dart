@@ -30,15 +30,18 @@ void main() async {
     final fileName = file.path.getFileName();
 
     if (fileName == 'build.yaml') {
-      print('Found build.yaml in ${file.path}');
       final content = await File(file.path).readAsString();
-      buildConfig = parseBuildYaml(content);
-      break;
+      final result = parseBuildYaml(content);
+      if (result.parsed) {
+        print('Found build.yaml in ${file.path}');
+        buildConfig = result.config;
+        break;
+      }
     }
   }
 
   if (buildConfig == null) {
-    buildConfig = parseBuildYaml(null);
+    buildConfig = parseBuildYaml(null).config;
     print('No build.yaml, use default settings.');
   }
 
