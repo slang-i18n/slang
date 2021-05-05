@@ -33,12 +33,12 @@ You can see an example of the generated file [here](https://github.com/Tienisto/
 
 **Step 1: Add dependencies**
 
-```yaml
-dependencies:
-  fast_i18n: ^4.4.1
+It is recommended to add `fast_i18n` to `dev_dependencies`.
 
+```yaml
 dev_dependencies:
   build_runner: any
+  fast_i18n: 4.4.1
 ```
 
 **Step 2: Create JSON files**
@@ -163,6 +163,7 @@ targets:
     builders:
       fast_i18n:i18nBuilder:
         options:
+          null_safety: true
           base_locale: fr
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
@@ -185,6 +186,7 @@ targets:
 
 Key|Type|Usage|Default
 ---|---|---|---
+null_safety|`Boolean`|generate null safe code|`true / auto`
 base_locale|`String`|locale of default json|`en`
 input_directory|`String`|path to input directory|`null`
 input_file_pattern|`String`|input file pattern|`.i18n.json`
