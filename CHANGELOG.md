@@ -1,3 +1,10 @@
+## 4.5.0-dev.0
+
+- feat: remove hint when overriding plural resolvers (were too verbose)
+- feat: generated plural resolvers fallback to default quantity if null
+- feat: add `zero` quantity to `cs`, `de`, `en` and `vi` (not breaking)
+- docs: it is now recommended to put this library into `dev_dependencies`
+
 ## 4.4.1
 
 - fix: `@` for `required` missing (Flutter 1.x.x)
