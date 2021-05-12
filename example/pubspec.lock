@@ -156,7 +156,7 @@ packages:
     source: hosted
     version: "2.0.0"
   fast_i18n:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: fast_i18n
       url: "https://pub.dartlang.org"
