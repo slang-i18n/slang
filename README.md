@@ -299,17 +299,19 @@ In case your language is not supported, you must provide a custom pluralization 
 LocaleSettings.setPluralResolver(
   language: 'en',
   cardinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+    if (n == 0)
+      return zero ?? other!;
     if (n == 1)
-      return one!;
+      return one ?? other!;
     return other!;
   },
   ordinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
     if (n % 10 == 1 && n % 100 != 11)
-      return one!;
+      return one ?? other!;
     if (n % 10 == 2 && n % 100 != 12)
-      return two!;
+        return two ?? other!;
     if (n % 10 == 3 && n % 100 != 13)
-      return few!;
+        return few ?? other!;
     return other!;
   },
 );

@@ -1,4 +1,4 @@
-## 4.5.0-dev.0
+## 4.5.0
 
 - feat: remove hint when overriding plural resolvers (were too verbose)
 - feat: generated plural resolvers fallback to default quantity if null
