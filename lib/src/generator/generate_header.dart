@@ -526,7 +526,8 @@ void _generatePluralFunction(
   buffer.writeln('}) {');
   for (final rule in ruleSet.rules) {
     buffer.writeln('\tif (${rule.condition})');
-    buffer.writeln('\t\treturn ${rule.result.paramName()}${nsExl(config)};');
+    buffer.writeln(
+        '\t\treturn ${rule.result.paramName()} ?? ${ruleSet.defaultQuantity.paramName()}${nsExl(config)};');
   }
   buffer.writeln(
       '\treturn ${ruleSet.defaultQuantity.paramName()}${nsExl(config)};');
