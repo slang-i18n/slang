@@ -288,26 +288,41 @@ void _generateLocaleSettings(
   buffer.writeln('\t}');
 
   buffer.writeln();
-  buffer.writeln(
-      '\t/// Sets plural resolver for languages which are not yet supported by library');
+  buffer.writeln('\t/// Sets plural resolvers.');
   buffer.writeln(
       '\t/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html');
   buffer.writeln(
       '\t/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart');
   buffer.writeln(
       '\t/// Only language part matters, script and country parts are ignored');
-  buffer.write('\tstatic final _renderedResolvers = <String>[');
-  for (final rendered in config.renderedPluralizationResolvers)
-    buffer.write('\'${rendered.language}\',');
-  buffer.writeln('];');
+  buffer.write('\t/// Rendered Resolvers: [');
+  for (int i = 0; i < config.renderedPluralizationResolvers.length; i++) {
+    if (i != 0) buffer.write(', ');
+    buffer.write('\'${config.renderedPluralizationResolvers[i].language}\'');
+  }
+  buffer.writeln(']');
+
+  final missing = allLocales
+      .map((l) => l.locale.language)
+      .toSet()
+      .difference(
+          config.renderedPluralizationResolvers.map((r) => r.language).toSet())
+      .toList();
+  if (missing.isNotEmpty) {
+    buffer.write('\t/// You must set these: [');
+    for (int i = 0; i < missing.length; i++) {
+      if (i != 0) buffer.write(', ');
+      buffer.write('\'${missing[i]}\'');
+    }
+    buffer.writeln(']');
+  }
+
   buffer.writeln(
-      '\tstatic void setPluralResolver({${nsReq(config)}required String language, ${nsReq(config)}required $pluralResolverType cardinalResolver, ${nsReq(config)}required $pluralResolverType ordinalResolver}) {');
-  buffer.writeln('\t\tif (_renderedResolvers.contains(language)) {');
+      '\tstatic void setPluralResolver({${nsReq(config)}required String language, $pluralResolverType${nsOpt(config)} cardinalResolver, $pluralResolverType${nsOpt(config)} ordinalResolver}) {');
   buffer.writeln(
-      '\t\t\tprint(\'Hint: You are overwriting the preconfigured plural resolver for <lang = \$language>\');');
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t\t$pluralResolverCardinal[language] = cardinalResolver;');
-  buffer.writeln('\t\t$pluralResolverOrdinal[language] = ordinalResolver;');
+      '\t\tif (cardinalResolver != null) $pluralResolverCardinal[language] = cardinalResolver;');
+  buffer.writeln(
+      '\t\tif (ordinalResolver != null) $pluralResolverOrdinal[language] = ordinalResolver;');
   buffer.writeln('\t}');
   buffer.writeln();
 
