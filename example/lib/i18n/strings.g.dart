@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-02 at 21:08 UTC
+ * Built on 2021-05-12 at 21:42 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -122,17 +122,14 @@ class LocaleSettings {
 			.toList();
 	}
 
-	/// Sets plural resolver for languages which are not yet supported by library
+	/// Sets plural resolvers.
 	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
 	/// Only language part matters, script and country parts are ignored
-	static final _renderedResolvers = ['de','en',];
-	static void setPluralResolver({required String language, required PluralResolver cardinalResolver, required PluralResolver ordinalResolver}) {
-		if (_renderedResolvers.contains(language)) {
-			print('Hint: You are overwriting the preconfigured plural resolver for <lang = $language>');
-		}
-		_pluralResolversCardinal[language] = cardinalResolver;
-		_pluralResolversOrdinal[language] = ordinalResolver;
+	/// Rendered Resolvers: ['de', 'en']
+	static void setPluralResolver({required String language, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		if (cardinalResolver != null) _pluralResolversCardinal[language] = cardinalResolver;
+		if (ordinalResolver != null) _pluralResolversOrdinal[language] = ordinalResolver;
 	}
 
 }
@@ -230,8 +227,10 @@ PluralResolver _missingPluralResolver(String language) {
 // prepared by fast_i18n
 
 String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	if (n == 0)
+		return zero ?? other!;
 	if (n == 1)
-		return one!;
+		return one ?? other!;
 	return other!;
 }
 
@@ -240,18 +239,20 @@ String _pluralOrdinalDe(num n, {String? zero, String? one, String? two, String? 
 }
 
 String _pluralCardinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	if (n == 0)
+		return zero ?? other!;
 	if (n == 1)
-		return one!;
+		return one ?? other!;
 	return other!;
 }
 
 String _pluralOrdinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
 	if (n % 10 == 1 && n % 100 != 11)
-		return one!;
+		return one ?? other!;
 	if (n % 10 == 2 && n % 100 != 12)
-		return two!;
+		return two ?? other!;
 	if (n % 10 == 3 && n % 100 != 13)
-		return few!;
+		return few ?? other!;
 	return other!;
 }
 
