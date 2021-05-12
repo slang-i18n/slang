@@ -11,7 +11,8 @@ class RuleSet {
   final List<Rule> rules;
   final Quantity defaultQuantity;
 
-  const RuleSet({required this.rules, required this.defaultQuantity});
+  RuleSet({List<Rule>? rules, required this.defaultQuantity})
+      : rules = rules ?? [];
 }
 
 class Rule {

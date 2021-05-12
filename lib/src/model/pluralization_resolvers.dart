@@ -6,28 +6,32 @@ import 'package:fast_i18n/src/model/pluralization.dart';
 /// - the parameter name is "n"
 ///
 /// Contribution would be nice!
-const List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
+// ignore: non_constant_identifier_names
+final List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
   // Czech
   PluralizationResolver(
       language: 'cs',
       cardinal: RuleSet(rules: [
+        Rule('n == 0', Quantity.zero),
         Rule('n == 1', Quantity.one),
-        Rule('n >= 2 && n <= 4', Quantity.few)
+        Rule('n >= 2 && n <= 4', Quantity.few),
       ], defaultQuantity: Quantity.other),
-      ordinal: RuleSet(rules: [], defaultQuantity: Quantity.other)),
+      ordinal: RuleSet(defaultQuantity: Quantity.other)),
   // German
   PluralizationResolver(
       language: 'de',
-      cardinal: RuleSet(
-          rules: [Rule('n == 1', Quantity.one)],
-          defaultQuantity: Quantity.other),
-      ordinal: RuleSet(rules: [], defaultQuantity: Quantity.other)),
+      cardinal: RuleSet(rules: [
+        Rule('n == 0', Quantity.zero),
+        Rule('n == 1', Quantity.one),
+      ], defaultQuantity: Quantity.other),
+      ordinal: RuleSet(defaultQuantity: Quantity.other)),
   // English
   PluralizationResolver(
       language: 'en',
-      cardinal: RuleSet(
-          rules: [Rule('n == 1', Quantity.one)],
-          defaultQuantity: Quantity.other),
+      cardinal: RuleSet(rules: [
+        Rule('n == 0', Quantity.zero),
+        Rule('n == 1', Quantity.one),
+      ], defaultQuantity: Quantity.other),
       ordinal: RuleSet(rules: [
         Rule('n % 10 == 1 && n % 100 != 11', Quantity.one),
         Rule('n % 10 == 2 && n % 100 != 12', Quantity.two),
@@ -36,7 +40,12 @@ const List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
   // Vietnamese
   PluralizationResolver(
     language: 'vi',
-    cardinal: RuleSet(rules: [], defaultQuantity: Quantity.other),
+    cardinal: RuleSet(
+      rules: [
+        Rule('n == 0', Quantity.zero),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
     ordinal: RuleSet(
         rules: [Rule('n == 1', Quantity.one)], defaultQuantity: Quantity.other),
   )
