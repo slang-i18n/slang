@@ -26,6 +26,7 @@ You can see an example of the generated file [here](https://github.com/Tienisto/
     - [String Interpolation](#string-interpolation)
     - [Pluralization](#pluralization)
     - [Maps](#maps)
+    - [Dynamic Keys](#dynamic-keys)
     - [Lists](#lists)
 - [FAQ](#faq)
 
@@ -38,7 +39,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 4.5.0
+  fast_i18n: 4.6.0
 ```
 
 **Step 2: Create JSON files**
@@ -359,6 +360,18 @@ Now you can access the translations via keys:
 String a = t.thisIsAMap['hello world'];
 String b = t.notAMapParent.notAMap; // the "classical" way
 String c = t.notAMapParent.aMapInClass['hi']; // nested
+```
+
+### Dynamic Keys
+
+A more general solution for [Maps](#maps).
+
+It is supported out of the box. No configuration needed. Please use this sparingly.
+
+```dart
+String a = t['myPath.anotherPath'];
+String b = t['myPath.anotherPath.3']; // with index for arrays
+String c = t['myPath.anotherPath'](name: Tom); // with arguments
 ```
 
 ### Lists
