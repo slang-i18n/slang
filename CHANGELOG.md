@@ -1,3 +1,7 @@
+## 4.6.2
+
+- fix: handle text nodes at root level, i.e. `t['someKey']`
+
 ## 4.6.1
 
 - fix: missing key parameter
