@@ -1,3 +1,7 @@
+## 4.6.1
+
+- fix: missing key parameter
+
 ## 4.6.0
 
 - feat: add flat translation map, accessible via `t['someKey.anotherKey']`

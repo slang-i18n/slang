@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-24 at 13:10 UTC
+ * Built on 2021-05-24 at 13:38 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -297,7 +297,7 @@ class _StringsEn {
 
 	/// A flat map containing all translations.
 	dynamic operator[](String key) {
-		return _translationMap[AppLocale.en];
+		return _translationMap[AppLocale.en]![key];
 	}
 }
 
@@ -327,7 +327,7 @@ class _StringsDe implements _StringsEn {
 
 	/// A flat map containing all translations.
 	dynamic operator[](String key) {
-		return _translationMap[AppLocale.de];
+		return _translationMap[AppLocale.de]![key];
 	}
 }
 
