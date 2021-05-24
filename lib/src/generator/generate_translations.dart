@@ -151,7 +151,7 @@ void _generateClass(
     buffer.writeln('\t/// A flat map containing all translations.');
     buffer.writeln('\tdynamic operator[](String key) {');
     buffer.writeln(
-        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}];');
+        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]![key];');
     buffer.writeln('\t}');
   }
 
