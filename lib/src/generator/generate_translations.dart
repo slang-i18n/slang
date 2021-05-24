@@ -34,20 +34,25 @@ void generateTranslations(
       .firstWhere((r) => r?.language == localeData.locale.language,
           orElse: () => null);
 
+  // only for the first class
+  bool root = true;
+
   do {
     ClassTask task = queue.removeFirst();
 
     _generateClass(
-      config,
-      localeData.base,
-      localeData.locale.language,
-      localeData.localeTag,
-      pluralizationResolver,
-      buffer,
-      queue,
-      task.className,
-      task.members,
-    );
+        config,
+        localeData.base,
+        localeData.locale.language,
+        localeData.localeTag,
+        pluralizationResolver,
+        buffer,
+        queue,
+        task.className,
+        task.members,
+        root);
+
+    root = false;
   } while (queue.isNotEmpty);
 }
 
@@ -63,6 +68,7 @@ void _generateClass(
   Queue<ClassTask> queue,
   String className,
   Map<String, Node> currMembers,
+  bool root,
 ) {
   final finalClassName = getClassName(parentName: className, locale: locale);
 
@@ -138,6 +144,16 @@ void _generateClass(
       }
     }
   });
+
+  if (root) {
+    // add map operator for translation map
+    buffer.writeln();
+    buffer.writeln('\t/// A flat map containing all translations.');
+    buffer.writeln('\tdynamic operator[](String key) {');
+    buffer.writeln(
+        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}];');
+    buffer.writeln('\t}');
+  }
 
   buffer.writeln('}');
 }
@@ -265,6 +281,85 @@ void _generateList(
     buffer.writeln(';');
   } else {
     buffer.writeln(',');
+  }
+}
+
+generateTranslationMap(
+    StringBuffer buffer, I18nConfig config, List<I18nData> translations) {
+  buffer.writeln();
+  buffer.writeln('/// A flat map containing all translations.');
+  buffer.writeln(
+      '/// Only for edge cases!. For simple maps, use the map function of this library.');
+  buffer.writeln(
+      'late Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
+
+  for (I18nData localeData in translations) {
+    final pluralizationResolver = config.renderedPluralizationResolvers
+        .cast<PluralizationResolver?>()
+        .firstWhere((r) => r?.language == localeData.locale.language,
+            orElse: () => null);
+
+    buffer.writeln(
+        '\t${config.enumName}.${localeData.locale.toLanguageTag().toEnumConstant()}: {');
+    _generateTranslationMapRecursive(buffer, localeData.root, '', config,
+        pluralizationResolver, localeData.locale.language);
+    buffer.writeln('\t},');
+  }
+
+  buffer.writeln('};');
+}
+
+_generateTranslationMapRecursive(
+    StringBuffer buffer,
+    Node parent,
+    String path,
+    I18nConfig config,
+    PluralizationResolver? pluralizationResolver,
+    String language) {
+  if (parent is ObjectNode) {
+    parent.entries.forEach((key, value) {
+      key = key.toCase(config.keyCase);
+
+      if (value is TextNode) {
+        if (value.params.isEmpty) {
+          buffer.writeln('\t\t\'$path.$key\': \'${value.content}\',');
+        } else {
+          buffer.writeln(
+              '\t\t\'$path.$key\': ${_toParameterList(value.params, config)} => \'${value.content}\',');
+        }
+      } else if (value is ListNode) {
+        // convert ListNode to ObjectNode with index as object keys
+        final nextPath = path != '' ? path + '.' + key : key;
+        final Map<String, Node> entries = {
+          for (int i = 0; i < value.entries.length; i++)
+            i.toString(): value.entries[i]
+        };
+        final converted = ObjectNode(entries, ObjectNodeType.classType);
+
+        _generateTranslationMapRecursive(buffer, converted, nextPath, config,
+            pluralizationResolver, language);
+      } else if (value is ObjectNode) {
+        final nextPath = path != '' ? path + '.' + key : key;
+
+        if (value.type == ObjectNodeType.pluralCardinal ||
+            value.type == ObjectNodeType.pluralOrdinal) {
+          buffer.write('\t\t\'$path.$key\': ');
+          _addPluralizationCall(
+              buffer: buffer,
+              config: config,
+              resolver: pluralizationResolver,
+              language: language,
+              cardinal: value.type == ObjectNodeType.pluralCardinal,
+              key: key,
+              children: value.entries,
+              depth: 1);
+        } else {
+          // recursive
+          _generateTranslationMapRecursive(
+              buffer, value, nextPath, config, pluralizationResolver, language);
+        }
+      }
+    });
   }
 }
 

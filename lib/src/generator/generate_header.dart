@@ -157,7 +157,9 @@ void _generateTranslationGetter(
       '/// Translation happens during initialization of the widget (call of $translateVar).');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
-  buffer.writeln('/// String translated = $translateVar.someKey.anotherKey;');
+  buffer.writeln('/// String a = $translateVar.someKey.anotherKey;');
+  buffer.writeln(
+      '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   buffer.writeln(
       '$baseClassName $translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
@@ -179,9 +181,11 @@ void _generateTranslationGetter(
   buffer.writeln('///');
   buffer.writeln('/// Step 2:');
   buffer.writeln(
-      '/// final $translateVar = $translationsClass.of(context); // get $translateVar variable');
+      '/// final $translateVar = $translationsClass.of(context); // Get $translateVar variable.');
   buffer.writeln(
-      '/// String translated = $translateVar.someKey.anotherKey; // use $translateVar variable');
+      '/// String a = $translateVar.someKey.anotherKey; // Use $translateVar variable.');
+  buffer.writeln(
+      '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   buffer.writeln('class $translationsClass {');
   buffer.writeln('\t$translationsClass._(); // no constructor');
   buffer.writeln();

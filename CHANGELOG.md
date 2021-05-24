@@ -1,3 +1,7 @@
+## 4.6.0
+
+- feat: add flat translation map, accessible via `t['someKey.anotherKey']`
+
 ## 4.5.0
 
 - feat: remove hint when overriding plural resolvers (were too verbose)

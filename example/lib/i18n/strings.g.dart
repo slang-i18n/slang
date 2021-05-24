@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-12 at 21:42 UTC
+ * Built on 2021-05-24 at 13:10 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -29,7 +29,8 @@ enum AppLocale {
 /// Translation happens during initialization of the widget (call of t).
 ///
 /// Usage:
-/// String translated = t.someKey.anotherKey;
+/// String a = t.someKey.anotherKey;
+/// String b = t['someKey.anotherKey']; // Only for edge cases!
 _StringsEn _t = _currLocale.translations;
 _StringsEn get t => _t;
 
@@ -45,8 +46,9 @@ _StringsEn get t => _t;
 /// );
 ///
 /// Step 2:
-/// final t = Translations.of(context); // get t variable
-/// String translated = t.someKey.anotherKey; // use t variable
+/// final t = Translations.of(context); // Get t variable.
+/// String a = t.someKey.anotherKey; // Use t variable.
+/// String b = t['someKey.anotherKey']; // Only for edge cases!
 class Translations {
 	Translations._(); // no constructor
 
@@ -292,6 +294,11 @@ class _StringsEn {
 		'en': 'English',
 		'de': 'German',
 	};
+
+	/// A flat map containing all translations.
+	dynamic operator[](String key) {
+		return _translationMap[AppLocale.en];
+	}
 }
 
 class _StringsMainScreenEn {
@@ -317,6 +324,11 @@ class _StringsDe implements _StringsEn {
 		'en': 'Englisch',
 		'de': 'Deutsch',
 	};
+
+	/// A flat map containing all translations.
+	dynamic operator[](String key) {
+		return _translationMap[AppLocale.de];
+	}
 }
 
 class _StringsMainScreenDe implements _StringsMainScreenEn {
@@ -331,3 +343,28 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 	);
 	@override String get tapMe => 'Drück mich';
 }
+
+/// A flat map containing all translations.
+/// Only for edge cases!. For simple maps, use the map function of this library.
+late Map<AppLocale, Map<String, dynamic>> _translationMap = {
+	AppLocale.en: {
+		'mainScreen.title': 'An English Title',
+		'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
+			one: 'You pressed $count time.',
+			other: 'You pressed $count times.',
+		),
+		'mainScreen.tapMe': 'Tap me',
+		'locales.en': 'English',
+		'locales.de': 'German',
+	},
+	AppLocale.de: {
+		'mainScreen.title': 'Ein deutscher Titel',
+		'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+			one: 'Du hast einmal gedrückt.',
+			other: 'Du hast $count mal gedrückt.',
+		),
+		'mainScreen.tapMe': 'Drück mich',
+		'locales.en': 'Englisch',
+		'locales.de': 'Deutsch',
+	},
+};
