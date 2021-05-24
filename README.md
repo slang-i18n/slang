@@ -371,7 +371,7 @@ It is supported out of the box. No configuration needed. Please use this sparing
 ```dart
 String a = t['myPath.anotherPath'];
 String b = t['myPath.anotherPath.3']; // with index for arrays
-String c = t['myPath.anotherPath'](name: Tom); // with arguments
+String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 ```
 
 ### Lists
