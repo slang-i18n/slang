@@ -319,31 +319,29 @@ _generateTranslationMapRecursive(
   if (parent is ObjectNode) {
     parent.entries.forEach((key, value) {
       key = key.toCase(config.keyCase);
+      if (path.isNotEmpty) key = '$path.$key';
 
       if (value is TextNode) {
         if (value.params.isEmpty) {
-          buffer.writeln('\t\t\'$path.$key\': \'${value.content}\',');
+          buffer.writeln('\t\t\'$key\': \'${value.content}\',');
         } else {
           buffer.writeln(
-              '\t\t\'$path.$key\': ${_toParameterList(value.params, config)} => \'${value.content}\',');
+              '\t\t\'$key\': ${_toParameterList(value.params, config)} => \'${value.content}\',');
         }
       } else if (value is ListNode) {
         // convert ListNode to ObjectNode with index as object keys
-        final nextPath = path != '' ? path + '.' + key : key;
         final Map<String, Node> entries = {
           for (int i = 0; i < value.entries.length; i++)
             i.toString(): value.entries[i]
         };
         final converted = ObjectNode(entries, ObjectNodeType.classType);
 
-        _generateTranslationMapRecursive(buffer, converted, nextPath, config,
-            pluralizationResolver, language);
+        _generateTranslationMapRecursive(
+            buffer, converted, key, config, pluralizationResolver, language);
       } else if (value is ObjectNode) {
-        final nextPath = path != '' ? path + '.' + key : key;
-
         if (value.type == ObjectNodeType.pluralCardinal ||
             value.type == ObjectNodeType.pluralOrdinal) {
-          buffer.write('\t\t\'$path.$key\': ');
+          buffer.write('\t\t\'$key\': ');
           _addPluralizationCall(
               buffer: buffer,
               config: config,
@@ -356,7 +354,7 @@ _generateTranslationMapRecursive(
         } else {
           // recursive
           _generateTranslationMapRecursive(
-              buffer, value, nextPath, config, pluralizationResolver, language);
+              buffer, value, key, config, pluralizationResolver, language);
         }
       }
     });
