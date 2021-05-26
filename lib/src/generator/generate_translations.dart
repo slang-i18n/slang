@@ -151,7 +151,7 @@ void _generateClass(
     buffer.writeln('\t/// A flat map containing all translations.');
     buffer.writeln('\tdynamic operator[](String key) {');
     buffer.writeln(
-        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]![key];');
+        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]${nsExl(config)}[key];');
     buffer.writeln('\t}');
   }
 
@@ -291,7 +291,7 @@ generateTranslationMap(
   buffer.writeln(
       '/// Only for edge cases!. For simple maps, use the map function of this library.');
   buffer.writeln(
-      'late Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
+      '${nsLate(config)}Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
 
   for (I18nData localeData in translations) {
     final pluralizationResolver = config.renderedPluralizationResolvers

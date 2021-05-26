@@ -1,3 +1,7 @@
+## 4.6.3
+
+- fix: restore non-nullsafety compatibility 
+
 ## 4.6.2
 
 - fix: handle text nodes at root level, i.e. `t['someKey']`

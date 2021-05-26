@@ -31,3 +31,7 @@ String nsReq(I18nConfig config) {
 String nsExl(I18nConfig config) {
   return config.nullSafety ? '!' : '';
 }
+
+String nsLate(I18nConfig config) {
+  return config.nullSafety ? 'late ' : '';
+}
