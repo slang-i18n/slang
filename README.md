@@ -17,6 +17,19 @@ Version 4.x.x is web compatible as soon as the Flutter team merge this fix into 
 
 You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
 
+This is how you access the translations:
+
+```dart
+final t = Translations.of(context); // optional, there is also a static getter without context
+
+String a = t.mainScreen.title; // simple use case
+String b = t.game.end.highscore(name: 'Tom', score: 32.6); // with parameters
+String c = t.items(count: 2); // with pluralization (using count parameter)
+String d = t.intro.step[4]; // with index
+String e = t.error.type['WARNING']; // with dynamic key
+String f = t['mainScreen.title']; // with fully dynamic key
+```
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
