@@ -289,7 +289,7 @@ generateTranslationMap(
   buffer.writeln();
   buffer.writeln('/// A flat map containing all translations.');
   buffer.writeln(
-      '/// Only for edge cases!. For simple maps, use the map function of this library.');
+      '/// Only for edge cases! For simple maps, use the map function of this library.');
   buffer.writeln(
       '${nsLate(config)}Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
 
