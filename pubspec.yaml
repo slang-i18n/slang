@@ -1,6 +1,6 @@
 name: fast_i18n
 description: Lightweight i18n solution. Use JSON files to create typesafe translations.
-version: 4.6.2
+version: 4.6.3
 homepage: https://github.com/Tienisto/flutter-fast-i18n
 
 environment:
