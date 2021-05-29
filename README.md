@@ -22,12 +22,12 @@ This is how you access the translations:
 ```dart
 final t = Translations.of(context); // optional, there is also a static getter without context
 
-String a = t.mainScreen.title; // simple use case
+String a = t.mainScreen.title;                             // simple use case
 String b = t.game.end.highscore(name: 'Tom', score: 32.6); // with parameters
-String c = t.items(count: 2); // with pluralization (using count parameter)
-String d = t.intro.step[4]; // with index
-String e = t.error.type['WARNING']; // with dynamic key
-String f = t['mainScreen.title']; // with fully dynamic key
+String c = t.items(count: 2);                              // with pluralization (using count)
+String d = t.intro.step[4];                                // with index
+String e = t.error.type['WARNING'];                        // with dynamic key
+String f = t['mainScreen.title'];                          // with fully dynamic key
 ```
 
 ## Table of Contents
