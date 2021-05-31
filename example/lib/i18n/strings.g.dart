@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-24 at 21:39 UTC
+ * Built on 2021-05-31 at 14:43 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -345,7 +345,7 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 }
 
 /// A flat map containing all translations.
-/// Only for edge cases!. For simple maps, use the map function of this library.
+/// Only for edge cases! For simple maps, use the map function of this library.
 late Map<AppLocale, Map<String, dynamic>> _translationMap = {
 	AppLocale.en: {
 		'mainScreen.title': 'An English Title',

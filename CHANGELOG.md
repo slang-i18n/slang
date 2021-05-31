@@ -1,3 +1,7 @@
+## 4.7.0
+
+- feat: new `string_interpolation` configuration. Possible values: `dart (default)`, `braces` and `double_braces`
+
 ## 4.6.3
 
 - fix: restore non-nullsafety compatibility 

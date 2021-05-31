@@ -35,6 +35,9 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
           BuildConfig.defaultTranslationClassVisibility;
   final keyCase = (configEntry?['key_case'] as String?)?.toKeyCase() ??
       BuildConfig.defaultKeyCase;
+  final stringInterpolation = (configEntry?['string_interpolation'] as String?)
+          ?.toStringInterpolation() ??
+      BuildConfig.defaultStringInterpolation;
   final maps = configEntry?['maps']?.cast<String>() ?? BuildConfig.defaultMaps;
   final pluralCardinal =
       configEntry?['pluralization']?['cardinal']?.cast<String>() ??
@@ -61,6 +64,7 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
       enumName: enumName,
       translationClassVisibility: translationClassVisibility,
       keyCase: keyCase,
+      stringInterpolation: stringInterpolation,
       maps: maps,
       pluralCardinal: pluralCardinal,
       pluralOrdinal: pluralOrdinal);

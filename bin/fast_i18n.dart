@@ -61,6 +61,8 @@ void main() async {
       ' -> translationClassVisibility: ${(buildConfig.translationClassVisibility.toString().split('.').last)}');
   print(
       ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
+  print(
+      ' -> stringInterpolation: ${(buildConfig.stringInterpolation.toString().split('.').last)}');
   print(' -> maps: ${buildConfig.maps}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
   print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');

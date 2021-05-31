@@ -51,10 +51,13 @@ class I18nBuilder implements Builder {
         enumName: options.config['enum_name'] ?? BuildConfig.defaultEnumName,
         translationClassVisibility:
             (options.config['translation_class_visibility'] as String?)
-                    .toTranslationClassVisibility() ??
+                    ?.toTranslationClassVisibility() ??
                 BuildConfig.defaultTranslationClassVisibility,
-        keyCase: (options.config['key_case'] as String?).toKeyCase() ??
+        keyCase: (options.config['key_case'] as String?)?.toKeyCase() ??
             BuildConfig.defaultKeyCase,
+        stringInterpolation: (options.config['string_interpolation'] as String?)
+                ?.toStringInterpolation() ??
+            BuildConfig.defaultStringInterpolation,
         maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
         pluralCardinal:
             options.config['pluralization']?['cardinal']?.cast<String>() ??

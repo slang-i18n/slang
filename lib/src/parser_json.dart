@@ -31,7 +31,7 @@ void _parseJSONObject(
   curr.forEach((key, value) {
     if (value is String) {
       // key: 'value'
-      destination[key] = TextNode(value);
+      destination[key] = TextNode(value, config.stringInterpolation);
     } else if (value is List) {
       // key: [ ...value ]
       List<Node> list = List.empty(growable: true);
@@ -68,7 +68,7 @@ void _parseJSONArray(
   for (dynamic value in curr) {
     if (value is String) {
       // key: 'value'
-      destination.add(TextNode(value));
+      destination.add(TextNode(value, config.stringInterpolation));
     } else if (value is List) {
       // key: [ ...value ]
       List<Node> list = List.empty(growable: true);

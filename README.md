@@ -36,13 +36,13 @@ String f = t['mainScreen.title'];                          // with fully dynamic
 
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
-- [API](#api)
 - [Features](#features)
     - [String Interpolation](#string-interpolation)
     - [Pluralization](#pluralization)
     - [Maps](#maps)
     - [Dynamic Keys](#dynamic-keys)
     - [Lists](#lists)
+- [API](#api)
 - [FAQ](#faq)
 
 ## Getting Started
@@ -54,7 +54,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 4.6.3
+  fast_i18n: 4.7.0
 ```
 
 **Step 2: Create JSON files**
@@ -189,6 +189,7 @@ targets:
           enum_name: AppLocale
           translation_class_visibility: private
           key_case: snake
+          string_interpolation: double_braces
           maps:
             - error.codes
             - category
@@ -212,43 +213,24 @@ translate_var|`String`|translate variable name|`t`
 enum_name|`String`|enum name|`AppLocale`
 translation_class_visibility|`private`, `public`|class visibility|`private`
 key_case|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
+string_interpolation|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
 maps|`List<String>`|entries which should be accessed via keys|`[]`
 pluralization/cardinal|`List<String>`|entries which have cardinals|`[]`
 pluralization/ordinal|`List<String>`|entries which have ordinals|`[]`
-
-## API
-
-When the dart code has been generated, you will see some useful classes and functions
-
-`t` - the translate variable for simple translations
-
-`Translations.of(context)` - translations which reacts to locale changes
-
-`TranslationProvider` - App wrapper, used for `Translations.of(context)`
-
-`LocaleSettings.useDeviceLocale()` - use the locale of the device
-
-`LocaleSettings.setLocale(AppLocale.en)` - change the locale
-
-`LocaleSettings.setLocaleRaw('de')` - change the locale
-
-`LocaleSettings.currentLocale` - get the current locale
-
-`LocaleSettings.baseLocale` - get the base locale
-
-`LocaleSettings.supportedLocalesRaw` - get the supported locales
-
-`LocaleSettings.supportedLocales` - see step 4a
-
-`LocaleSettings.setPluralResolver` - set pluralization resolver for unsupported languages
 
 ## Features
 
 ### String Interpolation
 
-Use the `$` prefix.
+There are three modes configurable via `string_interpolation`:
 
-In edge cases you can also wrap it with `${...}`.
+Mode|Example
+---|---
+`dart (default)`|`Hello $name or ${name2}`
+`braces`|`Hello {name}`
+`double_braces`|`Hello {{name}}`
+
+You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
 ```json
 {
@@ -420,6 +402,32 @@ String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
+
+## API                                                                                   
+                                                                                         
+When the dart code has been generated, you will see some useful classes and functions    
+                                                                                         
+`t` - the translate variable for simple translations                                     
+                                                                                         
+`Translations.of(context)` - translations which reacts to locale changes                 
+                                                                                         
+`TranslationProvider` - App wrapper, used for `Translations.of(context)`                 
+                                                                                         
+`LocaleSettings.useDeviceLocale()` - use the locale of the device                        
+                                                                                         
+`LocaleSettings.setLocale(AppLocale.en)` - change the locale                             
+                                                                                         
+`LocaleSettings.setLocaleRaw('de')` - change the locale                                  
+                                                                                         
+`LocaleSettings.currentLocale` - get the current locale                                  
+                                                                                         
+`LocaleSettings.baseLocale` - get the base locale                                        
+                                                                                         
+`LocaleSettings.supportedLocalesRaw` - get the supported locales                         
+                                                                                         
+`LocaleSettings.supportedLocales` - see step 4a                                          
+                                                                                         
+`LocaleSettings.setPluralResolver` - set pluralization resolver for unsupported languages
 
 ## FAQ
 

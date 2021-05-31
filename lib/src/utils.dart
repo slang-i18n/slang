@@ -1,6 +1,12 @@
 class Utils {
   /// matches $argument or ${argument}
-  static RegExp argumentsRegex = RegExp(r'([^\\]|^)\$\{?(\w+)\}?');
+  static RegExp argumentsDartRegex = RegExp(r'([^\\]|^)\$\{?(\w+)\}?');
+
+  /// matches {argument}
+  static RegExp argumentsBracesRegex = RegExp(r'([^\\])\{(\w+)\}');
+
+  /// matches {{argument}}
+  static RegExp argumentsDoubleBracesRegex = RegExp(r'([^\\])\{\{(\w+)\}\}');
 
   /// locale regex
   static const LOCALE_REGEX_RAW =

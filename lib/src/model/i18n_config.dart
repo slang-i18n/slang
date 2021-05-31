@@ -26,7 +26,7 @@ class I18nConfig {
 enum TranslationClassVisibility { private, public }
 enum KeyCase { camel, pascal, snake }
 
-extension Parser on String? {
+extension Parser on String {
   KeyCase? toKeyCase() {
     switch (this) {
       case 'camel':
@@ -35,8 +35,6 @@ extension Parser on String? {
         return KeyCase.snake;
       case 'pascal':
         return KeyCase.pascal;
-      default:
-        return null;
     }
   }
 
@@ -46,8 +44,6 @@ extension Parser on String? {
         return TranslationClassVisibility.private;
       case 'public':
         return TranslationClassVisibility.public;
-      default:
-        return null;
     }
   }
 }
