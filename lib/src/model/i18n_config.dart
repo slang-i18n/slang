@@ -7,27 +7,27 @@ class I18nConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
   final List<PluralizationResolver> renderedPluralizationResolvers;
-  final KeyCase? keyCase;
+  final KeyCase keyCase;
   final String translateVariable;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
 
   I18nConfig(
-      {required this.nullSafety,
-      required this.baseName,
-      required this.baseLocale,
-      required this.renderedPluralizationResolvers,
-      required this.keyCase,
-      required this.translateVariable,
-      required this.enumName,
-      required this.translationClassVisibility});
+      {this.nullSafety,
+      this.baseName,
+      this.baseLocale,
+      this.renderedPluralizationResolvers,
+      this.keyCase,
+      this.translateVariable,
+      this.enumName,
+      this.translationClassVisibility});
 }
 
 enum TranslationClassVisibility { private, public }
 enum KeyCase { camel, pascal, snake }
 
-extension Parser on String? {
-  KeyCase? toKeyCase() {
+extension Parser on String {
+  KeyCase toKeyCase() {
     switch (this) {
       case 'camel':
         return KeyCase.camel;
@@ -40,7 +40,7 @@ extension Parser on String? {
     }
   }
 
-  TranslationClassVisibility? toTranslationClassVisibility() {
+  TranslationClassVisibility toTranslationClassVisibility() {
     switch (this) {
       case 'private':
         return TranslationClassVisibility.private;

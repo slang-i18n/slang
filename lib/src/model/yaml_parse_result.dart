@@ -5,5 +5,5 @@ class YamlParseResult {
   final bool parsed;
   final BuildConfig config;
 
-  YamlParseResult({required this.parsed, required this.config});
+  YamlParseResult({this.parsed, this.config});
 }

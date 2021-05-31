@@ -2,9 +2,9 @@ import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
 String getClassNameRoot(
-    {required String baseName,
+    {String baseName,
     String locale = '',
-    required TranslationClassVisibility visibility}) {
+    TranslationClassVisibility visibility}) {
   String result = baseName.toCase(KeyCase.pascal) +
       locale.toLowerCase().toCase(KeyCase.pascal);
   if (visibility == TranslationClassVisibility.private) result = '_' + result;
@@ -12,7 +12,7 @@ String getClassNameRoot(
 }
 
 String getClassName(
-    {required String parentName, String childName = '', String locale = ''}) {
+    {String parentName, String childName = '', String locale = ''}) {
   return parentName +
       childName.toCase(KeyCase.pascal) +
       locale.toLowerCase().toCase(KeyCase.pascal);

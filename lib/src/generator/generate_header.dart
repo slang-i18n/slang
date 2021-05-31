@@ -77,9 +77,7 @@ void generateHeader(
 }
 
 void _generateHeaderComment(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> translations}) {
+    {StringBuffer buffer, I18nConfig config, List<I18nData> translations}) {
   final now = DateTime.now().toUtc();
   final int translationCount = translations.fold(
       0, (prev, curr) => prev + _countTranslations(curr.root));
@@ -103,10 +101,10 @@ void _generateImports(StringBuffer buffer) {
 }
 
 void _generateLocaleVariables(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseLocaleVar,
-    required String currLocaleVar}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    String baseLocaleVar,
+    String currLocaleVar}) {
   final String enumName = config.enumName;
   final String baseLocale = config.baseLocale.toLanguageTag();
 
@@ -117,9 +115,7 @@ void _generateLocaleVariables(
 }
 
 void _generateEnum(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> allLocales}) {
+    {StringBuffer buffer, I18nConfig config, List<I18nData> allLocales}) {
   final String enumName = config.enumName;
   final String baseLocale = config.baseLocale.toLanguageTag();
 
@@ -140,11 +136,11 @@ void _generateEnum(
 }
 
 void _generateTranslationGetter(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseClassName,
-    required String currLocaleVar,
-    required String translateVarInternal}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    String baseClassName,
+    String currLocaleVar,
+    String translateVarInternal}) {
   const String translationsClass = 'Translations';
   final String translateVar = config.translateVariable;
 
@@ -202,16 +198,16 @@ void _generateTranslationGetter(
 }
 
 void _generateLocaleSettings(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> allLocales,
-    required String baseLocaleVar,
-    required String currLocaleVar,
-    required String translateVarInternal,
-    required String translationProviderKey,
-    required String pluralResolverType,
-    required String pluralResolverCardinal,
-    required String pluralResolverOrdinal}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    List<I18nData> allLocales,
+    String baseLocaleVar,
+    String currLocaleVar,
+    String translateVarInternal,
+    String translationProviderKey,
+    String pluralResolverType,
+    String pluralResolverCardinal,
+    String pluralResolverOrdinal}) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
 
@@ -334,10 +330,10 @@ void _generateLocaleSettings(
 }
 
 void _generateExtensions(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> allLocales,
-    required String baseClassName}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    List<I18nData> allLocales,
+    String baseClassName}) {
   final String enumName = config.enumName;
 
   // enum extension
@@ -399,11 +395,11 @@ void _generateExtensions(
 }
 
 void _generateTranslationWrapper(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseClassName,
-    required String translationProviderKey,
-    required String currLocaleVar}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    String baseClassName,
+    String translationProviderKey,
+    String currLocaleVar}) {
   const String translationProviderClass = 'TranslationProvider';
   const String translationProviderStateClass = '_TranslationProviderState';
   const String inheritedClass = '_InheritedLocaleData';
@@ -466,12 +462,12 @@ void _generateTranslationWrapper(
 }
 
 void _generatePluralResolvers(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<PluralizationResolver> languageRules,
-    required String pluralResolverType,
-    required String pluralResolverCardinal,
-    required String pluralResolverOrdinal}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    List<PluralizationResolver> languageRules,
+    String pluralResolverType,
+    String pluralResolverCardinal,
+    String pluralResolverOrdinal}) {
   buffer.writeln();
   buffer.writeln('// pluralization resolvers');
 
@@ -518,10 +514,7 @@ void _generatePluralResolvers(
 
 /// generates the function without function name
 void _generatePluralFunction(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required RuleSet ruleSet,
-    required functionName}) {
+    {StringBuffer buffer, I18nConfig config, RuleSet ruleSet, functionName}) {
   buffer.write('String $functionName(num n, {');
   for (int i = 0; i < Quantity.values.length; i++) {
     if (i != 0) buffer.write(', ');
@@ -538,8 +531,7 @@ void _generatePluralFunction(
   buffer.writeln('}');
 }
 
-void _generateHelpers(
-    {required StringBuffer buffer, required I18nConfig config}) {
+void _generateHelpers({StringBuffer buffer, I18nConfig config}) {
   final enumName = config.enumName;
   buffer.writeln();
   buffer.writeln('// helpers');

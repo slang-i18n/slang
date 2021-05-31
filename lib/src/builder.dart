@@ -30,7 +30,7 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final bool nullSafety;
+    bool nullSafety;
     if (options.config['null_safety'] != null) {
       nullSafety = options.config['null_safety'] == true;
     } else {
@@ -50,21 +50,21 @@ class I18nBuilder implements Builder {
             options.config['translate_var'] ?? BuildConfig.defaultTranslateVar,
         enumName: options.config['enum_name'] ?? BuildConfig.defaultEnumName,
         translationClassVisibility:
-            (options.config['translation_class_visibility'] as String?)
+            (options.config['translation_class_visibility'] as String)
                     .toTranslationClassVisibility() ??
                 BuildConfig.defaultTranslationClassVisibility,
-        keyCase: (options.config['key_case'] as String?).toKeyCase() ??
+        keyCase: (options.config['key_case'] as String).toKeyCase() ??
             BuildConfig.defaultKeyCase,
         maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
         pluralCardinal:
-            options.config['pluralization']?['cardinal']?.cast<String>() ??
+            options.config['pluralization']['cardinal']?.cast<String>() ??
                 BuildConfig.defaultCardinal,
         pluralOrdinal:
-            options.config['pluralization']?['ordinal']?.cast<String>() ??
+            options.config['pluralization']['ordinal']?.cast<String>() ??
                 BuildConfig.defaultOrdinal);
 
     if (buildConfig.inputDirectory != null &&
-        !buildStep.inputId.path.contains(buildConfig.inputDirectory!)) return;
+        !buildStep.inputId.path.contains(buildConfig.inputDirectory)) return;
 
     // only generate once
     if (_generated) return;
@@ -73,7 +73,7 @@ class I18nBuilder implements Builder {
 
     // detect all locales, their assetId and the baseName
     final Map<AssetId, I18nLocale> assetMap = Map();
-    String? baseName;
+    String baseName;
 
     final Glob findAssetsPattern = buildConfig.inputDirectory != null
         ? Glob('**${buildConfig.inputDirectory}/*$inputFilePattern')
@@ -120,7 +120,7 @@ class I18nBuilder implements Builder {
     final String output = generate(
         config: I18nConfig(
             nullSafety: buildConfig.nullSafety,
-            baseName: baseName!,
+            baseName: baseName,
             baseLocale: buildConfig.baseLocale,
             renderedPluralizationResolvers: buildConfig
                         .pluralCardinal.isNotEmpty ||

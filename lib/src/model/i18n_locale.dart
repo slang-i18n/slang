@@ -3,10 +3,10 @@ import 'package:fast_i18n/src/utils.dart';
 /// own Locale type to decouple from dart:ui package
 class I18nLocale {
   final String language;
-  final String? script;
-  final String? country;
+  final String script;
+  final String country;
 
-  I18nLocale({required this.language, this.script, this.country});
+  I18nLocale({this.language, this.script, this.country});
 
   String toLanguageTag() {
     if (script != null && country != null) {

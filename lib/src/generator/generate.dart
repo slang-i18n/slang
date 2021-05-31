@@ -5,8 +5,7 @@ import 'package:fast_i18n/src/model/i18n_data.dart';
 
 /// main generate function
 /// returns a string representing the content of the .g.dart file
-String generate(
-    {required I18nConfig config, required List<I18nData> translations}) {
+String generate({I18nConfig config, List<I18nData> translations}) {
   StringBuffer buffer = StringBuffer();
 
   generateHeader(buffer, config, translations);
