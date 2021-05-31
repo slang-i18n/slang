@@ -9,20 +9,35 @@ import "package:yaml/yaml.dart";
 /// parses the yaml string according to build.yaml
 YamlParseResult parseBuildYaml(String yamlContent) {
   YamlMap configEntry;
+  bool parsed = true;
   if (yamlContent != null) {
     final map = loadYaml(yamlContent);
     configEntry = _findConfigEntry(map);
   }
 
+  if (configEntry == null) {
+    parsed = false;
+    configEntry = YamlMap.wrap({
+      'pluralization': {}
+    });
+  }
+
+  if (configEntry['pluralization'] == null) {
+    configEntry = YamlMap.wrap({
+      ...configEntry,
+      'pluralization': {}
+    });
+  }
+
   final baseLocale = I18nLocale.fromString(
       configEntry['base_locale'] ?? BuildConfig.defaultBaseLocale);
   final inputDirectory = ((configEntry['input_directory'] as String) ??
-          BuildConfig.defaultInputDirectory)
+      BuildConfig.defaultInputDirectory)
       ?.normalizePath();
   final inputFilePattern =
       configEntry['input_file_pattern'] ?? BuildConfig.defaultInputFilePattern;
   final outputDirectory = ((configEntry['output_directory'] as String) ??
-          BuildConfig.defaultOutputDirectory)
+      BuildConfig.defaultOutputDirectory)
       ?.normalizePath();
   final outputFilePattern = configEntry['output_file_pattern'] ??
       BuildConfig.defaultOutputFilePattern;
@@ -31,7 +46,7 @@ YamlParseResult parseBuildYaml(String yamlContent) {
   final enumName = configEntry['enum_name'] ?? BuildConfig.defaultEnumName;
   final translationClassVisibility =
       (configEntry['translation_class_visibility'] as String)
-              ?.toTranslationClassVisibility() ??
+          ?.toTranslationClassVisibility() ??
           BuildConfig.defaultTranslationClassVisibility;
   final keyCase = (configEntry['key_case'] as String)?.toKeyCase() ??
       BuildConfig.defaultKeyCase;
@@ -65,7 +80,7 @@ YamlParseResult parseBuildYaml(String yamlContent) {
       pluralCardinal: pluralCardinal,
       pluralOrdinal: pluralOrdinal);
 
-  return YamlParseResult(parsed: configEntry != null, config: buildConfig);
+  return YamlParseResult(parsed: parsed, config: buildConfig);
 }
 
 YamlMap _findConfigEntry(YamlMap parent) {
