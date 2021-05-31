@@ -10,7 +10,7 @@ class I18nData {
   final String localeTag; // the locale code tag
   final ObjectNode root; // the actual strings
 
-  I18nData({required this.base, required this.locale, required this.root})
+  I18nData({this.base, this.locale, this.root})
       : localeTag = locale.toLanguageTag();
 
   /// sorts base locale first, then alphabetically

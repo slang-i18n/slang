@@ -25,7 +25,7 @@ void main() async {
           .where((item) => FileSystemEntity.isFileSync(item.path));
 
   // build config
-  BuildConfig? buildConfig;
+  BuildConfig buildConfig;
   for (final file in files) {
     final fileName = file.path.getFileName();
 
@@ -70,16 +70,16 @@ void main() async {
 
   // filter files according to build config
   files = files.where((file) {
-    if (!file.path.endsWith(buildConfig!.inputFilePattern)) return false;
+    if (!file.path.endsWith(buildConfig.inputFilePattern)) return false;
 
     if (buildConfig.inputDirectory != null &&
-        !file.path.contains(buildConfig.inputDirectory!)) return false;
+        !file.path.contains(buildConfig.inputDirectory)) return false;
 
     return true;
   });
 
   // find base name
-  String? baseName;
+  String baseName;
   for (final file in files) {
     final fileName = file.path.getFileName();
 
@@ -103,7 +103,7 @@ void main() async {
   print('Scanning translations...');
   print('');
   final translationList = <I18nData>[];
-  String? resultPath;
+  String resultPath;
   for (final file in files) {
     final fileName = file.path.getFileName();
     final fileNameNoExtension =
@@ -141,7 +141,7 @@ void main() async {
 
   if (buildConfig.outputDirectory != null) {
     // output directory specified, use this path instead
-    resultPath = buildConfig.outputDirectory! +
+    resultPath = buildConfig.outputDirectory +
         Platform.pathSeparator +
         baseName +
         buildConfig.outputFilePattern;

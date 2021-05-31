@@ -3,16 +3,14 @@ class PluralizationResolver {
   final RuleSet cardinal;
   final RuleSet ordinal;
 
-  const PluralizationResolver(
-      {required this.language, required this.cardinal, required this.ordinal});
+  const PluralizationResolver({this.language, this.cardinal, this.ordinal});
 }
 
 class RuleSet {
   final List<Rule> rules;
   final Quantity defaultQuantity;
 
-  RuleSet({List<Rule>? rules, required this.defaultQuantity})
-      : rules = rules ?? [];
+  RuleSet({List<Rule> rules, this.defaultQuantity}) : rules = rules ?? [];
 }
 
 class Rule {
