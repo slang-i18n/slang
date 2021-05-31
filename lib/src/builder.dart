@@ -30,14 +30,9 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final bool nullSafety;
-    if (options.config['null_safety'] != null) {
-      nullSafety = options.config['null_safety'] == true;
-    } else {
-      nullSafety = (await buildStep.inputLibrary).isNonNullableByDefault;
-    }
     final buildConfig = BuildConfig(
-        nullSafety: nullSafety,
+        nullSafety:
+            options.config['null_safety'] ?? BuildConfig.defaultNullSafety,
         baseLocale: I18nLocale.fromString(
             options.config['base_locale'] ?? BuildConfig.defaultBaseLocale),
         inputDirectory: options.config['input_directory'] ??

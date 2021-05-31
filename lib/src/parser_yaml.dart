@@ -14,6 +14,8 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
     configEntry = _findConfigEntry(map);
   }
 
+  final bool nullSafety =
+      configEntry?['null_safety'] ?? BuildConfig.defaultNullSafety;
   final baseLocale = I18nLocale.fromString(
       configEntry?['base_locale'] ?? BuildConfig.defaultBaseLocale);
   final inputDirectory = ((configEntry?['input_directory'] as String?) ??
@@ -45,13 +47,6 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
   final pluralOrdinal =
       configEntry?['pluralization']?['ordinal']?.cast<String>() ??
           BuildConfig.defaultOrdinal;
-
-  final bool nullSafety;
-  if (configEntry?['null_safety'] != null) {
-    nullSafety = configEntry?['null_safety'] == true;
-  } else {
-    nullSafety = BuildConfig.defaultNullSafety;
-  }
 
   final buildConfig = BuildConfig(
       nullSafety: nullSafety,
