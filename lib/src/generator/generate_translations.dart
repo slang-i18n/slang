@@ -30,7 +30,7 @@ void generateTranslations(
   ));
 
   final pluralizationResolver = config.renderedPluralizationResolvers
-      .cast<PluralizationResolver?>()
+      .cast<PluralizationResolver>()
       .firstWhere((r) => r?.language == localeData.locale.language,
           orElse: () => null);
 
@@ -63,7 +63,7 @@ void _generateClass(
   bool base,
   String language,
   String locale,
-  PluralizationResolver? pluralizationResolver,
+  PluralizationResolver pluralizationResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
@@ -165,7 +165,7 @@ void _generateMap(
   bool base,
   String language,
   String locale,
-  PluralizationResolver? pluralizationResolver,
+  PluralizationResolver pluralizationResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className, // without locale
@@ -239,7 +239,7 @@ void _generateList(
   I18nConfig config,
   bool base,
   String locale,
-  PluralizationResolver? pluralizationResolver,
+  PluralizationResolver pluralizationResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
@@ -295,7 +295,7 @@ generateTranslationMap(
 
   for (I18nData localeData in translations) {
     final pluralizationResolver = config.renderedPluralizationResolvers
-        .cast<PluralizationResolver?>()
+        .cast<PluralizationResolver>()
         .firstWhere((r) => r?.language == localeData.locale.language,
             orElse: () => null);
 
@@ -314,7 +314,7 @@ _generateTranslationMapRecursive(
     Node parent,
     String path,
     I18nConfig config,
-    PluralizationResolver? pluralizationResolver,
+    PluralizationResolver pluralizationResolver,
     String language) {
   if (parent is ObjectNode) {
     parent.entries.forEach((key, value) {
@@ -376,14 +376,14 @@ String _toParameterList(List<String> params, I18nConfig config) {
 }
 
 void _addPluralizationCall(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required PluralizationResolver? resolver,
-    required String language,
-    required bool cardinal,
-    required String key,
-    required Map<String, Node> children,
-    required int depth}) {
+    {StringBuffer buffer,
+    I18nConfig config,
+    PluralizationResolver resolver,
+    String language,
+    bool cardinal,
+    String key,
+    Map<String, Node> children,
+    int depth}) {
   final textNodeList = children.values.cast<TextNode>().toList();
 
   if (textNodeList.isEmpty) {

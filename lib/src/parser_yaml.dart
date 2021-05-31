@@ -7,45 +7,45 @@ import 'package:fast_i18n/src/model/yaml_parse_result.dart';
 import "package:yaml/yaml.dart";
 
 /// parses the yaml string according to build.yaml
-YamlParseResult parseBuildYaml(String? yamlContent) {
-  YamlMap? configEntry;
+YamlParseResult parseBuildYaml(String yamlContent) {
+  YamlMap configEntry;
   if (yamlContent != null) {
     final map = loadYaml(yamlContent);
     configEntry = _findConfigEntry(map);
   }
 
   final baseLocale = I18nLocale.fromString(
-      configEntry?['base_locale'] ?? BuildConfig.defaultBaseLocale);
-  final inputDirectory = ((configEntry?['input_directory'] as String?) ??
+      configEntry['base_locale'] ?? BuildConfig.defaultBaseLocale);
+  final inputDirectory = ((configEntry['input_directory'] as String) ??
           BuildConfig.defaultInputDirectory)
       ?.normalizePath();
   final inputFilePattern =
-      configEntry?['input_file_pattern'] ?? BuildConfig.defaultInputFilePattern;
-  final outputDirectory = ((configEntry?['output_directory'] as String?) ??
+      configEntry['input_file_pattern'] ?? BuildConfig.defaultInputFilePattern;
+  final outputDirectory = ((configEntry['output_directory'] as String) ??
           BuildConfig.defaultOutputDirectory)
       ?.normalizePath();
-  final outputFilePattern = configEntry?['output_file_pattern'] ??
+  final outputFilePattern = configEntry['output_file_pattern'] ??
       BuildConfig.defaultOutputFilePattern;
   final translateVar =
-      configEntry?['translate_var'] ?? BuildConfig.defaultTranslateVar;
-  final enumName = configEntry?['enum_name'] ?? BuildConfig.defaultEnumName;
+      configEntry['translate_var'] ?? BuildConfig.defaultTranslateVar;
+  final enumName = configEntry['enum_name'] ?? BuildConfig.defaultEnumName;
   final translationClassVisibility =
-      (configEntry?['translation_class_visibility'] as String?)
+      (configEntry['translation_class_visibility'] as String)
               ?.toTranslationClassVisibility() ??
           BuildConfig.defaultTranslationClassVisibility;
-  final keyCase = (configEntry?['key_case'] as String?)?.toKeyCase() ??
+  final keyCase = (configEntry['key_case'] as String)?.toKeyCase() ??
       BuildConfig.defaultKeyCase;
-  final maps = configEntry?['maps']?.cast<String>() ?? BuildConfig.defaultMaps;
+  final maps = configEntry['maps']?.cast<String>() ?? BuildConfig.defaultMaps;
   final pluralCardinal =
-      configEntry?['pluralization']?['cardinal']?.cast<String>() ??
+      configEntry['pluralization']['cardinal']?.cast<String>() ??
           BuildConfig.defaultCardinal;
   final pluralOrdinal =
-      configEntry?['pluralization']?['ordinal']?.cast<String>() ??
+      configEntry['pluralization']['ordinal']?.cast<String>() ??
           BuildConfig.defaultOrdinal;
 
-  final bool nullSafety;
-  if (configEntry?['null_safety'] != null) {
-    nullSafety = configEntry?['null_safety'] == true;
+  bool nullSafety;
+  if (configEntry['null_safety'] != null) {
+    nullSafety = configEntry['null_safety'] == true;
   } else {
     nullSafety = BuildConfig.defaultNullSafety;
   }
@@ -68,7 +68,7 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
   return YamlParseResult(parsed: configEntry != null, config: buildConfig);
 }
 
-YamlMap? _findConfigEntry(YamlMap parent) {
+YamlMap _findConfigEntry(YamlMap parent) {
   for (final entry in parent.entries) {
     if (entry.key == 'fast_i18n:i18nBuilder' && entry.value is YamlMap) {
       final options = entry.value['options'];

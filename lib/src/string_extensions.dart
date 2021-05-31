@@ -12,7 +12,8 @@ extension StringExtensions on String {
 
   /// transforms the string to the specified case
   /// if case is null, then no transformation will be applied
-  String toCase(KeyCase? keyCase) {
+  String toCase(KeyCase keyCase) {
+    if (keyCase == null) return this;
     switch (keyCase) {
       case KeyCase.camel:
         return _getWords(this)
@@ -23,8 +24,6 @@ extension StringExtensions on String {
         return _getWords(this).map((word) => word.capitalize()).join('');
       case KeyCase.snake:
         return _getWords(this).map((word) => word.toLowerCase()).join('_');
-      case null:
-        return this;
       default:
         print('Unknown key case: $keyCase');
         return this;
@@ -56,7 +55,7 @@ List<String> _getWords(String input) {
 
   for (int i = 0; i < input.length; i++) {
     final String currChar = input[i];
-    final String? nextChar = i + 1 == input.length ? null : input[i + 1];
+    final String nextChar = i + 1 == input.length ? null : input[i + 1];
 
     if (_symbolSet.contains(currChar)) {
       continue;
