@@ -1,6 +1,5 @@
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/utils.dart';
 
 /// represents a build.yaml
 class BuildConfig {
@@ -64,34 +63,6 @@ extension StringInterpolationParser on String {
         return StringInterpolation.braces;
       case 'double_braces':
         return StringInterpolation.doubleBraces;
-    }
-  }
-
-  String digest(StringInterpolation interpolation) {
-    switch (interpolation) {
-      case StringInterpolation.dart:
-        return this; // no change
-      case StringInterpolation.braces:
-        return replaceAllMapped(Utils.argumentsBracesRegex, (match) {
-          return '${match.group(1)}\${${match.group(2)}}';
-        });
-      case StringInterpolation.doubleBraces:
-        return replaceAllMapped(Utils.argumentsDoubleBracesRegex, (match) {
-          return '${match.group(1)}\${${match.group(2)}}';
-        });
-    }
-  }
-}
-
-extension StringInterpolationExt on StringInterpolation {
-  RegExp get regex {
-    switch (this) {
-      case StringInterpolation.dart:
-        return Utils.argumentsDartRegex;
-      case StringInterpolation.braces:
-        return Utils.argumentsBracesRegex;
-      case StringInterpolation.doubleBraces:
-        return Utils.argumentsDoubleBracesRegex;
     }
   }
 }

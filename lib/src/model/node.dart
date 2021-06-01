@@ -37,16 +37,21 @@ class ListNode extends Node {
 }
 
 class TextNode extends Node {
+  /// Content of the text node, normalized.
+  /// Will be written to .g.dart as is.
   final String content;
+
+  /// List of parameters.
+  /// Hello {name}, I am {age} years old -> ['name', 'age']
   final List<String> params;
 
   TextNode(String content, StringInterpolation interpolation)
       : content = content
-            .replaceAll('\r\n', '\\n')
-            .replaceAll('\n', '\\n')
-            .replaceAll('\'', '\\\'')
-            .digest(interpolation),
-        params = _findArguments(content, interpolation).toSet().toList();
+            .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
+            .replaceAll('\n', '\\n') // (linebreak 2) -> \n
+            .replaceAll('\'', '\\\'') // ' -> \'
+            .normalizeStringInterpolation(interpolation),
+        params = content.parseArguments(interpolation);
 
   @override
   String toString() {
@@ -57,19 +62,59 @@ class TextNode extends Node {
   }
 }
 
-/// find arguments like $variableName in the given string
-/// this can be escaped with backslash
-///
-/// examples:
-/// 'hello $name' => ['name']
-/// 'hello \$name => []
-/// 'my name is $name and I am $age years old' => ['name', 'age']
-/// 'my name is ${name} and I am ${age} years old' => ['name', 'age']
-List<String> _findArguments(String content, StringInterpolation interpolation) {
-  return interpolation.regex
-      .allMatches(content)
-      .map((e) => e.group(2))
-      .where((e) => e != null)
-      .cast<String>()
-      .toList();
+extension StringExt on String {
+  /// transforms {arg} or {{arg}} to ${arg}
+  String normalizeStringInterpolation(StringInterpolation from) {
+    switch (from) {
+      case StringInterpolation.dart:
+        return this; // no change
+      case StringInterpolation.braces:
+        return replaceAllMapped(Utils.argumentsBracesRegex, (match) {
+          if (match.group(1) == '\\') {
+            return '{${match.group(2)}}'; // escape
+          }
+          return '${match.group(1)}\${${match.group(2)}}';
+        });
+      case StringInterpolation.doubleBraces:
+        return replaceAllMapped(Utils.argumentsDoubleBracesRegex, (match) {
+          if (match.group(1) == '\\') {
+            return '{{${match.group(2)}}}'; // escape
+          }
+          return '${match.group(1)}\${${match.group(2)}}';
+        });
+    }
+  }
+
+  /// find arguments like $variableName in the given string
+  /// this can be escaped with backslash
+  ///
+  /// examples:
+  /// 'hello $name' => ['name']
+  /// 'hello \$name => []
+  /// 'my name is $name and I am $age years old' => ['name', 'age']
+  List<String> parseArguments(StringInterpolation interpolation) {
+    final RegExp regex;
+    switch (interpolation) {
+      case StringInterpolation.dart:
+        regex = Utils.argumentsDartRegex;
+        break;
+      case StringInterpolation.braces:
+        regex = Utils.argumentsBracesRegex;
+        break;
+      case StringInterpolation.doubleBraces:
+        regex = Utils.argumentsDoubleBracesRegex;
+        break;
+    }
+
+    return regex
+        .allMatches(this)
+        .map((e) {
+          if (e.group(1) == '\\') return null; // escaped
+          return e.group(2);
+        })
+        .where((e) => e != null)
+        .cast<String>()
+        .toSet() // remove duplicates
+        .toList();
+  }
 }
