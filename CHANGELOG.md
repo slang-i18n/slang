@@ -1,3 +1,7 @@
+## 4.7.2
+
+- fix: handle string interpolation at the beginning (for `braces` and `double_braces`)
+
 ## 4.7.1
 
 - fix: `build_runner` generation error
