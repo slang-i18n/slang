@@ -38,6 +38,7 @@ String f = t['mainScreen.title'];                          // with fully dynamic
 - [Configuration](#configuration)
 - [Features](#features)
     - [String Interpolation](#string-interpolation)
+    - [Locale Enum](#locale-enum)
     - [Pluralization](#pluralization)
     - [Maps](#maps)
     - [Dynamic Keys](#dynamic-keys)
@@ -203,7 +204,7 @@ targets:
 
 Key|Type|Usage|Default
 ---|---|---|---
-null_safety|`Boolean`|generate null safe code|`true / auto`
+null_safety|`Boolean`|generate null safe code|`true`
 base_locale|`String`|locale of default json|`en`
 input_directory|`String`|path to input directory|`null`
 input_file_pattern|`String`|input file pattern|`.i18n.json`
@@ -222,26 +223,24 @@ pluralization/ordinal|`List<String>`|entries which have ordinals|`[]`
 
 ### String Interpolation
 
-There are three modes configurable via `string_interpolation`:
-
-Mode|Example
----|---
-`dart (default)`|`Hello $name or ${name2}`
-`braces`|`Hello {name}`
-`double_braces`|`Hello {{name}}`
+There are three modes configurable via `string_interpolation`.
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
-```json
-{
-  "greeting": "Hello $name",
-  "distance": "${distance}m"
-}
-```
+Mode|JSON Entry|Call
+---|---|---
+`dart (default)`|`Hello $name. I am ${height}m.`|`t.myKey(name: 'Tom', height: 1.73)`
+`braces`|`Hello {name}`|`t.myKey(name: 'Anna')`
+`double_braces`|`Hello {{name}}`|`t.myKey(name: 'Tom')`
+
+### Locale Enum
+
+Typesafety is one of the main advantages of this library. No typos. Enjoy exhausted switch-cases!
 
 ```dart
-t.greeting(name: 'Tom'); // Hello Tom
-t.distance(distance: 4.5); // 4.5m
+List<AppLocale> locales = AppLocale.values; // list all supported locales
+Locale locale = AppLocale.en.flutterLocale; // convert to native flutter locale
+String tag = AppLocale.en.languageTag; // convert to string tag (e.g. en-US)
 ```
 
 ### Pluralization
