@@ -128,9 +128,12 @@ void _generateEnum(
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln(
-      '/// - LocaleSettings.setLocale($enumName.${baseLocale.toEnumConstant()})');
+      '/// - LocaleSettings.setLocale($enumName.${baseLocale.toEnumConstant()}) // set locale');
   buffer.writeln(
-      '/// - if (LocaleSettings.currentLocale == $enumName.${baseLocale.toEnumConstant()})');
+      '/// - Locale locale = $enumName.${baseLocale.toEnumConstant()}.flutterLocale // get flutter locale from enum');
+  buffer.writeln(
+      '/// - if (LocaleSettings.currentLocale == $enumName.${baseLocale.toEnumConstant()}) // locale check');
+
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
