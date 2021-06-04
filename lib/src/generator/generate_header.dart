@@ -161,8 +161,10 @@ void _generateTranslationGetter(
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String a = $translateVar.someKey.anotherKey;');
-  buffer.writeln(
-      '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
+  if (config.renderFlatMap) {
+    buffer.writeln(
+        '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
+  }
   buffer.writeln(
       '$baseClassName $translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
@@ -187,8 +189,10 @@ void _generateTranslationGetter(
       '/// final $translateVar = $translationsClass.of(context); // Get $translateVar variable.');
   buffer.writeln(
       '/// String a = $translateVar.someKey.anotherKey; // Use $translateVar variable.');
-  buffer.writeln(
-      '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
+  if (config.renderFlatMap) {
+    buffer.writeln(
+        '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
+  }
   buffer.writeln('class $translationsClass {');
   buffer.writeln('\t$translationsClass._(); // no constructor');
   buffer.writeln();

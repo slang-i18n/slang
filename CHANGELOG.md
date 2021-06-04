@@ -1,3 +1,8 @@
+## 4.8.0
+
+- feat: add option to turn off flat map generation via `flat_map: false`
+- fix: escape parameters with backslash correctly
+
 ## 4.7.2
 
 - fix: handle string interpolation at the beginning (for `braces` and `double_braces`)

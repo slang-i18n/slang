@@ -53,6 +53,8 @@ class I18nBuilder implements Builder {
         stringInterpolation: (options.config['string_interpolation'] as String?)
                 ?.toStringInterpolation() ??
             BuildConfig.defaultStringInterpolation,
+        renderFlatMap:
+            options.config['flat_map'] ?? BuildConfig.defaultRenderFlatMap,
         maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
         pluralCardinal:
             options.config['pluralization']?['cardinal']?.cast<String>() ??
@@ -117,21 +119,23 @@ class I18nBuilder implements Builder {
     // generate
     final String output = generate(
         config: I18nConfig(
-            nullSafety: buildConfig.nullSafety,
-            baseName: baseName!,
-            baseLocale: buildConfig.baseLocale,
-            renderedPluralizationResolvers: buildConfig
-                        .pluralCardinal.isNotEmpty ||
-                    buildConfig.pluralOrdinal.isNotEmpty
-                ? PLURALIZATION_RESOLVERS
-                    .where((resolver) => assetMap.values
-                        .any((locale) => locale.language == resolver.language))
-                    .toList()
-                : [],
-            keyCase: buildConfig.keyCase,
-            translateVariable: buildConfig.translateVar,
-            enumName: buildConfig.enumName,
-            translationClassVisibility: buildConfig.translationClassVisibility),
+          nullSafety: buildConfig.nullSafety,
+          baseName: baseName!,
+          baseLocale: buildConfig.baseLocale,
+          renderedPluralizationResolvers: buildConfig
+                      .pluralCardinal.isNotEmpty ||
+                  buildConfig.pluralOrdinal.isNotEmpty
+              ? PLURALIZATION_RESOLVERS
+                  .where((resolver) => assetMap.values
+                      .any((locale) => locale.language == resolver.language))
+                  .toList()
+              : [],
+          keyCase: buildConfig.keyCase,
+          translateVariable: buildConfig.translateVar,
+          enumName: buildConfig.enumName,
+          translationClassVisibility: buildConfig.translationClassVisibility,
+          renderFlatMap: buildConfig.renderFlatMap,
+        ),
         translations: localesWithData.values.toList()
           ..sort(I18nData
               .generationComparator)); // base locale, then all other locales

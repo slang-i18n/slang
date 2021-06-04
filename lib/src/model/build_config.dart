@@ -16,6 +16,7 @@ class BuildConfig {
   static const KeyCase? defaultKeyCase = null;
   static const StringInterpolation defaultStringInterpolation =
       StringInterpolation.dart;
+  static const bool defaultRenderFlatMap = true;
   static const List<String> defaultMaps = <String>[];
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
@@ -31,25 +32,28 @@ class BuildConfig {
   final TranslationClassVisibility translationClassVisibility;
   final KeyCase? keyCase;
   final StringInterpolation stringInterpolation;
+  final bool renderFlatMap;
   final List<String> maps;
   final List<String> pluralCardinal;
   final List<String> pluralOrdinal;
 
-  BuildConfig(
-      {required this.nullSafety,
-      required this.baseLocale,
-      required this.inputDirectory,
-      required this.inputFilePattern,
-      required this.outputDirectory,
-      required this.outputFilePattern,
-      required this.translateVar,
-      required this.enumName,
-      required this.translationClassVisibility,
-      required this.keyCase,
-      required this.stringInterpolation,
-      required this.maps,
-      required this.pluralCardinal,
-      required this.pluralOrdinal});
+  BuildConfig({
+    required this.nullSafety,
+    required this.baseLocale,
+    required this.inputDirectory,
+    required this.inputFilePattern,
+    required this.outputDirectory,
+    required this.outputFilePattern,
+    required this.translateVar,
+    required this.enumName,
+    required this.translationClassVisibility,
+    required this.keyCase,
+    required this.stringInterpolation,
+    required this.renderFlatMap,
+    required this.maps,
+    required this.pluralCardinal,
+    required this.pluralOrdinal,
+  });
 }
 
 enum StringInterpolation { dart, braces, doubleBraces }

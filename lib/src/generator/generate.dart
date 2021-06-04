@@ -18,7 +18,9 @@ String generate(
     generateTranslations(buffer, config, localeData);
   }
 
-  generateTranslationMap(buffer, config, translations);
+  if (config.renderFlatMap) {
+    generateTranslationMap(buffer, config, translations);
+  }
 
   return buffer.toString();
 }

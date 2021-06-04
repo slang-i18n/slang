@@ -40,6 +40,8 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
   final stringInterpolation = (configEntry?['string_interpolation'] as String?)
           ?.toStringInterpolation() ??
       BuildConfig.defaultStringInterpolation;
+  final renderFlatMap =
+      configEntry?['flat_map'] ?? BuildConfig.defaultRenderFlatMap;
   final maps = configEntry?['maps']?.cast<String>() ?? BuildConfig.defaultMaps;
   final pluralCardinal =
       configEntry?['pluralization']?['cardinal']?.cast<String>() ??
@@ -49,20 +51,22 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
           BuildConfig.defaultOrdinal;
 
   final buildConfig = BuildConfig(
-      nullSafety: nullSafety,
-      baseLocale: baseLocale,
-      inputDirectory: inputDirectory,
-      inputFilePattern: inputFilePattern,
-      outputDirectory: outputDirectory,
-      outputFilePattern: outputFilePattern,
-      translateVar: translateVar,
-      enumName: enumName,
-      translationClassVisibility: translationClassVisibility,
-      keyCase: keyCase,
-      stringInterpolation: stringInterpolation,
-      maps: maps,
-      pluralCardinal: pluralCardinal,
-      pluralOrdinal: pluralOrdinal);
+    nullSafety: nullSafety,
+    baseLocale: baseLocale,
+    inputDirectory: inputDirectory,
+    inputFilePattern: inputFilePattern,
+    outputDirectory: outputDirectory,
+    outputFilePattern: outputFilePattern,
+    translateVar: translateVar,
+    enumName: enumName,
+    translationClassVisibility: translationClassVisibility,
+    keyCase: keyCase,
+    stringInterpolation: stringInterpolation,
+    renderFlatMap: renderFlatMap,
+    maps: maps,
+    pluralCardinal: pluralCardinal,
+    pluralOrdinal: pluralOrdinal,
+  );
 
   return YamlParseResult(parsed: configEntry != null, config: buildConfig);
 }

@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-05-31 at 14:43 UTC
+ * Built on 2021-06-04 at 14:26 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -16,8 +16,9 @@ AppLocale _currLocale = _baseLocale;
 /// Supported locales, see extension methods below.
 ///
 /// Usage:
-/// - LocaleSettings.setLocale(AppLocale.en)
-/// - if (LocaleSettings.currentLocale == AppLocale.en)
+/// - LocaleSettings.setLocale(AppLocale.en) // set locale
+/// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
+/// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
 enum AppLocale {
 	en, // 'en' (base locale, fallback)
 	de, // 'de'

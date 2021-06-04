@@ -11,16 +11,19 @@ class I18nConfig {
   final String translateVariable;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
+  final bool renderFlatMap;
 
-  I18nConfig(
-      {required this.nullSafety,
-      required this.baseName,
-      required this.baseLocale,
-      required this.renderedPluralizationResolvers,
-      required this.keyCase,
-      required this.translateVariable,
-      required this.enumName,
-      required this.translationClassVisibility});
+  I18nConfig({
+    required this.nullSafety,
+    required this.baseName,
+    required this.baseLocale,
+    required this.renderedPluralizationResolvers,
+    required this.keyCase,
+    required this.translateVariable,
+    required this.enumName,
+    required this.translationClassVisibility,
+    required this.renderFlatMap,
+  });
 }
 
 enum TranslationClassVisibility { private, public }

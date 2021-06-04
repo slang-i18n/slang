@@ -145,7 +145,7 @@ void _generateClass(
     }
   });
 
-  if (root) {
+  if (root && config.renderFlatMap) {
     // add map operator for translation map
     buffer.writeln();
     buffer.writeln('\t/// A flat map containing all translations.');

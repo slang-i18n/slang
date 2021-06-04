@@ -63,6 +63,7 @@ void main() async {
       ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
   print(
       ' -> stringInterpolation: ${(buildConfig.stringInterpolation.toString().split('.').last)}');
+  print(' -> render flat map: ${buildConfig.renderFlatMap}');
   print(' -> maps: ${buildConfig.maps}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
   print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
@@ -155,21 +156,22 @@ void main() async {
   // generate
   final String output = generate(
       config: I18nConfig(
-          nullSafety: buildConfig.nullSafety,
-          baseName: baseName,
-          baseLocale: buildConfig.baseLocale,
-          renderedPluralizationResolvers: buildConfig
-                      .pluralCardinal.isNotEmpty ||
-                  buildConfig.pluralOrdinal.isNotEmpty
-              ? PLURALIZATION_RESOLVERS
-                  .where((resolver) => translationList.any(
-                      (locale) => locale.locale.language == resolver.language))
-                  .toList()
-              : [],
-          keyCase: buildConfig.keyCase,
-          translateVariable: buildConfig.translateVar,
-          enumName: buildConfig.enumName,
-          translationClassVisibility: buildConfig.translationClassVisibility),
+        nullSafety: buildConfig.nullSafety,
+        baseName: baseName,
+        baseLocale: buildConfig.baseLocale,
+        renderedPluralizationResolvers: buildConfig.pluralCardinal.isNotEmpty ||
+                buildConfig.pluralOrdinal.isNotEmpty
+            ? PLURALIZATION_RESOLVERS
+                .where((resolver) => translationList.any(
+                    (locale) => locale.locale.language == resolver.language))
+                .toList()
+            : [],
+        keyCase: buildConfig.keyCase,
+        translateVariable: buildConfig.translateVar,
+        enumName: buildConfig.enumName,
+        translationClassVisibility: buildConfig.translationClassVisibility,
+        renderFlatMap: buildConfig.renderFlatMap,
+      ),
       translations: translationList
         ..sort(I18nData
             .generationComparator)); // base locale, then all other locales

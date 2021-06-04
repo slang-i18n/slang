@@ -55,7 +55,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 4.7.2
+  fast_i18n: 4.8.0
 ```
 
 **Step 2: Create JSON files**
@@ -191,6 +191,7 @@ targets:
           translation_class_visibility: private
           key_case: snake
           string_interpolation: double_braces
+          flat_map: false
           maps:
             - error.codes
             - category
@@ -204,20 +205,21 @@ targets:
 
 Key|Type|Usage|Default
 ---|---|---|---
-null_safety|`Boolean`|generate null safe code|`true`
-base_locale|`String`|locale of default json|`en`
-input_directory|`String`|path to input directory|`null`
-input_file_pattern|`String`|input file pattern|`.i18n.json`
-output_directory|`String`|path to output directory|`null`
-output_file_pattern|`String`|output file pattern|`.g.dart`
-translate_var|`String`|translate variable name|`t`
-enum_name|`String`|enum name|`AppLocale`
-translation_class_visibility|`private`, `public`|class visibility|`private`
-key_case|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
-string_interpolation|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
-maps|`List<String>`|entries which should be accessed via keys|`[]`
-pluralization/cardinal|`List<String>`|entries which have cardinals|`[]`
-pluralization/ordinal|`List<String>`|entries which have ordinals|`[]`
+`null_safety`|`Boolean`|generate null safe code|`true`
+`base_locale`|`String`|locale of default json|`en`
+`input_directory`|`String`|path to input directory|`null`
+`input_file_pattern`|`String`|input file pattern|`.i18n.json`
+`output_directory`|`String`|path to output directory|`null`
+`output_file_pattern`|`String`|output file pattern|`.g.dart`
+`translate_var`|`String`|translate variable name|`t`
+`enum_name`|`String`|enum name|`AppLocale`
+`translation_class_visibility`|`private`, `public`|class visibility|`private`
+`key_case`|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
+`string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
+`flat_map`|`Boolean`|generate flat map|`true`
+`maps`|`List<String>`|entries which should be accessed via keys|`[]`
+`pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
+`pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
 
 ## Features
 
