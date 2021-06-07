@@ -37,6 +37,7 @@ String f = t['mainScreen.title'];             // with fully dynamic key
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Features](#features)
+    - [Auto Rebuild](#auto-rebuild)
     - [String Interpolation](#string-interpolation)
     - [Locale Enum](#locale-enum)
     - [Pluralization](#pluralization)
@@ -232,6 +233,17 @@ Key|Type|Usage|Default
 `pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
 
 ## Features
+
+### Auto Rebuild
+
+You can let the library rebuild automatically for you.
+The watch function from `build_runner` is **NOT** maintained.
+
+Just run this command:
+
+```sh
+flutter pub run fast_i18n watch
+```
 
 ### String Interpolation
 

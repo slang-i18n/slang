@@ -2,6 +2,7 @@
 
 - feat: add option to turn off flat map generation via `flat_map: false`
 - feat: add `fallback_strategy` configuration, possible values `strict` (default), `base_locale`
+- feat: auto rebuild `flutter pub run fast_i18n watch` (experimental)
 - fix: escape parameters with backslash correctly
 
 ## 4.7.2

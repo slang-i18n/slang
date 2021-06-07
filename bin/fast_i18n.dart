@@ -15,16 +15,46 @@ import 'package:fast_i18n/src/utils.dart';
 ///
 /// Scans translation files and builds the dart file.
 /// This is usually faster than the build_runner implementation.
-void main() async {
-  final stopwatch = Stopwatch()..start();
+void main(List<String> arguments) async {
   print('Generating translations...\n');
+
+  final watchMode = arguments.length == 1 && arguments[0] == 'watch';
+  final stopwatch = Stopwatch();
+  if (!watchMode) {
+    // only run stopwatch if generating once
+    stopwatch.start();
+  }
 
   // get all files recursively (no directories)
   Iterable<FileSystemEntity> files =
       (await Directory.current.list(recursive: true).toList())
           .where((item) => FileSystemEntity.isFileSync(item.path));
 
-  // build config
+  final buildConfig = await getBuildConfig(files);
+
+  // filter files according to build config
+  files = files.where((file) {
+    if (!file.path.endsWith(buildConfig.inputFilePattern)) return false;
+
+    if (buildConfig.inputDirectory != null &&
+        !file.path.contains(buildConfig.inputDirectory!)) return false;
+
+    return true;
+  });
+
+  if (watchMode) {
+    await watchTranslations(buildConfig: buildConfig, files: files);
+  } else {
+    await generateTranslations(
+      buildConfig: buildConfig,
+      files: files,
+      verbose: true,
+      stopwatch: stopwatch,
+    );
+  }
+}
+
+Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   BuildConfig? buildConfig;
   for (final file in files) {
     final fileName = file.path.getFileName();
@@ -50,6 +80,8 @@ void main() async {
   print(' -> null safety: ${buildConfig.nullSafety}');
   print(' -> baseLocale: ${buildConfig.baseLocale.toLanguageTag()}');
   print(
+      ' -> fallbackStrategy: ${(buildConfig.fallbackStrategy.toString().split('.').last)}');
+  print(
       ' -> inputDirectory: ${buildConfig.inputDirectory != null ? buildConfig.inputDirectory : 'null (everywhere)'}');
   print(' -> inputFilePattern: ${buildConfig.inputFilePattern}');
   print(
@@ -63,22 +95,58 @@ void main() async {
       ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
   print(
       ' -> stringInterpolation: ${(buildConfig.stringInterpolation.toString().split('.').last)}');
-  print(' -> render flat map: ${buildConfig.renderFlatMap}');
+  print(' -> renderFlatMap: ${buildConfig.renderFlatMap}');
   print(' -> maps: ${buildConfig.maps}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
   print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
   print('');
 
-  // filter files according to build config
-  files = files.where((file) {
-    if (!file.path.endsWith(buildConfig!.inputFilePattern)) return false;
+  return buildConfig;
+}
 
-    if (buildConfig.inputDirectory != null &&
-        !file.path.contains(buildConfig.inputDirectory!)) return false;
+Future<void> watchTranslations({
+  required BuildConfig buildConfig,
+  required Iterable<FileSystemEntity> files,
+}) async {
+  final inputDirectoryPath = buildConfig.inputDirectory;
+  if (inputDirectoryPath == null) {
+    print('Please set input_directory in build.yaml.');
+    return;
+  }
 
-    return true;
-  });
+  final inputDirectory = Directory(inputDirectoryPath);
+  final stream = inputDirectory.watch(events: FileSystemEvent.all);
 
+  await generateTranslations(
+    buildConfig: buildConfig,
+    files: files,
+    verbose: false,
+  );
+
+  print('Listening to changes in $inputDirectoryPath (non-recursive)');
+  stdout.write('\r -> Init at $currentTime.');
+  await for (final event in stream) {
+    if (event.path.endsWith(buildConfig.inputFilePattern)) {
+      stdout.write('\r -> Generating...           ');
+      final newFiles = (await inputDirectory.list().toList()).where((item) =>
+          FileSystemEntity.isFileSync(item.path) &&
+          item.path.endsWith(buildConfig.inputFilePattern));
+      await generateTranslations(
+        buildConfig: buildConfig,
+        files: newFiles,
+        verbose: false,
+      );
+      stdout.write('\r -> Last Update at $currentTime.');
+    }
+  }
+}
+
+Future<void> generateTranslations({
+  required BuildConfig buildConfig,
+  required Iterable<FileSystemEntity> files,
+  required bool verbose,
+  Stopwatch? stopwatch,
+}) async {
   // find base name
   String? baseName;
   for (final file in files) {
@@ -89,8 +157,11 @@ void main() async {
     final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
     if (baseFile != null) {
       baseName = fileNameNoExtension;
-      print(
-          'Found base name: "$baseName" (used for output file name and class names)');
+
+      if (verbose) {
+        print(
+            'Found base name: "$baseName" (used for output file name and class names)');
+      }
       break;
     }
   }
@@ -101,8 +172,11 @@ void main() async {
   }
 
   // scan translations
-  print('Scanning translations...');
-  print('');
+  if (verbose) {
+    print('Scanning translations...');
+    print('');
+  }
+
   final translationList = <I18nData>[];
   String? resultPath;
   for (final file in files) {
@@ -121,8 +195,11 @@ void main() async {
               Platform.pathSeparator +
               baseName +
               buildConfig.outputFilePattern;
-      print(
-          '${('(base) ' + buildConfig.baseLocale.toLanguageTag()).padLeft(12)} -> ${file.path}');
+
+      if (verbose) {
+        print(
+            '${('(base) ' + buildConfig.baseLocale.toLanguageTag()).padLeft(12)} -> ${file.path}');
+      }
     } else {
       // secondary files (strings_x)
       final match = Utils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
@@ -135,7 +212,10 @@ void main() async {
         final content = await File(file.path).readAsString();
         final currTranslations = parseJSON(buildConfig, locale, content);
         translationList.add(currTranslations);
-        print('${locale.toLanguageTag().padLeft(12)} -> ${file.path}');
+
+        if (verbose) {
+          print('${locale.toLanguageTag().padLeft(12)} -> ${file.path}');
+        }
       }
     }
   }
@@ -180,25 +260,35 @@ void main() async {
   // write output
   await File(resultPath).writeAsString(output);
 
-  if (buildConfig.pluralCardinal.isNotEmpty ||
-      buildConfig.pluralOrdinal.isNotEmpty) {
-    // show pluralization hints if pluralization is configured
-    final languages =
-        translationList.map((locale) => locale.locale.language).toSet();
-    final rendered = PLURALIZATION_RESOLVERS
-        .map((resolver) => resolver.language)
-        .toSet()
-        .intersection(languages);
-    final missing = languages.difference(rendered);
-    print('');
-    print('Pluralization:');
-    print(' -> rendered resolvers: ${rendered.toList()}');
-    print(' -> you must implement these resolvers: ${missing.toList()}');
-  }
+  if (verbose) {
+    if (buildConfig.pluralCardinal.isNotEmpty ||
+        buildConfig.pluralOrdinal.isNotEmpty) {
+      // show pluralization hints if pluralization is configured
+      final languages =
+          translationList.map((locale) => locale.locale.language).toSet();
+      final rendered = PLURALIZATION_RESOLVERS
+          .map((resolver) => resolver.language)
+          .toSet()
+          .intersection(languages);
+      final missing = languages.difference(rendered);
+      print('');
+      print('Pluralization:');
+      print(' -> rendered resolvers: ${rendered.toList()}');
+      print(' -> you must implement these resolvers: ${missing.toList()}');
+    }
 
-  print('');
-  print('Output: $resultPath');
-  print('Translations generated successfully. (${stopwatch.elapsed})');
+    print('');
+    print('Output: $resultPath');
+
+    if (stopwatch != null)
+      print('Translations generated successfully. (${stopwatch.elapsed})');
+  }
+}
+
+// returns current time in HH:mm:ss
+String get currentTime {
+  final now = DateTime.now();
+  return '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
 }
 
 extension on String {
