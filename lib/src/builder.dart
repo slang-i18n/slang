@@ -35,6 +35,9 @@ class I18nBuilder implements Builder {
             options.config['null_safety'] ?? BuildConfig.defaultNullSafety,
         baseLocale: I18nLocale.fromString(
             options.config['base_locale'] ?? BuildConfig.defaultBaseLocale),
+        fallbackStrategy:
+            (options.config['fallback_strategy'] as String?)?.toFallbackStrategy() ??
+                BuildConfig.defaultFallbackStrategy,
         inputDirectory: options.config['input_directory'] ??
             BuildConfig.defaultInputDirectory,
         inputFilePattern: inputFilePattern,
@@ -56,12 +59,9 @@ class I18nBuilder implements Builder {
         renderFlatMap:
             options.config['flat_map'] ?? BuildConfig.defaultRenderFlatMap,
         maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
-        pluralCardinal:
-            options.config['pluralization']?['cardinal']?.cast<String>() ??
-                BuildConfig.defaultCardinal,
-        pluralOrdinal:
-            options.config['pluralization']?['ordinal']?.cast<String>() ??
-                BuildConfig.defaultOrdinal);
+        pluralCardinal: options.config['pluralization']?['cardinal']?.cast<String>() ??
+            BuildConfig.defaultCardinal,
+        pluralOrdinal: options.config['pluralization']?['ordinal']?.cast<String>() ?? BuildConfig.defaultOrdinal);
 
     if (buildConfig.inputDirectory != null &&
         !buildStep.inputId.path.contains(buildConfig.inputDirectory!)) return;
@@ -122,6 +122,7 @@ class I18nBuilder implements Builder {
           nullSafety: buildConfig.nullSafety,
           baseName: baseName!,
           baseLocale: buildConfig.baseLocale,
+          fallbackStrategy: buildConfig.fallbackStrategy,
           renderedPluralizationResolvers: buildConfig
                       .pluralCardinal.isNotEmpty ||
                   buildConfig.pluralOrdinal.isNotEmpty

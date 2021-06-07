@@ -159,6 +159,7 @@ void main() async {
         nullSafety: buildConfig.nullSafety,
         baseName: baseName,
         baseLocale: buildConfig.baseLocale,
+        fallbackStrategy: buildConfig.fallbackStrategy,
         renderedPluralizationResolvers: buildConfig.pluralCardinal.isNotEmpty ||
                 buildConfig.pluralOrdinal.isNotEmpty
             ? PLURALIZATION_RESOLVERS

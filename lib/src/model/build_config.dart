@@ -1,10 +1,11 @@
-import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 /// represents a build.yaml
 class BuildConfig {
   static const bool defaultNullSafety = true;
   static const String defaultBaseLocale = 'en';
+  static const FallbackStrategy defaultFallbackStrategy =
+      FallbackStrategy.strict;
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
@@ -23,6 +24,7 @@ class BuildConfig {
 
   final bool nullSafety;
   final I18nLocale baseLocale;
+  final FallbackStrategy fallbackStrategy;
   final String? inputDirectory;
   final String inputFilePattern;
   final String? outputDirectory;
@@ -40,6 +42,7 @@ class BuildConfig {
   BuildConfig({
     required this.nullSafety,
     required this.baseLocale,
+    required this.fallbackStrategy,
     required this.inputDirectory,
     required this.inputFilePattern,
     required this.outputDirectory,
@@ -56,9 +59,30 @@ class BuildConfig {
   });
 }
 
+enum FallbackStrategy { strict, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
+enum TranslationClassVisibility { private, public }
+enum KeyCase { camel, pascal, snake }
 
-extension StringInterpolationParser on String {
+extension Parser on String {
+  FallbackStrategy? toFallbackStrategy() {
+    switch (this) {
+      case 'strict':
+        return FallbackStrategy.strict;
+      case 'base_locale':
+        return FallbackStrategy.baseLocale;
+    }
+  }
+
+  TranslationClassVisibility? toTranslationClassVisibility() {
+    switch (this) {
+      case 'private':
+        return TranslationClassVisibility.private;
+      case 'public':
+        return TranslationClassVisibility.public;
+    }
+  }
+
   StringInterpolation? toStringInterpolation() {
     switch (this) {
       case 'dart':
@@ -67,6 +91,17 @@ extension StringInterpolationParser on String {
         return StringInterpolation.braces;
       case 'double_braces':
         return StringInterpolation.doubleBraces;
+    }
+  }
+
+  KeyCase? toKeyCase() {
+    switch (this) {
+      case 'camel':
+        return KeyCase.camel;
+      case 'snake':
+        return KeyCase.snake;
+      case 'pascal':
+        return KeyCase.pascal;
     }
   }
 }

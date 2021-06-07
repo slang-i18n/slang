@@ -190,6 +190,7 @@ targets:
         options:
           null_safety: true
           base_locale: fr
+          fallback_strategy: base_locale
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
@@ -215,6 +216,7 @@ Key|Type|Usage|Default
 ---|---|---|---
 `null_safety`|`Boolean`|generate null safe code|`true`
 `base_locale`|`String`|locale of default json|`en`
+`fallback_strategy`|`strict`, `base_locale`|handle missing translations|`strict`
 `input_directory`|`String`|path to input directory|`null`
 `input_file_pattern`|`String`|input file pattern|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
@@ -453,6 +455,12 @@ targets:
           input_directory: assets/i18n
           output_directory: lib/i18n
 ```
+
+**Can I use translations from base locale?**
+
+Yes. Please set `fallback_strategy: base_locale` in `build.yaml`.
+
+Now you can leave out translations in secondary languages. Missing translations will fallback to base locale.
 
 **Why setLocale doesn't work?**
 

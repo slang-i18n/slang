@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/yaml_parse_result.dart';
 import "package:yaml/yaml.dart";
@@ -18,6 +17,9 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
       configEntry?['null_safety'] ?? BuildConfig.defaultNullSafety;
   final baseLocale = I18nLocale.fromString(
       configEntry?['base_locale'] ?? BuildConfig.defaultBaseLocale);
+  final fallbackStrategy =
+      (configEntry?['fallback_strategy'] as String?)?.toFallbackStrategy() ??
+          BuildConfig.defaultFallbackStrategy;
   final inputDirectory = ((configEntry?['input_directory'] as String?) ??
           BuildConfig.defaultInputDirectory)
       ?.normalizePath();
@@ -53,6 +55,7 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
   final buildConfig = BuildConfig(
     nullSafety: nullSafety,
     baseLocale: baseLocale,
+    fallbackStrategy: fallbackStrategy,
     inputDirectory: inputDirectory,
     inputFilePattern: inputFilePattern,
     outputDirectory: outputDirectory,

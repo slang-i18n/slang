@@ -1,6 +1,7 @@
 ## 4.8.0
 
 - feat: add option to turn off flat map generation via `flat_map: false`
+- feat: add `fallback_strategy` configuration, possible values `strict` (default), `base_locale`
 - fix: escape parameters with backslash correctly
 
 ## 4.7.2
@@ -13,7 +14,7 @@
 
 ## 4.7.0
 
-- feat: new `string_interpolation` configuration. Possible values: `dart (default)`, `braces` and `double_braces`
+- feat: new `string_interpolation` configuration. Possible values: `dart` (default), `braces` and `double_braces`
 
 ## 4.6.3
 

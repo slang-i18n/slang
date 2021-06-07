@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:fast_i18n/src/generator/helper.dart';
+import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/node.dart';
@@ -79,10 +80,17 @@ void _generateClass(
   } else {
     final baseClassName = getClassName(
         parentName: className, locale: config.baseLocale.toLanguageTag());
-    buffer.writeln('class $finalClassName implements $baseClassName {');
+    final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.strict
+        ? 'implements'
+        : 'extends';
+    buffer.writeln('class $finalClassName $fallbackStrategy $baseClassName {');
   }
 
-  buffer.writeln('\t$finalClassName._(); // no constructor');
+  if (config.fallbackStrategy == FallbackStrategy.strict || base)
+    buffer.writeln('\t$finalClassName._(); // no constructor');
+  else
+    buffer.writeln('\t$finalClassName._() : super._(); // no constructor');
+
   buffer.writeln();
   buffer.writeln('\tstatic $finalClassName _instance = $finalClassName._();');
   if (config.translationClassVisibility == TranslationClassVisibility.public)
