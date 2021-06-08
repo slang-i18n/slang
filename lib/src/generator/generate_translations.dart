@@ -113,8 +113,8 @@ void _generateClass(
     } else if (value is ListNode) {
       String type = value.plainStrings ? 'String' : 'dynamic';
       buffer.write('List<$type> get $key => ');
-      _generateList(config, base, locale, pluralizationResolver, buffer, queue,
-          className, value.entries, 0);
+      _generateList(config, base, language, locale, pluralizationResolver,
+          buffer, queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -193,8 +193,8 @@ void _generateMap(
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
-      _generateList(config, base, locale, pluralizationResolver, buffer, queue,
-          className, value.entries, depth + 1);
+      _generateList(config, base, language, locale, pluralizationResolver,
+          buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -246,6 +246,7 @@ void _generateMap(
 void _generateList(
   I18nConfig config,
   bool base,
+  String language,
   String locale,
   PluralizationResolver? pluralizationResolver,
   StringBuffer buffer,
@@ -267,17 +268,40 @@ void _generateList(
             '${_toParameterList(value.params, config)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
-      _generateList(config, base, locale, pluralizationResolver, buffer, queue,
-          className, value.entries, depth + 1);
+      _generateList(config, base, language, locale, pluralizationResolver,
+          buffer, queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
-      String child = depth.toString() + 'i' + i.toString();
+      String key = depth.toString() + 'i' + i.toString();
       String childClassNoLocale =
-          getClassName(parentName: className, childName: child);
-      queue.add(ClassTask(childClassNoLocale, value.entries));
+          getClassName(parentName: className, childName: key);
 
-      String childClassWithLocale =
-          getClassName(parentName: className, childName: child, locale: locale);
-      buffer.writeln('$childClassWithLocale._instance,');
+      switch (value.type) {
+        case ObjectNodeType.classType:
+          // generate a class later on
+          queue.add(ClassTask(childClassNoLocale, value.entries));
+          String childClassWithLocale = getClassName(
+              parentName: className, childName: key, locale: locale);
+          buffer.writeln('$childClassWithLocale._instance,');
+          break;
+        case ObjectNodeType.map:
+          // inline map
+          _generateMap(config, base, language, locale, pluralizationResolver,
+              buffer, queue, childClassNoLocale, value.entries, depth + 1);
+          break;
+        case ObjectNodeType.pluralCardinal:
+        case ObjectNodeType.pluralOrdinal:
+          // pluralization
+          _addPluralizationCall(
+              buffer: buffer,
+              config: config,
+              resolver: pluralizationResolver,
+              language: language,
+              cardinal: value.type == ObjectNodeType.pluralCardinal,
+              key: key,
+              children: value.entries,
+              depth: depth + 1);
+          break;
+      }
     }
   }
 

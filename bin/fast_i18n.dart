@@ -97,6 +97,8 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
       ' -> stringInterpolation: ${(buildConfig.stringInterpolation.toString().split('.').last)}');
   print(' -> renderFlatMap: ${buildConfig.renderFlatMap}');
   print(' -> maps: ${buildConfig.maps}');
+  print(
+      ' -> pluralization/auto: ${(buildConfig.pluralAuto.toString().split('.').last)}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
   print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
   print('');

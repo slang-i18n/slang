@@ -19,6 +19,7 @@ class BuildConfig {
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
   static const List<String> defaultMaps = <String>[];
+  static const PluralAuto defaultPluralAuto = PluralAuto.off;
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
 
@@ -36,6 +37,7 @@ class BuildConfig {
   final StringInterpolation stringInterpolation;
   final bool renderFlatMap;
   final List<String> maps;
+  final PluralAuto pluralAuto;
   final List<String> pluralCardinal;
   final List<String> pluralOrdinal;
 
@@ -54,6 +56,7 @@ class BuildConfig {
     required this.stringInterpolation,
     required this.renderFlatMap,
     required this.maps,
+    required this.pluralAuto,
     required this.pluralCardinal,
     required this.pluralOrdinal,
   });
@@ -63,6 +66,7 @@ enum FallbackStrategy { strict, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }
 enum KeyCase { camel, pascal, snake }
+enum PluralAuto { off, cardinal, ordinal }
 
 extension Parser on String {
   FallbackStrategy? toFallbackStrategy() {
@@ -71,6 +75,8 @@ extension Parser on String {
         return FallbackStrategy.strict;
       case 'base_locale':
         return FallbackStrategy.baseLocale;
+      default:
+        return null;
     }
   }
 
@@ -80,6 +86,8 @@ extension Parser on String {
         return TranslationClassVisibility.private;
       case 'public':
         return TranslationClassVisibility.public;
+      default:
+        return null;
     }
   }
 
@@ -91,6 +99,8 @@ extension Parser on String {
         return StringInterpolation.braces;
       case 'double_braces':
         return StringInterpolation.doubleBraces;
+      default:
+        return null;
     }
   }
 
@@ -102,6 +112,21 @@ extension Parser on String {
         return KeyCase.snake;
       case 'pascal':
         return KeyCase.pascal;
+      default:
+        return null;
+    }
+  }
+
+  PluralAuto? toPluralAuto() {
+    switch (this) {
+      case 'off':
+        return PluralAuto.off;
+      case 'cardinal':
+        return PluralAuto.cardinal;
+      case 'ordinal':
+        return PluralAuto.ordinal;
+      default:
+        return null;
     }
   }
 }

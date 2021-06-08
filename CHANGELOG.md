@@ -1,3 +1,7 @@
+## 4.9.0
+
+- feat: detect pluralization automatically, configure it via `pluralization->auto: cardinal / ordinal`
+
 ## 4.8.0
 
 - feat: add option to turn off flat map generation via `flat_map: false`

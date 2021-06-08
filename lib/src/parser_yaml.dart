@@ -45,6 +45,9 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
   final renderFlatMap =
       configEntry?['flat_map'] ?? BuildConfig.defaultRenderFlatMap;
   final maps = configEntry?['maps']?.cast<String>() ?? BuildConfig.defaultMaps;
+  final pluralAuto =
+      (configEntry?['pluralization']?['auto'] as String?)?.toPluralAuto() ??
+          BuildConfig.defaultPluralAuto;
   final pluralCardinal =
       configEntry?['pluralization']?['cardinal']?.cast<String>() ??
           BuildConfig.defaultCardinal;
@@ -67,6 +70,7 @@ YamlParseResult parseBuildYaml(String? yamlContent) {
     stringInterpolation: stringInterpolation,
     renderFlatMap: renderFlatMap,
     maps: maps,
+    pluralAuto: pluralAuto,
     pluralCardinal: pluralCardinal,
     pluralOrdinal: pluralOrdinal,
   );

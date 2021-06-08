@@ -59,8 +59,9 @@ class I18nBuilder implements Builder {
         renderFlatMap:
             options.config['flat_map'] ?? BuildConfig.defaultRenderFlatMap,
         maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
-        pluralCardinal: options.config['pluralization']?['cardinal']?.cast<String>() ??
-            BuildConfig.defaultCardinal,
+        pluralAuto: (options.config['pluralization']?['auto'] as String?)?.toPluralAuto() ??
+            BuildConfig.defaultPluralAuto,
+        pluralCardinal: options.config['pluralization']?['cardinal']?.cast<String>() ?? BuildConfig.defaultCardinal,
         pluralOrdinal: options.config['pluralization']?['ordinal']?.cast<String>() ?? BuildConfig.defaultOrdinal);
 
     if (buildConfig.inputDirectory != null &&
