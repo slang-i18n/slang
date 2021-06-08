@@ -56,7 +56,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 4.8.0
+  fast_i18n: 4.9.0
 ```
 
 **Step 2: Create JSON files**
@@ -207,6 +207,7 @@ targets:
             - category
             - iconNames
           pluralization:
+            auto: cardinal
             cardinal:
               - someKey.apple
             ordinal:
@@ -229,6 +230,7 @@ Key|Type|Usage|Default
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
 `flat_map`|`Boolean`|generate flat map|`true`
 `maps`|`List<String>`|entries which should be accessed via keys|`[]`
+`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`off`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
 `pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
 
@@ -308,13 +310,23 @@ targets:
               - someKey.place
 ```
 
-Now you can access them.
+You can also let the library detect plurals automatically. Set `auto: <mode>`.
+
+```yaml
+options:
+  pluralization:
+    auto: cardinal
+```
+
+Finally, you can access them.
+
 ```dart
 String a = t.someKey.apple(count: 1); // I have 1 apple.
 String b = t.someKey.apple(count: 2); // I have 2 apples.
 ```
 
 In case your language is not supported, you must provide a custom pluralization resolver:
+
 ```dart
 // add this before you call the pluralization strings. Otherwise an exception will be thrown.
 LocaleSettings.setPluralResolver(
@@ -468,7 +480,7 @@ targets:
           output_directory: lib/i18n
 ```
 
-**Can I use translations from base locale?**
+**Can I skip translations or use them from base locale?**
 
 Yes. Please set `fallback_strategy: base_locale` in `build.yaml`.
 
@@ -480,6 +492,22 @@ In most cases you forgot the `setState` call.
 
 A more elegant solution is to use `TranslationProvider(child: MyApp())` and then get you translation variable with `final t = Translations.of(context)`.
 It will automatically trigger a rebuild on `setLocale` for all affected widgets.
+
+**How does this plural detection work?**
+
+If you set `auto: cardinal` or `auto: ordinal`, then this library checks if any json node has `zero`, `one`, `two`, `few`, `many` or `other` as children.
+
+As soon as an unknown item has been detected, then this json node is **not** a pluralization.
+
+```
+{
+  "fake": {
+    "one": "One apple",
+    "two": "Two apples",
+    "three": "Three apples" // unknown key word 'three', 'fake' is not a pluralization
+  }
+}
+```
 
 ## License
 
