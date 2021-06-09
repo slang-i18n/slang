@@ -124,9 +124,7 @@ class I18nBuilder implements Builder {
           baseName: baseName!,
           baseLocale: buildConfig.baseLocale,
           fallbackStrategy: buildConfig.fallbackStrategy,
-          renderedPluralizationResolvers: buildConfig
-                      .pluralCardinal.isNotEmpty ||
-                  buildConfig.pluralOrdinal.isNotEmpty
+          renderedPluralizationResolvers: buildConfig.usePluralFeature
               ? PLURALIZATION_RESOLVERS
                   .where((resolver) => assetMap.values
                       .any((locale) => locale.language == resolver.language))

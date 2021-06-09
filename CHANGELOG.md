@@ -1,3 +1,7 @@
+## 4.9.1
+
+- fix: generate default plural resolvers when auto pluralization is used
+
 ## 4.9.0
 
 - feat: detect pluralization automatically, configure it via `pluralization->auto: cardinal / ordinal`

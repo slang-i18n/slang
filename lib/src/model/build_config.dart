@@ -60,6 +60,12 @@ class BuildConfig {
     required this.pluralCardinal,
     required this.pluralOrdinal,
   });
+
+  bool get usePluralFeature {
+    return this.pluralAuto != PluralAuto.off ||
+        this.pluralCardinal.isNotEmpty ||
+        this.pluralOrdinal.isNotEmpty;
+  }
 }
 
 enum FallbackStrategy { strict, baseLocale }

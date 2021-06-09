@@ -242,8 +242,7 @@ Future<void> generateTranslations({
         baseName: baseName,
         baseLocale: buildConfig.baseLocale,
         fallbackStrategy: buildConfig.fallbackStrategy,
-        renderedPluralizationResolvers: buildConfig.pluralCardinal.isNotEmpty ||
-                buildConfig.pluralOrdinal.isNotEmpty
+        renderedPluralizationResolvers: buildConfig.usePluralFeature
             ? PLURALIZATION_RESOLVERS
                 .where((resolver) => translationList.any(
                     (locale) => locale.locale.language == resolver.language))
@@ -263,8 +262,7 @@ Future<void> generateTranslations({
   await File(resultPath).writeAsString(output);
 
   if (verbose) {
-    if (buildConfig.pluralCardinal.isNotEmpty ||
-        buildConfig.pluralOrdinal.isNotEmpty) {
+    if (buildConfig.usePluralFeature) {
       // show pluralization hints if pluralization is configured
       final languages =
           translationList.map((locale) => locale.locale.language).toSet();
