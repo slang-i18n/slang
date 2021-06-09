@@ -44,8 +44,10 @@ String f = t['mainScreen.title'];             // with fully dynamic key
     - [Maps](#maps)
     - [Dynamic Keys](#dynamic-keys)
     - [Lists](#lists)
+    - [Fallback](#fallback)
 - [API](#api)
 - [FAQ](#faq)
+- [Future Plans](#future-plans)
 
 ## Getting Started
 
@@ -396,7 +398,7 @@ String c = t.notAMapParent.aMapInClass['hi']; // nested
 
 ### Dynamic Keys
 
-A more general solution for [Maps](#maps).
+A more general solution to [Maps](#maps).
 
 It is supported out of the box. No configuration needed. Please use this sparingly.
 
@@ -436,6 +438,38 @@ String a = t.niceList[1]; // "nice"
 String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
+```
+
+### Fallback
+
+By default, you must provide all translations for all locales. Otherwise, you cannot compile it.
+
+In case of rapid development, you can turn off this feature. Missing translations will fallback to base locale.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:i18nBuilder:
+        options:
+          base_locale: en
+          fallback_strategy: base_locale  # add this
+```
+
+```json5
+// English
+{
+  "hello": "Hello",
+  "bye": "Bye"
+}
+```
+
+```json5
+// French
+{
+  "hello": "Salut",
+  // "bye" is missing, fallback to English version
+}
 ```
 
 ## API                                                                                   
@@ -508,6 +542,17 @@ As soon as an unknown item has been detected, then this json node is **not** a p
   }
 }
 ```
+
+## Future Plans
+
+In the near future, I will release the next major version `5.0.0`. These changes are planned:
+
+- remove null safety configuration, all projects must be null safe, this will cleanup the library code base a bit
+- some changes in `build.yaml`
+- no breaking changes in generated `g.dart` file
+
+I am very happy with the generated translation file. It couldn't be easier to access the strings, in my opinion.
+Because I also maintain many projects, no breaking changes are planned (except some in `build.yaml`).
 
 ## License
 
