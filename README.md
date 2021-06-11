@@ -2,6 +2,8 @@
 
 # fast_i18n
 
+[![pub package](https://img.shields.io/pub/v/fast_i18n.svg)](https://pub.dev/packages/fast_i18n)
+
 Lightweight i18n solution. Use JSON files to create typesafe translations.
 
 **For flutter web users:** version `3.0.4` contains the workaround for [#79555](https://github.com/flutter/flutter/issues/79555).
