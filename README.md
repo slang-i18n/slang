@@ -4,6 +4,7 @@
 
 [![pub package](https://img.shields.io/pub/v/fast_i18n.svg)](https://pub.dev/packages/fast_i18n)
 ![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Lightweight i18n solution. Use JSON files to create typesafe translations.
 
