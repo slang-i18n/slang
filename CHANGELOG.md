@@ -1,3 +1,7 @@
+## 4.9.2
+
+- docs: update README
+
 ## 4.9.1
 
 - fix: generate default plural resolvers when auto pluralization is used
