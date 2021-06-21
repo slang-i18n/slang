@@ -247,10 +247,9 @@ void _generateLocaleSettings(
   buffer.writeln('\t\t$currLocaleVar = locale;');
   buffer.writeln('\t\t$translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln();
-  buffer.writeln('\t\tfinal state = $translationProviderKey.currentState;');
-  buffer.writeln('\t\tif (state != null) {');
+  buffer.writeln('\t\tif (WidgetsBinding.instance != null) {');
   buffer.writeln('\t\t\t// force rebuild if TranslationProvider is used');
-  buffer.writeln('\t\t\tstate.setLocale($currLocaleVar);');
+  buffer.writeln('\t\t\t$translationProviderKey.currentState?.setLocale($currLocaleVar);');
   buffer.writeln('\t\t}');
   buffer.writeln();
   buffer.writeln('\t\treturn $currLocaleVar;');

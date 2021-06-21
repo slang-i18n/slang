@@ -1,5 +1,6 @@
 ## 4.9.2
 
+- fix: call setLocale without WidgetsBinding
 - docs: update README
 
 ## 4.9.1

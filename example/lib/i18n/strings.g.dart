@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-06-04 at 14:26 UTC
+ * Built on 2021-06-21 at 21:11 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -82,10 +82,9 @@ class LocaleSettings {
 		_currLocale = locale;
 		_t = _currLocale.translations;
 
-		final state = _translationProviderKey.currentState;
-		if (state != null) {
+		if (WidgetsBinding.instance != null) {
 			// force rebuild if TranslationProvider is used
-			state.setLocale(_currLocale);
+			_translationProviderKey.currentState?.setLocale(_currLocale);
 		}
 
 		return _currLocale;
