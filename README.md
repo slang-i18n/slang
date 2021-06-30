@@ -3,13 +3,13 @@
 # fast_i18n
 
 [![pub package](https://img.shields.io/pub/v/fast_i18n.svg)](https://pub.dev/packages/fast_i18n)
+<a href="https://github.com/Solido/awesome-flutter">
+   <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true" />
+</a>
 ![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Lightweight i18n solution. Use JSON files to create typesafe translations.
-
-**For flutter web users:** version `3.0.4` contains the workaround for [#79555](https://github.com/flutter/flutter/issues/79555).
-Version 4.x.x is web compatible as soon as the Flutter team merge this fix into the stable branch.
 
 **For legacy users:** version `4.x.x-legacy` is built on `build 1.3.0`, `glob 1.2.0`, `yaml 2.2.1` and `build_runner 1.10.2`. This way, you can access the latest features in your legacy project.
 
@@ -72,9 +72,8 @@ Only files having the `.i18n.json` file extension will be detected.
 The part after the underscore `_` is the actual locale (e.g. en_US, en-US, fr).
 You **must** provide the default translation file (the file without locale extension).
 
-`strings.i18n.json (mandatory, default, fallback)`
-
-```json
+```json5
+// File: strings.i18n.json (mandatory, default, fallback)
 {
   "hello": "Hello $name",
   "save": "Save",
@@ -85,9 +84,8 @@ You **must** provide the default translation file (the file without locale exten
 }
 ```
 
-`strings_de.i18n.json`
-
-```json
+```json5
+// File: strings_de.i18n.json
 {
   "hello": "Hallo $name",
   "save": "Speichern",
@@ -136,6 +134,7 @@ This is optional but recommended.
 Standard flutter controls (e.g. back button's tooltip) will also pick the right locale.
 
 ```yaml
+# File: pubspec.yaml
 dependencies:
   flutter:
     sdk: flutter
@@ -171,16 +170,7 @@ File: ios/Runner/Info.plist
 ```dart
 import 'package:my_app/i18n/strings.g.dart'; // import
 
-String a = t.login.success; // plain
-String b = t.hello(name: 'Tom'); // with argument
-String c = t.step[3]; // with index (for arrays)
-String d = t.type['WARNING']; // with key (for maps)
-
-// advanced
-TranslationProvider(child: MyApp()); // wrap your app with TranslationProvider
-// [...]
-final t = Translations.of(context); // forces a rebuild on locale change
-String translateAdvanced = t.hello(name: 'Tom');
+String a = t.login.success; // get translation
 ```
 
 ## Configuration
@@ -270,9 +260,21 @@ Mode|JSON Entry|Call
 Typesafety is one of the main advantages of this library. No typos. Enjoy exhausted switch-cases!
 
 ```dart
+// this enum is generated automatically for you
+enum AppLocale {
+  en,
+  fr,
+  zhCn,
+}
+```
+
+```dart
+// use cases
+LocaleSettings.setLocale(AppLocale.en); // set locale
 List<AppLocale> locales = AppLocale.values; // list all supported locales
 Locale locale = AppLocale.en.flutterLocale; // convert to native flutter locale
 String tag = AppLocale.en.languageTag; // convert to string tag (e.g. en-US)
+final t = AppLocale.en.translations; // get translations of one locale
 ```
 
 ### Pluralization
@@ -284,8 +286,8 @@ Some languages have support out of the box. See [here](https://github.com/Tienis
 In order to use plurals, please add the key paths to `build.yaml`.
 Next, add the required quantities to the translation file. You can access the `num count` but it is optional.
 
-`strings.i18n.json`
-```json
+```json5
+// File: strings.i18n.json
 {
   "someKey": {
     "apple": {
@@ -302,8 +304,8 @@ Next, add the required quantities to the translation file. You can access the `n
 }
 ```
 
-`build.yaml`
 ```yaml
+# File: build.yaml
 targets:
   $default:
     builders:
@@ -319,6 +321,7 @@ targets:
 You can also let the library detect plurals automatically. Set `auto: <mode>`.
 
 ```yaml
+# File: build.yaml
 options:
   pluralization:
     auto: cardinal
@@ -348,9 +351,9 @@ LocaleSettings.setPluralResolver(
     if (n % 10 == 1 && n % 100 != 11)
       return one ?? other!;
     if (n % 10 == 2 && n % 100 != 12)
-        return two ?? other!;
+      return two ?? other!;
     if (n % 10 == 3 && n % 100 != 13)
-        return few ?? other!;
+      return few ?? other!;
     return other!;
   },
 );
@@ -364,8 +367,8 @@ Define the maps in your `build.yaml`. Each configuration item represents the tra
 
 Keep in mind that all nice features like autocompletion are gone.
 
-`strings.i18n.json`
-```json
+```json5
+// File: strings.i18n.json
 {
   "welcome": "Welcome",
   "thisIsAMap": {
@@ -380,8 +383,8 @@ Keep in mind that all nice features like autocompletion are gone.
 }
 ```
 
-`build.yaml`
 ```yaml
+# File: build.yaml
 targets:
   $default:
     builders:
@@ -530,6 +533,12 @@ In most cases you forgot the `setState` call.
 
 A more elegant solution is to use `TranslationProvider(child: MyApp())` and then get you translation variable with `final t = Translations.of(context)`.
 It will automatically trigger a rebuild on `setLocale` for all affected widgets.
+
+**My plural resolver is not specified?**
+
+An exception is thrown by `_missingPluralResolver` because you missed to add `LocaleSettings.setPluralResolver` for the specific language.
+
+See [Pluralization](#pluralization).
 
 **How does this plural detection work?**
 
