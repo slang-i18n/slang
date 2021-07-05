@@ -28,12 +28,13 @@ This is how you access the translations:
 ```dart
 final t = Translations.of(context); // optional, there is also a static getter without context
 
-String a = t.mainScreen.title;                // simple use case
-String b = t.game.end.highscore(score: 32.6); // with parameters
-String c = t.items(count: 2);                 // with pluralization (using count)
-String d = t.intro.step[4];                   // with index
-String e = t.error.type['WARNING'];           // with dynamic key
-String f = t['mainScreen.title'];             // with fully dynamic key
+String a = t.mainScreen.title;                         // simple use case
+String b = t.game.end.highscore(score: 32.6);          // with parameters
+String c = t.items(count: 2);                          // with pluralization (using count)
+String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
+String e = t.intro.step[4];                            // with index
+String f = t.error.type['WARNING'];                    // with dynamic key
+String g = t['mainScreen.title'];                      // with fully dynamic key
 ```
 
 ## Table of Contents
@@ -45,6 +46,7 @@ String f = t['mainScreen.title'];             // with fully dynamic key
     - [String Interpolation](#string-interpolation)
     - [Locale Enum](#locale-enum)
     - [Pluralization](#pluralization)
+    - [Custom Contexts](#custom-contexts)
     - [Maps](#maps)
     - [Dynamic Keys](#dynamic-keys)
     - [Lists](#lists)
@@ -208,6 +210,14 @@ targets:
               - someKey.apple
             ordinal:
               - someKey.place
+          contexts:
+            gender_context:
+              enum:
+                - male
+                - female
+              auto: false
+              paths:
+                - my.path.to.greet
 ```
 
 Key|Type|Usage|Default
@@ -229,6 +239,9 @@ Key|Type|Usage|Default
 `pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`off`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
 `pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
+`<context>`/`enum`|`List<String>`|context forms|no default
+`<context>`/`auto`|`Boolean`|auto detect context|`true`
+`<context>`/`paths`|`List<String>`|entries using this context|`[]`
 
 ## Features
 
@@ -357,6 +370,60 @@ LocaleSettings.setPluralResolver(
     return other!;
   },
 );
+```
+
+### Custom Contexts
+
+You can utilize custom contexts to differentiate between male and female forms.
+
+```json5
+// File: strings.i18n.json
+{
+  "greet": {
+    "male": "Hello Mr $name",
+    "female": "Hello Ms $name"
+  }
+}
+```
+
+```yaml
+# File: build.yaml
+options:
+  contexts:
+    gender_context:
+      enum:
+        - male
+        - female
+```
+
+```dart
+String a = t.greet(name: 'Maria', context: GenderContext.female);
+```
+
+You can disable auto detection. This may increase performance.
+
+```yaml
+# File: build.yaml
+options:
+  contexts:
+    gender_context:
+      enum:
+        - male
+        - female
+      auto: false
+      paths:
+        - my.path.to.greet
+```
+
+You can collapse multiple forms.
+
+```json5
+// File: strings.i18n.json
+{
+  "greet": {
+    "male,female": "Hello $name",
+  }
+}
 ```
 
 ### Maps
