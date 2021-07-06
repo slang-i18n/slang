@@ -1,3 +1,7 @@
+## 4.10.0
+
+- feat: support for custom contexts, e.g. `t.greet(name: 'Tom', context: Gender.male)`, more information in the README
+
 ## 4.9.2
 
 - fix: call setLocale without WidgetsBinding

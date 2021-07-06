@@ -1,7 +1,7 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
-import 'package:fast_i18n/src/parser_json.dart';
+import 'package:fast_i18n/src/parser/json_parser.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -24,11 +24,12 @@ void main() {
     pluralAuto: BuildConfig.defaultPluralAuto,
     pluralCardinal: BuildConfig.defaultCardinal,
     pluralOrdinal: BuildConfig.defaultOrdinal,
+    contexts: BuildConfig.defaultContexts,
   );
 
-  group(parseJSON, () {
+  group(JsonParser.parseTranslations, () {
     test('one text', () {
-      final root = parseJSON(baseConfig, defaultLocale, '''{
+      final root = JsonParser.parseTranslations(baseConfig, defaultLocale, '''{
         "hi": "hello"
       }''').root;
       expect(root.entries.length, 1);
@@ -40,7 +41,7 @@ void main() {
 
     test('root map', () {
       final config = baseConfig.copyWith(maps: ['myMap']);
-      final root = parseJSON(config, defaultLocale, '''{
+      final root = JsonParser.parseTranslations(config, defaultLocale, '''{
         "hi": "hello",
         "myMap": {
           "a": "a"
@@ -57,7 +58,7 @@ void main() {
     });
 
     test('root list', () {
-      final root = parseJSON(baseConfig, defaultLocale, '''{
+      final root = JsonParser.parseTranslations(baseConfig, defaultLocale, '''{
         "hi": "hello",
         "myList": [
           "a"
@@ -97,6 +98,7 @@ extension on BuildConfig {
       pluralAuto: pluralAuto ?? this.pluralAuto,
       pluralCardinal: pluralCardinal ?? this.pluralCardinal,
       pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
+      contexts: BuildConfig.defaultContexts,
     );
   }
 }

@@ -1,22 +1,27 @@
 import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/utils.dart';
 
 /// the super class of every node
-class Node {}
+abstract class Node {
+  static const KEY_DELIMITER = ','; // used by context
+}
 
 enum ObjectNodeType {
   classType, // represent this object as class
   map, // as Map<String,dynamic>
   pluralCardinal, // as function
   pluralOrdinal, // as function
+  context, // as function
 }
 
 class ObjectNode extends Node {
   final Map<String, Node> entries;
   final ObjectNodeType type;
   final bool plainStrings;
+  final ContextType? contextHint; // to save computing power by calc only once
 
-  ObjectNode(this.entries, this.type)
+  ObjectNode(this.entries, this.type, this.contextHint)
       : plainStrings = entries.values
             .every((child) => child is TextNode && child.params.isEmpty);
 
