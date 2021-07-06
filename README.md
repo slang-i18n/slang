@@ -415,7 +415,7 @@ options:
         - my.path.to.greet
 ```
 
-You can collapse multiple forms.
+In contrast to pluralization, you **must** provide all forms. Collapse it to save space.
 
 ```json5
 // File: strings.i18n.json
@@ -613,7 +613,7 @@ If you set `auto: cardinal` or `auto: ordinal`, then this library checks if any 
 
 As soon as an unknown item has been detected, then this json node is **not** a pluralization.
 
-```
+```json5
 {
   "fake": {
     "one": "One apple",

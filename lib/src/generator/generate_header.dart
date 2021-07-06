@@ -52,6 +52,8 @@ void generateHeader(
       pluralResolverCardinal: pluralResolverMapCardinal,
       pluralResolverOrdinal: pluralResolverMapOrdinal);
 
+  _generateContextEnums(buffer: buffer, config: config);
+
   _generateExtensions(
       buffer: buffer,
       config: config,
@@ -340,14 +342,31 @@ void _generateLocaleSettings(
   buffer.writeln('}');
 }
 
-void _generateExtensions(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> allLocales,
-    required String baseClassName}) {
+void _generateContextEnums({
+  required StringBuffer buffer,
+  required I18nConfig config,
+}) {
+  buffer.writeln();
+  buffer.writeln('// context enums');
+
+  for (final contextType in config.contexts) {
+    buffer.writeln();
+    buffer.writeln('enum ${contextType.enumName} {');
+    for (final enumValue in contextType.enumValues) {
+      buffer.writeln('\t$enumValue,');
+    }
+    buffer.writeln('}');
+  }
+}
+
+void _generateExtensions({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> allLocales,
+  required String baseClassName,
+}) {
   final String enumName = config.enumName;
 
-  // enum extension
   buffer.writeln();
   buffer.writeln('// extensions for $enumName');
   buffer.writeln();

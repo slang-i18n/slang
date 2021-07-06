@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 /// represents a build.yaml
@@ -22,6 +25,7 @@ class BuildConfig {
   static const PluralAuto defaultPluralAuto = PluralAuto.off;
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
+  static const List<ContextType> defaultContexts = <ContextType>[];
 
   final bool nullSafety;
   final I18nLocale baseLocale;
@@ -40,6 +44,7 @@ class BuildConfig {
   final PluralAuto pluralAuto;
   final List<String> pluralCardinal;
   final List<String> pluralOrdinal;
+  final List<ContextType> contexts;
 
   BuildConfig({
     required this.nullSafety,
@@ -59,12 +64,36 @@ class BuildConfig {
     required this.pluralAuto,
     required this.pluralCardinal,
     required this.pluralOrdinal,
+    required this.contexts,
   });
 
   bool get usePluralFeature {
     return this.pluralAuto != PluralAuto.off ||
         this.pluralCardinal.isNotEmpty ||
         this.pluralOrdinal.isNotEmpty;
+  }
+
+  BuildConfig withAbsolutePaths() {
+    return BuildConfig(
+      nullSafety: nullSafety,
+      baseLocale: baseLocale,
+      fallbackStrategy: fallbackStrategy,
+      inputDirectory: inputDirectory?.normalizePath(),
+      inputFilePattern: inputFilePattern,
+      outputDirectory: outputDirectory?.normalizePath(),
+      outputFilePattern: outputFilePattern,
+      translateVar: translateVar,
+      enumName: enumName,
+      translationClassVisibility: translationClassVisibility,
+      keyCase: keyCase,
+      stringInterpolation: stringInterpolation,
+      renderFlatMap: renderFlatMap,
+      maps: maps,
+      pluralAuto: pluralAuto,
+      pluralCardinal: pluralCardinal,
+      pluralOrdinal: pluralOrdinal,
+      contexts: contexts,
+    );
   }
 }
 
@@ -134,5 +163,21 @@ extension Parser on String {
       default:
         return null;
     }
+  }
+
+  /// converts to absolute file path
+  String normalizePath() {
+    String result = this
+        .replaceAll('/', Platform.pathSeparator)
+        .replaceAll('\\', Platform.pathSeparator);
+
+    if (result.startsWith(Platform.pathSeparator))
+      result = result.substring(Platform.pathSeparator.length);
+
+    if (result.endsWith(Platform.pathSeparator))
+      result =
+          result.substring(0, result.length - Platform.pathSeparator.length);
+
+    return Directory.current.path + Platform.pathSeparator + result;
   }
 }

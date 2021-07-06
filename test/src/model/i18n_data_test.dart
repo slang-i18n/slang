@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('generationComparator', () {
-    final root = ObjectNode({}, ObjectNodeType.classType);
+    final root = ObjectNode({}, ObjectNodeType.classType, null);
     test('without base', () {
       List<I18nData> locales = [
         I18nData(base: false, locale: I18nLocale.fromString('ee'), root: root),

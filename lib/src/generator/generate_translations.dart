@@ -140,15 +140,26 @@ void _generateClass(
           // pluralization
           buffer.write('String $key');
           _addPluralizationCall(
-              buffer: buffer,
-              config: config,
-              resolver: pluralizationResolver,
-              language: language,
-              cardinal: value.type == ObjectNodeType.pluralCardinal,
-              key: key,
-              children: value.entries,
-              depth: 0);
+            buffer: buffer,
+            config: config,
+            resolver: pluralizationResolver,
+            language: language,
+            cardinal: value.type == ObjectNodeType.pluralCardinal,
+            key: key,
+            children: value.entries,
+            depth: 0,
+          );
           break;
+        case ObjectNodeType.context:
+          // custom context
+          buffer.write('String $key');
+          _addContextCall(
+            buffer: buffer,
+            config: config,
+            contextEnumName: value.contextHint!.enumName,
+            children: value.entries,
+            depth: 0,
+          );
       }
     }
   });
@@ -227,6 +238,16 @@ void _generateMap(
               children: value.entries,
               depth: depth + 1);
           break;
+        case ObjectNodeType.context:
+          // custom context
+          buffer.write('\'$key\': ');
+          _addContextCall(
+            buffer: buffer,
+            config: config,
+            contextEnumName: value.contextHint!.enumName,
+            children: value.entries,
+            depth: depth + 1,
+          );
       }
     }
   });
@@ -301,6 +322,15 @@ void _generateList(
               children: value.entries,
               depth: depth + 1);
           break;
+        case ObjectNodeType.context:
+          // custom context
+          _addContextCall(
+            buffer: buffer,
+            config: config,
+            contextEnumName: value.contextHint!.enumName,
+            children: value.entries,
+            depth: depth + 1,
+          );
       }
     }
   }
@@ -366,7 +396,7 @@ _generateTranslationMapRecursive(
           for (int i = 0; i < value.entries.length; i++)
             i.toString(): value.entries[i]
         };
-        final converted = ObjectNode(entries, ObjectNodeType.classType);
+        final converted = ObjectNode(entries, ObjectNodeType.classType, null);
 
         _generateTranslationMapRecursive(
             buffer, converted, key, config, pluralizationResolver, language);
@@ -375,14 +405,24 @@ _generateTranslationMapRecursive(
             value.type == ObjectNodeType.pluralOrdinal) {
           buffer.write('\t\t\'$key\': ');
           _addPluralizationCall(
-              buffer: buffer,
-              config: config,
-              resolver: pluralizationResolver,
-              language: language,
-              cardinal: value.type == ObjectNodeType.pluralCardinal,
-              key: key,
-              children: value.entries,
-              depth: 1);
+            buffer: buffer,
+            config: config,
+            resolver: pluralizationResolver,
+            language: language,
+            cardinal: value.type == ObjectNodeType.pluralCardinal,
+            key: key,
+            children: value.entries,
+            depth: 1,
+          );
+        } else if (value.type == ObjectNodeType.context) {
+          buffer.write('\t\t\'$key\': ');
+          _addContextCall(
+            buffer: buffer,
+            config: config,
+            contextEnumName: value.contextHint!.enumName,
+            children: value.entries,
+            depth: 1,
+          );
         } else {
           // recursive
           _generateTranslationMapRecursive(
@@ -463,6 +503,50 @@ void _addPluralizationCall(
   if (depth == 0) {
     buffer.writeln(';');
   } else {
+    buffer.writeln(',');
+  }
+}
+
+void _addContextCall(
+    {required StringBuffer buffer,
+    required I18nConfig config,
+    required String contextEnumName,
+    required Map<String, Node> children,
+    required int depth}) {
+  final textNodeList = children.values.cast<TextNode>().toList();
+
+  // parameters are union sets over all plural forms
+  final paramSet = <String>{};
+  for (final textNode in textNodeList) {
+    paramSet.addAll(textNode.params);
+  }
+  final params = paramSet.where((p) => p != 'context').toList();
+
+  // parameters with count as first number
+  buffer.write('({${nsReq(config)}required $contextEnumName context');
+  for (int i = 0; i < params.length; i++) {
+    buffer.write(', ${nsReq(config)}required Object ');
+    buffer.write(params[i]);
+  }
+  buffer.writeln('}) {');
+
+  _addTabs(buffer, depth + 2);
+  buffer.writeln('switch (context) {');
+
+  final keys = children.keys.toList();
+  for (int i = 0; i < textNodeList.length; i++) {
+    _addTabs(buffer, depth + 3);
+    buffer.writeln(
+        'case $contextEnumName.${keys[i]}: return \'${textNodeList[i].content}\';');
+  }
+
+  _addTabs(buffer, depth + 2);
+  buffer.writeln('}');
+
+  _addTabs(buffer, depth + 1);
+  buffer.write('}');
+
+  if (depth != 0) {
     buffer.writeln(',');
   }
 }

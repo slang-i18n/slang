@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:fast_i18n/src/builder/build_config_builder.dart';
 import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
-import 'package:fast_i18n/src/parser_json.dart';
-import 'package:fast_i18n/src/parser_yaml.dart';
+import 'package:fast_i18n/src/parser/json_parser.dart';
+import 'package:fast_i18n/src/parser/yaml_parser.dart';
 import 'package:fast_i18n/src/utils.dart';
 
 /// To run this:
@@ -61,19 +62,21 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
 
     if (fileName == 'build.yaml') {
       final content = await File(file.path).readAsString();
-      final result = parseBuildYaml(content);
-      if (result.parsed) {
+      buildConfig = YamlParser.parseBuildYaml(content);
+      if (buildConfig != null) {
         print('Found build.yaml in ${file.path}');
-        buildConfig = result.config;
         break;
       }
     }
   }
 
   if (buildConfig == null) {
-    buildConfig = parseBuildYaml(null).config;
+    buildConfig = BuildConfigBuilder.fromMap({});
     print('No build.yaml, use default settings.');
   }
+
+  // convert to absolute paths
+  buildConfig = buildConfig.withAbsolutePaths();
 
   // show build config
   print('');
@@ -101,6 +104,12 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
       ' -> pluralization/auto: ${(buildConfig.pluralAuto.toString().split('.').last)}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
   print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
+  print(
+      ' -> contexts: ${buildConfig.contexts.isEmpty ? 'no custom contexts' : ''}');
+  for (final contextType in buildConfig.contexts) {
+    print(
+        '    - ${contextType.enumName} { ${contextType.enumValues.join(', ')} }');
+  }
   print('');
 
   return buildConfig;
@@ -189,8 +198,8 @@ Future<void> generateTranslations({
     if (baseFile != null) {
       // base file
       final content = await File(file.path).readAsString();
-      final currTranslations =
-          parseJSON(buildConfig, buildConfig.baseLocale, content);
+      final currTranslations = JsonParser.parseTranslations(
+          buildConfig, buildConfig.baseLocale, content);
       translationList.add(currTranslations);
       resultPath =
           file.path.replaceAll("${Platform.pathSeparator}$fileName", '') +
@@ -212,7 +221,8 @@ Future<void> generateTranslations({
         final locale = I18nLocale(
             language: language ?? '', script: script, country: country);
         final content = await File(file.path).readAsString();
-        final currTranslations = parseJSON(buildConfig, locale, content);
+        final currTranslations =
+            JsonParser.parseTranslations(buildConfig, locale, content);
         translationList.add(currTranslations);
 
         if (verbose) {
@@ -253,6 +263,7 @@ Future<void> generateTranslations({
         enumName: buildConfig.enumName,
         translationClassVisibility: buildConfig.translationClassVisibility,
         renderFlatMap: buildConfig.renderFlatMap,
+        contexts: buildConfig.contexts,
       ),
       translations: translationList
         ..sort(I18nData

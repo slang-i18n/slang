@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:build/build.dart';
+import 'package:fast_i18n/src/builder/build_config_builder.dart';
 import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
-import 'package:fast_i18n/src/parser_json.dart';
+import 'package:fast_i18n/src/parser/json_parser.dart';
 import 'package:fast_i18n/src/utils.dart';
 import 'package:glob/glob.dart';
 
@@ -30,39 +31,7 @@ class I18nBuilder implements Builder {
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final buildConfig = BuildConfig(
-        nullSafety:
-            options.config['null_safety'] ?? BuildConfig.defaultNullSafety,
-        baseLocale: I18nLocale.fromString(
-            options.config['base_locale'] ?? BuildConfig.defaultBaseLocale),
-        fallbackStrategy:
-            (options.config['fallback_strategy'] as String?)?.toFallbackStrategy() ??
-                BuildConfig.defaultFallbackStrategy,
-        inputDirectory: options.config['input_directory'] ??
-            BuildConfig.defaultInputDirectory,
-        inputFilePattern: inputFilePattern,
-        outputDirectory: options.config['output_directory'] ??
-            BuildConfig.defaultOutputDirectory,
-        outputFilePattern: outputFilePattern,
-        translateVar:
-            options.config['translate_var'] ?? BuildConfig.defaultTranslateVar,
-        enumName: options.config['enum_name'] ?? BuildConfig.defaultEnumName,
-        translationClassVisibility:
-            (options.config['translation_class_visibility'] as String?)
-                    ?.toTranslationClassVisibility() ??
-                BuildConfig.defaultTranslationClassVisibility,
-        keyCase: (options.config['key_case'] as String?)?.toKeyCase() ??
-            BuildConfig.defaultKeyCase,
-        stringInterpolation: (options.config['string_interpolation'] as String?)
-                ?.toStringInterpolation() ??
-            BuildConfig.defaultStringInterpolation,
-        renderFlatMap:
-            options.config['flat_map'] ?? BuildConfig.defaultRenderFlatMap,
-        maps: options.config['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
-        pluralAuto: (options.config['pluralization']?['auto'] as String?)?.toPluralAuto() ??
-            BuildConfig.defaultPluralAuto,
-        pluralCardinal: options.config['pluralization']?['cardinal']?.cast<String>() ?? BuildConfig.defaultCardinal,
-        pluralOrdinal: options.config['pluralization']?['ordinal']?.cast<String>() ?? BuildConfig.defaultOrdinal);
+    final buildConfig = BuildConfigBuilder.fromMap(options.config);
 
     if (buildConfig.inputDirectory != null &&
         !buildStep.inputId.path.contains(buildConfig.inputDirectory!)) return;
@@ -113,7 +82,8 @@ class I18nBuilder implements Builder {
     for (MapEntry<AssetId, I18nLocale> asset in assetMap.entries) {
       I18nLocale locale = asset.value;
       String content = await buildStep.readAsString(asset.key);
-      I18nData representation = parseJSON(buildConfig, locale, content);
+      I18nData representation =
+          JsonParser.parseTranslations(buildConfig, locale, content);
       localesWithData[asset.key] = representation;
     }
 
@@ -135,6 +105,7 @@ class I18nBuilder implements Builder {
           enumName: buildConfig.enumName,
           translationClassVisibility: buildConfig.translationClassVisibility,
           renderFlatMap: buildConfig.renderFlatMap,
+          contexts: buildConfig.contexts,
         ),
         translations: localesWithData.values.toList()
           ..sort(I18nData
