@@ -21,7 +21,7 @@ class BuildConfigBuilder {
               .map((e) => e.toCase(KeyCase.camel))
               .toList(),
           auto: config['auto'] ?? ContextType.defaultAuto,
-          paths: config['enum']?.cast<String>() ?? ContextType.defaultPaths,
+          paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
         );
       }).toList();
     }
