@@ -1,6 +1,6 @@
 # https://pub.dartlang.org/packages/build_config
 builders:
-  i18nBuilder:
+  fast_i18n:
     import: 'package:fast_i18n/src/builder.dart'
     builder_factories: ['i18nBuilder']
     build_extensions: {'.i18n.json': ['.g.dart']}
