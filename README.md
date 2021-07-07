@@ -258,7 +258,7 @@ flutter pub run fast_i18n watch
 
 ### String Interpolation
 
-There are three modes configurable via `string_interpolation`.
+There are three modes configurable via `string_interpolation` in `build.yaml`.
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
@@ -394,13 +394,17 @@ options:
       enum:
         - male
         - female
+    polite_context:
+      enum:
+        - polite
+        - rude
 ```
 
 ```dart
 String a = t.greet(name: 'Maria', context: GenderContext.female);
 ```
 
-You can disable auto detection. This may increase performance.
+Auto detection is on by default. You can disable auto detection. This may speed up build time.
 
 ```yaml
 # File: build.yaml
@@ -410,8 +414,8 @@ options:
       enum:
         - male
         - female
-      auto: false
-      paths:
+      auto: false # disable auto detection
+      paths: # now you must specify paths manually
         - my.path.to.greet
 ```
 
@@ -437,14 +441,13 @@ Keep in mind that all nice features like autocompletion are gone.
 ```json5
 // File: strings.i18n.json
 {
-  "welcome": "Welcome",
-  "thisIsAMap": {
+  "a": {
     "hello world": "hello"
   },
-  "notAMapParent": {
-    "notAMap": "hello",
-    "aMapInClass": {
-      "hi": "hi"
+  "b": {
+    "b0": "hey",
+    "b1": {
+      "hi there": "hi"
     }
   }
 }
@@ -458,16 +461,16 @@ targets:
       fast_i18n:i18nBuilder:
         options:
           maps:
-            - thisIsAMap
-            - notAMapParent.aMapInClass
+            - a
+            - b.b1
 ```
 
 Now you can access the translations via keys:
 
 ```dart
-String a = t.thisIsAMap['hello world'];
-String b = t.notAMapParent.notAMap; // the "classical" way
-String c = t.notAMapParent.aMapInClass['hi']; // nested
+String a = t.a['hello world']; // "hello"
+String b = t.b.b0; // "hey"
+String c = t.b.b1['hi there']; // "hi"
 ```
 
 ### Dynamic Keys
@@ -607,9 +610,11 @@ An exception is thrown by `_missingPluralResolver` because you missed to add `Lo
 
 See [Pluralization](#pluralization).
 
-**How does this plural detection work?**
+**How does auto detection work?**
 
-If you set `auto: cardinal` or `auto: ordinal`, then this library checks if any json node has `zero`, `one`, `two`, `few`, `many` or `other` as children.
+You can let the library detect plurals or contexts.
+
+For plurals, it checks if any json node has `zero`, `one`, `two`, `few`, `many` or `other` as children.
 
 As soon as an unknown item has been detected, then this json node is **not** a pluralization.
 
@@ -622,6 +627,8 @@ As soon as an unknown item has been detected, then this json node is **not** a p
   }
 }
 ```
+
+For contexts, all enum values must exist.
 
 ## Future Plans
 
