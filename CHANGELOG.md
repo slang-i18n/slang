@@ -1,3 +1,8 @@
+## 4.11.0
+
+- feat: simplify ${arg} to $arg if possible
+- feat: make internal translation class instance final
+
 ## 4.10.0
 
 - feat: support for custom contexts, e.g. `t.greet(name: 'Tom', context: Gender.male)`, more information in the README
