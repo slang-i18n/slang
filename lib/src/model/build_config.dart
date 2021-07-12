@@ -6,8 +6,7 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 /// represents a build.yaml
 class BuildConfig {
   static const String defaultBaseLocale = 'en';
-  static const FallbackStrategy defaultFallbackStrategy =
-      FallbackStrategy.none;
+  static const FallbackStrategy defaultFallbackStrategy = FallbackStrategy.none;
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;

@@ -559,8 +559,7 @@ void _generatePluralFunction(
     buffer.writeln(
         '\t\treturn ${rule.result.paramName()} ?? ${ruleSet.defaultQuantity.paramName()}!;');
   }
-  buffer.writeln(
-      '\treturn ${ruleSet.defaultQuantity.paramName()}!;');
+  buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()}!;');
   buffer.writeln('}');
 }
 
