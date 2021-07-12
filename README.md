@@ -233,7 +233,7 @@ Key|Type|Usage|Default
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
 `flat_map`|`Boolean`|generate flat map|`true`
 `maps`|`List<String>`|entries which should be accessed via keys|`[]`
-`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`off`
+`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`cardinal`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
 `pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
 `<context>`/`enum`|`List<String>`|context forms|no default
