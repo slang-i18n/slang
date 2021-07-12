@@ -99,8 +99,6 @@ void _generateClass(
   buffer.writeln();
 
   currMembers.forEach((key, value) {
-    key = key.toCase(config.keyCase);
-
     buffer.write('\t');
     if (!base) buffer.write('@override ');
 
@@ -381,7 +379,6 @@ _generateTranslationMapRecursive(
     String language) {
   if (parent is ObjectNode) {
     parent.entries.forEach((key, value) {
-      key = key.toCase(config.keyCase);
       if (path.isNotEmpty) key = '$path.$key';
 
       if (value is TextNode) {

@@ -9,7 +9,6 @@ class I18nConfig {
   final I18nLocale baseLocale; // defaults to 'en'
   final FallbackStrategy fallbackStrategy;
   final List<PluralizationResolver> renderedPluralizationResolvers;
-  final KeyCase? keyCase;
   final String translateVariable;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
@@ -21,7 +20,6 @@ class I18nConfig {
     required this.baseLocale,
     required this.fallbackStrategy,
     required this.renderedPluralizationResolvers,
-    required this.keyCase,
     required this.translateVariable,
     required this.enumName,
     required this.translationClassVisibility,

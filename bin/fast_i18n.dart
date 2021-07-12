@@ -256,7 +256,6 @@ Future<void> generateTranslations({
                     (locale) => locale.locale.language == resolver.language))
                 .toList()
             : [],
-        keyCase: buildConfig.keyCase,
         translateVariable: buildConfig.translateVar,
         enumName: buildConfig.enumName,
         translationClassVisibility: buildConfig.translationClassVisibility,

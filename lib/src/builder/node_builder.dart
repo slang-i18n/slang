@@ -2,6 +2,7 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
+import 'package:fast_i18n/src/string_extensions.dart';
 
 class NodeBuilder {
   static ObjectNode fromMap(BuildConfig config, Map<String, dynamic> map) {
@@ -17,6 +18,8 @@ class NodeBuilder {
     List<String> stack,
   ) {
     curr.forEach((key, value) {
+      key = key.toCase(config.keyCase);
+
       if (value is String) {
         // leaf
         // key: 'value'

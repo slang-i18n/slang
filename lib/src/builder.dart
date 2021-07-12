@@ -99,7 +99,6 @@ class I18nBuilder implements Builder {
                       .any((locale) => locale.language == resolver.language))
                   .toList()
               : [],
-          keyCase: buildConfig.keyCase,
           translateVariable: buildConfig.translateVar,
           enumName: buildConfig.enumName,
           translationClassVisibility: buildConfig.translationClassVisibility,
