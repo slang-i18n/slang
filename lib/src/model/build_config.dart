@@ -22,7 +22,7 @@ class BuildConfig {
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
   static const List<String> defaultMaps = <String>[];
-  static const PluralAuto defaultPluralAuto = PluralAuto.off;
+  static const PluralAuto defaultPluralAuto = PluralAuto.cardinal;
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
