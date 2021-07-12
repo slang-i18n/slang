@@ -3,10 +3,14 @@ class Utils {
   static RegExp argumentsDartRegex = RegExp(r'([^\\]|^)\$\{?(\w+)\}?');
 
   /// matches {argument}
-  static RegExp argumentsBracesRegex = RegExp(r'(.|^)\{(\w+)\}');
+  /// 1 = pre character (to check \)
+  /// 2 = actual argument
+  /// 3 = post character is word, therefore ${...}
+  static RegExp argumentsBracesRegex = RegExp(r'(.|^)\{(\w+)\}(\w)?');
 
   /// matches {{argument}}
-  static RegExp argumentsDoubleBracesRegex = RegExp(r'(.|^)\{\{(\w+)\}\}');
+  /// similar group indices like [argumentsBracesRegex]
+  static RegExp argumentsDoubleBracesRegex = RegExp(r'(.|^)\{\{(\w+)\}\}(\w)?');
 
   /// locale regex
   static const LOCALE_REGEX_RAW =

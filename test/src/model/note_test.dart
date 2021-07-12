@@ -21,21 +21,14 @@ void main() {
     test('one argument (single braces)', () {
       final test = 'I have one argument named {apple}.';
       final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content, 'I have one argument named \${apple}.');
-      expect(node.params, ['apple']);
-    });
-
-    test('one argument (single braces)', () {
-      final test = 'I have one argument named {apple}.';
-      final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content, 'I have one argument named \${apple}.');
+      expect(node.content, 'I have one argument named \$apple.');
       expect(node.params, ['apple']);
     });
 
     test('one argument without space (single braces)', () {
       final test = 'I have one argument named{apple}.';
       final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content, 'I have one argument named\${apple}.');
+      expect(node.content, 'I have one argument named\$apple.');
       expect(node.params, ['apple']);
     });
 
@@ -43,14 +36,14 @@ void main() {
       final test = 'I have one argument named {apple} but this is \$fake.';
       final node = TextNode(test, StringInterpolation.braces);
       expect(node.content,
-          'I have one argument named \${apple} but this is \$fake.');
+          'I have one argument named \$apple but this is \$fake.');
       expect(node.params, ['apple']);
     });
 
     test('one argument (double braces)', () {
       final test = 'I have one argument named {{apple}}.';
       final node = TextNode(test, StringInterpolation.doubleBraces);
-      expect(node.content, 'I have one argument named \${apple}.');
+      expect(node.content, 'I have one argument named \$apple.');
       expect(node.params, ['apple']);
     });
 
@@ -95,21 +88,35 @@ void main() {
         expect(
             'This string has one argument named {tom}.'
                 .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named \${tom}.');
+            'This string has one argument named \$tom.');
+      });
+
+      test('one argument followed by underscore', () {
+        expect(
+            'This string has one argument named {tom}_'
+                .normalizeStringInterpolation(StringInterpolation.braces),
+            'This string has one argument named \${tom}_');
+      });
+
+      test('one argument followed by number', () {
+        expect(
+            'This string has one argument named {tom}7'
+                .normalizeStringInterpolation(StringInterpolation.braces),
+            'This string has one argument named \${tom}7');
       });
 
       test('two arguments', () {
         expect(
             'This string has two arguments named {tom} and {two}.'
                 .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has two arguments named \${tom} and \${two}.');
+            'This string has two arguments named \$tom and \$two.');
       });
 
       test('one without space', () {
         expect(
             'This string has one argument named{tom}.'
                 .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named\${tom}.');
+            'This string has one argument named\$tom.');
       });
 
       test('escaped', () {
@@ -131,21 +138,21 @@ void main() {
         expect(
             'This string has one argument named {{tom}}.'
                 .normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has one argument named \${tom}.');
+            'This string has one argument named \$tom.');
       });
 
       test('two arguments', () {
         expect(
             'This string has two arguments named {{tom}} and {{two}}.'
                 .normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has two arguments named \${tom} and \${two}.');
+            'This string has two arguments named \$tom and \$two.');
       });
 
       test('one without space', () {
         expect(
             'This string has one argument named{{tom}}.'
                 .normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has one argument named\${tom}.');
+            'This string has one argument named\$tom.');
       });
 
       test('escaped', () {

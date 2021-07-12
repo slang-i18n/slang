@@ -78,14 +78,28 @@ extension StringExt on String {
           if (match.group(1) == '\\') {
             return '{${match.group(2)}}'; // escape
           }
-          return '${match.group(1)}\${${match.group(2)}}';
+
+          if (match.group(3) != null) {
+            // ${...}
+            return '${match.group(1)}\${${match.group(2)}}${match.group(3)}';
+          } else {
+            // $...
+            return '${match.group(1)}\$${match.group(2)}';
+          }
         });
       case StringInterpolation.doubleBraces:
         return replaceAllMapped(Utils.argumentsDoubleBracesRegex, (match) {
           if (match.group(1) == '\\') {
             return '{{${match.group(2)}}}'; // escape
           }
-          return '${match.group(1)}\${${match.group(2)}}';
+
+          if (match.group(3) != null) {
+            // ${...}
+            return '${match.group(1)}\${${match.group(2)}}${match.group(3)}';
+          } else {
+            // $...
+            return '${match.group(1)}\$${match.group(2)}';
+          }
         });
     }
   }
