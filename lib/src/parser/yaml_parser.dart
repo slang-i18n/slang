@@ -17,7 +17,7 @@ class YamlParser {
 
   static YamlMap? _findConfigEntry(YamlMap parent) {
     for (final entry in parent.entries) {
-      if (entry.key == 'fast_i18n:i18nBuilder' && entry.value is YamlMap) {
+      if (entry.key == 'fast_i18n' && entry.value is YamlMap) {
         final options = entry.value['options'];
         if (options != null) return options; // found
       }
