@@ -80,13 +80,13 @@ void _generateClass(
   } else {
     final baseClassName = getClassName(
         parentName: className, locale: config.baseLocale.toLanguageTag());
-    final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.strict
+    final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.none
         ? 'implements'
         : 'extends';
     buffer.writeln('class $finalClassName $fallbackStrategy $baseClassName {');
   }
 
-  if (config.fallbackStrategy == FallbackStrategy.strict || base)
+  if (config.fallbackStrategy == FallbackStrategy.none || base)
     buffer.writeln('\t$finalClassName._(); // no constructor');
   else
     buffer.writeln('\t$finalClassName._() : super._(); // no constructor');

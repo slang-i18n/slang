@@ -8,7 +8,7 @@ class BuildConfig {
   static const bool defaultNullSafety = true;
   static const String defaultBaseLocale = 'en';
   static const FallbackStrategy defaultFallbackStrategy =
-      FallbackStrategy.strict;
+      FallbackStrategy.none;
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
@@ -97,7 +97,7 @@ class BuildConfig {
   }
 }
 
-enum FallbackStrategy { strict, baseLocale }
+enum FallbackStrategy { none, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }
 enum KeyCase { camel, pascal, snake }
@@ -106,8 +106,8 @@ enum PluralAuto { off, cardinal, ordinal }
 extension Parser on String {
   FallbackStrategy? toFallbackStrategy() {
     switch (this) {
-      case 'strict':
-        return FallbackStrategy.strict;
+      case 'none':
+        return FallbackStrategy.none;
       case 'base_locale':
         return FallbackStrategy.baseLocale;
       default:
