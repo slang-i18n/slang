@@ -1,11 +1,24 @@
 ## 4.11.0
 
-- feat: simplify ${arg} to $arg if possible
+- feat: simplify `${arg}` to `$arg` if possible
 - feat: make internal translation class instance final
 
 ## 4.10.0
 
-- feat: support for custom contexts, e.g. `t.greet(name: 'Tom', context: Gender.male)`, more information in the README
+Added support for custom contexts.
+Example:
+```json
+{
+  "greet": {
+    "male": "Hello Mr $name",
+    "female": "Hello Ms $name"
+  }
+}
+```
+```dart
+String a = t.greet(name: 'Anna', context: GenderContext.female);
+```
+For more information, see README.
 
 ## 4.9.2
 
