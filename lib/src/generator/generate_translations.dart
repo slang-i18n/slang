@@ -171,7 +171,7 @@ void _generateClass(
     buffer.writeln('\t/// A flat map containing all translations.');
     buffer.writeln('\tdynamic operator[](String key) {');
     buffer.writeln(
-        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]${nsExl(config)}[key];');
+        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]![key];');
     buffer.writeln('\t}');
   }
 
@@ -354,7 +354,7 @@ generateTranslationMap(
   buffer.writeln(
       '/// Only for edge cases! For simple maps, use the map function of this library.');
   buffer.writeln(
-      '${nsLate(config)}Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
+      'late Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
 
   for (I18nData localeData in translations) {
     final pluralizationResolver = config.renderedPluralizationResolvers
@@ -441,7 +441,7 @@ String _toParameterList(List<String> params, I18nConfig config) {
   buffer.write('({');
   for (int i = 0; i < params.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('${nsReq(config)}required Object ');
+    buffer.write('required Object ');
     buffer.write(params[i]);
   }
   buffer.write('})');
@@ -471,9 +471,9 @@ void _addPluralizationCall(
   final params = paramSet.where((p) => p != 'count').toList();
 
   // parameters with count as first number
-  buffer.write('({${nsReq(config)}required num count');
+  buffer.write('({required num count');
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', ${nsReq(config)}required Object ');
+    buffer.write(', required Object ');
     buffer.write(params[i]);
   }
 
@@ -524,9 +524,9 @@ void _addContextCall(
   final params = paramSet.where((p) => p != 'context').toList();
 
   // parameters with count as first number
-  buffer.write('({${nsReq(config)}required $contextEnumName context');
+  buffer.write('({required $contextEnumName context');
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', ${nsReq(config)}required Object ');
+    buffer.write(', required Object ');
     buffer.write(params[i]);
   }
   buffer.writeln('}) {');

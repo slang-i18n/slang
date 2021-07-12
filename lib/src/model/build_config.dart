@@ -5,7 +5,6 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 /// represents a build.yaml
 class BuildConfig {
-  static const bool defaultNullSafety = true;
   static const String defaultBaseLocale = 'en';
   static const FallbackStrategy defaultFallbackStrategy =
       FallbackStrategy.none;
@@ -27,7 +26,6 @@ class BuildConfig {
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
 
-  final bool nullSafety;
   final I18nLocale baseLocale;
   final FallbackStrategy fallbackStrategy;
   final String? inputDirectory;
@@ -47,7 +45,6 @@ class BuildConfig {
   final List<ContextType> contexts;
 
   BuildConfig({
-    required this.nullSafety,
     required this.baseLocale,
     required this.fallbackStrategy,
     required this.inputDirectory,
@@ -75,7 +72,6 @@ class BuildConfig {
 
   BuildConfig withAbsolutePaths() {
     return BuildConfig(
-      nullSafety: nullSafety,
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       inputDirectory: inputDirectory?.normalizePath(),

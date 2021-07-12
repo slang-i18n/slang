@@ -80,7 +80,6 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
 
   // show build config
   print('');
-  print(' -> null safety: ${buildConfig.nullSafety}');
   print(' -> baseLocale: ${buildConfig.baseLocale.toLanguageTag()}');
   print(
       ' -> fallbackStrategy: ${(buildConfig.fallbackStrategy.toString().split('.').last)}');
@@ -248,7 +247,6 @@ Future<void> generateTranslations({
   // generate
   final String output = generate(
       config: I18nConfig(
-        nullSafety: buildConfig.nullSafety,
         baseName: baseName,
         baseLocale: buildConfig.baseLocale,
         fallbackStrategy: buildConfig.fallbackStrategy,

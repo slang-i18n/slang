@@ -90,7 +90,6 @@ class I18nBuilder implements Builder {
     // generate
     final String output = generate(
         config: I18nConfig(
-          nullSafety: buildConfig.nullSafety,
           baseName: baseName!,
           baseLocale: buildConfig.baseLocale,
           fallbackStrategy: buildConfig.fallbackStrategy,

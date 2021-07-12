@@ -1,5 +1,4 @@
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
 String getClassNameRoot(
@@ -17,22 +16,4 @@ String getClassName(
   return parentName +
       childName.toCase(KeyCase.pascal) +
       locale.toLowerCase().toCase(KeyCase.pascal);
-}
-
-// null safety (ns) helpers
-
-String nsOpt(I18nConfig config) {
-  return config.nullSafety ? '?' : '';
-}
-
-String nsReq(I18nConfig config) {
-  return config.nullSafety ? '' : '@';
-}
-
-String nsExl(I18nConfig config) {
-  return config.nullSafety ? '!' : '';
-}
-
-String nsLate(I18nConfig config) {
-  return config.nullSafety ? 'late ' : '';
 }
