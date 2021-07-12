@@ -92,7 +92,7 @@ void _generateClass(
     buffer.writeln('\t$finalClassName._() : super._(); // no constructor');
 
   buffer.writeln();
-  buffer.writeln('\tstatic $finalClassName _instance = $finalClassName._();');
+  buffer.writeln('\tstatic final $finalClassName _instance = $finalClassName._();');
   if (config.translationClassVisibility == TranslationClassVisibility.public)
     buffer.writeln('\tstatic $finalClassName get instance => _instance;');
   buffer.writeln();
