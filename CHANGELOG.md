@@ -1,3 +1,15 @@
+## 5.0.0
+
+**This release mostly focuses on simplifications of** `build.yaml`.
+- **Breaking:** builder name renamed from `fast_i18n:i18nBuilder` to `fast_i18n`
+- **Breaking:** plural auto detection is on by default (`auto: cardinal`)
+- **Breaking:** fallback strategy option `strict` is now `none`
+- **Breaking:** key paths in `build.yaml` must be cased according to `key_case` if specified
+- **Breaking:** your project must be null safe
+- feat: generated file follows lint guidelines
+
+You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/MIGRATION.md).
+
 ## 4.11.0
 
 - feat: simplify `${arg}` to `$arg` if possible
