@@ -70,7 +70,6 @@ void generateHeader(
   _generatePluralResolvers(
       buffer: buffer,
       config: config,
-      languageRules: config.renderedPluralizationResolvers,
       pluralResolverType: pluralResolverType,
       pluralResolverCardinal: pluralResolverMapCardinal,
       pluralResolverOrdinal: pluralResolverMapOrdinal);
@@ -203,7 +202,7 @@ void _generateTranslationGetter(
       '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
   buffer.writeln('\t\tif (inheritedWidget == null) {');
   buffer.writeln(
-      '\t\t\tthrow(\'Please wrap your app with "TranslationProvider".\');');
+      '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
   buffer.writeln('\t\t}');
   buffer.writeln('\t\treturn inheritedWidget.translations;');
   buffer.writeln('\t}');
@@ -235,11 +234,12 @@ void _generateLocaleSettings(
       '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag');
   buffer.writeln('\tstatic $enumName useDeviceLocale() {');
   buffer.writeln(
-      '\t\tString${nsOpt(config)} deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
-  buffer.writeln('\t\tif (deviceLocale != null)');
+      '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
+  buffer.writeln('\t\tif (deviceLocale != null) {');
   buffer.writeln('\t\t\treturn setLocaleRaw(deviceLocale);');
-  buffer.writeln('\t\telse');
+  buffer.writeln('\t\t} else {');
   buffer.writeln('\t\t\treturn setLocale($baseLocaleVar);');
+  buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
   buffer.writeln();
@@ -309,17 +309,17 @@ void _generateLocaleSettings(
   buffer.writeln(
       '\t/// Only language part matters, script and country parts are ignored');
   buffer.write('\t/// Rendered Resolvers: [');
-  for (int i = 0; i < config.renderedPluralizationResolvers.length; i++) {
+  final renderedResolvers = config.getRenderedPluralResolvers().toList();
+  for (int i = 0; i < renderedResolvers.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('\'${config.renderedPluralizationResolvers[i].language}\'');
+    buffer.write('\'${renderedResolvers[i]}\'');
   }
   buffer.writeln(']');
 
   final missing = allLocales
       .map((l) => l.locale.language)
       .toSet()
-      .difference(
-          config.renderedPluralizationResolvers.map((r) => r.language).toSet())
+      .difference(renderedResolvers.toSet())
       .toList();
   if (missing.isNotEmpty) {
     buffer.write('\t/// You must set these: [');
@@ -331,7 +331,7 @@ void _generateLocaleSettings(
   }
 
   buffer.writeln(
-      '\tstatic void setPluralResolver({${nsReq(config)}required String language, $pluralResolverType${nsOpt(config)} cardinalResolver, $pluralResolverType${nsOpt(config)} ordinalResolver}) {');
+      '\tstatic void setPluralResolver({required String language, $pluralResolverType? cardinalResolver, $pluralResolverType? ordinalResolver}) {');
   buffer.writeln(
       '\t\tif (cardinalResolver != null) $pluralResolverCardinal[language] = cardinalResolver;');
   buffer.writeln(
@@ -398,7 +398,7 @@ void _generateExtensions({
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.write(
-        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return Locale.fromSubtags(languageCode: \'${locale.locale.language}\'');
+        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return const Locale.fromSubtags(languageCode: \'${locale.locale.language}\'');
     if (locale.locale.script != null)
       buffer.write(', scriptCode: \'${locale.locale.script}\'');
     if (locale.locale.country != null)
@@ -412,7 +412,7 @@ void _generateExtensions({
   // string extension
   buffer.writeln();
   buffer.writeln('extension String${enumName}Extensions on String {');
-  buffer.writeln('\t$enumName${nsOpt(config)} to$enumName() {');
+  buffer.writeln('\t$enumName? to$enumName() {');
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
@@ -440,11 +440,11 @@ void _generateTranslationWrapper(
   buffer.writeln('// wrappers');
   buffer.writeln();
   buffer.writeln(
-      'GlobalKey<$translationProviderStateClass> $translationProviderKey = new GlobalKey<$translationProviderStateClass>();');
+      'GlobalKey<$translationProviderStateClass> $translationProviderKey = GlobalKey<$translationProviderStateClass>();');
   buffer.writeln();
   buffer.writeln('class $translationProviderClass extends StatefulWidget {');
   buffer.writeln(
-      '\t$translationProviderClass({${nsReq(config)}required this.child}) : super(key: $translationProviderKey);');
+      '\t$translationProviderClass({required this.child}) : super(key: $translationProviderKey);');
   buffer.writeln();
   buffer.writeln('\tfinal Widget child;');
   buffer.writeln();
@@ -480,7 +480,7 @@ void _generateTranslationWrapper(
   buffer.writeln(
       '\tfinal $baseClassName translations; // store translations to avoid switch call');
   buffer.writeln(
-      '\t$inheritedClass({${nsReq(config)}required this.locale, ${nsReq(config)}required Widget child})');
+      '\t$inheritedClass({required this.locale, required Widget child})');
   buffer.writeln(
       '\t\t: translations = locale.translations, super(child: child);');
   buffer.writeln();
@@ -494,51 +494,58 @@ void _generateTranslationWrapper(
 void _generatePluralResolvers(
     {required StringBuffer buffer,
     required I18nConfig config,
-    required List<PluralizationResolver> languageRules,
     required String pluralResolverType,
     required String pluralResolverCardinal,
     required String pluralResolverOrdinal}) {
   buffer.writeln();
+
+  if (config.unsupportedPluralLanguages.isEmpty &&
+      config.renderedCardinalResolvers.isEmpty &&
+      config.renderedOrdinalResolvers.isEmpty) {
+    buffer.writeln('// pluralization feature not used');
+    return;
+  }
+
   buffer.writeln('// pluralization resolvers');
 
   buffer.writeln();
-  buffer.writeln('// for unsupported languages');
   buffer.writeln('// map: language -> resolver');
   buffer.writeln(
-      'typedef String $pluralResolverType(num n, {String${nsOpt(config)} zero, String${nsOpt(config)} one, String${nsOpt(config)} two, String${nsOpt(config)} few, String${nsOpt(config)} many, String${nsOpt(config)} other});');
+      'typedef $pluralResolverType = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
   buffer.writeln(
       'Map<String, $pluralResolverType> $pluralResolverCardinal = {};');
   buffer
       .writeln('Map<String, $pluralResolverType> $pluralResolverOrdinal = {};');
-  buffer.writeln();
-  buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
-  buffer
-      .writeln('\tthrow(\'Resolver for <lang = \$language> not specified\');');
-  buffer.writeln('}');
+
+  if (config.unsupportedPluralLanguages.isNotEmpty) {
+    buffer.writeln();
+    buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
+    buffer
+        .writeln('\tthrow \'Resolver for <lang = \$language> not specified\';');
+    buffer.writeln('}');
+  }
 
   buffer.writeln();
   buffer.writeln('// prepared by fast_i18n');
-  if (languageRules.isEmpty) {
-    buffer.writeln();
-    buffer.writeln(
-        '// No language with pluralization support available or no pluralization configured.');
-  }
-  for (final setting in languageRules) {
-    // cardinal
-    buffer.writeln();
-    _generatePluralFunction(
-        buffer: buffer,
-        config: config,
-        ruleSet: setting.cardinal,
-        functionName: '_pluralCardinal${setting.language.capitalize()}');
 
-    // ordinal
+  // cardinal resolvers
+  for (final entry in config.renderedCardinalResolvers.entries) {
     buffer.writeln();
     _generatePluralFunction(
         buffer: buffer,
         config: config,
-        ruleSet: setting.ordinal,
-        functionName: '_pluralOrdinal${setting.language.capitalize()}');
+        ruleSet: entry.value,
+        functionName: '_pluralCardinal${entry.key.capitalize()}');
+  }
+
+  // ordinal resolvers
+  for (final entry in config.renderedOrdinalResolvers.entries) {
+    buffer.writeln();
+    _generatePluralFunction(
+        buffer: buffer,
+        config: config,
+        ruleSet: entry.value,
+        functionName: '_pluralOrdinal${entry.key.capitalize()}');
   }
 }
 
@@ -551,16 +558,28 @@ void _generatePluralFunction(
   buffer.write('String $functionName(num n, {');
   for (int i = 0; i < Quantity.values.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('String${nsOpt(config)} ${Quantity.values[i].paramName()}');
+    buffer.write('String? ${Quantity.values[i].paramName()}');
   }
   buffer.writeln('}) {');
+
+  bool first = true;
   for (final rule in ruleSet.rules) {
-    buffer.writeln('\tif (${rule.condition})');
+    if (first) {
+      buffer.write('\tif ');
+    } else {
+      buffer.write('\t} else if ');
+    }
+    buffer.writeln('(${rule.condition}) {');
     buffer.writeln(
-        '\t\treturn ${rule.result.paramName()} ?? ${ruleSet.defaultQuantity.paramName()}${nsExl(config)};');
+        '\t\treturn ${rule.result.paramName()} ?? ${ruleSet.defaultQuantity.paramName()}!;');
+    first = false;
   }
-  buffer.writeln(
-      '\treturn ${ruleSet.defaultQuantity.paramName()}${nsExl(config)};');
+
+  if (!first) {
+    buffer.writeln('\t}');
+  }
+
+  buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()}!;');
   buffer.writeln('}');
 }
 
@@ -572,22 +591,22 @@ void _generateHelpers(
   buffer.writeln();
   buffer.writeln(
       'final _localeRegex = RegExp(r\'^${Utils.LOCALE_REGEX_RAW}\$\');');
-  buffer.writeln('$enumName${nsOpt(config)} _selectLocale(String localeRaw) {');
+  buffer.writeln('$enumName? _selectLocale(String localeRaw) {');
   buffer.writeln('\tfinal match = _localeRegex.firstMatch(localeRaw);');
-  buffer.writeln('\tAppLocale${nsOpt(config)} selected;');
+  buffer.writeln('\tAppLocale? selected;');
   buffer.writeln('\tif (match != null) {');
   buffer.writeln('\t\tfinal language = match.group(1);');
   buffer.writeln();
   buffer.writeln('\t\t// match exactly');
   buffer.writeln('\t\tselected = $enumName.values');
-  buffer.writeln('\t\t\t.cast<$enumName${nsOpt(config)}>()');
+  buffer.writeln('\t\t\t.cast<$enumName?>()');
   buffer.writeln(
       '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll(\'_\', \'-\'), orElse: () => null);');
   buffer.writeln();
   buffer.writeln('\t\tif (selected == null && language != null) {');
   buffer.writeln('\t\t\t// match language');
   buffer.writeln('\t\t\tselected = $enumName.values');
-  buffer.writeln('\t\t\t\t.cast<$enumName${nsOpt(config)}>()');
+  buffer.writeln('\t\t\t\t.cast<$enumName?>()');
   buffer.writeln(
       '\t\t\t\t.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);');
   buffer.writeln('\t\t}');

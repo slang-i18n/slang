@@ -1,10 +1,8 @@
 class PluralizationResolver {
-  final String language;
   final RuleSet cardinal;
   final RuleSet ordinal;
 
-  const PluralizationResolver(
-      {required this.language, required this.cardinal, required this.ordinal});
+  const PluralizationResolver({required this.cardinal, required this.ordinal});
 }
 
 class RuleSet {

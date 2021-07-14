@@ -5,7 +5,6 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/node.dart';
-import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
 /// decides which class should be generated
@@ -30,11 +29,6 @@ void generateTranslations(
     localeData.root.entries,
   ));
 
-  final pluralizationResolver = config.renderedPluralizationResolvers
-      .cast<PluralizationResolver?>()
-      .firstWhere((r) => r?.language == localeData.locale.language,
-          orElse: () => null);
-
   // only for the first class
   bool root = true;
 
@@ -46,7 +40,7 @@ void generateTranslations(
         localeData.base,
         localeData.locale.language,
         localeData.localeTag,
-        pluralizationResolver,
+        config.hasPluralResolver(localeData.locale.language),
         buffer,
         queue,
         task.className,
@@ -64,7 +58,7 @@ void _generateClass(
   bool base,
   String language,
   String locale,
-  PluralizationResolver? pluralizationResolver,
+  bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
@@ -80,13 +74,13 @@ void _generateClass(
   } else {
     final baseClassName = getClassName(
         parentName: className, locale: config.baseLocale.toLanguageTag());
-    final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.strict
+    final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.none
         ? 'implements'
         : 'extends';
     buffer.writeln('class $finalClassName $fallbackStrategy $baseClassName {');
   }
 
-  if (config.fallbackStrategy == FallbackStrategy.strict || base)
+  if (config.fallbackStrategy == FallbackStrategy.none || base)
     buffer.writeln('\t$finalClassName._(); // no constructor');
   else
     buffer.writeln('\t$finalClassName._() : super._(); // no constructor');
@@ -99,8 +93,6 @@ void _generateClass(
   buffer.writeln();
 
   currMembers.forEach((key, value) {
-    key = key.toCase(config.keyCase);
-
     buffer.write('\t');
     if (!base) buffer.write('@override ');
 
@@ -114,8 +106,8 @@ void _generateClass(
     } else if (value is ListNode) {
       String type = value.plainStrings ? 'String' : 'dynamic';
       buffer.write('List<$type> get $key => ');
-      _generateList(config, base, language, locale, pluralizationResolver,
-          buffer, queue, className, value.entries, 0);
+      _generateList(config, base, language, locale, hasPluralResolver, buffer,
+          queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -133,7 +125,7 @@ void _generateClass(
           // inline map
           String type = value.plainStrings ? 'String' : 'dynamic';
           buffer.write('Map<String, $type> get $key => ');
-          _generateMap(config, base, language, locale, pluralizationResolver,
+          _generateMap(config, base, language, locale, hasPluralResolver,
               buffer, queue, childClassNoLocale, value.entries, 0);
           break;
         case ObjectNodeType.pluralCardinal:
@@ -143,7 +135,7 @@ void _generateClass(
           _addPluralizationCall(
             buffer: buffer,
             config: config,
-            resolver: pluralizationResolver,
+            hasPluralResolver: hasPluralResolver,
             language: language,
             cardinal: value.type == ObjectNodeType.pluralCardinal,
             key: key,
@@ -169,9 +161,10 @@ void _generateClass(
     // add map operator for translation map
     buffer.writeln();
     buffer.writeln('\t/// A flat map containing all translations.');
+    if (!base) buffer.writeln('\t@override');
     buffer.writeln('\tdynamic operator[](String key) {');
     buffer.writeln(
-        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]${nsExl(config)}[key];');
+        '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]![key];');
     buffer.writeln('\t}');
   }
 
@@ -185,7 +178,7 @@ void _generateMap(
   bool base,
   String language,
   String locale,
-  PluralizationResolver? pluralizationResolver,
+  bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className, // without locale
@@ -205,8 +198,8 @@ void _generateMap(
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
-      _generateList(config, base, language, locale, pluralizationResolver,
-          buffer, queue, className, value.entries, depth + 1);
+      _generateList(config, base, language, locale, hasPluralResolver, buffer,
+          queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -222,7 +215,7 @@ void _generateMap(
         case ObjectNodeType.map:
           // inline map
           buffer.write('\'$key\': ');
-          _generateMap(config, base, language, locale, pluralizationResolver,
+          _generateMap(config, base, language, locale, hasPluralResolver,
               buffer, queue, childClassNoLocale, value.entries, depth + 1);
           break;
         case ObjectNodeType.pluralCardinal:
@@ -232,7 +225,7 @@ void _generateMap(
           _addPluralizationCall(
               buffer: buffer,
               config: config,
-              resolver: pluralizationResolver,
+              hasPluralResolver: hasPluralResolver,
               language: language,
               cardinal: value.type == ObjectNodeType.pluralCardinal,
               key: key,
@@ -270,7 +263,7 @@ void _generateList(
   bool base,
   String language,
   String locale,
-  PluralizationResolver? pluralizationResolver,
+  bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
@@ -290,8 +283,8 @@ void _generateList(
             '${_toParameterList(value.params, config)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
-      _generateList(config, base, language, locale, pluralizationResolver,
-          buffer, queue, className, value.entries, depth + 1);
+      _generateList(config, base, language, locale, hasPluralResolver, buffer,
+          queue, className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String key = depth.toString() + 'i' + i.toString();
       String childClassNoLocale =
@@ -307,7 +300,7 @@ void _generateList(
           break;
         case ObjectNodeType.map:
           // inline map
-          _generateMap(config, base, language, locale, pluralizationResolver,
+          _generateMap(config, base, language, locale, hasPluralResolver,
               buffer, queue, childClassNoLocale, value.entries, depth + 1);
           break;
         case ObjectNodeType.pluralCardinal:
@@ -316,7 +309,7 @@ void _generateList(
           _addPluralizationCall(
               buffer: buffer,
               config: config,
-              resolver: pluralizationResolver,
+              hasPluralResolver: hasPluralResolver,
               language: language,
               cardinal: value.type == ObjectNodeType.pluralCardinal,
               key: key,
@@ -354,18 +347,22 @@ generateTranslationMap(
   buffer.writeln(
       '/// Only for edge cases! For simple maps, use the map function of this library.');
   buffer.writeln(
-      '${nsLate(config)}Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
+      'late Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
 
   for (I18nData localeData in translations) {
-    final pluralizationResolver = config.renderedPluralizationResolvers
-        .cast<PluralizationResolver?>()
-        .firstWhere((r) => r?.language == localeData.locale.language,
-            orElse: () => null);
+    final hasPluralResolver =
+        config.hasPluralResolver(localeData.locale.language);
 
     buffer.writeln(
         '\t${config.enumName}.${localeData.locale.toLanguageTag().toEnumConstant()}: {');
-    _generateTranslationMapRecursive(buffer, localeData.root, '', config,
-        pluralizationResolver, localeData.locale.language);
+    _generateTranslationMapRecursive(
+      buffer,
+      localeData.root,
+      '',
+      config,
+      hasPluralResolver,
+      localeData.locale.language,
+    );
     buffer.writeln('\t},');
   }
 
@@ -373,15 +370,15 @@ generateTranslationMap(
 }
 
 _generateTranslationMapRecursive(
-    StringBuffer buffer,
-    Node parent,
-    String path,
-    I18nConfig config,
-    PluralizationResolver? pluralizationResolver,
-    String language) {
+  StringBuffer buffer,
+  Node parent,
+  String path,
+  I18nConfig config,
+  bool hasPluralResolver,
+  String language,
+) {
   if (parent is ObjectNode) {
     parent.entries.forEach((key, value) {
-      key = key.toCase(config.keyCase);
       if (path.isNotEmpty) key = '$path.$key';
 
       if (value is TextNode) {
@@ -400,7 +397,7 @@ _generateTranslationMapRecursive(
         final converted = ObjectNode(entries, ObjectNodeType.classType, null);
 
         _generateTranslationMapRecursive(
-            buffer, converted, key, config, pluralizationResolver, language);
+            buffer, converted, key, config, hasPluralResolver, language);
       } else if (value is ObjectNode) {
         if (value.type == ObjectNodeType.pluralCardinal ||
             value.type == ObjectNodeType.pluralOrdinal) {
@@ -408,7 +405,7 @@ _generateTranslationMapRecursive(
           _addPluralizationCall(
             buffer: buffer,
             config: config,
-            resolver: pluralizationResolver,
+            hasPluralResolver: hasPluralResolver,
             language: language,
             cardinal: value.type == ObjectNodeType.pluralCardinal,
             key: key,
@@ -427,7 +424,7 @@ _generateTranslationMapRecursive(
         } else {
           // recursive
           _generateTranslationMapRecursive(
-              buffer, value, key, config, pluralizationResolver, language);
+              buffer, value, key, config, hasPluralResolver, language);
         }
       }
     });
@@ -441,7 +438,7 @@ String _toParameterList(List<String> params, I18nConfig config) {
   buffer.write('({');
   for (int i = 0; i < params.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('${nsReq(config)}required Object ');
+    buffer.write('required Object ');
     buffer.write(params[i]);
   }
   buffer.write('})');
@@ -451,7 +448,7 @@ String _toParameterList(List<String> params, I18nConfig config) {
 void _addPluralizationCall(
     {required StringBuffer buffer,
     required I18nConfig config,
-    required PluralizationResolver? resolver,
+    required bool hasPluralResolver,
     required String language,
     required bool cardinal,
     required String key,
@@ -471,9 +468,9 @@ void _addPluralizationCall(
   final params = paramSet.where((p) => p != 'count').toList();
 
   // parameters with count as first number
-  buffer.write('({${nsReq(config)}required num count');
+  buffer.write('({required num count');
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', ${nsReq(config)}required Object ');
+    buffer.write(', required Object ');
     buffer.write(params[i]);
   }
 
@@ -481,7 +478,7 @@ void _addPluralizationCall(
   buffer.write(
       '}) => (_pluralResolvers${cardinal ? 'Cardinal' : 'Ordinal'}[\'$language\'] ?? ');
 
-  if (resolver != null) {
+  if (hasPluralResolver) {
     // call predefined resolver
     if (cardinal)
       buffer.writeln('_pluralCardinal${language.capitalize()})(count,');
@@ -524,9 +521,9 @@ void _addContextCall(
   final params = paramSet.where((p) => p != 'context').toList();
 
   // parameters with count as first number
-  buffer.write('({${nsReq(config)}required $contextEnumName context');
+  buffer.write('({required $contextEnumName context');
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', ${nsReq(config)}required Object ');
+    buffer.write(', required Object ');
     buffer.write(params[i]);
   }
   buffer.writeln('}) {');

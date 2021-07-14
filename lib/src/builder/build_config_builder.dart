@@ -13,8 +13,6 @@ class BuildConfigBuilder {
         final enumName = e.key.toCase(KeyCase.pascal);
         final config = e.value.cast<String, dynamic>() as Map<String, dynamic>;
 
-        List<String> s = config['enum']?.cast<String>();
-
         return ContextType(
           enumName: enumName,
           enumValues: (config['enum'].cast<String>() as List<String>)
@@ -27,7 +25,6 @@ class BuildConfigBuilder {
     }
 
     return BuildConfig(
-      nullSafety: map['null_safety'] ?? BuildConfig.defaultNullSafety,
       baseLocale: I18nLocale.fromString(
           map['base_locale'] ?? BuildConfig.defaultBaseLocale),
       fallbackStrategy:

@@ -5,10 +5,8 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 /// represents a build.yaml
 class BuildConfig {
-  static const bool defaultNullSafety = true;
   static const String defaultBaseLocale = 'en';
-  static const FallbackStrategy defaultFallbackStrategy =
-      FallbackStrategy.strict;
+  static const FallbackStrategy defaultFallbackStrategy = FallbackStrategy.none;
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
@@ -22,12 +20,11 @@ class BuildConfig {
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
   static const List<String> defaultMaps = <String>[];
-  static const PluralAuto defaultPluralAuto = PluralAuto.off;
+  static const PluralAuto defaultPluralAuto = PluralAuto.cardinal;
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
 
-  final bool nullSafety;
   final I18nLocale baseLocale;
   final FallbackStrategy fallbackStrategy;
   final String? inputDirectory;
@@ -47,7 +44,6 @@ class BuildConfig {
   final List<ContextType> contexts;
 
   BuildConfig({
-    required this.nullSafety,
     required this.baseLocale,
     required this.fallbackStrategy,
     required this.inputDirectory,
@@ -75,7 +71,6 @@ class BuildConfig {
 
   BuildConfig withAbsolutePaths() {
     return BuildConfig(
-      nullSafety: nullSafety,
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       inputDirectory: inputDirectory?.normalizePath(),
@@ -97,7 +92,7 @@ class BuildConfig {
   }
 }
 
-enum FallbackStrategy { strict, baseLocale }
+enum FallbackStrategy { none, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }
 enum KeyCase { camel, pascal, snake }
@@ -106,8 +101,8 @@ enum PluralAuto { off, cardinal, ordinal }
 extension Parser on String {
   FallbackStrategy? toFallbackStrategy() {
     switch (this) {
-      case 'strict':
-        return FallbackStrategy.strict;
+      case 'none':
+        return FallbackStrategy.none;
       case 'base_locale':
         return FallbackStrategy.baseLocale;
       default:

@@ -7,7 +7,6 @@ import 'package:test/test.dart';
 void main() {
   final defaultLocale = I18nLocale.fromString(BuildConfig.defaultBaseLocale);
   final baseConfig = BuildConfig(
-    nullSafety: BuildConfig.defaultNullSafety,
     baseLocale: defaultLocale,
     fallbackStrategy: BuildConfig.defaultFallbackStrategy,
     inputDirectory: BuildConfig.defaultInputDirectory,
@@ -81,7 +80,6 @@ extension on BuildConfig {
     List<String>? pluralOrdinal,
   }) {
     return BuildConfig(
-      nullSafety: nullSafety,
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       inputDirectory: inputDirectory,

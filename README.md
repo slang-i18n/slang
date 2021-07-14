@@ -53,7 +53,6 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
     - [Fallback](#fallback)
 - [API](#api)
 - [FAQ](#faq)
-- [Future Plans](#future-plans)
 
 ## Getting Started
 
@@ -64,7 +63,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 4.11.0
+  fast_i18n: 5.0.0
 ```
 
 **Step 2: Create JSON files**
@@ -185,9 +184,8 @@ For customization, you can create the `build.yaml` file. Place it in the root di
 targets:
   $default:
     builders:
-      fast_i18n:i18nBuilder:
+      fast_i18n:
         options:
-          null_safety: true
           base_locale: fr
           fallback_strategy: base_locale
           input_directory: lib/i18n
@@ -222,9 +220,8 @@ targets:
 
 Key|Type|Usage|Default
 ---|---|---|---
-`null_safety`|`Boolean`|generate null safe code|`true`
 `base_locale`|`String`|locale of default json|`en`
-`fallback_strategy`|`strict`, `base_locale`|handle missing translations|`strict`
+`fallback_strategy`|`none`, `base_locale`|handle missing translations|`none`
 `input_directory`|`String`|path to input directory|`null`
 `input_file_pattern`|`String`|input file pattern|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
@@ -236,7 +233,7 @@ Key|Type|Usage|Default
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
 `flat_map`|`Boolean`|generate flat map|`true`
 `maps`|`List<String>`|entries which should be accessed via keys|`[]`
-`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`off`
+`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`cardinal`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
 `pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
 `<context>`/`enum`|`List<String>`|context forms|no default
@@ -296,8 +293,28 @@ This library uses the concept defined [here](https://unicode-org.github.io/cldr-
 
 Some languages have support out of the box. See [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart).
 
-In order to use plurals, please add the key paths to `build.yaml`.
-Next, add the required quantities to the translation file. You can access the `num count` but it is optional.
+Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
+
+You can access the `num count` but it is optional.
+
+```json5
+// File: strings.i18n.json
+{
+  "someKey": {
+    "apple": {
+      "one": "I have $count apple.",
+      "other": "I have $count apples."
+    }
+  }
+}
+```
+
+```dart
+String a = t.someKey.apple(count: 1); // I have 1 apple.
+String b = t.someKey.apple(count: 2); // I have 2 apples.
+```
+
+Plurals are interpreted as cardinals by default. You can configure or disable it.
 
 ```json5
 // File: strings.i18n.json
@@ -322,35 +339,21 @@ Next, add the required quantities to the translation file. You can access the `n
 targets:
   $default:
     builders:
-      fast_i18n:i18nBuilder:
+      fast_i18n:
         options:
           pluralization:
+            auto: off
             cardinal:
               - someKey.apple
             ordinal:
               - someKey.place
 ```
 
-You can also let the library detect plurals automatically. Set `auto: <mode>`.
-
-```yaml
-# File: build.yaml
-options:
-  pluralization:
-    auto: cardinal
-```
-
-Finally, you can access them.
-
-```dart
-String a = t.someKey.apple(count: 1); // I have 1 apple.
-String b = t.someKey.apple(count: 2); // I have 2 apples.
-```
-
 In case your language is not supported, you must provide a custom pluralization resolver:
 
 ```dart
 // add this before you call the pluralization strings. Otherwise an exception will be thrown.
+// you don't need to specify both
 LocaleSettings.setPluralResolver(
   language: 'en',
   cardinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
@@ -458,7 +461,7 @@ Keep in mind that all nice features like autocompletion are gone.
 targets:
   $default:
     builders:
-      fast_i18n:i18nBuilder:
+      fast_i18n:
         options:
           maps:
             - a
@@ -527,7 +530,7 @@ In case of rapid development, you can turn off this feature. Missing translation
 targets:
   $default:
     builders:
-      fast_i18n:i18nBuilder:
+      fast_i18n:
         options:
           base_locale: en
           fallback_strategy: base_locale  # add this
@@ -585,7 +588,7 @@ Yes. Specify `input_directory` and `output_directory` in `build.yaml`.
 targets:
   $default:
     builders:
-      fast_i18n:i18nBuilder:
+      fast_i18n:
         options:
           input_directory: assets/i18n
           output_directory: lib/i18n
@@ -629,17 +632,6 @@ As soon as an unknown item has been detected, then this json node is **not** a p
 ```
 
 For contexts, all enum values must exist.
-
-## Future Plans
-
-In the near future, I will release the next major version `5.0.0`. These changes are planned:
-
-- remove null safety configuration, all projects must be null safe, this will cleanup the library code base a bit
-- some changes in `build.yaml`
-- no breaking changes in generated `g.dart` file
-
-I am very happy with the generated translation file. It couldn't be easier to access the strings, in my opinion.
-Because I also maintain many projects, no breaking changes are planned (except some in `build.yaml`).
 
 ## License
 

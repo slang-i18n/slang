@@ -9,9 +9,16 @@ class I18nData {
   final I18nLocale locale; // the locale (the part after the underscore)
   final String localeTag; // the locale code tag
   final ObjectNode root; // the actual strings
+  final bool hasCardinal;
+  final bool hasOrdinal;
 
-  I18nData({required this.base, required this.locale, required this.root})
-      : localeTag = locale.toLanguageTag();
+  I18nData({
+    required this.base,
+    required this.locale,
+    required this.root,
+    required this.hasCardinal,
+    required this.hasOrdinal,
+  }) : localeTag = locale.toLanguageTag();
 
   /// sorts base locale first, then alphabetically
   static I18nDataComparator generationComparator = (I18nData a, I18nData b) {
