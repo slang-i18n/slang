@@ -391,16 +391,20 @@ You can utilize custom contexts to differentiate between male and female forms.
 
 ```yaml
 # File: build.yaml
-options:
-  contexts:
-    gender_context:
-      enum:
-        - male
-        - female
-    polite_context:
-      enum:
-        - polite
-        - rude
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          contexts:
+            gender_context:
+              enum:
+                - male
+                - female
+            polite_context:
+              enum:
+                - polite
+                - rude
 ```
 
 ```dart
@@ -411,15 +415,19 @@ Auto detection is on by default. You can disable auto detection. This may speed 
 
 ```yaml
 # File: build.yaml
-options:
-  contexts:
-    gender_context:
-      enum:
-        - male
-        - female
-      auto: false # disable auto detection
-      paths: # now you must specify paths manually
-        - my.path.to.greet
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          contexts:
+            gender_context:
+              enum:
+                - male
+                - female
+              auto: false # disable auto detection
+              paths: # now you must specify paths manually
+                - my.path.to.greet
 ```
 
 In contrast to pluralization, you **must** provide all forms. Collapse it to save space.
