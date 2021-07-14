@@ -203,7 +203,7 @@ void _generateTranslationGetter(
       '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
   buffer.writeln('\t\tif (inheritedWidget == null) {');
   buffer.writeln(
-      '\t\t\tthrow(\'Please wrap your app with "TranslationProvider".\');');
+      '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
   buffer.writeln('\t\t}');
   buffer.writeln('\t\treturn inheritedWidget.translations;');
   buffer.writeln('\t}');
@@ -235,11 +235,12 @@ void _generateLocaleSettings(
       '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag');
   buffer.writeln('\tstatic $enumName useDeviceLocale() {');
   buffer.writeln(
-      '\t\tString? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
-  buffer.writeln('\t\tif (deviceLocale != null)');
+      '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
+  buffer.writeln('\t\tif (deviceLocale != null) {');
   buffer.writeln('\t\t\treturn setLocaleRaw(deviceLocale);');
-  buffer.writeln('\t\telse');
+  buffer.writeln('\t\t} else {');
   buffer.writeln('\t\t\treturn setLocale($baseLocaleVar);');
+  buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
   buffer.writeln();
@@ -398,7 +399,7 @@ void _generateExtensions({
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.write(
-        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return Locale.fromSubtags(languageCode: \'${locale.locale.language}\'');
+        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return const Locale.fromSubtags(languageCode: \'${locale.locale.language}\'');
     if (locale.locale.script != null)
       buffer.write(', scriptCode: \'${locale.locale.script}\'');
     if (locale.locale.country != null)
@@ -440,7 +441,7 @@ void _generateTranslationWrapper(
   buffer.writeln('// wrappers');
   buffer.writeln();
   buffer.writeln(
-      'GlobalKey<$translationProviderStateClass> $translationProviderKey = new GlobalKey<$translationProviderStateClass>();');
+      'GlobalKey<$translationProviderStateClass> $translationProviderKey = GlobalKey<$translationProviderStateClass>();');
   buffer.writeln();
   buffer.writeln('class $translationProviderClass extends StatefulWidget {');
   buffer.writeln(
@@ -505,7 +506,7 @@ void _generatePluralResolvers(
   buffer.writeln('// for unsupported languages');
   buffer.writeln('// map: language -> resolver');
   buffer.writeln(
-      'typedef String $pluralResolverType(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
+      'typedef $pluralResolverType = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
   buffer.writeln(
       'Map<String, $pluralResolverType> $pluralResolverCardinal = {};');
   buffer
@@ -513,7 +514,7 @@ void _generatePluralResolvers(
   buffer.writeln();
   buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
   buffer
-      .writeln('\tthrow(\'Resolver for <lang = \$language> not specified\');');
+      .writeln('\tthrow \'Resolver for <lang = \$language> not specified\';');
   buffer.writeln('}');
 
   buffer.writeln();
@@ -554,11 +555,24 @@ void _generatePluralFunction(
     buffer.write('String? ${Quantity.values[i].paramName()}');
   }
   buffer.writeln('}) {');
+
+  bool first = true;
   for (final rule in ruleSet.rules) {
-    buffer.writeln('\tif (${rule.condition})');
+    if (first) {
+      buffer.write('\tif ');
+    } else {
+      buffer.write('\t} else if ');
+    }
+    buffer.writeln('(${rule.condition}) {');
     buffer.writeln(
         '\t\treturn ${rule.result.paramName()} ?? ${ruleSet.defaultQuantity.paramName()}!;');
+    first = false;
   }
+
+  if (!first) {
+    buffer.writeln('\t}');
+  }
+
   buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()}!;');
   buffer.writeln('}');
 }

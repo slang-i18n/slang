@@ -167,6 +167,7 @@ void _generateClass(
     // add map operator for translation map
     buffer.writeln();
     buffer.writeln('\t/// A flat map containing all translations.');
+    if (!base) buffer.writeln('\t@override');
     buffer.writeln('\tdynamic operator[](String key) {');
     buffer.writeln(
         '\t\treturn _translationMap[${config.enumName}.${locale.toEnumConstant()}]![key];');
