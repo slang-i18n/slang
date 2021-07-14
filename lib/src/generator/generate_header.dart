@@ -70,7 +70,6 @@ void generateHeader(
   _generatePluralResolvers(
       buffer: buffer,
       config: config,
-      languageRules: config.renderedPluralizationResolvers,
       pluralResolverType: pluralResolverType,
       pluralResolverCardinal: pluralResolverMapCardinal,
       pluralResolverOrdinal: pluralResolverMapOrdinal);
@@ -310,17 +309,17 @@ void _generateLocaleSettings(
   buffer.writeln(
       '\t/// Only language part matters, script and country parts are ignored');
   buffer.write('\t/// Rendered Resolvers: [');
-  for (int i = 0; i < config.renderedPluralizationResolvers.length; i++) {
+  final renderedResolvers = config.getRenderedPluralResolvers().toList();
+  for (int i = 0; i < renderedResolvers.length; i++) {
     if (i != 0) buffer.write(', ');
-    buffer.write('\'${config.renderedPluralizationResolvers[i].language}\'');
+    buffer.write('\'${renderedResolvers[i]}\'');
   }
   buffer.writeln(']');
 
   final missing = allLocales
       .map((l) => l.locale.language)
       .toSet()
-      .difference(
-          config.renderedPluralizationResolvers.map((r) => r.language).toSet())
+      .difference(renderedResolvers.toSet())
       .toList();
   if (missing.isNotEmpty) {
     buffer.write('\t/// You must set these: [');
@@ -495,15 +494,21 @@ void _generateTranslationWrapper(
 void _generatePluralResolvers(
     {required StringBuffer buffer,
     required I18nConfig config,
-    required List<PluralizationResolver> languageRules,
     required String pluralResolverType,
     required String pluralResolverCardinal,
     required String pluralResolverOrdinal}) {
   buffer.writeln();
+
+  if (config.unsupportedPluralLanguages.isEmpty &&
+      config.renderedCardinalResolvers.isEmpty &&
+      config.renderedOrdinalResolvers.isEmpty) {
+    buffer.writeln('// pluralization feature not used');
+    return;
+  }
+
   buffer.writeln('// pluralization resolvers');
 
   buffer.writeln();
-  buffer.writeln('// for unsupported languages');
   buffer.writeln('// map: language -> resolver');
   buffer.writeln(
       'typedef $pluralResolverType = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
@@ -511,35 +516,36 @@ void _generatePluralResolvers(
       'Map<String, $pluralResolverType> $pluralResolverCardinal = {};');
   buffer
       .writeln('Map<String, $pluralResolverType> $pluralResolverOrdinal = {};');
-  buffer.writeln();
-  buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
-  buffer
-      .writeln('\tthrow \'Resolver for <lang = \$language> not specified\';');
-  buffer.writeln('}');
+
+  if (config.unsupportedPluralLanguages.isNotEmpty) {
+    buffer.writeln();
+    buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
+    buffer
+        .writeln('\tthrow \'Resolver for <lang = \$language> not specified\';');
+    buffer.writeln('}');
+  }
 
   buffer.writeln();
   buffer.writeln('// prepared by fast_i18n');
-  if (languageRules.isEmpty) {
-    buffer.writeln();
-    buffer.writeln(
-        '// No language with pluralization support available or no pluralization configured.');
-  }
-  for (final setting in languageRules) {
-    // cardinal
-    buffer.writeln();
-    _generatePluralFunction(
-        buffer: buffer,
-        config: config,
-        ruleSet: setting.cardinal,
-        functionName: '_pluralCardinal${setting.language.capitalize()}');
 
-    // ordinal
+  // cardinal resolvers
+  for (final entry in config.renderedCardinalResolvers.entries) {
     buffer.writeln();
     _generatePluralFunction(
         buffer: buffer,
         config: config,
-        ruleSet: setting.ordinal,
-        functionName: '_pluralOrdinal${setting.language.capitalize()}');
+        ruleSet: entry.value,
+        functionName: '_pluralCardinal${entry.key.capitalize()}');
+  }
+
+  // ordinal resolvers
+  for (final entry in config.renderedOrdinalResolvers.entries) {
+    buffer.writeln();
+    _generatePluralFunction(
+        buffer: buffer,
+        config: config,
+        ruleSet: entry.value,
+        functionName: '_pluralOrdinal${entry.key.capitalize()}');
   }
 }
 

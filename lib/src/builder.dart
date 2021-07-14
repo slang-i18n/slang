@@ -3,12 +3,11 @@ import 'dart:io';
 
 import 'package:build/build.dart';
 import 'package:fast_i18n/src/builder/build_config_builder.dart';
+import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
 import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
 import 'package:fast_i18n/src/parser/json_parser.dart';
 import 'package:fast_i18n/src/utils.dart';
 import 'package:glob/glob.dart';
@@ -87,27 +86,19 @@ class I18nBuilder implements Builder {
       localesWithData[asset.key] = representation;
     }
 
+    final translationList = localesWithData.values.toList()
+      ..sort(I18nData.generationComparator);
+    final config = I18nConfigBuilder.build(
+      baseName: baseName!,
+      buildConfig: buildConfig,
+      translationList: translationList,
+    );
+
     // generate
     final String output = generate(
-        config: I18nConfig(
-          baseName: baseName!,
-          baseLocale: buildConfig.baseLocale,
-          fallbackStrategy: buildConfig.fallbackStrategy,
-          renderedPluralizationResolvers: buildConfig.usePluralFeature
-              ? PLURALIZATION_RESOLVERS
-                  .where((resolver) => assetMap.values
-                      .any((locale) => locale.language == resolver.language))
-                  .toList()
-              : [],
-          translateVariable: buildConfig.translateVar,
-          enumName: buildConfig.enumName,
-          translationClassVisibility: buildConfig.translationClassVisibility,
-          renderFlatMap: buildConfig.renderFlatMap,
-          contexts: buildConfig.contexts,
-        ),
-        translations: localesWithData.values.toList()
-          ..sort(I18nData
-              .generationComparator)); // base locale, then all other locales
+      config: config,
+      translations: translationList,
+    );
 
     // write only to main locale
     final AssetId baseId =

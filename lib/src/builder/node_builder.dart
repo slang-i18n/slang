@@ -4,19 +4,51 @@ import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
+class BuildResult {
+  final ObjectNode root;
+  final bool hasCardinal;
+  final bool hasOrdinal;
+
+  BuildResult({
+    required this.root,
+    required this.hasCardinal,
+    required this.hasOrdinal,
+  });
+}
+
 class NodeBuilder {
-  static ObjectNode fromMap(BuildConfig config, Map<String, dynamic> map) {
-    Map<String, Node> destination = Map();
-    _parseMapNode(config, map, destination, []);
-    return ObjectNode(destination, ObjectNodeType.classType, null);
+  static BuildResult fromMap(BuildConfig config, Map<String, dynamic> map) {
+    final Map<String, Node> destination = {};
+    bool hasCardinal = false;
+    bool hasOrdinal = false;
+    _parseMapNode(
+      config: config,
+      curr: map,
+      destination: destination,
+      stack: [],
+      cardinalNotifier: () {
+        hasCardinal = true;
+      },
+      ordinalNotifier: () {
+        hasOrdinal = true;
+      },
+    );
+
+    return BuildResult(
+      root: ObjectNode(destination, ObjectNodeType.classType, null),
+      hasCardinal: hasCardinal,
+      hasOrdinal: hasOrdinal,
+    );
   }
 
-  static void _parseMapNode(
-    BuildConfig config,
-    Map<String, dynamic> curr,
-    Map<String, Node> destination,
-    List<String> stack,
-  ) {
+  static void _parseMapNode({
+    required BuildConfig config,
+    required Map<String, dynamic> curr,
+    required Map<String, Node> destination,
+    required List<String> stack,
+    required Function cardinalNotifier,
+    required Function ordinalNotifier,
+  }) {
     curr.forEach((key, value) {
       key = key.toCase(config.keyCase);
 
@@ -34,19 +66,39 @@ class NodeBuilder {
           final Map<String, dynamic> listAsMap = {
             for (int i = 0; i < value.length; i++) i.toString(): value[i],
           };
-          _parseMapNode(config, listAsMap, childrenTarget, nextStack);
+          _parseMapNode(
+            config: config,
+            curr: listAsMap,
+            destination: childrenTarget,
+            stack: nextStack,
+            cardinalNotifier: cardinalNotifier,
+            ordinalNotifier: ordinalNotifier,
+          );
 
           // finally only take their values, ignoring keys
           destination[key] = ListNode(childrenTarget.values.toList());
         } else {
           // key: { ...value }
-          _parseMapNode(config, value, childrenTarget, nextStack);
+          _parseMapNode(
+            config: config,
+            curr: value,
+            destination: childrenTarget,
+            stack: nextStack,
+            cardinalNotifier: cardinalNotifier,
+            ordinalNotifier: ordinalNotifier,
+          );
           _DetectionResult result =
               _determineNodeType(config, nextStack, childrenTarget);
 
           if (result.nodeType == ObjectNodeType.context ||
               result.nodeType == ObjectNodeType.pluralCardinal ||
               result.nodeType == ObjectNodeType.pluralOrdinal) {
+            if (result.nodeType == ObjectNodeType.pluralCardinal) {
+              cardinalNotifier();
+            } else if (result.nodeType == ObjectNodeType.pluralOrdinal) {
+              ordinalNotifier();
+            }
+
             // split children by comma
             final entries = childrenTarget.entries.toList();
             for (final entry in entries) {

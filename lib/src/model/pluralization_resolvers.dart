@@ -7,10 +7,9 @@ import 'package:fast_i18n/src/model/pluralization.dart';
 ///
 /// Contribution would be nice!
 // ignore: non_constant_identifier_names
-final List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
+final Map<String, PluralizationResolver> PLURALIZATION_RESOLVERS = {
   // Czech
-  PluralizationResolver(
-      language: 'cs',
+  'cs:': PluralizationResolver(
       cardinal: RuleSet(rules: [
         Rule('n == 0', Quantity.zero),
         Rule('n == 1', Quantity.one),
@@ -18,16 +17,14 @@ final List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
       ], defaultQuantity: Quantity.other),
       ordinal: RuleSet(defaultQuantity: Quantity.other)),
   // German
-  PluralizationResolver(
-      language: 'de',
+  'de': PluralizationResolver(
       cardinal: RuleSet(rules: [
         Rule('n == 0', Quantity.zero),
         Rule('n == 1', Quantity.one),
       ], defaultQuantity: Quantity.other),
       ordinal: RuleSet(defaultQuantity: Quantity.other)),
   // English
-  PluralizationResolver(
-      language: 'en',
+  'en': PluralizationResolver(
       cardinal: RuleSet(rules: [
         Rule('n == 0', Quantity.zero),
         Rule('n == 1', Quantity.one),
@@ -38,8 +35,7 @@ final List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
         Rule('n % 10 == 3 && n % 100 != 13', Quantity.few),
       ], defaultQuantity: Quantity.other)),
   // Vietnamese
-  PluralizationResolver(
-    language: 'vi',
+  'vi': PluralizationResolver(
     cardinal: RuleSet(
       rules: [
         Rule('n == 0', Quantity.zero),
@@ -49,4 +45,4 @@ final List<PluralizationResolver> PLURALIZATION_RESOLVERS = [
     ordinal: RuleSet(
         rules: [Rule('n == 1', Quantity.one)], defaultQuantity: Quantity.other),
   )
-];
+};

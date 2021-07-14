@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:fast_i18n/src/builder/build_config_builder.dart';
+import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
 import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
 import 'package:fast_i18n/src/parser/json_parser.dart';
 import 'package:fast_i18n/src/parser/yaml_parser.dart';
 import 'package:fast_i18n/src/utils.dart';
@@ -244,27 +243,21 @@ Future<void> generateTranslations({
     return;
   }
 
+  // base locale, then all other locales
+  translationList.sort(I18nData.generationComparator);
+
+  // build config
+  final config = I18nConfigBuilder.build(
+    baseName: baseName,
+    buildConfig: buildConfig,
+    translationList: translationList,
+  );
+
   // generate
   final String output = generate(
-      config: I18nConfig(
-        baseName: baseName,
-        baseLocale: buildConfig.baseLocale,
-        fallbackStrategy: buildConfig.fallbackStrategy,
-        renderedPluralizationResolvers: buildConfig.usePluralFeature
-            ? PLURALIZATION_RESOLVERS
-                .where((resolver) => translationList.any(
-                    (locale) => locale.locale.language == resolver.language))
-                .toList()
-            : [],
-        translateVariable: buildConfig.translateVar,
-        enumName: buildConfig.enumName,
-        translationClassVisibility: buildConfig.translationClassVisibility,
-        renderFlatMap: buildConfig.renderFlatMap,
-        contexts: buildConfig.contexts,
-      ),
-      translations: translationList
-        ..sort(I18nData
-            .generationComparator)); // base locale, then all other locales
+    config: config,
+    translations: translationList,
+  );
 
   // write output
   await File(resultPath).writeAsString(output);
@@ -272,17 +265,12 @@ Future<void> generateTranslations({
   if (verbose) {
     if (buildConfig.usePluralFeature) {
       // show pluralization hints if pluralization is configured
-      final languages =
-          translationList.map((locale) => locale.locale.language).toSet();
-      final rendered = PLURALIZATION_RESOLVERS
-          .map((resolver) => resolver.language)
-          .toSet()
-          .intersection(languages);
-      final missing = languages.difference(rendered);
       print('');
       print('Pluralization:');
-      print(' -> rendered resolvers: ${rendered.toList()}');
-      print(' -> you must implement these resolvers: ${missing.toList()}');
+      print(
+          ' -> rendered resolvers: ${config.getRenderedPluralResolvers().toList()}');
+      print(
+          ' -> you must implement these resolvers: ${config.unsupportedPluralLanguages}');
     }
 
     print('');

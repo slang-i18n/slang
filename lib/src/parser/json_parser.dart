@@ -11,10 +11,13 @@ class JsonParser {
   static I18nData parseTranslations(
       BuildConfig config, I18nLocale locale, String content) {
     Map<String, dynamic> map = json.decode(content);
+    final buildResult = NodeBuilder.fromMap(config, map);
     return I18nData(
       base: config.baseLocale == locale,
       locale: locale,
-      root: NodeBuilder.fromMap(config, map),
+      root: buildResult.root,
+      hasCardinal: buildResult.hasCardinal,
+      hasOrdinal: buildResult.hasOrdinal,
     );
   }
 }
