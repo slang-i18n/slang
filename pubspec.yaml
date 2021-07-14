@@ -1,5 +1,5 @@
 name: fast_i18n
-description: Lightweight i18n solution. Use JSON files to create typesafe translations.
+description: Localization (i18n) solution. Use JSON files to create typesafe translations via source generation.
 version: 4.11.0
 homepage: https://github.com/Tienisto/flutter-fast-i18n
 publish_to: https://pub.dev
