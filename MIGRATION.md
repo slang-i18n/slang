@@ -72,3 +72,16 @@ targets:
 ### Null Safety
 
 Null safety is must have. This will simplify the library code base.
+
+### Linked Translations
+
+Messages containing `@:` are interpreted as linked translations from now on. In edge cases this may break.
+
+```json
+{
+  "meta": {
+    "appName": "My App"
+  },
+  "welcome": "Welcome to @:meta.appName"
+}
+```

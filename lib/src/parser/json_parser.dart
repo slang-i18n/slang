@@ -11,7 +11,7 @@ class JsonParser {
   static I18nData parseTranslations(
       BuildConfig config, I18nLocale locale, String content) {
     Map<String, dynamic> map = json.decode(content);
-    final buildResult = NodeBuilder.fromMap(config, map);
+    final buildResult = NodeBuilder.fromMap(config, locale, map);
     return I18nData(
       base: config.baseLocale == locale,
       locale: locale,

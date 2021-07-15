@@ -12,6 +12,9 @@ class Utils {
   /// similar group indices like [argumentsBracesRegex]
   static RegExp argumentsDoubleBracesRegex = RegExp(r'(.|^)\{\{(\w+)\}\}(\w)?');
 
+  /// matches @:translation.key
+  static RegExp linkedRegex = RegExp(r'@:([\w|.]*\w)');
+
   /// locale regex
   static const LOCALE_REGEX_RAW =
       r'([A-Za-z]{2,4})([_-]([A-Za-z]{4}))?([_-]([A-Za-z]{2}|[0-9]{3}))?';

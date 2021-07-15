@@ -593,7 +593,7 @@ void _generateHelpers(
       'final _localeRegex = RegExp(r\'^${Utils.LOCALE_REGEX_RAW}\$\');');
   buffer.writeln('$enumName? _selectLocale(String localeRaw) {');
   buffer.writeln('\tfinal match = _localeRegex.firstMatch(localeRaw);');
-  buffer.writeln('\tAppLocale? selected;');
+  buffer.writeln('\t$enumName? selected;');
   buffer.writeln('\tif (match != null) {');
   buffer.writeln('\t\tfinal language = match.group(1);');
   buffer.writeln();

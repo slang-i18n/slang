@@ -44,6 +44,7 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
 - [Features](#features)
     - [Auto Rebuild](#auto-rebuild)
     - [String Interpolation](#string-interpolation)
+    - [Linked Translations](#linked-translations)
     - [Locale Enum](#locale-enum)
     - [Pluralization](#pluralization)
     - [Custom Contexts](#custom-contexts)
@@ -264,6 +265,19 @@ Mode|JSON Entry|Call
 `dart (default)`|`Hello $name. I am ${height}m.`|`t.myKey(name: 'Tom', height: 1.73)`
 `braces`|`Hello {name}`|`t.myKey(name: 'Anna')`
 `double_braces`|`Hello {{name}}`|`t.myKey(name: 'Tom')`
+
+### Linked Translations
+
+You can link one translation to another. Add the prefix `@:` followed by the translation key.
+
+```json
+{
+  "meta": {
+    "appName": "My App"
+  },
+  "welcome": "Welcome to @:meta.appName"
+}
+```
 
 ### Locale Enum
 

@@ -50,15 +50,19 @@ class TextNode extends Node {
   /// Hello {name}, I am {age} years old -> {'name', 'age'}
   late final Set<String> params;
 
-  TextNode(String content, StringInterpolation interpolation) {
-    final contentNormalized = content
+  TextNode(
+    String content,
+    StringInterpolation interpolation,
+    String localeEnum,
+  ) {
+    String contentNormalized = content
         .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
         .replaceAll('\n', '\\n') // (linebreak 2) -> \n
         .replaceAll('\'', '\\\''); // ' -> \'
 
+    // parse arguments, modify [contentNormalized] according to interpolation
     switch (interpolation) {
       case StringInterpolation.dart:
-        this.content = contentNormalized; // no change
         this.params = Utils.argumentsDartRegex
             .allMatches(contentNormalized)
             .map((e) => e.group(2))
@@ -67,7 +71,7 @@ class TextNode extends Node {
         break;
       case StringInterpolation.braces:
         params = Set<String>();
-        this.content = contentNormalized
+        contentNormalized = contentNormalized
             .replaceAllMapped(Utils.argumentsBracesRegex, (match) {
           if (match.group(1) == '\\') {
             return '{${match.group(2)}}'; // escape
@@ -86,7 +90,7 @@ class TextNode extends Node {
         break;
       case StringInterpolation.doubleBraces:
         params = Set<String>();
-        this.content = contentNormalized
+        contentNormalized = contentNormalized
             .replaceAllMapped(Utils.argumentsDoubleBracesRegex, (match) {
           if (match.group(1) == '\\') {
             return '{{${match.group(2)}}}'; // escape
@@ -103,6 +107,12 @@ class TextNode extends Node {
           }
         });
     }
+
+    // detect linked translations
+    this.content =
+        contentNormalized.replaceAllMapped(Utils.linkedRegex, (match) {
+      return '\${$localeEnum.translations.${match.group(1)}}';
+    });
   }
 
   @override

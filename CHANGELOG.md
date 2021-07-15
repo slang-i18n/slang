@@ -7,6 +7,7 @@
 - **Breaking:** key paths in `build.yaml` must be cased according to `key_case` if specified
 - **Breaking:** your project must be null safe
 - feat: generated file follows lint guidelines
+- feat: add support for linked translations, e.g. `Welcome to @:appName`
 
 You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/MIGRATION.md).
 

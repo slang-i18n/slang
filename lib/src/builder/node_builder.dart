@@ -1,5 +1,6 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
+import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
@@ -17,12 +18,19 @@ class BuildResult {
 }
 
 class NodeBuilder {
-  static BuildResult fromMap(BuildConfig config, Map<String, dynamic> map) {
+  static BuildResult fromMap(
+    BuildConfig config,
+    I18nLocale locale,
+    Map<String, dynamic> map,
+  ) {
     final Map<String, Node> destination = {};
+    final localeEnum =
+        '${config.enumName}.${locale.toLanguageTag().toEnumConstant()}';
     bool hasCardinal = false;
     bool hasOrdinal = false;
     _parseMapNode(
       config: config,
+      localeEnum: localeEnum,
       curr: map,
       destination: destination,
       stack: [],
@@ -43,6 +51,7 @@ class NodeBuilder {
 
   static void _parseMapNode({
     required BuildConfig config,
+    required String localeEnum,
     required Map<String, dynamic> curr,
     required Map<String, Node> destination,
     required List<String> stack,
@@ -55,7 +64,11 @@ class NodeBuilder {
       if (value is String) {
         // leaf
         // key: 'value'
-        destination[key] = TextNode(value, config.stringInterpolation);
+        destination[key] = TextNode(
+          value,
+          config.stringInterpolation,
+          localeEnum,
+        );
       } else {
         final List<String> nextStack = [...stack, key];
         final Map<String, Node> childrenTarget = Map();
@@ -68,6 +81,7 @@ class NodeBuilder {
           };
           _parseMapNode(
             config: config,
+            localeEnum: localeEnum,
             curr: listAsMap,
             destination: childrenTarget,
             stack: nextStack,
@@ -81,6 +95,7 @@ class NodeBuilder {
           // key: { ...value }
           _parseMapNode(
             config: config,
+            localeEnum: localeEnum,
             curr: value,
             destination: childrenTarget,
             stack: nextStack,
