@@ -4,195 +4,137 @@ import 'package:test/test.dart';
 
 void main() {
   group(TextNode, () {
-    test('no arguments', () {
-      final test = 'No arguments';
-      final node = TextNode(test, StringInterpolation.dart);
-      expect(node.content, test);
-      expect(node.params, []);
-    });
-
-    test('one argument (dart)', () {
-      final test = 'I have one argument named \$apple.';
-      final node = TextNode(test, StringInterpolation.dart);
-      expect(node.content, test);
-      expect(node.params, ['apple']);
-    });
-
-    test('one argument (single braces)', () {
-      final test = 'I have one argument named {apple}.';
-      final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content, 'I have one argument named \$apple.');
-      expect(node.params, ['apple']);
-    });
-
-    test('one argument without space (single braces)', () {
-      final test = 'I have one argument named{apple}.';
-      final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content, 'I have one argument named\$apple.');
-      expect(node.params, ['apple']);
-    });
-
-    test('one argument (single braces) with fake argument', () {
-      final test = 'I have one argument named {apple} but this is \$fake.';
-      final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content,
-          'I have one argument named \$apple but this is \$fake.');
-      expect(node.params, ['apple']);
-    });
-
-    test('one argument (double braces)', () {
-      final test = 'I have one argument named {{apple}}.';
-      final node = TextNode(test, StringInterpolation.doubleBraces);
-      expect(node.content, 'I have one argument named \$apple.');
-      expect(node.params, ['apple']);
-    });
-
-    test('one argument (escaped, dart)', () {
-      final test = 'I have one argument named \\\$apple.';
-      final node = TextNode(test, StringInterpolation.dart);
-      expect(node.content, 'I have one argument named \\\$apple.'); // \$apple
-      expect(node.params, []);
-    });
-
-    test('one argument (escaped, braces)', () {
-      final test = 'I have one argument named \\{apple}.';
-      final node = TextNode(test, StringInterpolation.braces);
-      expect(node.content, 'I have one argument named {apple}.');
-      expect(node.params, []);
-    });
-
-    test('one argument (escaped, double braces)', () {
-      final test = 'I have one argument named \\{{apple}}.';
-      final node = TextNode(test, StringInterpolation.doubleBraces);
-      expect(node.content, 'I have one argument named {{apple}}.');
-      expect(node.params, []);
-    });
-
-    test('one fake argument (double braces)', () {
-      final test = 'I have one argument named \\{apple}.';
-      final node = TextNode(test, StringInterpolation.doubleBraces);
-      expect(node.content, test);
-      expect(node.params, []);
-    });
-  });
-
-  group('normalizeStringInterpolation', () {
-    group('single braces', () {
+    group(StringInterpolation.dart, () {
       test('no arguments', () {
-        String test = 'This string has no arguments.';
-        expect(test.normalizeStringInterpolation(StringInterpolation.braces),
-            test);
+        final test = 'No arguments';
+        final node = TextNode(test, StringInterpolation.dart);
+        expect(node.content, test);
+        expect(node.params, <String>{});
       });
 
       test('one argument', () {
-        expect(
-            'This string has one argument named {tom}.'
-                .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named \$tom.');
+        final test = 'I have one argument named \$apple.';
+        final node = TextNode(test, StringInterpolation.dart);
+        expect(node.content, test);
+        expect(node.params, {'apple'});
+      });
+
+      test('one duplicate argument', () {
+        final test = 'This string has one \$argument and \$argument.';
+        final node = TextNode(test, StringInterpolation.dart);
+        expect(node.content, test);
+        expect(node.params, {'argument'});
+      });
+
+      test('one argument at the beginning', () {
+        final test = '\$test at the beginning.';
+        final node = TextNode(test, StringInterpolation.dart);
+        expect(node.content, test);
+        expect(node.params, {'test'});
+      });
+
+      test('one escaped argument', () {
+        final test = 'I have one argument named \\\$apple.';
+        final node = TextNode(test, StringInterpolation.dart);
+        expect(node.content, 'I have one argument named \\\$apple.'); // \$apple
+        expect(node.params, <String>{});
+      });
+    });
+
+    group(StringInterpolation.braces, () {
+      test('no arguments', () {
+        final test = 'No arguments';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content, test);
+        expect(node.params, <String>{});
+      });
+
+      test('one argument', () {
+        final test = 'I have one argument named {apple}.';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content, 'I have one argument named \$apple.');
+        expect(node.params, {'apple'});
+      });
+
+      test('one argument without space', () {
+        final test = 'I have one argument named{apple}.';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content, 'I have one argument named\$apple.');
+        expect(node.params, {'apple'});
       });
 
       test('one argument followed by underscore', () {
-        expect(
-            'This string has one argument named {tom}_'
-                .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named \${tom}_');
+        final test = 'This string has one argument named {tom}_';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content, 'This string has one argument named \${tom}_');
+        expect(node.params, {'tom'});
       });
 
       test('one argument followed by number', () {
-        expect(
-            'This string has one argument named {tom}7'
-                .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named \${tom}7');
+        final test = 'This string has one argument named {tom}7';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content, 'This string has one argument named \${tom}7');
+        expect(node.params, {'tom'});
       });
 
-      test('two arguments', () {
-        expect(
-            'This string has two arguments named {tom} and {two}.'
-                .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has two arguments named \$tom and \$two.');
+      test('one argument with fake argument', () {
+        final test = 'I have one argument named {apple} but this is \$fake.';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content,
+            'I have one argument named \$apple but this is \$fake.');
+        expect(node.params, {'apple'});
       });
 
-      test('one without space', () {
-        expect(
-            'This string has one argument named{tom}.'
-                .normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named\$tom.');
-      });
-
-      test('escaped', () {
-        String test = 'This string has one argument named \\{tom}.';
-        expect(test.normalizeStringInterpolation(StringInterpolation.braces),
-            'This string has one argument named {tom}.');
+      test('one escaped argument escaped', () {
+        final test = 'I have one argument named \\{apple}.';
+        final node = TextNode(test, StringInterpolation.braces);
+        expect(node.content, 'I have one argument named {apple}.');
+        expect(node.params, <String>{});
       });
     });
 
-    group('double braces', () {
+    group(StringInterpolation.doubleBraces, () {
       test('no arguments', () {
-        String test = 'This string has no arguments.';
-        expect(
-            test.normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            test);
+        final test = 'No arguments';
+        final node = TextNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, test);
+        expect(node.params, <String>{});
       });
 
       test('one argument', () {
-        expect(
-            'This string has one argument named {{tom}}.'
-                .normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has one argument named \$tom.');
+        final test = 'I have one argument named {{apple}}.';
+        final node = TextNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, 'I have one argument named \$apple.');
+        expect(node.params, {'apple'});
       });
 
-      test('two arguments', () {
-        expect(
-            'This string has two arguments named {{tom}} and {{two}}.'
-                .normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has two arguments named \$tom and \$two.');
+      test('one argument followed by underscore', () {
+        final test = 'This string has one argument named {{tom}}_';
+        final node = TextNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, 'This string has one argument named \${tom}_');
+        expect(node.params, {'tom'});
       });
 
-      test('one without space', () {
-        expect(
-            'This string has one argument named{{tom}}.'
-                .normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has one argument named\$tom.');
+      test('one argument followed by number', () {
+        final test = 'This string has one argument named {{tom}}7';
+        final node = TextNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, 'This string has one argument named \${tom}7');
+        expect(node.params, {'tom'});
       });
 
-      test('escaped', () {
-        String test = 'This string has one argument named \\{{tom}}.';
-        expect(
-            test.normalizeStringInterpolation(StringInterpolation.doubleBraces),
-            'This string has one argument named {{tom}}.');
+      test('one fake argument', () {
+        final test = 'I have one argument named \\{apple}.';
+        final node = TextNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, test);
+        expect(node.params, <String>{});
       });
-    });
-  });
 
-  group('parseArguments', () {
-    test('no arguments', () {
-      String test = 'This string has no arguments.';
-      expect(test.parseArguments(StringInterpolation.braces), []);
-    });
-
-    test('one argument', () {
-      String test = 'This string has one \$argument.';
-      expect(test.parseArguments(StringInterpolation.dart), ['argument']);
-    });
-
-    test('one duplicate argument', () {
-      String test = 'This string has one \$argument and \$argument.';
-      expect(test.parseArguments(StringInterpolation.dart), ['argument']);
-    });
-
-    test('one argument at the beginning (dart)', () {
-      String test = '\$test at the beginning.';
-      expect(test.parseArguments(StringInterpolation.dart), ['test']);
-    });
-
-    test('one argument at the beginning (braces)', () {
-      String test = '{test} at the beginning.';
-      expect(test.parseArguments(StringInterpolation.braces), ['test']);
-    });
-
-    test('one argument at the beginning (double braces)', () {
-      String test = '{{test}} at the beginning.';
-      expect(test.parseArguments(StringInterpolation.doubleBraces), ['test']);
+      test('one escaped argument', () {
+        final test = 'I have one argument named \\{{apple}}.';
+        final node = TextNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, 'I have one argument named {{apple}}.');
+        expect(node.params, <String>{});
+      });
     });
   });
 }

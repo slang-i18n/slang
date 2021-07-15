@@ -433,13 +433,15 @@ _generateTranslationMapRecursive(
 
 /// returns the parameter list
 /// e.g. ({required Object name, required Object age})
-String _toParameterList(List<String> params, I18nConfig config) {
+String _toParameterList(Set<String> params, I18nConfig config) {
   StringBuffer buffer = StringBuffer();
   buffer.write('({');
-  for (int i = 0; i < params.length; i++) {
-    if (i != 0) buffer.write(', ');
+  bool first = true;
+  for (final param in params) {
+    if (!first) buffer.write(', ');
     buffer.write('required Object ');
-    buffer.write(params[i]);
+    buffer.write(param);
+    first = false;
   }
   buffer.write('})');
   return buffer.toString();
