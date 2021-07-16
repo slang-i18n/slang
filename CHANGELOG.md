@@ -1,3 +1,7 @@
+## 5.0.1
+
+- fix: Missing `PluralResolver` when pluralization is not used in project
+
 ## 5.0.0
 
 **This release mostly focuses on simplifications of** `build.yaml`.
