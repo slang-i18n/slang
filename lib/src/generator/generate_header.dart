@@ -300,43 +300,48 @@ void _generateLocaleSettings(
   buffer.writeln('\t\t\t.toList();');
   buffer.writeln('\t}');
 
-  buffer.writeln();
-  buffer.writeln('\t/// Sets plural resolvers.');
-  buffer.writeln(
-      '\t/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html');
-  buffer.writeln(
-      '\t/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart');
-  buffer.writeln(
-      '\t/// Only language part matters, script and country parts are ignored');
-  buffer.write('\t/// Rendered Resolvers: [');
-  final renderedResolvers = config.getRenderedPluralResolvers().toList();
-  for (int i = 0; i < renderedResolvers.length; i++) {
-    if (i != 0) buffer.write(', ');
-    buffer.write('\'${renderedResolvers[i]}\'');
-  }
-  buffer.writeln(']');
-
-  final missing = allLocales
-      .map((l) => l.locale.language)
-      .toSet()
-      .difference(renderedResolvers.toSet())
-      .toList();
-  if (missing.isNotEmpty) {
-    buffer.write('\t/// You must set these: [');
-    for (int i = 0; i < missing.length; i++) {
+  if (config.unsupportedPluralLanguages.isNotEmpty ||
+      config.renderedCardinalResolvers.isNotEmpty ||
+      config.renderedOrdinalResolvers.isNotEmpty) {
+    buffer.writeln();
+    buffer.writeln('\t/// Sets plural resolvers.');
+    buffer.writeln(
+        '\t/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html');
+    buffer.writeln(
+        '\t/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart');
+    buffer.writeln(
+        '\t/// Only language part matters, script and country parts are ignored');
+    buffer.write('\t/// Rendered Resolvers: [');
+    final renderedResolvers = config.getRenderedPluralResolvers().toList();
+    for (int i = 0; i < renderedResolvers.length; i++) {
       if (i != 0) buffer.write(', ');
-      buffer.write('\'${missing[i]}\'');
+      buffer.write('\'${renderedResolvers[i]}\'');
     }
     buffer.writeln(']');
+
+    final missing = allLocales
+        .map((l) => l.locale.language)
+        .toSet()
+        .difference(renderedResolvers.toSet())
+        .toList();
+    if (missing.isNotEmpty) {
+      buffer.write('\t/// You must set these: [');
+      for (int i = 0; i < missing.length; i++) {
+        if (i != 0) buffer.write(', ');
+        buffer.write('\'${missing[i]}\'');
+      }
+      buffer.writeln(']');
+    }
+
+    buffer.writeln(
+        '\tstatic void setPluralResolver({required String language, $pluralResolverType? cardinalResolver, $pluralResolverType? ordinalResolver}) {');
+    buffer.writeln(
+        '\t\tif (cardinalResolver != null) $pluralResolverCardinal[language] = cardinalResolver;');
+    buffer.writeln(
+        '\t\tif (ordinalResolver != null) $pluralResolverOrdinal[language] = ordinalResolver;');
+    buffer.writeln('\t}');
   }
 
-  buffer.writeln(
-      '\tstatic void setPluralResolver({required String language, $pluralResolverType? cardinalResolver, $pluralResolverType? ordinalResolver}) {');
-  buffer.writeln(
-      '\t\tif (cardinalResolver != null) $pluralResolverCardinal[language] = cardinalResolver;');
-  buffer.writeln(
-      '\t\tif (ordinalResolver != null) $pluralResolverOrdinal[language] = ordinalResolver;');
-  buffer.writeln('\t}');
   buffer.writeln();
 
   buffer.writeln('}');
