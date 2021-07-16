@@ -1,11 +1,8 @@
 targets:
   $default:
     builders:
-      fast_i18n:i18nBuilder:
+      fast_i18n:
         options:
           base_locale: en
           maps:
             - locales
-          pluralization:
-            cardinal:
-              - mainScreen.counter

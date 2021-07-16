@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-06-21 at 21:11 UTC
+ * Built on 2021-07-16 at 09:19 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -56,7 +56,7 @@ class Translations {
 	static _StringsEn of(BuildContext context) {
 		final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
 		if (inheritedWidget == null) {
-			throw('Please wrap your app with "TranslationProvider".');
+			throw 'Please wrap your app with "TranslationProvider".';
 		}
 		return inheritedWidget.translations;
 	}
@@ -69,11 +69,12 @@ class LocaleSettings {
 	/// Returns the locale which has been set.
 	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag
 	static AppLocale useDeviceLocale() {
-		String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
-		if (deviceLocale != null)
+		final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+		if (deviceLocale != null) {
 			return setLocaleRaw(deviceLocale);
-		else
+		} else {
 			return setLocale(_baseLocale);
+		}
 	}
 
 	/// Sets locale
@@ -128,13 +129,15 @@ class LocaleSettings {
 	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
 	/// Only language part matters, script and country parts are ignored
-	/// Rendered Resolvers: ['de', 'en']
+	/// Rendered Resolvers: ['en', 'de']
 	static void setPluralResolver({required String language, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
 		if (cardinalResolver != null) _pluralResolversCardinal[language] = cardinalResolver;
 		if (ordinalResolver != null) _pluralResolversOrdinal[language] = ordinalResolver;
 	}
 
 }
+
+// context enums
 
 // extensions for AppLocale
 
@@ -155,8 +158,8 @@ extension AppLocaleExtensions on AppLocale {
 
 	Locale get flutterLocale {
 		switch (this) {
-			case AppLocale.en: return Locale.fromSubtags(languageCode: 'en');
-			case AppLocale.de: return Locale.fromSubtags(languageCode: 'de');
+			case AppLocale.en: return const Locale.fromSubtags(languageCode: 'en');
+			case AppLocale.de: return const Locale.fromSubtags(languageCode: 'de');
 		}
 	}
 }
@@ -173,7 +176,7 @@ extension StringAppLocaleExtensions on String {
 
 // wrappers
 
-GlobalKey<_TranslationProviderState> _translationProviderKey = new GlobalKey<_TranslationProviderState>();
+GlobalKey<_TranslationProviderState> _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
 class TranslationProvider extends StatefulWidget {
 	TranslationProvider({required this.child}) : super(key: _translationProviderKey);
@@ -216,45 +219,28 @@ class _InheritedLocaleData extends InheritedWidget {
 
 // pluralization resolvers
 
-// for unsupported languages
 // map: language -> resolver
-typedef String PluralResolver(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
+typedef PluralResolver = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
 Map<String, PluralResolver> _pluralResolversCardinal = {};
 Map<String, PluralResolver> _pluralResolversOrdinal = {};
 
-PluralResolver _missingPluralResolver(String language) {
-	throw('Resolver for <lang = $language> not specified');
-}
-
 // prepared by fast_i18n
 
-String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	if (n == 0)
-		return zero ?? other!;
-	if (n == 1)
-		return one ?? other!;
-	return other!;
-}
-
-String _pluralOrdinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	return other!;
-}
-
 String _pluralCardinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	if (n == 0)
+	if (n == 0) {
 		return zero ?? other!;
-	if (n == 1)
+	} else if (n == 1) {
 		return one ?? other!;
+	}
 	return other!;
 }
 
-String _pluralOrdinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	if (n % 10 == 1 && n % 100 != 11)
+String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	if (n == 0) {
+		return zero ?? other!;
+	} else if (n == 1) {
 		return one ?? other!;
-	if (n % 10 == 2 && n % 100 != 12)
-		return two ?? other!;
-	if (n % 10 == 3 && n % 100 != 13)
-		return few ?? other!;
+	}
 	return other!;
 }
 
@@ -287,7 +273,7 @@ AppLocale? _selectLocale(String localeRaw) {
 class _StringsEn {
 	_StringsEn._(); // no constructor
 
-	static _StringsEn _instance = _StringsEn._();
+	static final _StringsEn _instance = _StringsEn._();
 
 	_StringsMainScreenEn get mainScreen => _StringsMainScreenEn._instance;
 	Map<String, String> get locales => {
@@ -304,7 +290,7 @@ class _StringsEn {
 class _StringsMainScreenEn {
 	_StringsMainScreenEn._(); // no constructor
 
-	static _StringsMainScreenEn _instance = _StringsMainScreenEn._();
+	static final _StringsMainScreenEn _instance = _StringsMainScreenEn._();
 
 	String get title => 'An English Title';
 	String counter({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
@@ -317,7 +303,7 @@ class _StringsMainScreenEn {
 class _StringsDe implements _StringsEn {
 	_StringsDe._(); // no constructor
 
-	static _StringsDe _instance = _StringsDe._();
+	static final _StringsDe _instance = _StringsDe._();
 
 	@override _StringsMainScreenDe get mainScreen => _StringsMainScreenDe._instance;
 	@override Map<String, String> get locales => {
@@ -326,6 +312,7 @@ class _StringsDe implements _StringsEn {
 	};
 
 	/// A flat map containing all translations.
+	@override
 	dynamic operator[](String key) {
 		return _translationMap[AppLocale.de]![key];
 	}
@@ -334,7 +321,7 @@ class _StringsDe implements _StringsEn {
 class _StringsMainScreenDe implements _StringsMainScreenEn {
 	_StringsMainScreenDe._(); // no constructor
 
-	static _StringsMainScreenDe _instance = _StringsMainScreenDe._();
+	static final _StringsMainScreenDe _instance = _StringsMainScreenDe._();
 
 	@override String get title => 'Ein deutscher Titel';
 	@override String counter({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,

@@ -35,7 +35,7 @@ packages:
       name: build
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.3"
   build_config:
     dependency: transitive
     description:
@@ -161,7 +161,7 @@ packages:
       name: fast_i18n
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.9.2"
+    version: "5.0.0"
   file:
     dependency: transitive
     description:
