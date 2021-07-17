@@ -45,7 +45,8 @@ extension<E> on Iterable<E> {
   }
 }
 
-final Set<String> _symbolSet = {' ', '.', '/', '_', '\\', '-'};
+final RegExp _upperAlphaRegex = RegExp(r'[A-Z]');
+final Set<String> _symbolSet = {' ', '.', '_', '-', '/', '\\'};
 
 /// get word list from string input
 /// assume that words are separated by special characters or by camel case
@@ -65,7 +66,7 @@ List<String> _getWords(String input) {
     buffer.write(currChar);
 
     final bool isEndOfWord = nextChar == null ||
-        (!isAllCaps && nextChar == nextChar.toUpperCase()) ||
+        (!isAllCaps && _upperAlphaRegex.hasMatch(nextChar)) ||
         _symbolSet.contains(nextChar);
 
     if (isEndOfWord) {

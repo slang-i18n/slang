@@ -52,7 +52,7 @@ void main() {
 
     test('mix to snake', () {
       expect(
-          'hello_worldCool-lol'.toCase(KeyCase.snake), 'hello_world_cool_lol');
+          'hello_worldCool-lol-23-end'.toCase(KeyCase.snake), 'hello_world_cool_lol_23_end');
     });
   });
 
