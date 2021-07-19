@@ -11,7 +11,7 @@
 
 Lightweight i18n solution. Use JSON files to create typesafe translations.
 
-**For legacy users:** version `4.x.x-legacy` is built on `build 1.3.0`, `glob 1.2.0`, `yaml 2.2.1` and `build_runner 1.10.2`. This way, you can access the latest features in your legacy project.
+**Latest version for projects without null safety:** 4.11.0
 
 ## About this library
 
@@ -64,7 +64,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.0.0
+  fast_i18n: 5.0.1
 ```
 
 **Step 2: Create JSON files**
