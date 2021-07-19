@@ -263,14 +263,14 @@ Future<void> generateTranslations({
   await File(resultPath).writeAsString(output);
 
   if (verbose) {
-    if (buildConfig.usePluralFeature) {
+    if (config.hasPlurals()) {
       // show pluralization hints if pluralization is configured
       print('');
       print('Pluralization:');
       print(
           ' -> rendered resolvers: ${config.getRenderedPluralResolvers().toList()}');
       print(
-          ' -> you must implement these resolvers: ${config.unsupportedPluralLanguages}');
+          ' -> you must implement these resolvers: ${config.unsupportedPluralLanguages.toList()}');
     }
 
     print('');

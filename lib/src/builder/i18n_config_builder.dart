@@ -12,13 +12,12 @@ class I18nConfigBuilder {
   }) {
     Map<String, RuleSet> renderedCardinalResolvers = {};
     Map<String, RuleSet> renderedOrdinalResolvers = {};
-    List<String> unsupportedPluralLanguages = [];
+    Set<String> unsupportedPluralLanguages = {};
     for (final translationData in translationList) {
       final language = translationData.locale.language;
       final pluralizationResolver = PLURALIZATION_RESOLVERS[language];
       if (pluralizationResolver == null) {
-        if (buildConfig.usePluralFeature &&
-            (translationData.hasCardinal || translationData.hasOrdinal)) {
+        if (translationData.hasCardinal || translationData.hasOrdinal) {
           unsupportedPluralLanguages.add(language);
         }
         continue;

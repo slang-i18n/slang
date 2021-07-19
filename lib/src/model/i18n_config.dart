@@ -10,7 +10,7 @@ class I18nConfig {
   final FallbackStrategy fallbackStrategy;
   final Map<String, RuleSet> renderedCardinalResolvers;
   final Map<String, RuleSet> renderedOrdinalResolvers;
-  final List<String> unsupportedPluralLanguages; // resolvers needed
+  final Set<String> unsupportedPluralLanguages; // resolvers needed
   final String translateVariable;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
@@ -40,5 +40,11 @@ class I18nConfig {
   bool hasPluralResolver(String language) {
     return renderedCardinalResolvers[language] != null ||
         renderedOrdinalResolvers[language] != null;
+  }
+
+  bool hasPlurals() {
+    return renderedCardinalResolvers.isNotEmpty ||
+        renderedOrdinalResolvers.isNotEmpty ||
+        unsupportedPluralLanguages.isNotEmpty;
   }
 }

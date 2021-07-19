@@ -300,9 +300,7 @@ void _generateLocaleSettings(
   buffer.writeln('\t\t\t.toList();');
   buffer.writeln('\t}');
 
-  if (config.unsupportedPluralLanguages.isNotEmpty ||
-      config.renderedCardinalResolvers.isNotEmpty ||
-      config.renderedOrdinalResolvers.isNotEmpty) {
+  if (config.hasPlurals()) {
     buffer.writeln();
     buffer.writeln('\t/// Sets plural resolvers.');
     buffer.writeln(
@@ -319,11 +317,7 @@ void _generateLocaleSettings(
     }
     buffer.writeln(']');
 
-    final missing = allLocales
-        .map((l) => l.locale.language)
-        .toSet()
-        .difference(renderedResolvers.toSet())
-        .toList();
+    final missing = config.unsupportedPluralLanguages.toList();
     if (missing.isNotEmpty) {
       buffer.write('\t/// You must set these: [');
       for (int i = 0; i < missing.length; i++) {
@@ -504,9 +498,7 @@ void _generatePluralResolvers(
     required String pluralResolverOrdinal}) {
   buffer.writeln();
 
-  if (config.unsupportedPluralLanguages.isEmpty &&
-      config.renderedCardinalResolvers.isEmpty &&
-      config.renderedOrdinalResolvers.isEmpty) {
+  if (!config.hasPlurals()) {
     buffer.writeln('// pluralization feature not used');
     return;
   }

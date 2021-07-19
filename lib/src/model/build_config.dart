@@ -63,12 +63,6 @@ class BuildConfig {
     required this.contexts,
   });
 
-  bool get usePluralFeature {
-    return this.pluralAuto != PluralAuto.off ||
-        this.pluralCardinal.isNotEmpty ||
-        this.pluralOrdinal.isNotEmpty;
-  }
-
   BuildConfig withAbsolutePaths() {
     return BuildConfig(
       baseLocale: baseLocale,
