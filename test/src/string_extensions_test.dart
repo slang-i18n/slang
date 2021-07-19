@@ -51,8 +51,8 @@ void main() {
     });
 
     test('mix to snake', () {
-      expect(
-          'hello_worldCool-lol-23-end'.toCase(KeyCase.snake), 'hello_world_cool_lol_23_end');
+      expect('hello_worldCool-lol-23-end'.toCase(KeyCase.snake),
+          'hello_world_cool_lol_23_end');
     });
   });
 
