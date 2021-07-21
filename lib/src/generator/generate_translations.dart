@@ -548,6 +548,8 @@ void _addContextCall(
 
   if (depth != 0) {
     buffer.writeln(',');
+  } else {
+    buffer.writeln();
   }
 }
 
