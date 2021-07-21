@@ -1,3 +1,7 @@
+## 5.0.2
+
+- fix: transform keys with multiple digits according to `key_case` correctly
+
 ## 5.0.1
 
 - fix: Missing `PluralResolver` when pluralization is not used in project
