@@ -1,7 +1,7 @@
 ## 5.0.3
 
 - fix: For country code only, `india` instead of `in` will be used for enum constant (`in` is a reserved keyword)
-- fix: When using country code only, the correct device locale will be selected 
+- fix: When using country code only, the correct device locale will be selected
 
 ## 5.0.2
 
