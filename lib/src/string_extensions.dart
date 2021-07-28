@@ -30,12 +30,6 @@ extension StringExtensions on String {
         return this;
     }
   }
-
-  /// transforms the string to a enum constant
-  /// used for AppLocale enum
-  String toEnumConstant() {
-    return this.toLowerCase().toCase(KeyCase.camel);
-  }
 }
 
 extension<E> on Iterable<E> {

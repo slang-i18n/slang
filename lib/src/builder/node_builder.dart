@@ -24,8 +24,7 @@ class NodeBuilder {
     Map<String, dynamic> map,
   ) {
     final Map<String, Node> destination = {};
-    final localeEnum =
-        '${config.enumName}.${locale.toLanguageTag().toEnumConstant()}';
+    final localeEnum = '${config.enumName}.${locale.enumConstant}';
     bool hasCardinal = false;
     bool hasOrdinal = false;
     _parseMapNode(

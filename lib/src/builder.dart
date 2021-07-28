@@ -64,8 +64,8 @@ class I18nBuilder implements Builder {
           final language = match.group(3);
           final script = match.group(5);
           final country = match.group(7);
-          assetMap[assetId] = I18nLocale(
-              language: language ?? '', script: script, country: country);
+          assetMap[assetId] =
+              I18nLocale(language: language, script: script, country: country);
         }
       }
     });

@@ -1,26 +1,31 @@
+import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/string_extensions.dart';
 import 'package:fast_i18n/src/utils.dart';
 
 /// own Locale type to decouple from dart:ui package
 class I18nLocale {
-  final String language;
+  static const String UNDEFINED_LANGUAGE = 'und';
+
+  final String? language;
   final String? script;
   final String? country;
+  late String languageTag = _toLanguageTag();
+  late String enumConstant = _toEnumConstant();
 
-  I18nLocale({required this.language, this.script, this.country});
+  I18nLocale({this.language, this.script, this.country});
 
-  String toLanguageTag() {
-    if (script != null && country != null) {
-      // 3 parts
-      return '$language-$script-$country';
+  String _toLanguageTag() {
+    return [language, script, country]
+        .where((element) => element != null)
+        .join('-');
+  }
+
+  String _toEnumConstant() {
+    final result = _toLanguageTag().toLowerCase().toCase(KeyCase.camel);
+    if (result == 'in') {
+      return 'india'; // hardcode to india because 'in' is a keyword
     } else {
-      final secondPart = script ?? country;
-      if (secondPart != null) {
-        // 2 parts
-        return '$language-$secondPart';
-      } else {
-        // 1 part (language only)
-        return language;
-      }
+      return result;
     }
   }
 

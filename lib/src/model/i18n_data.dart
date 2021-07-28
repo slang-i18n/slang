@@ -7,7 +7,6 @@ typedef int I18nDataComparator(I18nData a, I18nData b);
 class I18nData {
   final bool base; // whether or not this is the base locale
   final I18nLocale locale; // the locale (the part after the underscore)
-  final String localeTag; // the locale code tag
   final ObjectNode root; // the actual strings
   final bool hasCardinal;
   final bool hasOrdinal;
@@ -18,12 +17,12 @@ class I18nData {
     required this.root,
     required this.hasCardinal,
     required this.hasOrdinal,
-  }) : localeTag = locale.toLanguageTag();
+  });
 
   /// sorts base locale first, then alphabetically
   static I18nDataComparator generationComparator = (I18nData a, I18nData b) {
     if (!a.base && !b.base) {
-      return a.localeTag.compareTo(b.localeTag);
+      return a.locale.languageTag.compareTo(b.locale.languageTag);
     } else if (!a.base && b.base) {
       return 1; // move non-base to the right
     } else {

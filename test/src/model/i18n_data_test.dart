@@ -38,7 +38,7 @@ void main() {
         ),
       ];
       locales.sort(I18nData.generationComparator);
-      expect(locales.map((e) => e.locale.toLanguageTag()).toList(),
+      expect(locales.map((e) => e.locale.languageTag).toList(),
           ['aa', 'ee', 'ff', 'gg']);
     });
 
@@ -74,7 +74,7 @@ void main() {
         ),
       ];
       locales.sort(I18nData.generationComparator);
-      expect(locales.map((e) => e.locale.toLanguageTag()).toList(),
+      expect(locales.map((e) => e.locale.languageTag).toList(),
           ['ff', 'aa', 'ee', 'gg']);
     });
   });

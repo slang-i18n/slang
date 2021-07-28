@@ -79,7 +79,7 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
 
   // show build config
   print('');
-  print(' -> baseLocale: ${buildConfig.baseLocale.toLanguageTag()}');
+  print(' -> baseLocale: ${buildConfig.baseLocale.languageTag}');
   print(
       ' -> fallbackStrategy: ${(buildConfig.fallbackStrategy.toString().split('.').last)}');
   print(
@@ -207,7 +207,7 @@ Future<void> generateTranslations({
 
       if (verbose) {
         print(
-            '${('(base) ' + buildConfig.baseLocale.toLanguageTag()).padLeft(12)} -> ${file.path}');
+            '${('(base) ' + buildConfig.baseLocale.languageTag).padLeft(12)} -> ${file.path}');
       }
     } else {
       // secondary files (strings_x)
@@ -217,14 +217,17 @@ Future<void> generateTranslations({
         final script = match.group(5);
         final country = match.group(7);
         final locale = I18nLocale(
-            language: language ?? '', script: script, country: country);
+          language: language,
+          script: script,
+          country: country,
+        );
         final content = await File(file.path).readAsString();
         final currTranslations =
             JsonParser.parseTranslations(buildConfig, locale, content);
         translationList.add(currTranslations);
 
         if (verbose) {
-          print('${locale.toLanguageTag().padLeft(12)} -> ${file.path}');
+          print('${locale.languageTag.padLeft(12)} -> ${file.path}');
         }
       }
     }

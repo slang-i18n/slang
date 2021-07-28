@@ -1,4 +1,5 @@
 import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
 String getClassNameRoot(
@@ -12,8 +13,10 @@ String getClassNameRoot(
 }
 
 String getClassName(
-    {required String parentName, String childName = '', String locale = ''}) {
+    {required String parentName, String childName = '', I18nLocale? locale}) {
   return parentName +
       childName.toCase(KeyCase.pascal) +
-      locale.toLowerCase().toCase(KeyCase.pascal);
+      (locale != null
+          ? locale.languageTag.toLowerCase().toCase(KeyCase.pascal)
+          : '');
 }

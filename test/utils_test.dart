@@ -9,12 +9,15 @@ void main() {
       RegExpMatch? match = regex.firstMatch('strings_en');
       expect(match?.group(2), 'strings'); // base name
       expect(match?.group(3), 'en'); // language
+      expect(match?.group(5), null);
+      expect(match?.group(7), null);
     });
 
     test('strings_en_US', () {
       RegExpMatch? match = regex.firstMatch('strings_en_US');
       expect(match?.group(2), 'strings'); // base name
       expect(match?.group(3), 'en');
+      expect(match?.group(5), null);
       expect(match?.group(7), 'US');
     });
 
@@ -22,6 +25,7 @@ void main() {
       RegExpMatch? match = regex.firstMatch('translations_en-US');
       expect(match?.group(2), 'translations'); // base name
       expect(match?.group(3), 'en');
+      expect(match?.group(5), null);
       expect(match?.group(7), 'US');
     });
 
@@ -31,6 +35,14 @@ void main() {
       expect(match?.group(3), 'zh');
       expect(match?.group(5), 'Hant');
       expect(match?.group(7), 'TW');
+    });
+
+    test('strings_CN', () {
+      RegExpMatch? match = regex.firstMatch('strings_CN');
+      expect(match?.group(2), 'strings'); // base name
+      expect(match?.group(3), null);
+      expect(match?.group(5), null);
+      expect(match?.group(7), 'CN');
     });
   });
 

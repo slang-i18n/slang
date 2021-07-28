@@ -55,22 +55,4 @@ void main() {
           'hello_world_cool_lol_23_end');
     });
   });
-
-  group('toEnumConstant', () {
-    test('en', () {
-      expect('en'.toEnumConstant(), 'en');
-    });
-
-    test('en-EN', () {
-      expect('en-EN'.toEnumConstant(), 'enEn');
-    });
-
-    test('en-EN-EN', () {
-      expect('en-EN-EN'.toEnumConstant(), 'enEnEn');
-    });
-
-    test('en-En-En', () {
-      expect('en-En-En'.toEnumConstant(), 'enEnEn');
-    });
-  });
 }

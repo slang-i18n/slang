@@ -17,7 +17,7 @@ class Utils {
 
   /// locale regex
   static const LOCALE_REGEX_RAW =
-      r'([A-Za-z]{2,4})([_-]([A-Za-z]{4}))?([_-]([A-Za-z]{2}|[0-9]{3}))?';
+      r'([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?';
 
   /// Finds the parts of the locale. It must start with an underscore.
   /// groups for strings_zh-Hant-TW:

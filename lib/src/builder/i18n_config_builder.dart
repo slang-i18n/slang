@@ -1,6 +1,7 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
+import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
 
@@ -14,7 +15,8 @@ class I18nConfigBuilder {
     Map<String, RuleSet> renderedOrdinalResolvers = {};
     Set<String> unsupportedPluralLanguages = {};
     for (final translationData in translationList) {
-      final language = translationData.locale.language;
+      final language =
+          translationData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE;
       final pluralizationResolver = PLURALIZATION_RESOLVERS[language];
       if (pluralizationResolver == null) {
         if (translationData.hasCardinal || translationData.hasOrdinal) {

@@ -15,7 +15,7 @@ void generateHeader(
   final String baseClassName = getClassNameRoot(
       baseName: config.baseName,
       visibility: config.translationClassVisibility,
-      locale: config.baseLocale.toLanguageTag());
+      locale: config.baseLocale.languageTag);
   const String pluralResolverType = 'PluralResolver';
   const String pluralResolverMapCardinal = '_pluralResolversCardinal';
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
@@ -109,11 +109,10 @@ void _generateLocaleVariables(
     required String baseLocaleVar,
     required String currLocaleVar}) {
   final String enumName = config.enumName;
-  final String baseLocale = config.baseLocale.toLanguageTag();
 
   buffer.writeln();
   buffer.writeln(
-      'const $enumName $baseLocaleVar = $enumName.${baseLocale.toEnumConstant()};');
+      'const $enumName $baseLocaleVar = $enumName.${config.baseLocale.enumConstant};');
   buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
 }
 
@@ -122,23 +121,24 @@ void _generateEnum(
     required I18nConfig config,
     required List<I18nData> allLocales}) {
   final String enumName = config.enumName;
-  final String baseLocale = config.baseLocale.toLanguageTag();
+  final String baseLocaleEnumConstant =
+      '$enumName.${config.baseLocale.enumConstant}';
 
   buffer.writeln();
   buffer.writeln('/// Supported locales, see extension methods below.');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln(
-      '/// - LocaleSettings.setLocale($enumName.${baseLocale.toEnumConstant()}) // set locale');
+      '/// - LocaleSettings.setLocale($baseLocaleEnumConstant) // set locale');
   buffer.writeln(
-      '/// - Locale locale = $enumName.${baseLocale.toEnumConstant()}.flutterLocale // get flutter locale from enum');
+      '/// - Locale locale = $baseLocaleEnumConstant.flutterLocale // get flutter locale from enum');
   buffer.writeln(
-      '/// - if (LocaleSettings.currentLocale == $enumName.${baseLocale.toEnumConstant()}) // locale check');
+      '/// - if (LocaleSettings.currentLocale == $baseLocaleEnumConstant) // locale check');
 
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t${locale.localeTag.toEnumConstant()}, // \'${locale.localeTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
+        '\t${locale.locale.enumConstant}, // \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
   }
   buffer.writeln('}');
 }
@@ -375,10 +375,10 @@ void _generateExtensions({
   for (I18nData locale in allLocales) {
     String className = getClassNameRoot(
         baseName: config.baseName,
-        locale: locale.localeTag,
+        locale: locale.locale.languageTag,
         visibility: config.translationClassVisibility);
     buffer.writeln(
-        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return $className._instance;');
+        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className._instance;');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
@@ -387,7 +387,7 @@ void _generateExtensions({
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return \'${locale.localeTag}\';');
+        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return \'${locale.locale.languageTag}\';');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
@@ -397,11 +397,18 @@ void _generateExtensions({
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.write(
-        '\t\t\tcase $enumName.${locale.localeTag.toEnumConstant()}: return const Locale.fromSubtags(languageCode: \'${locale.locale.language}\'');
-    if (locale.locale.script != null)
-      buffer.write(', scriptCode: \'${locale.locale.script}\'');
-    if (locale.locale.country != null)
-      buffer.write(', countryCode: \'${locale.locale.country}\'');
+        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return const Locale.fromSubtags(');
+    if (locale.locale.language != null)
+      buffer.write('languageCode: \'${locale.locale.language}\'');
+    if (locale.locale.script != null) {
+      if (locale.locale.language != null) buffer.write(', ');
+      buffer.write('scriptCode: \'${locale.locale.script}\', ');
+    }
+    if (locale.locale.country != null) {
+      if (locale.locale.language != null || locale.locale.script != null)
+        buffer.write(', ');
+      buffer.write('countryCode: \'${locale.locale.country}\'');
+    }
     buffer.writeln(');');
   }
   buffer.writeln('\t\t}');
@@ -415,7 +422,7 @@ void _generateExtensions({
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     buffer.writeln(
-        '\t\t\tcase \'${locale.localeTag}\': return $enumName.${locale.localeTag.toEnumConstant()};');
+        '\t\t\tcase \'${locale.locale.languageTag}\': return $enumName.${locale.locale.enumConstant};');
   }
   buffer.writeln('\t\t\tdefault: return null;');
   buffer.writeln('\t\t}');
@@ -593,13 +600,18 @@ void _generateHelpers(
   buffer.writeln('\t$enumName? selected;');
   buffer.writeln('\tif (match != null) {');
   buffer.writeln('\t\tfinal language = match.group(1);');
+  buffer.writeln('\t\tfinal country = match.group(5);');
   buffer.writeln();
+
+  // match exactly
   buffer.writeln('\t\t// match exactly');
   buffer.writeln('\t\tselected = $enumName.values');
   buffer.writeln('\t\t\t.cast<$enumName?>()');
   buffer.writeln(
       '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll(\'_\', \'-\'), orElse: () => null);');
   buffer.writeln();
+
+  // match language
   buffer.writeln('\t\tif (selected == null && language != null) {');
   buffer.writeln('\t\t\t// match language');
   buffer.writeln('\t\t\tselected = $enumName.values');
@@ -607,6 +619,17 @@ void _generateHelpers(
   buffer.writeln(
       '\t\t\t\t.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);');
   buffer.writeln('\t\t}');
+  buffer.writeln();
+
+  // match country
+  buffer.writeln('\t\tif (selected == null && country != null) {');
+  buffer.writeln('\t\t\t// match country');
+  buffer.writeln('\t\t\tselected = $enumName.values');
+  buffer.writeln('\t\t\t\t.cast<$enumName?>()');
+  buffer.writeln(
+      '\t\t\t\t.firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);');
+  buffer.writeln('\t\t}');
+
   buffer.writeln('\t}');
   buffer.writeln('\treturn selected;');
   buffer.writeln('}');
