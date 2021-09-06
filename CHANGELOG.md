@@ -1,3 +1,7 @@
+## 5.0.4
+
+- fix: always escape `$` for `braces` and `double_braces`, escape `$` for `dart` if this symbol is alone
+
 ## 5.0.3
 
 - fix: For country code only, `india` instead of `in` will be used for enum constant (`in` is a reserved keyword)

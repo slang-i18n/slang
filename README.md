@@ -64,7 +64,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.0.3
+  fast_i18n: 5.0.4
 ```
 
 **Step 2: Create JSON files**
@@ -626,7 +626,7 @@ Now you can leave out translations in secondary languages. Missing translations 
 
 In most cases you forgot the `setState` call.
 
-A more elegant solution is to use `TranslationProvider(child: MyApp())` and then get you translation variable with `final t = Translations.of(context)`.
+A more elegant solution is to use `TranslationProvider(child: MyApp())` and then get your translation variable with `final t = Translations.of(context)`.
 It will automatically trigger a rebuild on `setLocale` for all affected widgets.
 
 **My plural resolver is not specified?**
