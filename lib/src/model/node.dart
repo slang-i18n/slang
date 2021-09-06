@@ -60,6 +60,31 @@ class TextNode extends Node {
         .replaceAll('\n', '\\n') // (linebreak 2) -> \n
         .replaceAll('\'', '\\\''); // ' -> \'
 
+    if (interpolation == StringInterpolation.dart) {
+      // escape single $
+      contentNormalized =
+          contentNormalized.replaceAllMapped(Utils.dollarOnlyRegex, (match) {
+        String result = '';
+        if (match.group(1) != null) {
+          result += match.group(1)!; // pre character
+        }
+        result += '\\\$';
+        if (match.group(2) != null) {
+          result += match.group(2)!; // post character
+        }
+        return result;
+      });
+    } else {
+      contentNormalized =
+          contentNormalized.replaceAllMapped(Utils.dollarRegex, (match) {
+        if (match.group(1) != null) {
+          return '${match.group(1)}\\\$'; // with pre character
+        } else {
+          return '\\\$';
+        }
+      });
+    }
+
     // parse arguments, modify [contentNormalized] according to interpolation
     switch (interpolation) {
       case StringInterpolation.dart:

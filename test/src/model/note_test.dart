@@ -49,6 +49,15 @@ void main() {
             '\$apple is linked to \${AppLocale.en.translations.wow}!');
         expect(node.params, {'apple'});
       });
+
+      test('one argument and single dollars', () {
+        final test =
+            r'$ I have \$ one argument named $apple but also a $ and a $';
+        final node = TextNode(test, StringInterpolation.dart, localeEnum);
+        expect(node.content,
+            r'\$ I have \$ one argument named $apple but also a \$ and a \$');
+        expect(node.params, {'apple'});
+      });
     });
 
     group(StringInterpolation.braces, () {
@@ -87,11 +96,12 @@ void main() {
         expect(node.params, {'tom'});
       });
 
-      test('one argument with fake argument', () {
-        final test = 'I have one argument named {apple} but this is \$fake.';
+      test('one argument with fake arguments', () {
+        final test =
+            r'$ I have one argument named {apple} but this is $fake. \$ $';
         final node = TextNode(test, StringInterpolation.braces, localeEnum);
         expect(node.content,
-            'I have one argument named \$apple but this is \$fake.');
+            r'\$ I have one argument named $apple but this is \$fake. \$ \$');
         expect(node.params, {'apple'});
       });
 

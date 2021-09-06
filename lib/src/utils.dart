@@ -15,6 +15,12 @@ class Utils {
   /// matches @:translation.key
   static RegExp linkedRegex = RegExp(r'@:([\w|.]*\w)');
 
+  /// matches $hello, $ but not \$
+  static RegExp dollarRegex = RegExp(r'([^\\]|^)\$');
+
+  /// matches only $ but not \$
+  static RegExp dollarOnlyRegex = RegExp(r'([^\\]|^)\$( |$)');
+
   /// locale regex
   static const LOCALE_REGEX_RAW =
       r'([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?';
