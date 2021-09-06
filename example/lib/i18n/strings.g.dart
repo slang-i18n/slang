@@ -246,12 +246,13 @@ String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String?
 
 // helpers
 
-final _localeRegex = RegExp(r'^([A-Za-z]{2,4})([_-]([A-Za-z]{4}))?([_-]([A-Za-z]{2}|[0-9]{3}))?$');
+final _localeRegex = RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
 AppLocale? _selectLocale(String localeRaw) {
 	final match = _localeRegex.firstMatch(localeRaw);
 	AppLocale? selected;
 	if (match != null) {
 		final language = match.group(1);
+		final country = match.group(5);
 
 		// match exactly
 		selected = AppLocale.values
@@ -263,6 +264,13 @@ AppLocale? _selectLocale(String localeRaw) {
 			selected = AppLocale.values
 				.cast<AppLocale?>()
 				.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);
+		}
+
+		if (selected == null && country != null) {
+			// match country
+			selected = AppLocale.values
+				.cast<AppLocale?>()
+				.firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);
 		}
 	}
 	return selected;
