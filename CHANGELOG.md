@@ -1,3 +1,7 @@
+## 5.1.0
+
+- feat: add `param_case` configuration to recase parameters
+
 ## 5.0.4
 
 - fix: always escape `$` for `braces` and `double_braces`, escape `$` for `dart` if this symbol is alone

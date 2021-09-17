@@ -52,6 +52,7 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
     - [Dynamic Keys](#dynamic-keys)
     - [Lists](#lists)
     - [Fallback](#fallback)
+    - [Recasing](#recasing)
 - [API](#api)
 - [FAQ](#faq)
 
@@ -64,7 +65,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.0.4
+  fast_i18n: 5.1.0
 ```
 
 **Step 2: Create JSON files**
@@ -197,6 +198,7 @@ targets:
           enum_name: AppLocale
           translation_class_visibility: private
           key_case: snake
+          param_case: pascal
           string_interpolation: double_braces
           flat_map: false
           maps:
@@ -231,6 +233,7 @@ Key|Type|Usage|Default
 `enum_name`|`String`|enum name|`AppLocale`
 `translation_class_visibility`|`private`, `public`|class visibility|`private`
 `key_case`|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
+`param_case`|`camel`, `pascal`, `snake`|transform parameters (optional)|`null`
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
 `flat_map`|`Boolean`|generate flat map|`true`
 `maps`|`List<String>`|entries which should be accessed via keys|`[]`
@@ -572,6 +575,34 @@ targets:
   "hello": "Salut",
   // "bye" is missing, fallback to English version
 }
+```
+
+### Recasing
+
+By default, no transformations will be applied.
+
+You can change that by specifying `key_case` or `param_case`.
+
+Possible cases are: `camel`, `snake` and `pascal`.
+
+```json
+{
+  "this_must_be_camel_case": "But the parameter must be in {snakeCase}"
+}
+```
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          key_case: camel
+          param_case: snake
+```
+
+```dart
+t.thisMustBeCamelCase(snake_case: 'snake case');
 ```
 
 ## API                                                                                   
