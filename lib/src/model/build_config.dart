@@ -15,7 +15,8 @@ class BuildConfig {
   static const String defaultEnumName = 'AppLocale';
   static const TranslationClassVisibility defaultTranslationClassVisibility =
       TranslationClassVisibility.private;
-  static const KeyCase? defaultKeyCase = null;
+  static const CaseStyle? defaultKeyCase = null;
+  static const CaseStyle? defaultParamCase = null;
   static const StringInterpolation defaultStringInterpolation =
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
@@ -34,7 +35,8 @@ class BuildConfig {
   final String translateVar;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
-  final KeyCase? keyCase;
+  final CaseStyle? keyCase;
+  final CaseStyle? paramCase;
   final StringInterpolation stringInterpolation;
   final bool renderFlatMap;
   final List<String> maps;
@@ -54,6 +56,7 @@ class BuildConfig {
     required this.enumName,
     required this.translationClassVisibility,
     required this.keyCase,
+    required this.paramCase,
     required this.stringInterpolation,
     required this.renderFlatMap,
     required this.maps,
@@ -75,6 +78,7 @@ class BuildConfig {
       enumName: enumName,
       translationClassVisibility: translationClassVisibility,
       keyCase: keyCase,
+      paramCase: paramCase,
       stringInterpolation: stringInterpolation,
       renderFlatMap: renderFlatMap,
       maps: maps,
@@ -89,7 +93,7 @@ class BuildConfig {
 enum FallbackStrategy { none, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }
-enum KeyCase { camel, pascal, snake }
+enum CaseStyle { camel, pascal, snake }
 enum PluralAuto { off, cardinal, ordinal }
 
 extension Parser on String {
@@ -128,14 +132,14 @@ extension Parser on String {
     }
   }
 
-  KeyCase? toKeyCase() {
+  CaseStyle? toCaseStyle() {
     switch (this) {
       case 'camel':
-        return KeyCase.camel;
+        return CaseStyle.camel;
       case 'snake':
-        return KeyCase.snake;
+        return CaseStyle.snake;
       case 'pascal':
-        return KeyCase.pascal;
+        return CaseStyle.pascal;
       default:
         return null;
     }

@@ -12,16 +12,16 @@ extension StringExtensions on String {
 
   /// transforms the string to the specified case
   /// if case is null, then no transformation will be applied
-  String toCase(KeyCase? keyCase) {
+  String toCase(CaseStyle? keyCase) {
     switch (keyCase) {
-      case KeyCase.camel:
+      case CaseStyle.camel:
         return _getWords(this)
             .mapIndexed((index, word) =>
                 index == 0 ? word.toLowerCase() : word.capitalize())
             .join('');
-      case KeyCase.pascal:
+      case CaseStyle.pascal:
         return _getWords(this).map((word) => word.capitalize()).join('');
-      case KeyCase.snake:
+      case CaseStyle.snake:
         return _getWords(this).map((word) => word.toLowerCase()).join('_');
       case null:
         return this;

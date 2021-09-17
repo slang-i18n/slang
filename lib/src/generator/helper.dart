@@ -6,8 +6,8 @@ String getClassNameRoot(
     {required String baseName,
     String locale = '',
     required TranslationClassVisibility visibility}) {
-  String result = baseName.toCase(KeyCase.pascal) +
-      locale.toLowerCase().toCase(KeyCase.pascal);
+  String result = baseName.toCase(CaseStyle.pascal) +
+      locale.toLowerCase().toCase(CaseStyle.pascal);
   if (visibility == TranslationClassVisibility.private) result = '_' + result;
   return result;
 }
@@ -15,8 +15,8 @@ String getClassNameRoot(
 String getClassName(
     {required String parentName, String childName = '', I18nLocale? locale}) {
   return parentName +
-      childName.toCase(KeyCase.pascal) +
+      childName.toCase(CaseStyle.pascal) +
       (locale != null
-          ? locale.languageTag.toLowerCase().toCase(KeyCase.pascal)
+          ? locale.languageTag.toLowerCase().toCase(CaseStyle.pascal)
           : '');
 }

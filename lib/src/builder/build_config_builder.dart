@@ -10,13 +10,13 @@ class BuildConfigBuilder {
     List<ContextType> contextTypes = [];
     if (contextMap != null) {
       contextTypes = contextMap.entries.map((e) {
-        final enumName = e.key.toCase(KeyCase.pascal);
+        final enumName = e.key.toCase(CaseStyle.pascal);
         final config = e.value.cast<String, dynamic>() as Map<String, dynamic>;
 
         return ContextType(
           enumName: enumName,
           enumValues: (config['enum'].cast<String>() as List<String>)
-              .map((e) => e.toCase(KeyCase.camel))
+              .map((e) => e.toCase(CaseStyle.camel))
               .toList(),
           auto: config['auto'] ?? ContextType.defaultAuto,
           paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
@@ -44,8 +44,10 @@ class BuildConfigBuilder {
           (map['translation_class_visibility'] as String?)
                   ?.toTranslationClassVisibility() ??
               BuildConfig.defaultTranslationClassVisibility,
-      keyCase: (map['key_case'] as String?)?.toKeyCase() ??
+      keyCase: (map['key_case'] as String?)?.toCaseStyle() ??
           BuildConfig.defaultKeyCase,
+      paramCase: (map['param_case'] as String?)?.toCaseStyle() ??
+          BuildConfig.defaultParamCase,
       stringInterpolation:
           (map['string_interpolation'] as String?)?.toStringInterpolation() ??
               BuildConfig.defaultStringInterpolation,

@@ -21,7 +21,7 @@ class I18nLocale {
   }
 
   String _toEnumConstant() {
-    final result = _toLanguageTag().toLowerCase().toCase(KeyCase.camel);
+    final result = _toLanguageTag().toLowerCase().toCase(CaseStyle.camel);
     if (result == 'in') {
       return 'india'; // hardcode to india because 'in' is a keyword
     } else {

@@ -1,5 +1,6 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
+import 'package:fast_i18n/src/string_extensions.dart';
 import 'package:fast_i18n/src/utils.dart';
 
 /// the super class of every node
@@ -53,8 +54,9 @@ class TextNode extends Node {
   TextNode(
     String content,
     StringInterpolation interpolation,
-    String localeEnum,
-  ) {
+    String localeEnum, [
+    CaseStyle? paramCase,
+  ]) {
     String contentNormalized = content
         .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
         .replaceAll('\n', '\\n') // (linebreak 2) -> \n
@@ -88,11 +90,21 @@ class TextNode extends Node {
     // parse arguments, modify [contentNormalized] according to interpolation
     switch (interpolation) {
       case StringInterpolation.dart:
-        this.params = Utils.argumentsDartRegex
-            .allMatches(contentNormalized)
-            .map((e) => e.group(2))
-            .cast<String>()
-            .toSet(); // remove duplicates
+        params = Set<String>();
+        contentNormalized = contentNormalized
+            .replaceAllMapped(Utils.argumentsDartRegex, (match) {
+          final paramOriginal = match.group(2)!;
+          if (paramCase == null) {
+            // no transformations
+            params.add(paramOriginal);
+            return match.group(0)!;
+          } else {
+            // apply param case
+            final paramWithCase = paramOriginal.toCase(paramCase);
+            params.add(paramWithCase);
+            return match.group(0)!.replaceAll(paramOriginal, paramWithCase);
+          }
+        });
         break;
       case StringInterpolation.braces:
         params = Set<String>();
@@ -102,14 +114,15 @@ class TextNode extends Node {
             return '{${match.group(2)}}'; // escape
           }
 
-          params.add(match.group(2)!);
+          final param = match.group(2)!.toCase(paramCase);
+          params.add(param);
 
           if (match.group(3) != null) {
-            // ${...}
-            return '${match.group(1)}\${${match.group(2)}}${match.group(3)}';
+            // ${...} because a word follows
+            return '${match.group(1)}\${$param}${match.group(3)}';
           } else {
             // $...
-            return '${match.group(1)}\$${match.group(2)}';
+            return '${match.group(1)}\$$param';
           }
         });
         break;
@@ -121,14 +134,15 @@ class TextNode extends Node {
             return '{{${match.group(2)}}}'; // escape
           }
 
-          params.add(match.group(2)!);
+          final param = match.group(2)!.toCase(paramCase);
+          params.add(param);
 
           if (match.group(3) != null) {
-            // ${...}
-            return '${match.group(1)}\${${match.group(2)}}${match.group(3)}';
+            // ${...} because a word follows
+            return '${match.group(1)}\${$param}${match.group(3)}';
           } else {
             // $...
-            return '${match.group(1)}\$${match.group(2)}';
+            return '${match.group(1)}\$$param';
           }
         });
     }

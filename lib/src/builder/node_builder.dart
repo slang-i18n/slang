@@ -67,6 +67,7 @@ class NodeBuilder {
           value,
           config.stringInterpolation,
           localeEnum,
+          config.paramCase,
         );
       } else {
         final List<String> nextStack = [...stack, key];

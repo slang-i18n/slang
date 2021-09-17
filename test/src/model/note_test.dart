@@ -58,6 +58,15 @@ void main() {
             r'\$ I have \$ one argument named $apple but also a \$ and a \$');
         expect(node.params, {'apple'});
       });
+
+      test('with case', () {
+        final test = r'Nice $cool_hi $wow ${yes} ${no_yes} @:hello_world.yes';
+        final node = TextNode(
+            test, StringInterpolation.dart, localeEnum, CaseStyle.camel);
+        expect(node.content,
+            r'Nice $coolHi $wow ${yes} ${noYes} ${AppLocale.en.translations.hello_world.yes}');
+        expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
+      });
     });
 
     group(StringInterpolation.braces, () {
@@ -119,6 +128,14 @@ void main() {
             '\$apple is linked to \${AppLocale.en.translations.wow}!');
         expect(node.params, {'apple'});
       });
+
+      test('with case', () {
+        final test = r'Nice {cool_hi} {wow} {yes}a {no_yes}';
+        final node = TextNode(
+            test, StringInterpolation.braces, localeEnum, CaseStyle.camel);
+        expect(node.content, r'Nice $coolHi $wow ${yes}a $noYes');
+        expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
+      });
     });
 
     group(StringInterpolation.doubleBraces, () {
@@ -168,6 +185,14 @@ void main() {
             TextNode(test, StringInterpolation.doubleBraces, localeEnum);
         expect(node.content, 'I have one argument named {{apple}}.');
         expect(node.params, <String>{});
+      });
+
+      test('with case', () {
+        final test = r'Nice {{cool_hi}} {{wow}} {{yes}}a {{no_yes}}';
+        final node = TextNode(test, StringInterpolation.doubleBraces,
+            localeEnum, CaseStyle.camel);
+        expect(node.content, r'Nice $coolHi $wow ${yes}a $noYes');
+        expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
     });
   });

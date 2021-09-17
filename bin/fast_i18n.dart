@@ -95,6 +95,8 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   print(
       ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
   print(
+      ' -> paramCase: ${buildConfig.paramCase != null ? buildConfig.paramCase.toString().split('.').last : 'null (no change)'}');
+  print(
       ' -> stringInterpolation: ${(buildConfig.stringInterpolation.toString().split('.').last)}');
   print(' -> renderFlatMap: ${buildConfig.renderFlatMap}');
   print(' -> maps: ${buildConfig.maps}');

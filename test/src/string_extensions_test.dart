@@ -23,35 +23,35 @@ void main() {
     });
 
     test('camel to camel', () {
-      expect('helloWorldCool'.toCase(KeyCase.camel), 'helloWorldCool');
+      expect('helloWorldCool'.toCase(CaseStyle.camel), 'helloWorldCool');
     });
 
     test('camel to snake', () {
-      expect('helloWorldCool'.toCase(KeyCase.snake), 'hello_world_cool');
+      expect('helloWorldCool'.toCase(CaseStyle.snake), 'hello_world_cool');
     });
 
     test('snake to snake', () {
-      expect('hello_world_cool'.toCase(KeyCase.snake), 'hello_world_cool');
+      expect('hello_world_cool'.toCase(CaseStyle.snake), 'hello_world_cool');
     });
 
     test('snake to camel', () {
-      expect('hello_world_cool'.toCase(KeyCase.camel), 'helloWorldCool');
+      expect('hello_world_cool'.toCase(CaseStyle.camel), 'helloWorldCool');
     });
 
     test('pascal to camel', () {
-      expect('HelloWorldCool'.toCase(KeyCase.camel), 'helloWorldCool');
+      expect('HelloWorldCool'.toCase(CaseStyle.camel), 'helloWorldCool');
     });
 
     test('camel to pascal', () {
-      expect('helloWorldCool'.toCase(KeyCase.pascal), 'HelloWorldCool');
+      expect('helloWorldCool'.toCase(CaseStyle.pascal), 'HelloWorldCool');
     });
 
     test('snake to pascal', () {
-      expect('hello_world_cool'.toCase(KeyCase.pascal), 'HelloWorldCool');
+      expect('hello_world_cool'.toCase(CaseStyle.pascal), 'HelloWorldCool');
     });
 
     test('mix to snake', () {
-      expect('hello_worldCool-lol-23-end'.toCase(KeyCase.snake),
+      expect('hello_worldCool-lol-23-end'.toCase(CaseStyle.snake),
           'hello_world_cool_lol_23_end');
     });
   });
