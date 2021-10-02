@@ -45,6 +45,8 @@ class BuildConfigBuilder {
               BuildConfig.defaultTranslationClassVisibility,
       keyCase: (map['key_case'] as String?)?.toCaseStyle() ??
           BuildConfig.defaultKeyCase,
+      keyMapCase: (map['key_map_case'] as String?)?.toCaseStyle() ??
+          BuildConfig.defaultKeyMapCase,
       paramCase: (map['param_case'] as String?)?.toCaseStyle() ??
           BuildConfig.defaultParamCase,
       stringInterpolation:

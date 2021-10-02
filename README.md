@@ -201,6 +201,7 @@ targets:
           enum_name: AppLocale
           translation_class_visibility: private
           key_case: snake
+          key_map_case: camel
           param_case: pascal
           string_interpolation: double_braces
           flat_map: false
@@ -236,6 +237,7 @@ Key|Type|Usage|Default
 `enum_name`|`String`|enum name|`AppLocale`
 `translation_class_visibility`|`private`, `public`|class visibility|`private`
 `key_case`|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
+`key_map_case`|`camel`, `pascal`, `snake`|transform keys for maps (optional)|`null`
 `param_case`|`camel`, `pascal`, `snake`|transform parameters (optional)|`null`
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
 `flat_map`|`Boolean`|generate flat map|`true`
@@ -600,13 +602,16 @@ targets:
 
 By default, no transformations will be applied.
 
-You can change that by specifying `key_case` or `param_case`.
+You can change that by specifying `key_case`, `key_map_case` or `param_case`.
 
 Possible cases are: `camel`, `snake` and `pascal`.
 
 ```json
 {
-  "this_must_be_camel_case": "But the parameter must be in {snakeCase}"
+  "this_must_be_camel_case": "But the parameter must be in {snakeCase}",
+  "my_map": {
+    "this_should_be_in_pascal": "hi"
+  }
 }
 ```
 
@@ -617,11 +622,15 @@ targets:
       fast_i18n:
         options:
           key_case: camel
+          key_map_case: pascal
           param_case: snake
+          maps:
+            - myMap
 ```
 
 ```dart
 t.thisMustBeCamelCase(snake_case: 'snake case');
+t.myMap['ThisShouldBeInPascal'];
 ```
 
 ### Auto Rebuild

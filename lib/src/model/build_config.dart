@@ -16,6 +16,7 @@ class BuildConfig {
   static const TranslationClassVisibility defaultTranslationClassVisibility =
       TranslationClassVisibility.private;
   static const CaseStyle? defaultKeyCase = null;
+  static const CaseStyle? defaultKeyMapCase = null;
   static const CaseStyle? defaultParamCase = null;
   static const StringInterpolation defaultStringInterpolation =
       StringInterpolation.dart;
@@ -37,6 +38,7 @@ class BuildConfig {
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
   final CaseStyle? keyCase;
+  final CaseStyle? keyMapCase;
   final CaseStyle? paramCase;
   final StringInterpolation stringInterpolation;
   final bool renderFlatMap;
@@ -57,6 +59,7 @@ class BuildConfig {
     required this.enumName,
     required this.translationClassVisibility,
     required this.keyCase,
+    required this.keyMapCase,
     required this.paramCase,
     required this.stringInterpolation,
     required this.renderFlatMap,
@@ -89,6 +92,7 @@ class BuildConfig {
       enumName: enumName,
       translationClassVisibility: translationClassVisibility,
       keyCase: keyCase,
+      keyMapCase: keyMapCase,
       paramCase: paramCase,
       stringInterpolation: stringInterpolation,
       renderFlatMap: renderFlatMap,

@@ -32,6 +32,7 @@ class NodeBuilder {
     bool hasOrdinal = false;
     _parseMapNode(
       config: config,
+      keyCase: config.keyCase,
       localeEnum: localeEnum,
       curr: map,
       destination: destination,
@@ -53,6 +54,7 @@ class NodeBuilder {
 
   static void _parseMapNode({
     required BuildConfig config,
+    required CaseStyle? keyCase,
     required String localeEnum,
     required Map<String, dynamic> curr,
     required Map<String, Node> destination,
@@ -61,7 +63,7 @@ class NodeBuilder {
     required Function ordinalNotifier,
   }) {
     curr.forEach((key, value) {
-      key = key.toCase(config.keyCase);
+      key = key.toCase(keyCase); // transform key if necessary
 
       if (value is String || value is num) {
         // leaf
@@ -84,6 +86,7 @@ class NodeBuilder {
           };
           _parseMapNode(
             config: config,
+            keyCase: config.keyCase,
             localeEnum: localeEnum,
             curr: listAsMap,
             destination: childrenTarget,
@@ -98,6 +101,10 @@ class NodeBuilder {
           // key: { ...value }
           _parseMapNode(
             config: config,
+            keyCase: config.keyCase != config.keyMapCase &&
+                    _determineMapType(config, nextStack)
+                ? config.keyMapCase
+                : config.keyCase,
             localeEnum: localeEnum,
             curr: value,
             destination: childrenTarget,
@@ -108,6 +115,7 @@ class NodeBuilder {
           _DetectionResult result =
               _determineNodeType(config, nextStack, childrenTarget);
 
+          // notify plural and split by comma if necessary
           if (result.nodeType == ObjectNodeType.context ||
               result.nodeType == ObjectNodeType.pluralCardinal ||
               result.nodeType == ObjectNodeType.pluralOrdinal) {
@@ -186,6 +194,12 @@ class NodeBuilder {
 
       return _DetectionResult(ObjectNodeType.classType);
     }
+  }
+
+  /// light version of [_determineNodeType] only checking map type
+  static bool _determineMapType(BuildConfig config, List<String> stack) {
+    String stackAsString = stack.join('.');
+    return config.maps.contains(stackAsString);
   }
 }
 

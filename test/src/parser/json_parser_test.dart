@@ -1,32 +1,10 @@
-import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/parser/json_parser.dart';
 import 'package:test/test.dart';
 
-void main() {
-  final defaultLocale = I18nLocale.fromString(BuildConfig.defaultBaseLocale);
-  final baseConfig = BuildConfig(
-    baseLocale: defaultLocale,
-    fallbackStrategy: BuildConfig.defaultFallbackStrategy,
-    inputDirectory: BuildConfig.defaultInputDirectory,
-    inputFilePattern: BuildConfig.defaultInputFilePattern,
-    outputDirectory: BuildConfig.defaultOutputDirectory,
-    outputFilePattern: BuildConfig.defaultOutputFilePattern,
-    translateVar: BuildConfig.defaultTranslateVar,
-    enumName: BuildConfig.defaultEnumName,
-    translationClassVisibility: BuildConfig.defaultTranslationClassVisibility,
-    keyCase: BuildConfig.defaultKeyCase,
-    paramCase: BuildConfig.defaultParamCase,
-    stringInterpolation: BuildConfig.defaultStringInterpolation,
-    renderFlatMap: BuildConfig.defaultRenderFlatMap,
-    maps: BuildConfig.defaultMaps,
-    pluralAuto: BuildConfig.defaultPluralAuto,
-    pluralCardinal: BuildConfig.defaultCardinal,
-    pluralOrdinal: BuildConfig.defaultOrdinal,
-    contexts: BuildConfig.defaultContexts,
-  );
+import '../../util/build_config_utils.dart';
 
+void main() {
   group(JsonParser.parseTranslations, () {
     test('one text', () {
       final root = JsonParser.parseTranslations(baseConfig, defaultLocale, '''{
@@ -91,34 +69,4 @@ void main() {
       expect(map['myMap'], isA<ObjectNode>());
     });
   });
-}
-
-extension on BuildConfig {
-  BuildConfig copyWith({
-    List<String>? maps,
-    PluralAuto? pluralAuto,
-    List<String>? pluralCardinal,
-    List<String>? pluralOrdinal,
-  }) {
-    return BuildConfig(
-      baseLocale: baseLocale,
-      fallbackStrategy: fallbackStrategy,
-      inputDirectory: inputDirectory,
-      inputFilePattern: inputFilePattern,
-      outputDirectory: outputDirectory,
-      outputFilePattern: outputFilePattern,
-      translateVar: translateVar,
-      enumName: enumName,
-      translationClassVisibility: translationClassVisibility,
-      keyCase: keyCase,
-      paramCase: paramCase,
-      stringInterpolation: stringInterpolation,
-      renderFlatMap: renderFlatMap,
-      maps: maps ?? this.maps,
-      pluralAuto: pluralAuto ?? this.pluralAuto,
-      pluralCardinal: pluralCardinal ?? this.pluralCardinal,
-      pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
-      contexts: BuildConfig.defaultContexts,
-    );
-  }
 }

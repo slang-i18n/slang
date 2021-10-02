@@ -95,6 +95,8 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   print(
       ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase?.getEnumName() : 'null (no change)'}');
   print(
+      ' -> keyCase (for maps): ${buildConfig.keyMapCase != null ? buildConfig.keyMapCase?.getEnumName() : 'null (no change)'}');
+  print(
       ' -> paramCase: ${buildConfig.paramCase != null ? buildConfig.paramCase?.getEnumName() : 'null (no change)'}');
   print(
       ' -> stringInterpolation: ${buildConfig.stringInterpolation.getEnumName()}');
