@@ -26,6 +26,7 @@ class BuildConfig {
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
 
+  final FileType fileType;
   final I18nLocale baseLocale;
   final FallbackStrategy fallbackStrategy;
   final String? inputDirectory;
@@ -64,7 +65,17 @@ class BuildConfig {
     required this.pluralCardinal,
     required this.pluralOrdinal,
     required this.contexts,
-  });
+  }) : fileType = _determineFileType(inputFilePattern);
+
+  static FileType _determineFileType(String extension) {
+    if (extension.endsWith('.json')) {
+      return FileType.json;
+    } else if (extension.endsWith('.yaml')) {
+      return FileType.yaml;
+    } else {
+      throw 'Input file pattern must end with .json or .yaml (Input: $extension)';
+    }
+  }
 
   BuildConfig withAbsolutePaths() {
     return BuildConfig(
@@ -90,6 +101,7 @@ class BuildConfig {
   }
 }
 
+enum FileType { json, yaml }
 enum FallbackStrategy { none, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }

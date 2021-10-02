@@ -6,7 +6,7 @@ import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/parser/json_parser.dart';
+import 'package:fast_i18n/src/parser/parser_facade.dart';
 import 'package:fast_i18n/src/parser/yaml_parser.dart';
 import 'package:fast_i18n/src/utils.dart';
 
@@ -79,9 +79,9 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
 
   // show build config
   print('');
+  print(' -> fileType: ${buildConfig.fileType.getEnumName()}');
   print(' -> baseLocale: ${buildConfig.baseLocale.languageTag}');
-  print(
-      ' -> fallbackStrategy: ${(buildConfig.fallbackStrategy.toString().split('.').last)}');
+  print(' -> fallbackStrategy: ${buildConfig.fallbackStrategy.getEnumName()}');
   print(
       ' -> inputDirectory: ${buildConfig.inputDirectory != null ? buildConfig.inputDirectory : 'null (everywhere)'}');
   print(' -> inputFilePattern: ${buildConfig.inputFilePattern}');
@@ -91,17 +91,16 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   print(' -> translateVar: ${buildConfig.translateVar}');
   print(' -> enumName: ${buildConfig.enumName}');
   print(
-      ' -> translationClassVisibility: ${(buildConfig.translationClassVisibility.toString().split('.').last)}');
+      ' -> translationClassVisibility: ${buildConfig.translationClassVisibility.getEnumName()}');
   print(
-      ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase.toString().split('.').last : 'null (no change)'}');
+      ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase?.getEnumName() : 'null (no change)'}');
   print(
-      ' -> paramCase: ${buildConfig.paramCase != null ? buildConfig.paramCase.toString().split('.').last : 'null (no change)'}');
+      ' -> paramCase: ${buildConfig.paramCase != null ? buildConfig.paramCase?.getEnumName() : 'null (no change)'}');
   print(
-      ' -> stringInterpolation: ${(buildConfig.stringInterpolation.toString().split('.').last)}');
+      ' -> stringInterpolation: ${buildConfig.stringInterpolation.getEnumName()}');
   print(' -> renderFlatMap: ${buildConfig.renderFlatMap}');
   print(' -> maps: ${buildConfig.maps}');
-  print(
-      ' -> pluralization/auto: ${(buildConfig.pluralAuto.toString().split('.').last)}');
+  print(' -> pluralization/auto: ${buildConfig.pluralAuto.getEnumName()}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
   print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
   print(
@@ -198,8 +197,11 @@ Future<void> generateTranslations({
     if (baseFile != null) {
       // base file
       final content = await File(file.path).readAsString();
-      final currTranslations = JsonParser.parseTranslations(
-          buildConfig, buildConfig.baseLocale, content);
+      final currTranslations = ParserFacade.parseTranslations(
+        config: buildConfig,
+        locale: buildConfig.baseLocale,
+        content: content,
+      );
       translationList.add(currTranslations);
       resultPath =
           file.path.replaceAll("${Platform.pathSeparator}$fileName", '') +
@@ -224,8 +226,11 @@ Future<void> generateTranslations({
           country: country,
         );
         final content = await File(file.path).readAsString();
-        final currTranslations =
-            JsonParser.parseTranslations(buildConfig, locale, content);
+        final currTranslations = ParserFacade.parseTranslations(
+          config: buildConfig,
+          locale: locale,
+          content: content,
+        );
         translationList.add(currTranslations);
 
         if (verbose) {
@@ -296,5 +301,12 @@ extension on String {
   /// converts /some/path/file.json to file.json
   String getFileName() {
     return this.split(Platform.pathSeparator).last;
+  }
+}
+
+extension on Object {
+  /// expects an enum and get its string representation without enum class name
+  String getEnumName() {
+    return this.toString().split('.').last;
   }
 }

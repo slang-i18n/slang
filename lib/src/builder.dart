@@ -8,7 +8,7 @@ import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/parser/json_parser.dart';
+import 'package:fast_i18n/src/parser/parser_facade.dart';
 import 'package:fast_i18n/src/utils.dart';
 import 'package:glob/glob.dart';
 
@@ -81,8 +81,11 @@ class I18nBuilder implements Builder {
     for (MapEntry<AssetId, I18nLocale> asset in assetMap.entries) {
       I18nLocale locale = asset.value;
       String content = await buildStep.readAsString(asset.key);
-      I18nData representation =
-          JsonParser.parseTranslations(buildConfig, locale, content);
+      I18nData representation = ParserFacade.parseTranslations(
+        config: buildConfig,
+        locale: locale,
+        content: content,
+      );
       localesWithData[asset.key] = representation;
     }
 
