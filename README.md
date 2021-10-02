@@ -9,7 +9,7 @@
 ![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Lightweight i18n solution. Use JSON files to create typesafe translations.
+Lightweight i18n solution. Use JSON or YAML files to create typesafe translations.
 
 **Latest version for projects without null safety:** 4.11.0
 
@@ -42,7 +42,7 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Features](#features)
-    - [Auto Rebuild](#auto-rebuild)
+    - [File Types](#file-types)
     - [String Interpolation](#string-interpolation)
     - [Linked Translations](#linked-translations)
     - [Locale Enum](#locale-enum)
@@ -53,6 +53,7 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
     - [Lists](#lists)
     - [Fallback](#fallback)
     - [Recasing](#recasing)
+    - [Auto Rebuild](#auto-rebuild)
 - [API](#api)
 - [FAQ](#faq)
 
@@ -65,7 +66,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.1.0
+  fast_i18n: 5.2.0
 ```
 
 **Step 2: Create JSON files**
@@ -74,6 +75,8 @@ Create these files inside your `lib` directory. Preferably in one common package
 Only files having the `.i18n.json` file extension will be detected.
 The part after the underscore `_` is the actual locale (e.g. en_US, en-US, fr).
 You **must** provide the default translation file (the file without locale extension).
+
+YAML files are also supported. See [File Types](#file-types).
 
 ```json5
 // File: strings.i18n.json (mandatory, default, fallback)
@@ -226,7 +229,7 @@ Key|Type|Usage|Default
 `base_locale`|`String`|locale of default json|`en`
 `fallback_strategy`|`none`, `base_locale`|handle missing translations|`none`
 `input_directory`|`String`|path to input directory|`null`
-`input_file_pattern`|`String`|input file pattern|`.i18n.json`
+`input_file_pattern`|`String`|input file pattern, must end with .json or .yaml|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|output file pattern|`.g.dart`
 `translate_var`|`String`|translate variable name|`t`
@@ -246,15 +249,31 @@ Key|Type|Usage|Default
 
 ## Features
 
-### Auto Rebuild
+### File Types
 
-You can let the library rebuild automatically for you.
-The watch function from `build_runner` is **NOT** maintained.
+Both JSON and YAML files are supported.
 
-Just run this command:
+By default, JSON translations are used. To change to YAML, please modify input file pattern
 
-```sh
-flutter pub run fast_i18n watch
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          input_directory: assets/i18n
+          input_file_pattern: .i18n.yaml  # must end with .yaml
+```
+
+```yaml
+# File: assets/i18n/strings.i18n.yaml
+welcome:
+  # comments can be used
+  title: Welcome to my app
+  steps:
+    - Enter name
+    - Enter address
 ```
 
 ### String Interpolation
@@ -603,6 +622,17 @@ targets:
 
 ```dart
 t.thisMustBeCamelCase(snake_case: 'snake case');
+```
+
+### Auto Rebuild
+
+You can let the library rebuild automatically for you.
+The watch function from `build_runner` is **NOT** maintained.
+
+Just run this command:
+
+```sh
+flutter pub run fast_i18n watch
 ```
 
 ## API                                                                                   
