@@ -5,13 +5,12 @@ import 'package:fast_i18n/src/string_extensions.dart';
 
 class BuildConfigBuilder {
   static BuildConfig fromMap(Map<String, dynamic> map) {
-    final contextMap =
-        map['contexts']?.cast<String, dynamic>() as Map<String, dynamic>?;
+    final contextMap = map['contexts'] as Map<String, dynamic>?;
     List<ContextType> contextTypes = [];
     if (contextMap != null) {
       contextTypes = contextMap.entries.map((e) {
         final enumName = e.key.toCase(CaseStyle.pascal);
-        final config = e.value.cast<String, dynamic>() as Map<String, dynamic>;
+        final config = e.value as Map<String, dynamic>;
 
         return ContextType(
           enumName: enumName,

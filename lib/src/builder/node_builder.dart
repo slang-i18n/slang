@@ -18,6 +18,9 @@ class BuildResult {
 }
 
 class NodeBuilder {
+  /// Builds the nodes according to the map
+  /// The map must be of type Map<String, dynamic> and all children may of type
+  /// String, num, List<dynamic> or Map<String, dynamic>.
   static BuildResult fromMap(
     BuildConfig config,
     I18nLocale locale,
@@ -60,11 +63,11 @@ class NodeBuilder {
     curr.forEach((key, value) {
       key = key.toCase(config.keyCase);
 
-      if (value is String) {
+      if (value is String || value is num) {
         // leaf
         // key: 'value'
         destination[key] = TextNode(
-          value,
+          value.toString(),
           config.stringInterpolation,
           localeEnum,
           config.paramCase,

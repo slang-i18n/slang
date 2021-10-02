@@ -70,6 +70,26 @@ void main() {
       expect((root.entries.entries.last.value as ListNode).entries.length, 1);
       expect((root.entries.entries.last.value as ListNode).plainStrings, true);
     });
+
+    test('numbers', () {
+      final root = JsonParser.parseTranslations(baseConfig, defaultLocale, '''{
+        "a": 1,
+        "myList": [
+          2.2
+        ],
+        "myMap": {
+          "myKey": 3
+        }
+      }''').root;
+      final map = root.entries;
+      expect(map.entries.length, 3);
+      expect(map['a'], isA<TextNode>());
+      expect((map['a'] as TextNode).content, '1');
+      expect(map['myList'], isA<ListNode>());
+      expect(
+          ((map['myList'] as ListNode).entries[0] as TextNode).content, '2.2');
+      expect(map['myMap'], isA<ObjectNode>());
+    });
   });
 }
 
