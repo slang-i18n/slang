@@ -1,3 +1,30 @@
+## 5.2.0
+
+- feat: add YAML support, you can now choose between JSON and YAML to define your translations!
+- feat: different casing for map keys via `key_map_case`
+
+New recommended setup (see README):
+
+```dart
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // LocaleSettings.useDeviceLocale();
+  runApp(TranslationProvider(child: MyApp())); // Wrap your app with TranslationProvider
+}
+```
+
+```dart
+MaterialApp(
+  locale: TranslationProvider.of(context).flutterLocale, // use provider
+  supportedLocales: LocaleSettings.supportedLocales,
+  localizationsDelegates: const [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+)
+```
+
 ## 5.1.0
 
 - feat: add `param_case` configuration to recase parameters
