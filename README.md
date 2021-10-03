@@ -133,7 +133,7 @@ void initState() {
 }
 ```
 
-**Step 4a: Override 'supportedLocales'**
+**Step 4a: Flutter locale**
 
 This is optional but recommended.
 
@@ -149,13 +149,21 @@ dependencies:
 ```
 
 ```dart
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(TranslationProvider(child: MyApp())); // Wrap your app with TranslationProvider
+}
+```
+
+```dart
 MaterialApp(
+  locale: TranslationProvider.of(context).flutterLocale, // use provider
+  supportedLocales: LocaleSettings.supportedLocales,
   localizationsDelegates: const [
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
   ],
-  supportedLocales: LocaleSettings.supportedLocales,
 )
 ```
 

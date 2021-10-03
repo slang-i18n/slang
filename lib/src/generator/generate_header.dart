@@ -457,6 +457,18 @@ void _generateTranslationWrapper(
   buffer.writeln('\t@override');
   buffer.writeln(
       '\t$translationProviderStateClass createState() => $translationProviderStateClass();');
+
+  buffer.writeln();
+  buffer.writeln('\tstatic $inheritedClass of(BuildContext context) {');
+  buffer.writeln(
+      '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
+  buffer.writeln('\t\tif (inheritedWidget == null) {');
+  buffer.writeln(
+      '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t\treturn inheritedWidget;');
+  buffer.writeln('\t}');
+
   buffer.writeln('}');
 
   buffer.writeln();
@@ -484,7 +496,10 @@ void _generateTranslationWrapper(
   buffer.writeln('class $inheritedClass extends InheritedWidget {');
   buffer.writeln('\tfinal $enumName locale;');
   buffer.writeln(
+      '\tLocale get flutterLocale => locale.flutterLocale; // shortcut');
+  buffer.writeln(
       '\tfinal $baseClassName translations; // store translations to avoid switch call');
+  buffer.writeln();
   buffer.writeln(
       '\t$inheritedClass({required this.locale, required Widget child})');
   buffer.writeln(
