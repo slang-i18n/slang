@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-07-16 at 09:19 UTC
+ * Built on 2021-10-09 at 22:19 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -185,6 +185,14 @@ class TranslationProvider extends StatefulWidget {
 
 	@override
 	_TranslationProviderState createState() => _TranslationProviderState();
+
+	static _InheritedLocaleData of(BuildContext context) {
+		final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
+		if (inheritedWidget == null) {
+			throw 'Please wrap your app with "TranslationProvider".';
+		}
+		return inheritedWidget;
+	}
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
@@ -207,7 +215,9 @@ class _TranslationProviderState extends State<TranslationProvider> {
 
 class _InheritedLocaleData extends InheritedWidget {
 	final AppLocale locale;
+	Locale get flutterLocale => locale.flutterLocale; // shortcut
 	final _StringsEn translations; // store translations to avoid switch call
+
 	_InheritedLocaleData({required this.locale, required Widget child})
 		: translations = locale.translations, super(child: child);
 

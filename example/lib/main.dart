@@ -1,14 +1,12 @@
 import 'package:example/i18n/strings.g.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   LocaleSettings.useDeviceLocale(); // initialize with the right locale
-
-  // we will wrap it with TranslationProvider because user can change locale at runtime
-  // see method B in .g.dart file
-  runApp(TranslationProvider(
-    child: MyApp()
+  runApp(TranslationProvider( // wrap with TranslationProvider
+    child: MyApp(),
   ));
 }
 
@@ -17,6 +15,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      locale: TranslationProvider.of(context).flutterLocale,
+      supportedLocales: LocaleSettings.supportedLocales,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: MyHomePage(),
     );
   }
@@ -57,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // lets loop over all supported locales
               children: AppLocale.values.map((locale) {
 
-                AppLocale activeLocale = LocaleSettings.currentLocale; // active locale (typed version)
+                AppLocale activeLocale = LocaleSettings.currentLocale; // active locale
                 bool active = activeLocale == locale; // typed version is preferred to avoid typos
 
                 return Padding(
