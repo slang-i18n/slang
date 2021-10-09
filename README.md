@@ -616,7 +616,7 @@ Possible cases are: `camel`, `snake` and `pascal`.
 
 ```json
 {
-  "this_must_be_camel_case": "But the parameter must be in {snakeCase}",
+  "must_be_camel_case": "The parameter is in {snakeCase}",
   "my_map": {
     "this_should_be_in_pascal": "hi"
   }
@@ -637,8 +637,8 @@ targets:
 ```
 
 ```dart
-t.thisMustBeCamelCase(snake_case: 'snake case');
-t.myMap['ThisShouldBeInPascal'];
+String a = t.mustBeCamelCase(snake_case: 'nice');
+String b = t.myMap['ThisShouldBeInPascal'];
 ```
 
 ### Auto Rebuild
@@ -702,7 +702,7 @@ Now you can leave out translations in secondary languages. Missing translations 
 
 **Why setLocale doesn't work?**
 
-In most cases you forgot the `setState` call.
+In most cases, you forgot the `setState` call.
 
 A more elegant solution is to use `TranslationProvider(child: MyApp())` and then get your translation variable with `final t = Translations.of(context)`.
 It will automatically trigger a rebuild on `setLocale` for all affected widgets.
