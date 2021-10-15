@@ -66,7 +66,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.2.0
+  fast_i18n: 5.3.0
 ```
 
 **Step 2: Create JSON files**
@@ -304,11 +304,14 @@ You can link one translation to another. Add the prefix `@:` followed by the tra
 
 ```json
 {
-  "meta": {
-    "appName": "My App"
-  },
-  "welcome": "Welcome to @:meta.appName"
+  "myName": "my name is {name}",
+  "myAge": "I am {age} years old",
+  "introduce": "Hello, @:myName and @:myAge"
 }
+```
+
+```dart
+String s = t.introduce(name: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
 ```
 
 ### Locale Enum

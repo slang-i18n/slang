@@ -37,7 +37,7 @@ void main() {
               'auto': false,
               'paths': [
                 'myPath',
-                'mySecondPath.subPath'
+                'mySecondPath.subPath',
               ],
             },
           },

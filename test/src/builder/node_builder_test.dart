@@ -45,5 +45,50 @@ void main() {
       final mapNode = result.root.entries['my_map'] as ObjectNode;
       expect((mapNode.entries['my_value 3'] as TextNode).content, 'cool');
     });
+
+    test('one link no parameters', () {
+      final result = NodeBuilder.fromMap(
+        baseConfig,
+        defaultLocale,
+        {
+          'a': 'A',
+          'b': 'Hello @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as TextNode;
+      expect(textNode.params, <String>{});
+      expect(textNode.content, r'Hello ${AppLocale.en.translations.a}');
+    });
+
+    test('one link 2 parameters straight', () {
+      final result = NodeBuilder.fromMap(
+        baseConfig,
+        defaultLocale,
+        {
+          'a': r'A $p1 $p1 $p2',
+          'b': 'Hello @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as TextNode;
+      expect(textNode.params, {'p1', 'p2'});
+      expect(textNode.content,
+          r'Hello ${AppLocale.en.translations.a(p1: p1, p2: p2)}');
+    });
+
+    test('linked translations with parameters recursive', () {
+      final result = NodeBuilder.fromMap(
+        baseConfig,
+        defaultLocale,
+        {
+          'a': r'A $p1 $p1 $p2 @:b @:c',
+          'b': r'Hello $p3 @:a',
+          'c': r'C $p4 @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as TextNode;
+      expect(textNode.params, {'p1', 'p2', 'p3', 'p4'});
+      expect(textNode.content,
+          r'Hello $p3 ${AppLocale.en.translations.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
+    });
   });
 }
