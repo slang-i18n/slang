@@ -1,3 +1,7 @@
+## 5.3.0
+
+- feat: handle linked translations with parameters
+
 ## 5.2.0
 
 - feat: add YAML support, you can now choose between JSON and YAML to define your translations!

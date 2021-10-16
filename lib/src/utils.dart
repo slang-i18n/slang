@@ -13,7 +13,7 @@ class Utils {
   static RegExp argumentsDoubleBracesRegex = RegExp(r'(.|^)\{\{(\w+)\}\}(\w)?');
 
   /// matches @:translation.key
-  static RegExp linkedRegex = RegExp(r'@:([\w|.]*\w)');
+  static RegExp linkedRegex = RegExp(r'@:(\w[\w|.]*\w|\w)');
 
   /// matches $hello, $ but not \$
   static RegExp dollarRegex = RegExp(r'([^\\]|^)\$');

@@ -67,6 +67,14 @@ void main() {
             r'Nice $coolHi $wow ${yes} ${noYes} ${AppLocale.en.translations.hello_world.yes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
+
+      test('with links', () {
+        final test = r'@:.c @:a @:hi @:wow. @:nice.cool';
+        final node = TextNode(test, StringInterpolation.dart, localeEnum);
+        expect(node.content,
+            r'@:.c ${AppLocale.en.translations.a} ${AppLocale.en.translations.hi} ${AppLocale.en.translations.wow}. ${AppLocale.en.translations.nice.cool}');
+        expect(node.params, <String>{});
+      });
     });
 
     group(StringInterpolation.braces, () {

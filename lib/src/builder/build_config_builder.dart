@@ -4,25 +4,8 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
 class BuildConfigBuilder {
+  /// Parses the config entry
   static BuildConfig fromMap(Map<String, dynamic> map) {
-    final contextMap = map['contexts'] as Map<String, dynamic>?;
-    List<ContextType> contextTypes = [];
-    if (contextMap != null) {
-      contextTypes = contextMap.entries.map((e) {
-        final enumName = e.key.toCase(CaseStyle.pascal);
-        final config = e.value as Map<String, dynamic>;
-
-        return ContextType(
-          enumName: enumName,
-          enumValues: (config['enum'].cast<String>() as List<String>)
-              .map((e) => e.toCase(CaseStyle.camel))
-              .toList(),
-          auto: config['auto'] ?? ContextType.defaultAuto,
-          paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
-        );
-      }).toList();
-    }
-
     return BuildConfig(
       baseLocale: I18nLocale.fromString(
           map['base_locale'] ?? BuildConfig.defaultBaseLocale),
@@ -60,7 +43,27 @@ class BuildConfigBuilder {
           BuildConfig.defaultCardinal,
       pluralOrdinal: map['pluralization']?['ordinal']?.cast<String>() ??
           BuildConfig.defaultOrdinal,
-      contexts: contextTypes,
+      contexts: (map['contexts'] as Map<String, dynamic>?)?.toContextTypes() ??
+          BuildConfig.defaultContexts,
     );
+  }
+}
+
+extension on Map<String, dynamic> {
+  /// Parses the 'contexts' config
+  List<ContextType> toContextTypes() {
+    return this.entries.map((e) {
+      final enumName = e.key.toCase(CaseStyle.pascal);
+      final config = e.value as Map<String, dynamic>;
+
+      return ContextType(
+        enumName: enumName,
+        enumValues: (config['enum'].cast<String>() as List<String>)
+            .map((e) => e.toCase(CaseStyle.camel))
+            .toList(),
+        auto: config['auto'] ?? ContextType.defaultAuto,
+        paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
+      );
+    }).toList();
   }
 }

@@ -43,20 +43,37 @@ class ListNode extends Node {
 }
 
 class TextNode extends Node {
+  /// The original string
+  late final String raw;
+
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
-  late final String content;
+  late String content;
 
   /// Set of parameters.
   /// Hello {name}, I am {age} years old -> {'name', 'age'}
-  late final Set<String> params;
+  late Set<String> params;
+
+  /// Set of [TextNode] represented as path
+  /// Will be used for 2nd round, determining the final set of parameters
+  late final Set<String> links;
+
+  /// Plural and context parameters need to have a special parameter type (e.g. num)
+  /// In a normal case, this parameter and its type will be added at generate stage
+  ///
+  /// For special cases, i.e. a translation is linked to a plural translation,
+  /// the type must be specified and cannot be [Object].
+  Map<String, String> paramTypeMap = <String, String>{};
 
   TextNode(
     String content,
     StringInterpolation interpolation,
     String localeEnum, [
     CaseStyle? paramCase,
+    Map<String, Set<String>>? linkParamMap,
   ]) {
+    raw = content;
+
     String contentNormalized = content
         .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
         .replaceAll('\n', '\\n') // (linebreak 2) -> \n
@@ -148,9 +165,22 @@ class TextNode extends Node {
     }
 
     // detect linked translations
+    this.links = Set<String>();
     this.content =
         contentNormalized.replaceAllMapped(Utils.linkedRegex, (match) {
-      return '\${$localeEnum.translations.${match.group(1)}}';
+      final linkedPath = match.group(1)!;
+      links.add(linkedPath);
+
+      if (linkParamMap == null) {
+        // assume no parameters
+        return '\${$localeEnum.translations.$linkedPath}';
+      }
+
+      final linkedParams = linkParamMap[linkedPath]!;
+      params.addAll(linkedParams);
+      final parameterString =
+          linkedParams.map((param) => '$param: $param').join(', ');
+      return '\${$localeEnum.translations.$linkedPath($parameterString)}';
     });
   }
 
