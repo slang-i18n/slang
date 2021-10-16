@@ -1,4 +1,5 @@
 import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 
 final defaultLocale = I18nLocale.fromString(BuildConfig.defaultBaseLocale);
@@ -33,6 +34,7 @@ extension BuildConfigCopy on BuildConfig {
     PluralAuto? pluralAuto,
     List<String>? pluralCardinal,
     List<String>? pluralOrdinal,
+    List<ContextType>? contexts,
   }) {
     return BuildConfig(
       baseLocale: baseLocale,
@@ -53,7 +55,7 @@ extension BuildConfigCopy on BuildConfig {
       pluralAuto: pluralAuto ?? this.pluralAuto,
       pluralCardinal: pluralCardinal ?? this.pluralCardinal,
       pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
-      contexts: BuildConfig.defaultContexts,
+      contexts: contexts ?? BuildConfig.defaultContexts,
     );
   }
 }

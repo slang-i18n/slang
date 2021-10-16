@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:fast_i18n/src/generator/generate_translations.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
@@ -29,7 +30,8 @@ class NodeBuilder {
     Map<String, dynamic> map,
   ) {
     final Map<String, Node> destination = {}; // root map
-    final Map<String, TextNode> textNodeMap = {}; // flat map Path -> TextNode
+    final Map<String, Node> leavesMap =
+        {}; // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural
     final localeEnum = '${config.enumName}.${locale.enumConstant}';
     bool hasCardinal = false;
     bool hasOrdinal = false;
@@ -46,7 +48,7 @@ class NodeBuilder {
       localeEnum: localeEnum,
       curr: map,
       destination: destination,
-      textNodeMap: textNodeMap,
+      leavesMap: leavesMap,
       stack: [],
       cardinalNotifier: () {
         hasCardinal = true;
@@ -59,8 +61,14 @@ class NodeBuilder {
     // 2nd round: Handle parameterized linked translations
     //
     // TextNodes with parameterized linked translations are rebuilt with correct parameters.
-    textNodeMap.forEach((key, value) {
+    leavesMap.entries
+        .where((entry) => entry.value is TextNode)
+        .forEach((entry) {
+      final key = entry.key;
+      final value = entry.value as TextNode;
+
       final linkParamMap = <String, Set<String>>{};
+      final paramTypeMap = <String, String>{};
       value.links.forEach((link) {
         final currParam = <String>{};
         final visitedLinks = <String>{};
@@ -69,18 +77,48 @@ class NodeBuilder {
 
         while (queue.isNotEmpty) {
           final currLink = queue.removeFirst();
-          final linkedNode = textNodeMap[currLink];
+          final linkedNode = leavesMap[currLink];
           if (linkedNode == null) {
             throw '"$key" is linked to "$currLink" but it is undefined (${locale.languageTag}).';
           }
-          currParam.addAll(linkedNode.params);
+
           visitedLinks.add(currLink);
 
-          linkedNode.links.forEach((child) {
-            if (!visitedLinks.contains(child)) {
-              queue.add(child);
+          if (linkedNode is TextNode) {
+            currParam.addAll(linkedNode.params);
+
+            // lookup links
+            linkedNode.links.forEach((child) {
+              if (!visitedLinks.contains(child)) {
+                queue.add(child);
+              }
+            });
+          } else if (linkedNode is ObjectNode) {
+            final paramSet = linkedNode.entries.values
+                .map((e) => (e as TextNode).params)
+                .expand((params) => params)
+                .toSet();
+            if (linkedNode.type == ObjectNodeType.context) {
+              paramSet.add(CONTEXT_PARAMETER);
+              paramTypeMap[CONTEXT_PARAMETER] =
+                  linkedNode.contextHint!.enumName;
+            } else {
+              paramSet.add(PLURAL_PARAMETER);
+              paramTypeMap[PLURAL_PARAMETER] = 'num';
             }
-          });
+            currParam.addAll(paramSet);
+
+            // lookup links of children
+            linkedNode.entries.values.forEach((element) {
+              (element as TextNode).links.forEach((child) {
+                if (!visitedLinks.contains(child)) {
+                  queue.add(child);
+                }
+              });
+            });
+          } else {
+            throw '"$key" is linked to "$currLink" which is a ${linkedNode.runtimeType} (must be $TextNode or $ObjectNode).';
+          }
         }
 
         linkParamMap[link] = currParam;
@@ -92,6 +130,7 @@ class NodeBuilder {
             localeEnum, config.paramCase, linkParamMap);
         value.params = textNode.params;
         value.content = textNode.content;
+        value.paramTypeMap = paramTypeMap;
       }
     });
 
@@ -108,7 +147,7 @@ class NodeBuilder {
     required String localeEnum,
     required Map<String, dynamic> curr,
     required Map<String, Node> destination,
-    required Map<String, TextNode> textNodeMap,
+    required Map<String, Node> leavesMap,
     required List<String> stack,
     required Function cardinalNotifier,
     required Function ordinalNotifier,
@@ -126,7 +165,7 @@ class NodeBuilder {
           config.paramCase,
         );
         destination[key] = textNode;
-        textNodeMap[[...stack, key].toNodePath()] = textNode;
+        leavesMap[[...stack, key].toNodePath()] = textNode;
       } else {
         final List<String> nextStack = [...stack, key];
         final Map<String, Node> childrenTarget = Map();
@@ -143,7 +182,7 @@ class NodeBuilder {
             localeEnum: localeEnum,
             curr: listAsMap,
             destination: childrenTarget,
-            textNodeMap: textNodeMap,
+            leavesMap: leavesMap,
             stack: nextStack,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
@@ -162,7 +201,7 @@ class NodeBuilder {
             localeEnum: localeEnum,
             curr: value,
             destination: childrenTarget,
-            textNodeMap: textNodeMap,
+            leavesMap: leavesMap,
             stack: nextStack,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
@@ -195,8 +234,14 @@ class NodeBuilder {
             }
           }
 
-          destination[key] =
+          final node =
               ObjectNode(childrenTarget, result.nodeType, result.contextHint);
+          destination[key] = node;
+          if (node.type == ObjectNodeType.pluralCardinal ||
+              node.type == ObjectNodeType.pluralOrdinal ||
+              node.type == ObjectNodeType.context) {
+            leavesMap[nextStack.toNodePath()] = node;
+          }
         }
       }
     });

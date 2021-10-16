@@ -58,6 +58,13 @@ class TextNode extends Node {
   /// Will be used for 2nd round, determining the final set of parameters
   late final Set<String> links;
 
+  /// Plural and context parameters need to have a special parameter type (e.g. num)
+  /// In a normal case, this parameter and its type will be added at generate stage
+  ///
+  /// For special cases, i.e. a translation is linked to a plural translation,
+  /// the type must be specified and cannot be [Object].
+  Map<String, String> paramTypeMap = <String, String>{};
+
   TextNode(
     String content,
     StringInterpolation interpolation,

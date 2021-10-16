@@ -8,6 +8,9 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
+const PLURAL_PARAMETER = 'count';
+const CONTEXT_PARAMETER = 'context';
+
 /// decides which class should be generated
 class ClassTask {
   final String className;
@@ -101,7 +104,7 @@ void _generateClass(
         buffer.writeln('String get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
-            'String $key${_toParameterList(value.params, config)} => \'${value.content}\';');
+            'String $key${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
       String type = value.plainStrings ? 'String' : 'dynamic';
@@ -193,7 +196,7 @@ void _generateMap(
         buffer.writeln('\'$key\': \'${value.content}\',');
       } else {
         buffer.writeln(
-            '\'$key\': ${_toParameterList(value.params, config)} => \'${value.content}\',');
+            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
@@ -278,7 +281,7 @@ void _generateList(
         buffer.writeln('\'${value.content}\',');
       } else {
         buffer.writeln(
-            '${_toParameterList(value.params, config)} => \'${value.content}\',');
+            '${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
       _generateList(config, base, locale, hasPluralResolver, buffer, queue,
@@ -384,7 +387,7 @@ _generateTranslationMapRecursive(
           buffer.writeln('\t\t\'$key\': \'${value.content}\',');
         } else {
           buffer.writeln(
-              '\t\t\'$key\': ${_toParameterList(value.params, config)} => \'${value.content}\',');
+              '\t\t\'$key\': ${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\',');
         }
       } else if (value is ListNode) {
         // convert ListNode to ObjectNode with index as object keys
@@ -431,13 +434,14 @@ _generateTranslationMapRecursive(
 
 /// returns the parameter list
 /// e.g. ({required Object name, required Object age})
-String _toParameterList(Set<String> params, I18nConfig config) {
+String _toParameterList(
+    Set<String> params, Map<String, String> paramTypeMap, I18nConfig config) {
   StringBuffer buffer = StringBuffer();
   buffer.write('({');
   bool first = true;
   for (final param in params) {
     if (!first) buffer.write(', ');
-    buffer.write('required Object ');
+    buffer.write('required ${paramTypeMap[param] ?? 'Object'} ');
     buffer.write(param);
     first = false;
   }
@@ -465,10 +469,10 @@ void _addPluralizationCall(
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
   }
-  final params = paramSet.where((p) => p != 'count').toList();
+  final params = paramSet.where((p) => p != PLURAL_PARAMETER).toList();
 
   // parameters with count as first number
-  buffer.write('({required num count');
+  buffer.write('({required num $PLURAL_PARAMETER');
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -481,12 +485,14 @@ void _addPluralizationCall(
   if (hasPluralResolver) {
     // call predefined resolver
     if (cardinal)
-      buffer.writeln('_pluralCardinal${language.capitalize()})(count,');
+      buffer.writeln(
+          '_pluralCardinal${language.capitalize()})($PLURAL_PARAMETER,');
     else
-      buffer.writeln('_pluralOrdinal${language.capitalize()})(count,');
+      buffer.writeln(
+          '_pluralOrdinal${language.capitalize()})($PLURAL_PARAMETER,');
   } else {
     // throw error
-    buffer.writeln('_missingPluralResolver(\'$language\'))(count,');
+    buffer.writeln('_missingPluralResolver(\'$language\'))($PLURAL_PARAMETER,');
   }
 
   final keys = children.keys.toList();
@@ -518,10 +524,10 @@ void _addContextCall(
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
   }
-  final params = paramSet.where((p) => p != 'context').toList();
+  final params = paramSet.where((p) => p != CONTEXT_PARAMETER).toList();
 
-  // parameters with count as first number
-  buffer.write('({required $contextEnumName context');
+  // parameters with context as first parameter
+  buffer.write('({required $contextEnumName $CONTEXT_PARAMETER');
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -529,7 +535,7 @@ void _addContextCall(
   buffer.writeln('}) {');
 
   _addTabs(buffer, depth + 2);
-  buffer.writeln('switch (context) {');
+  buffer.writeln('switch ($CONTEXT_PARAMETER) {');
 
   final keys = children.keys.toList();
   for (int i = 0; i < textNodeList.length; i++) {

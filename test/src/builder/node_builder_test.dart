@@ -1,5 +1,6 @@
 import 'package:fast_i18n/src/builder/node_builder.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:test/test.dart';
 
@@ -89,6 +90,51 @@ void main() {
       expect(textNode.params, {'p1', 'p2', 'p3', 'p4'});
       expect(textNode.content,
           r'Hello $p3 ${AppLocale.en.translations.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
+    });
+
+    test('linked translation with plural', () {
+      final result = NodeBuilder.fromMap(
+        baseConfig,
+        defaultLocale,
+        {
+          'a': {
+            'one': 'ONE',
+            'other': r'OTHER $p1',
+          },
+          'b': r'Hello @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as TextNode;
+      expect(textNode.params, {'p1', 'count'});
+      expect(textNode.paramTypeMap, {'count': 'num'});
+      expect(textNode.content,
+          r'Hello ${AppLocale.en.translations.a(p1: p1, count: count)}');
+    });
+
+    test('linked translation with context', () {
+      final result = NodeBuilder.fromMap(
+        baseConfig.copyWith(contexts: [
+          ContextType(
+            enumName: 'GenderCon',
+            enumValues: ['male', 'female'],
+            auto: true,
+            paths: [],
+          ),
+        ]),
+        defaultLocale,
+        {
+          'a': {
+            'male': 'MALE',
+            'female': r'FEMALE $p1',
+          },
+          'b': r'Hello @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as TextNode;
+      expect(textNode.params, {'p1', 'context'});
+      expect(textNode.paramTypeMap, {'context': 'GenderCon'});
+      expect(textNode.content,
+          r'Hello ${AppLocale.en.translations.a(p1: p1, context: context)}');
     });
   });
 }
