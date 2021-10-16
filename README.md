@@ -40,18 +40,18 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Features](#features)
-    - [File Types](#file-types)
-    - [String Interpolation](#string-interpolation)
-    - [Linked Translations](#linked-translations)
-    - [Locale Enum](#locale-enum)
-    - [Pluralization](#pluralization)
-    - [Custom Contexts](#custom-contexts)
-    - [Maps](#maps)
-    - [Dynamic Keys](#dynamic-keys)
-    - [Lists](#lists)
-    - [Fallback](#fallback)
-    - [Recasing](#recasing)
-    - [Auto Rebuild](#auto-rebuild)
+    - [File Types](#-file-types)
+    - [String Interpolation](#-string-interpolation)
+    - [Linked Translations](#-linked-translations)
+    - [Locale Enum](#-locale-enum)
+    - [Pluralization](#-pluralization)
+    - [Custom Contexts](#-custom-contexts)
+    - [Maps](#-maps)
+    - [Dynamic Keys](#-dynamic-keys)
+    - [Lists](#-lists)
+    - [Fallback](#-fallback)
+    - [Recasing](#-recasing)
+    - [Auto Rebuild](#-auto-rebuild)
 - [API](#api)
 - [FAQ](#faq)
 
@@ -257,7 +257,7 @@ Key|Type|Usage|Default
 
 ## Features
 
-### File Types
+### ➤ File Types
 
 Both JSON and YAML files are supported.
 
@@ -284,7 +284,7 @@ welcome:
     - Enter address
 ```
 
-### String Interpolation
+### ➤ String Interpolation
 
 There are three modes configurable via `string_interpolation` in `build.yaml`.
 
@@ -296,7 +296,7 @@ Mode|Translation|Call
 `braces`|`Hello {name}`|`t.myKey(name: 'Anna')`
 `double_braces`|`Hello {{name}}`|`t.myKey(name: 'Tom')`
 
-### Linked Translations
+### ➤ Linked Translations
 
 You can link one translation to another. Add the prefix `@:` followed by the translation key.
 
@@ -314,7 +314,7 @@ You can link one translation to another. Add the prefix `@:` followed by the tra
 String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
 ```
 
-### Locale Enum
+### ➤ Locale Enum
 
 Typesafety is one of the main advantages of this library. No typos. Enjoy exhausted switch-cases!
 
@@ -336,7 +336,7 @@ String tag = AppLocale.en.languageTag; // convert to string tag (e.g. en-US)
 final t = AppLocale.en.translations; // get translations of one locale
 ```
 
-### Pluralization
+### ➤ Pluralization
 
 This library uses the concept defined [here](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
 
@@ -424,7 +424,7 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
-### Custom Contexts
+### ➤ Custom Contexts
 
 You can utilize custom contexts to differentiate between male and female forms.
 
@@ -490,7 +490,7 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 }
 ```
 
-### Maps
+### ➤ Maps
 
 You can access each translation via string keys by defining maps.
 
@@ -533,7 +533,7 @@ String b = t.b.b0; // "hey"
 String c = t.b.b1['hi there']; // "hi"
 ```
 
-### Dynamic Keys
+### ➤ Dynamic Keys
 
 A more general solution to [Maps](#maps).
 
@@ -545,7 +545,7 @@ String b = t['myPath.anotherPath.3']; // with index for arrays
 String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 ```
 
-### Lists
+### ➤ Lists
 
 Lists are fully supported. No configuration needed. You can also put lists or maps inside lists!
 
@@ -577,7 +577,7 @@ String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
 
-### Fallback
+### ➤ Fallback
 
 By default, you must provide all translations for all locales. Otherwise, you cannot compile it.
 
@@ -609,7 +609,7 @@ targets:
 }
 ```
 
-### Recasing
+### ➤ Recasing
 
 By default, no transformations will be applied.
 
@@ -644,7 +644,7 @@ String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
 ```
 
-### Auto Rebuild
+### ➤ Auto Rebuild
 
 You can let the library rebuild automatically for you.
 The watch function from `build_runner` is **NOT** maintained.
