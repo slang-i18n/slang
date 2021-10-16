@@ -11,8 +11,6 @@
 
 Lightweight i18n solution. Use JSON or YAML files to create typesafe translations.
 
-**Latest version for projects without null safety:** 4.11.0
-
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
@@ -292,7 +290,7 @@ There are three modes configurable via `string_interpolation` in `build.yaml`.
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
-Mode|JSON Entry|Call
+Mode|Translation|Call
 ---|---|---
 `dart (default)`|`Hello $name. I am ${height}m.`|`t.myKey(name: 'Tom', height: 1.73)`
 `braces`|`Hello {name}`|`t.myKey(name: 'Anna')`
@@ -304,14 +302,16 @@ You can link one translation to another. Add the prefix `@:` followed by the tra
 
 ```json
 {
-  "myName": "my name is {name}",
-  "myAge": "I am {age} years old",
-  "introduce": "Hello, @:myName and @:myAge"
+  "fields": {
+    "name": "my name is {firstName}",
+    "age": "I am {age} years old"
+  },
+  "introduce": "Hello, @:fields.name and @:fields.age"
 }
 ```
 
 ```dart
-String s = t.introduce(name: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
+String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
 ```
 
 ### Locale Enum
