@@ -6,11 +6,21 @@ class PluralizationResolver {
 }
 
 class RuleSet {
+  /// Generate a i variable. 'i' is a integer digits of n.
+  final bool i;
+
+  /// Generate a v variable. 'v' is a number of visible fraction digits in n.
+  final bool v;
+
   final List<Rule> rules;
   final Quantity defaultQuantity;
 
-  RuleSet({List<Rule>? rules, required this.defaultQuantity})
-      : rules = rules ?? [];
+  RuleSet({
+    this.i = false,
+    this.v = false,
+    List<Rule>? rules,
+    required this.defaultQuantity,
+  }) : rules = rules ?? [];
 }
 
 class Rule {

@@ -573,13 +573,21 @@ void _generatePluralFunction(
     {required StringBuffer buffer,
     required I18nConfig config,
     required RuleSet ruleSet,
-    required functionName}) {
+    required String functionName}) {
   buffer.write('String $functionName(num n, {');
   for (int i = 0; i < Quantity.values.length; i++) {
     if (i != 0) buffer.write(', ');
     buffer.write('String? ${Quantity.values[i].paramName()}');
   }
   buffer.writeln('}) {');
+
+  if (ruleSet.i || ruleSet.v) {
+    buffer.writeln('\tfinal i = n.toInt();');
+  }
+  if (ruleSet.v) {
+    buffer.writeln(
+        '\tfinal v = i == n ? 0: n.toString().split(\'.\')[1].length;');
+  }
 
   bool first = true;
   for (final rule in ruleSet.rules) {
