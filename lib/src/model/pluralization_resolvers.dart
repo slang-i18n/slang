@@ -49,6 +49,53 @@ final Map<String, PluralizationResolver> PLURALIZATION_RESOLVERS = {
       defaultQuantity: Quantity.other,
     ),
   ),
+  // Spanish
+  'es': PluralizationResolver(
+    cardinal: RuleSet(
+      rules: [
+        Rule('n == 1', Quantity.one),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+    ordinal: RuleSet(
+      defaultQuantity: Quantity.other,
+    ),
+  ),
+  // French
+  'fr': PluralizationResolver(
+    cardinal: RuleSet(
+      i: true,
+      v: true,
+      rules: [
+        Rule('i == 0 || i == 1', Quantity.one),
+        Rule('i != 0 && i % 1000000 == 0 && v == 0', Quantity.many),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+    ordinal: RuleSet(
+      rules: [
+        Rule('n == 1', Quantity.many),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+  ),
+  // Italian
+  'it': PluralizationResolver(
+    cardinal: RuleSet(
+      i: true,
+      v: true,
+      rules: [
+        Rule('i == 1 && v == 0', Quantity.one),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+    ordinal: RuleSet(
+      rules: [
+        Rule('n == 8 || n == 11 || n == 80 || n == 800', Quantity.many),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+  ),
   // Vietnamese
   'vi': PluralizationResolver(
     cardinal: RuleSet(
