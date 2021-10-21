@@ -52,7 +52,6 @@ final Map<String, PluralizationResolver> PLURALIZATION_RESOLVERS = {
   // Spanish
   'es': PluralizationResolver(
     cardinal: RuleSet(
-      i: true,
       rules: [
         Rule('n == 1', Quantity.one),
       ],
