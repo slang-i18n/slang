@@ -512,12 +512,13 @@ void _generateTranslationWrapper(
   buffer.writeln('}');
 }
 
-void _generatePluralResolvers(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String pluralResolverType,
-    required String pluralResolverCardinal,
-    required String pluralResolverOrdinal}) {
+void _generatePluralResolvers({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String pluralResolverType,
+  required String pluralResolverCardinal,
+  required String pluralResolverOrdinal,
+}) {
   buffer.writeln();
 
   if (!config.hasPlurals()) {
@@ -568,12 +569,13 @@ void _generatePluralResolvers(
   }
 }
 
-/// generates the function without function name
-void _generatePluralFunction(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required RuleSet ruleSet,
-    required String functionName}) {
+/// Generates the plural resolver for one language and type (cardial, ordinal).
+void _generatePluralFunction({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required RuleSet ruleSet,
+  required String functionName,
+}) {
   buffer.write('String $functionName(num n, {');
   for (int i = 0; i < Quantity.values.length; i++) {
     if (i != 0) buffer.write(', ');
@@ -584,9 +586,10 @@ void _generatePluralFunction(
   if (ruleSet.i || ruleSet.v) {
     buffer.writeln('\tfinal i = n.toInt();');
   }
+
   if (ruleSet.v) {
     buffer.writeln(
-        '\tfinal v = i == n ? 0: n.toString().split(\'.\')[1].length;');
+        '\tfinal v = i == n ? 0 : n.toString().split(\'.\')[1].length;');
   }
 
   bool first = true;

@@ -6,13 +6,16 @@ class PluralizationResolver {
 }
 
 class RuleSet {
-  /// Generate a i variable. 'i' is a integer digits of n.
+  /// Generate variable 'i', integer of 'n'.
   final bool i;
 
-  /// Generate a v variable. 'v' is a number of visible fraction digits in n.
+  /// Generate variable 'v', visible fraction digits of n.
   final bool v;
 
+  /// List of rules representing 'if' statements. Order matters!
   final List<Rule> rules;
+
+  /// The quantity if all rules failed or no rules are defined.
   final Quantity defaultQuantity;
 
   RuleSet({
@@ -24,7 +27,10 @@ class RuleSet {
 }
 
 class Rule {
+  /// The if-condition, rendered as is.
   final String condition;
+
+  /// The resulting quantity if [condition] is true
   final Quantity result;
 
   const Rule(this.condition, this.result);
