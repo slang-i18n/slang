@@ -17,11 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       locale: TranslationProvider.of(context).flutterLocale,
       supportedLocales: LocaleSettings.supportedLocales,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       home: MyHomePage(),
     );
   }

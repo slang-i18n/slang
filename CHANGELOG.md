@@ -21,11 +21,7 @@ void main() {
 MaterialApp(
   locale: TranslationProvider.of(context).flutterLocale, // use provider
   supportedLocales: LocaleSettings.supportedLocales,
-  localizationsDelegates: const [
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
+  localizationsDelegates: GlobalMaterialLocalizations.delegates,
 )
 ```
 
