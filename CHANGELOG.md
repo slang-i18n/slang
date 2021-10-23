@@ -1,3 +1,7 @@
+## 5.4.0
+
+- feat: add default plural resolvers for Spanish, French and Italian (Thanks to @SimoneBressan)
+
 ## 5.3.0
 
 - feat: handle linked translations with parameters

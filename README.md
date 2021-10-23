@@ -64,7 +64,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.3.0
+  fast_i18n: 5.4.0
 ```
 
 **Step 2: Create JSON files**
