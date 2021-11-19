@@ -256,9 +256,13 @@ Key|Type|Usage|Default
 
 ### ➤ File Types
 
-Both JSON and YAML files are supported.
+Type|Supported|Note
+---|---|---
+JSON|✔|by default
+YAML|✔|update `input_file_pattern`
+CSV|TODO|
 
-By default, JSON translations are used. To change to YAML, please modify input file pattern
+To change to YAML, please modify input file pattern
 
 ```yaml
 # File: build.yaml
@@ -269,16 +273,6 @@ targets:
         options:
           input_directory: assets/i18n
           input_file_pattern: .i18n.yaml  # must end with .yaml
-```
-
-```yaml
-# File: assets/i18n/strings.i18n.yaml
-welcome:
-  # comments can be used
-  title: Welcome to my app
-  steps:
-    - Enter name
-    - Enter address
 ```
 
 ### ➤ String Interpolation
