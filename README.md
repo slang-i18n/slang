@@ -41,6 +41,7 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
 - [Configuration](#configuration)
 - [Features](#features)
     - [File Types](#-file-types)
+    - [Namespaces](#-namespaces)
     - [String Interpolation](#-string-interpolation)
     - [Linked Translations](#-linked-translations)
     - [Locale Enum](#-locale-enum)
@@ -200,6 +201,7 @@ targets:
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
           output_file_pattern: .g.dart
+          namespaces: false
           translate_var: t
           enum_name: AppLocale
           translation_class_visibility: private
@@ -236,6 +238,7 @@ Key|Type|Usage|Default
 `input_file_pattern`|`String`|input file pattern, must end with .json or .yaml|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|output file pattern|`.g.dart`
+`namespaces`|`Boolean`|split into multiple files|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
 `translation_class_visibility`|`private`, `public`|class visibility|`private`
@@ -273,6 +276,38 @@ targets:
         options:
           input_directory: assets/i18n
           input_file_pattern: .i18n.yaml  # must end with .yaml
+```
+
+### ➤ Namespaces
+
+You can split up the localizations into multiple files. Each file represents a namespace.
+
+This feature is disabled by default for single-file usage. You must enable it.
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          namespaces: true  # enable this feature
+```
+
+Let's create two namespaces called `widgets` and `dialogs`.
+
+```
+i18n/
+- widgets.i18n.json
+- widgets_fr.i18n.json
+- dialogs.i18n.json
+- dialogs_fr.i18n.json
+```
+
+```dart
+// t.<namespace>.<path>
+String a = t.widgets.welcomeCard.title;
+String b = t.dialogs.logout.title;
 ```
 
 ### ➤ String Interpolation
