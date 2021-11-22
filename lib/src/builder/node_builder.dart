@@ -24,11 +24,11 @@ class NodeBuilder {
   /// Builds the nodes according to the map
   /// The map must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
-  static BuildResult fromMap(
-    BuildConfig config,
-    I18nLocale locale,
-    Map<String, dynamic> map,
-  ) {
+  static BuildResult fromMap({
+    required BuildConfig config,
+    required I18nLocale locale,
+    required Map<String, dynamic> map,
+}) {
     final Map<String, Node> destination = {}; // root map
     final Map<String, Node> leavesMap =
         {}; // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural

@@ -2,8 +2,41 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
+import 'package:fast_i18n/src/utils/yaml_utils.dart';
+import 'package:yaml/yaml.dart';
 
 class BuildConfigBuilder {
+
+  /// Parses the full build.yaml file to get the config
+  /// May return null if no config entry is found.
+  static BuildConfig? fromYaml(String rawYaml) {
+    final parsedYaml = loadYaml(rawYaml);
+    final configEntry = _findConfigEntry(parsedYaml);
+    if (configEntry == null) {
+      return null;
+    }
+
+    final map = YamlUtils.deepCast(configEntry.value);
+    return fromMap(map);
+  }
+
+  /// Returns the part of the yaml file which is "important"
+  static YamlMap? _findConfigEntry(YamlMap parent) {
+    for (final entry in parent.entries) {
+      if (entry.key == 'fast_i18n' && entry.value is YamlMap) {
+        final options = entry.value['options'];
+        if (options != null) return options; // found
+      }
+
+      if (entry.value is YamlMap) {
+        final result = _findConfigEntry(entry.value);
+        if (result != null) {
+          return result; // found
+        }
+      }
+    }
+  }
+
   /// Parses the config entry
   static BuildConfig fromMap(Map<String, dynamic> map) {
     return BuildConfig(
@@ -20,6 +53,8 @@ class BuildConfigBuilder {
           map['output_directory'] ?? BuildConfig.defaultOutputDirectory,
       outputFilePattern:
           map['output_file_pattern'] ?? BuildConfig.defaultOutputFilePattern,
+      outputFileName: map['output_file_name'] ?? BuildConfig.defaultOutputFileName,
+      namespaces: map['namespaces'] ?? BuildConfig.defaultNamespaces,
       translateVar: map['translate_var'] ?? BuildConfig.defaultTranslateVar,
       enumName: map['enum_name'] ?? BuildConfig.defaultEnumName,
       translationClassVisibility:

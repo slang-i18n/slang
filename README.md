@@ -200,7 +200,9 @@ targets:
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
+          # deprecated
           output_file_pattern: .g.dart
+          output_file_name: translations.g.dart
           namespaces: false
           translate_var: t
           enum_name: AppLocale
@@ -237,7 +239,8 @@ Key|Type|Usage|Default
 `input_directory`|`String`|path to input directory|`null`
 `input_file_pattern`|`String`|input file pattern, must end with .json or .yaml|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
-`output_file_pattern`|`String`|output file pattern|`.g.dart`
+`output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
+`output_file_name`|`String`|output file name|`null`
 `namespaces`|`Boolean`|split into multiple files|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
@@ -291,6 +294,7 @@ targets:
     builders:
       fast_i18n:
         options:
+          output_file_name: translations.g.dart  # set file name
           namespaces: true  # enable this feature
 ```
 

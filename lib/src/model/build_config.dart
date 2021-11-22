@@ -11,6 +11,8 @@ class BuildConfig {
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
   static const String defaultOutputFilePattern = '.g.dart';
+  static const String? defaultOutputFileName = null;
+  static const bool defaultNamespaces = false;
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
   static const TranslationClassVisibility defaultTranslationClassVisibility =
@@ -34,6 +36,8 @@ class BuildConfig {
   final String inputFilePattern;
   final String? outputDirectory;
   final String outputFilePattern;
+  final String? outputFileName;
+  final bool namespaces;
   final String translateVar;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
@@ -55,6 +59,8 @@ class BuildConfig {
     required this.inputFilePattern,
     required this.outputDirectory,
     required this.outputFilePattern,
+    required this.outputFileName,
+    required this.namespaces,
     required this.translateVar,
     required this.enumName,
     required this.translationClassVisibility,
@@ -84,10 +90,12 @@ class BuildConfig {
     return BuildConfig(
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
-      inputDirectory: inputDirectory?.normalizePath(),
+      inputDirectory: inputDirectory?.toAbsolutePath(),
       inputFilePattern: inputFilePattern,
-      outputDirectory: outputDirectory?.normalizePath(),
+      outputDirectory: outputDirectory?.toAbsolutePath(),
       outputFilePattern: outputFilePattern,
+      outputFileName: outputFileName,
+      namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,
       translationClassVisibility: translationClassVisibility,
@@ -175,7 +183,7 @@ extension Parser on String {
   }
 
   /// converts to absolute file path
-  String normalizePath() {
+  String toAbsolutePath() {
     String result = this
         .replaceAll('/', Platform.pathSeparator)
         .replaceAll('\\', Platform.pathSeparator);
