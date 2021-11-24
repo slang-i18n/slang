@@ -283,7 +283,7 @@ targets:
 
 ### ➤ Namespaces
 
-You can split up the localizations into multiple files. Each file represents a namespace.
+You can split the translations into multiple files. Each file represents a namespace.
 
 This feature is disabled by default for single-file usage. You must enable it.
 
