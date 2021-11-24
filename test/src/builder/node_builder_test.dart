@@ -9,22 +9,26 @@ import '../../util/build_config_utils.dart';
 void main() {
   group(NodeBuilder.fromMap, () {
     test('1 TextNode', () {
-      final result = NodeBuilder.fromMap(baseConfig, defaultLocale, {
-        'test': 'a',
-      });
+      final result = NodeBuilder.fromMap(
+        config: baseConfig,
+        locale: defaultLocale,
+        map: {
+          'test': 'a',
+        },
+      );
       final map = result.root.entries;
       expect((map['test'] as TextNode).content, 'a');
     });
 
     test('keyCase=snake and keyMapCase=camel', () {
       final result = NodeBuilder.fromMap(
-        baseConfig.copyWith(
+        config: baseConfig.copyWith(
           maps: ['my_map'],
           keyCase: CaseStyle.snake,
           keyMapCase: CaseStyle.camel,
         ),
-        defaultLocale,
-        {
+        locale: defaultLocale,
+        map: {
           'myMap': {'my_value': 'cool'},
         },
       );
@@ -34,12 +38,12 @@ void main() {
 
     test('keyCase=snake and keyMapCase=null', () {
       final result = NodeBuilder.fromMap(
-        baseConfig.copyWith(
+        config: baseConfig.copyWith(
           maps: ['my_map'],
           keyCase: CaseStyle.snake,
         ),
-        defaultLocale,
-        {
+        locale: defaultLocale,
+        map: {
           'myMap': {'my_value 3': 'cool'},
         },
       );
@@ -49,9 +53,9 @@ void main() {
 
     test('one link no parameters', () {
       final result = NodeBuilder.fromMap(
-        baseConfig,
-        defaultLocale,
-        {
+        config: baseConfig,
+        locale: defaultLocale,
+        map: {
           'a': 'A',
           'b': 'Hello @:a',
         },
@@ -63,9 +67,9 @@ void main() {
 
     test('one link 2 parameters straight', () {
       final result = NodeBuilder.fromMap(
-        baseConfig,
-        defaultLocale,
-        {
+        config: baseConfig,
+        locale: defaultLocale,
+        map: {
           'a': r'A $p1 $p1 $p2',
           'b': 'Hello @:a',
         },
@@ -78,9 +82,9 @@ void main() {
 
     test('linked translations with parameters recursive', () {
       final result = NodeBuilder.fromMap(
-        baseConfig,
-        defaultLocale,
-        {
+        config: baseConfig,
+        locale: defaultLocale,
+        map: {
           'a': r'A $p1 $p1 $p2 @:b @:c',
           'b': r'Hello $p3 @:a',
           'c': r'C $p4 @:a',
@@ -94,9 +98,9 @@ void main() {
 
     test('linked translation with plural', () {
       final result = NodeBuilder.fromMap(
-        baseConfig,
-        defaultLocale,
-        {
+        config: baseConfig,
+        locale: defaultLocale,
+        map: {
           'a': {
             'one': 'ONE',
             'other': r'OTHER $p1',
@@ -113,7 +117,7 @@ void main() {
 
     test('linked translation with context', () {
       final result = NodeBuilder.fromMap(
-        baseConfig.copyWith(contexts: [
+        config: baseConfig.copyWith(contexts: [
           ContextType(
             enumName: 'GenderCon',
             enumValues: ['male', 'female'],
@@ -121,8 +125,8 @@ void main() {
             paths: [],
           ),
         ]),
-        defaultLocale,
-        {
+        locale: defaultLocale,
+        map: {
           'a': {
             'male': 'MALE',
             'female': r'FEMALE $p1',

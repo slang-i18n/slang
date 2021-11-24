@@ -3,120 +3,178 @@ import 'dart:io';
 
 import 'package:build/build.dart';
 import 'package:fast_i18n/src/builder/build_config_builder.dart';
-import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
-import 'package:fast_i18n/src/generator/generate.dart';
+import 'package:fast_i18n/src/builder/translation_map_builder.dart';
+import 'package:fast_i18n/src/generator/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/parser/parser_facade.dart';
+import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/path_utils.dart';
 import 'package:glob/glob.dart';
 
-Builder i18nBuilder(BuilderOptions options) => I18nBuilder(options);
+/// Static entry point for build_runner
+Builder i18nBuilder(BuilderOptions options) {
+  final buildConfig = BuildConfigBuilder.fromMap(options.config);
+  String outputFilePattern;
+  if (buildConfig.outputFileName != null) {
+    // new variant
+    outputFilePattern = buildConfig.outputFileName!.getFileExtension();
+  } else {
+    // legacy variant
+    outputFilePattern = buildConfig.outputFilePattern;
+  }
+  return I18nBuilder(
+    buildConfig: buildConfig,
+    outputFilePattern: outputFilePattern,
+  );
+}
 
 class I18nBuilder implements Builder {
-  I18nBuilder(this.options);
-
-  final BuilderOptions options;
-
+  final BuildConfig buildConfig;
+  final String outputFilePattern;
   bool _generated = false;
 
-  String get inputFilePattern =>
-      options.config['input_file_pattern'] ??
-      BuildConfig.defaultInputFilePattern;
-  String get outputFilePattern =>
-      options.config['output_file_pattern'] ??
-      BuildConfig.defaultOutputFilePattern;
+  I18nBuilder({required this.buildConfig, required this.outputFilePattern});
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    final buildConfig = BuildConfigBuilder.fromMap(options.config);
-
-    if (buildConfig.inputDirectory != null &&
-        !buildStep.inputId.path.contains(buildConfig.inputDirectory!)) return;
-
     // only generate once
     if (_generated) return;
 
     _generated = true;
 
-    // detect all locales, their assetId and the baseName
-    final Map<AssetId, I18nLocale> assetMap = Map();
-    String? baseName;
-
     final Glob findAssetsPattern = buildConfig.inputDirectory != null
-        ? Glob('**${buildConfig.inputDirectory}/*$inputFilePattern')
-        : Glob('**$inputFilePattern');
+        ? Glob(
+            '**${buildConfig.inputDirectory}/*${buildConfig.inputFilePattern}')
+        : Glob('**${buildConfig.inputFilePattern}');
+
+    // STEP 1: determine base name and output file name / path
+
+    final assets = <AssetId>[];
+    String? baseName;
+    String? outputFileName;
+    String outputFilePath;
+
+    if (buildConfig.outputFileName != null) {
+      // newer version
+      outputFileName = buildConfig.outputFileName!;
+      baseName = buildConfig.outputFileName!.getFileNameNoExtension();
+    }
 
     await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
-      final fileNameNoExtension =
-          assetId.pathSegments.last.replaceAll(inputFilePattern, '');
+      assets.add(assetId);
 
-      final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
-      if (baseFile != null) {
-        // base file
-        assetMap[assetId] = buildConfig.baseLocale;
-        baseName = fileNameNoExtension;
-      } else {
-        // secondary files (strings_x)
-        final match = Utils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
-        if (match != null) {
-          final language = match.group(3);
-          final script = match.group(5);
-          final country = match.group(7);
-          assetMap[assetId] =
-              I18nLocale(language: language, script: script, country: country);
+      if (buildConfig.outputFileName == null) {
+        // use legacy mode by taking the namespace name
+        final fileNameNoExtension =
+            assetId.pathSegments.last.getFileNameNoExtension();
+        final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
+        if (baseFile != null) {
+          // base file
+          baseName = fileNameNoExtension;
+          outputFileName = fileNameNoExtension + buildConfig.outputFilePattern;
         }
       }
     });
 
-    if (baseName == null) {
+    if (baseName == null || outputFileName == null) {
       print('Error: No base translation file.');
       return;
     }
 
-    // map each assetId to I18nData
-    final localesWithData = Map<AssetId, I18nData>();
-
-    for (MapEntry<AssetId, I18nLocale> asset in assetMap.entries) {
-      I18nLocale locale = asset.value;
-      String content = await buildStep.readAsString(asset.key);
-      I18nData representation = ParserFacade.parseTranslations(
-        config: buildConfig,
-        locale: locale,
-        content: content,
-      );
-      localesWithData[asset.key] = representation;
+    if (buildConfig.outputDirectory != null) {
+      // output directory specified, use this path instead
+      outputFilePath = buildConfig.outputDirectory! +
+          Platform.pathSeparator +
+          outputFileName!;
+    } else {
+      // use the directory of the first (random) translation file
+      final fileName = assets.first.path.getFileName();
+      outputFilePath = assets.first.path
+              .replaceAll("${Platform.pathSeparator}$fileName", '') +
+          Platform.pathSeparator +
+          outputFileName!;
     }
 
-    final translationList = localesWithData.values.toList()
-      ..sort(I18nData.generationComparator);
-    final config = I18nConfigBuilder.build(
-      baseName: baseName!,
+    // STEP 2: scan translations
+    final translationMap = NamespaceTranslationMap();
+    for (final asset in assets) {
+      final content = await buildStep.readAsString(asset);
+      final fileNameNoExtension = asset.path.getFileNameNoExtension();
+      final baseFileMatch = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
+      if (baseFileMatch != null) {
+        // base file
+        final namespace = baseFileMatch.group(1)!;
+        translationMap.add(
+          locale: buildConfig.baseLocale,
+          namespace: namespace,
+          translations: TranslationMapBuilder.fromString(
+            buildConfig.fileType,
+            content,
+          ),
+        );
+      } else {
+        // secondary files (strings_x)
+        final match = Utils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
+        if (match != null) {
+          final namespace = match.group(2)!;
+          final language = match.group(3);
+          final script = match.group(5);
+          final country = match.group(7);
+          final locale = I18nLocale(
+            language: language,
+            script: script,
+            country: country,
+          );
+
+          translationMap.add(
+            locale: locale,
+            namespace: namespace,
+            translations: TranslationMapBuilder.fromString(
+              buildConfig.fileType,
+              content,
+            ),
+          );
+        }
+      }
+    }
+
+    // STEP 3: generate .g.dart content
+    final result = GeneratorFacade.generate(
       buildConfig: buildConfig,
-      translationList: translationList,
+      baseName: baseName!,
+      translationMap: translationMap,
     );
 
-    // generate
-    final String output = generate(
-      config: config,
-      translations: translationList,
-    );
+    // STEP 4: write output to hard drive
+    File(outputFilePath).writeAsStringSync(result);
 
-    // write only to main locale
-    final AssetId baseId =
-        localesWithData.entries.firstWhere((element) => element.value.base).key;
-
-    final finalOutputDirectory = buildConfig.outputDirectory ??
-        (baseId.pathSegments..removeLast()).join('/');
-    final String outFilePath =
-        '$finalOutputDirectory/$baseName$outputFilePattern';
-
-    File(outFilePath).writeAsStringSync(output);
+    if (buildConfig.outputFileName == null && buildConfig.namespaces) {
+      print('');
+      print(
+          'WARNING: Please specify "outputFileName". Using fallback file name for now.');
+    }
   }
 
   @override
   get buildExtensions => {
-        inputFilePattern: [outputFilePattern],
+        buildConfig.inputFilePattern: [outputFilePattern],
       };
+}
+
+extension on String {
+  /// converts /some/path/file.json to file.json
+  String getFileName() {
+    return PathUtils.getFileName(this);
+  }
+
+  /// converts /some/path/file.json to file
+  String getFileNameNoExtension() {
+    return PathUtils.getFileNameNoExtension(this);
+  }
+
+  /// converts /some/path/file.i18n.json to i18n.json
+  String getFileExtension() {
+    return PathUtils.getFileExtension(this);
+  }
 }
