@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:fast_i18n/src/builder/build_config_builder.dart';
-import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
-import 'package:fast_i18n/src/builder/node_builder.dart';
 import 'package:fast_i18n/src/builder/translation_map_builder.dart';
-import 'package:fast_i18n/src/generator/generate.dart';
+import 'package:fast_i18n/src/generator/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/path_utils.dart';
 
 /// To run this:
 /// -> flutter pub run fast_i18n
@@ -197,9 +196,8 @@ Future<void> generateTranslations({
 
   if (buildConfig.outputDirectory != null) {
     // output directory specified, use this path instead
-    outputFilePath = buildConfig.outputDirectory! +
-        Platform.pathSeparator +
-        outputFileName;
+    outputFilePath =
+        buildConfig.outputDirectory! + Platform.pathSeparator + outputFileName;
   } else {
     // use the directory of the first (random) translation file
     final fileName = files.first.path.getFileName();
@@ -215,23 +213,23 @@ Future<void> generateTranslations({
     print('');
   }
 
-  // STEP 2a: read raw files and save them as maps
-  // locale -> (namespace -> translation map)
-  final translations = <I18nLocale, Map<String, Map<String, dynamic>>>{};
+  final translationMap = NamespaceTranslationMap();
   for (final file in files) {
+    final content = await File(file.path).readAsString();
     final fileNameNoExtension = file.path.getFileNameNoExtension();
-    final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
-    if (baseFile != null) {
+    final baseFileMatch = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
+    if (baseFileMatch != null) {
       // base file
-      final namespace = baseFile.group(1)!;
-      final content = await File(file.path).readAsString();
+      final namespace = baseFileMatch.group(1)!;
 
-      if (!translations.containsKey(buildConfig.baseLocale)) {
-        // ensure that the locale exists
-        translations[buildConfig.baseLocale] = {};
-      }
-
-      translations[buildConfig.baseLocale]![namespace] = TranslationMapBuilder.fromString(buildConfig.fileType, content);
+      translationMap.add(
+        locale: buildConfig.baseLocale,
+        namespace: namespace,
+        translations: TranslationMapBuilder.fromString(
+          buildConfig.fileType,
+          content,
+        ),
+      );
 
       if (verbose) {
         print(
@@ -250,13 +248,15 @@ Future<void> generateTranslations({
           script: script,
           country: country,
         );
-        final content = await File(file.path).readAsString();
 
-        if (!translations.containsKey(buildConfig.baseLocale)) {
-          // ensure that the locale exists
-          translations[buildConfig.baseLocale] = {};
-        }
-        translations[buildConfig.baseLocale]![namespace] = TranslationMapBuilder.fromString(buildConfig.fileType, content);
+        translationMap.add(
+          locale: locale,
+          namespace: namespace,
+          translations: TranslationMapBuilder.fromString(
+            buildConfig.fileType,
+            content,
+          ),
+        );
 
         if (verbose) {
           print('${locale.languageTag.padLeft(12)} -> ${file.path}');
@@ -265,54 +265,22 @@ Future<void> generateTranslations({
     }
   }
 
-  // STEP 2b: combine namespaces
-  final List<I18nData> translationList = translations.entries.map((localeEntry) {
-    final locale = localeEntry.key;
-    final namespaces = localeEntry.value;
-    final buildResult = NodeBuilder.fromMap(
-      config: buildConfig,
-      locale: locale,
-      map: buildConfig.namespaces ? namespaces : namespaces.values.first,
-    );
-    return I18nData(
-      base: buildConfig.baseLocale == locale,
-      locale: locale,
-      root: buildResult.root,
-      hasCardinal: buildResult.hasCardinal,
-      hasOrdinal: buildResult.hasOrdinal,
-    );
-  }).toList();
-
-  // STEP 2c: prepare model for generation
-
-  // sort: base locale, then all other locales
-  translationList.sort(I18nData.generationComparator);
-
-  // build config
-  final config = I18nConfigBuilder.build(
-    baseName: baseName,
+  // STEP 3: generate .g.dart content
+  final result = GeneratorFacade.generate(
     buildConfig: buildConfig,
-    translationList: translationList,
-  );
-
-  // STEP 3: generate .g.dart file
-  final String output = generate(
-    config: config,
-    translations: translationList,
+    baseName: baseName,
+    translationMap: translationMap,
+    showPluralHint: verbose,
   );
 
   // STEP 4: write output to hard drive
-  await File(outputFilePath).writeAsString(output);
+  await File(outputFilePath).writeAsString(result);
 
   if (verbose) {
-    if (config.hasPlurals()) {
-      // show pluralization hints if pluralization is configured
+    if (buildConfig.outputFileName == null && buildConfig.namespaces) {
       print('');
-      print('Pluralization:');
       print(
-          ' -> rendered resolvers: ${config.getRenderedPluralResolvers().toList()}');
-      print(
-          ' -> you must implement these resolvers: ${config.unsupportedPluralLanguages.toList()}');
+          'WARNING: Please specify "outputFileName". Using fallback file name for now.');
     }
 
     print('');
@@ -332,12 +300,12 @@ String get currentTime {
 extension on String {
   /// converts /some/path/file.json to file.json
   String getFileName() {
-    return this.split(Platform.pathSeparator).last;
+    return PathUtils.getFileName(this);
   }
 
   /// converts /some/path/file.json to file
   String getFileNameNoExtension() {
-    return this.getFileName().split('.').first;
+    return PathUtils.getFileNameNoExtension(this);
   }
 }
 

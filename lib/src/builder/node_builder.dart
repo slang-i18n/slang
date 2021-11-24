@@ -28,7 +28,7 @@ class NodeBuilder {
     required BuildConfig config,
     required I18nLocale locale,
     required Map<String, dynamic> map,
-}) {
+  }) {
     final Map<String, Node> destination = {}; // root map
     final Map<String, Node> leavesMap =
         {}; // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural

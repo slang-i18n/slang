@@ -1,5 +1,4 @@
 class YamlUtils {
-
   /// converts Map<dynamic, dynamic> to Map<String, dynamic> for all children
   /// forcing all keys to be strings
   static Map<String, dynamic> deepCast(Map<dynamic, dynamic> source) {

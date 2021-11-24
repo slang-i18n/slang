@@ -6,7 +6,6 @@ import 'package:fast_i18n/src/utils/yaml_utils.dart';
 import 'package:yaml/yaml.dart';
 
 class BuildConfigBuilder {
-
   /// Parses the full build.yaml file to get the config
   /// May return null if no config entry is found.
   static BuildConfig? fromYaml(String rawYaml) {
@@ -53,7 +52,8 @@ class BuildConfigBuilder {
           map['output_directory'] ?? BuildConfig.defaultOutputDirectory,
       outputFilePattern:
           map['output_file_pattern'] ?? BuildConfig.defaultOutputFilePattern,
-      outputFileName: map['output_file_name'] ?? BuildConfig.defaultOutputFileName,
+      outputFileName:
+          map['output_file_name'] ?? BuildConfig.defaultOutputFileName,
       namespaces: map['namespaces'] ?? BuildConfig.defaultNamespaces,
       translateVar: map['translate_var'] ?? BuildConfig.defaultTranslateVar,
       enumName: map['enum_name'] ?? BuildConfig.defaultEnumName,

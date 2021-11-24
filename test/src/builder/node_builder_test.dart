@@ -10,10 +10,12 @@ void main() {
   group(NodeBuilder.fromMap, () {
     test('1 TextNode', () {
       final result = NodeBuilder.fromMap(
-          config: baseConfig,
-          locale: defaultLocale,map: {
-        'test': 'a',
-      },);
+        config: baseConfig,
+        locale: defaultLocale,
+        map: {
+          'test': 'a',
+        },
+      );
       final map = result.root.entries;
       expect((map['test'] as TextNode).content, 'a');
     });
