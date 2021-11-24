@@ -97,7 +97,8 @@ class I18nBuilder implements Builder {
     final translationMap = NamespaceTranslationMap();
     for (final asset in assets) {
       final content = await buildStep.readAsString(asset);
-      final fileNameNoExtension = asset.path.getFileNameNoExtension();
+      final fileNameNoExtension =
+          asset.pathSegments.last.getFileNameNoExtension();
       final baseFileMatch = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
       if (baseFileMatch != null) {
         // base file
@@ -160,11 +161,6 @@ class I18nBuilder implements Builder {
 }
 
 extension on String {
-  /// converts /some/path/file.json to file.json
-  String getFileName() {
-    return PathUtils.getFileName(this);
-  }
-
   /// converts /some/path/file.json to file
   String getFileNameNoExtension() {
     return PathUtils.getFileNameNoExtension(this);
