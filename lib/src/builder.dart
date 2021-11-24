@@ -82,18 +82,15 @@ class I18nBuilder implements Builder {
       return;
     }
 
+    // CAUTION: in build_runner, the path separator seems to be hard coded to /
     if (buildConfig.outputDirectory != null) {
       // output directory specified, use this path instead
-      outputFilePath = buildConfig.outputDirectory! +
-          Platform.pathSeparator +
-          outputFileName!;
+      outputFilePath = buildConfig.outputDirectory! + '/' + outputFileName!;
     } else {
       // use the directory of the first (random) translation file
-      final fileName = assets.first.path.getFileName();
-      outputFilePath = assets.first.path
-              .replaceAll("${Platform.pathSeparator}$fileName", '') +
-          Platform.pathSeparator +
-          outputFileName!;
+      final finalOutputDirectory =
+          (assets.first.pathSegments..removeLast()).join('/');
+      outputFilePath = '$finalOutputDirectory/$outputFileName';
     }
 
     // STEP 2: scan translations
