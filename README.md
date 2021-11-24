@@ -43,13 +43,13 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
     - [File Types](#-file-types)
     - [Namespaces](#-namespaces)
     - [String Interpolation](#-string-interpolation)
+    - [Lists](#-lists)
     - [Linked Translations](#-linked-translations)
     - [Locale Enum](#-locale-enum)
     - [Pluralization](#-pluralization)
     - [Custom Contexts](#-custom-contexts)
     - [Maps](#-maps)
     - [Dynamic Keys](#-dynamic-keys)
-    - [Lists](#-lists)
     - [Fallback](#-fallback)
     - [Recasing](#-recasing)
     - [Auto Rebuild](#-auto-rebuild)
@@ -326,6 +326,38 @@ Mode|Translation|Call
 `braces`|`Hello {name}`|`t.myKey(name: 'Anna')`
 `double_braces`|`Hello {{name}}`|`t.myKey(name: 'Tom')`
 
+### ➤ Lists
+
+Lists are fully supported. No configuration needed. You can also put lists or maps inside lists!
+
+```json
+{
+  "niceList": [
+    "hello",
+    "nice",
+    [
+      "first item in nested list",
+      "second item in nested list"
+    ],
+    {
+      "wow": "WOW!",
+      "ok": "OK!"
+    },
+    {
+      "a map entry": "access via key",
+      "another entry": "access via second key"
+    }
+  ]
+}
+```
+
+```dart
+String a = t.niceList[1]; // "nice"
+String b = t.niceList[2][0]; // "first item in nested list"
+String c = t.niceList[3].ok; // "OK!"
+String d = t.niceList[4]['a map entry']; // "access via key"
+```
+
 ### ➤ Linked Translations
 
 You can link one translation to another. Add the prefix `@:` followed by the translation key.
@@ -573,38 +605,6 @@ It is supported out of the box. No configuration needed. Please use this sparing
 String a = t['myPath.anotherPath'];
 String b = t['myPath.anotherPath.3']; // with index for arrays
 String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
-```
-
-### ➤ Lists
-
-Lists are fully supported. No configuration needed. You can also put lists or maps inside lists!
-
-```json
-{
-  "niceList": [
-    "hello",
-    "nice",
-    [
-      "first item in nested list",
-      "second item in nested list"
-    ],
-    {
-      "wow": "WOW!",
-      "ok": "OK!"
-    },
-    {
-      "a map entry": "access via key",
-      "another entry": "access via second key"
-    }
-  ]
-}
-```
-
-```dart
-String a = t.niceList[1]; // "nice"
-String b = t.niceList[2][0]; // "first item in nested list"
-String c = t.niceList[3].ok; // "OK!"
-String d = t.niceList[4]['a map entry']; // "access via key"
 ```
 
 ### ➤ Fallback
