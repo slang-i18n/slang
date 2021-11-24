@@ -44,6 +44,7 @@ String g = t['mainScreen.title'];                      // with fully dynamic key
     - [Namespaces](#-namespaces)
     - [String Interpolation](#-string-interpolation)
     - [Lists](#-lists)
+    - [Interfaces](#-interfaces)
     - [Linked Translations](#-linked-translations)
     - [Locale Enum](#-locale-enum)
     - [Pluralization](#-pluralization)
@@ -230,6 +231,8 @@ targets:
               auto: false
               paths:
                 - my.path.to.greet
+          interfaces:
+            PageData: onboarding.pages
 ```
 
 Key|Type|Usage|Default
@@ -257,6 +260,7 @@ Key|Type|Usage|Default
 `<context>`/`enum`|`List<String>`|context forms|no default
 `<context>`/`auto`|`Boolean`|auto detect context|`true`
 `<context>`/`paths`|`List<String>`|entries using this context|`[]`
+`children of interfaces`|`Pairs of Alias:Path`|alias interfaces|`null`
 
 ## Features
 
@@ -356,6 +360,67 @@ String a = t.niceList[1]; // "nice"
 String b = t.niceList[2][0]; // "first item in nested list"
 String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
+```
+
+### ➤ Interfaces
+
+Often, lists or maps contain maps having the same structure.
+
+```json
+{
+  "onboarding": {
+    "pages": [
+      {
+        "title": "Welcome",
+        "content": "Welcome to my app!"
+      },
+      {
+        "title": "Sync",
+        "content": "Synchronize all your devices!"
+      }
+    ],
+    "whatsNew": {
+      "v2": {
+        "title": "New in 2.0",
+        "rows": [
+          "Add sync"
+        ]
+      },
+      "v3": {
+        "title": "New in 3.0",
+        "rows": [
+          "New game modes",
+          "And a lot more!"
+        ]
+      }
+    }
+  }
+}
+```
+
+Here we know that all objects inside `pages` and `whatsNew` have the same attributes.
+Thankfully, this library detects that out of the box.
+
+By default, the name of the interface will be something like `IStringsOnboardingPages`.
+Let's rename it to `PageData` for cleaner code.
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          interfaces:
+            PageData: onboarding.pages
+```
+
+```dart
+for (int i = 0; i < t.onboarding.pages.length; i++) {
+  PageData currentPage = t.onboarding.pages[i]; // notice the common interface "PageData" here
+  String title = currentPage.title; // compile-time safety, title must exist!
+  String content = currentPage.content;
+}
 ```
 
 ### ➤ Linked Translations
@@ -547,7 +612,7 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 // File: strings.i18n.json
 {
   "greet": {
-    "male,female": "Hello $name",
+    "male,female": "Hello $name"
   }
 }
 ```
