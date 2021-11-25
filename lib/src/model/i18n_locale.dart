@@ -1,6 +1,6 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
-import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 /// own Locale type to decouple from dart:ui package
 class I18nLocale {
@@ -43,7 +43,7 @@ class I18nLocale {
   }
 
   static I18nLocale fromString(String localeRaw) {
-    final match = Utils.localeRegex.firstMatch(localeRaw);
+    final match = RegexUtils.localeRegex.firstMatch(localeRaw);
     if (match != null) {
       final language = match.group(1);
       final script = match.group(3);

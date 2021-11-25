@@ -1,9 +1,9 @@
-import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('fileWithLocaleRegex', () {
-    RegExp regex = Utils.fileWithLocaleRegex;
+    RegExp regex = RegexUtils.fileWithLocaleRegex;
 
     test('strings_en', () {
       RegExpMatch? match = regex.firstMatch('strings_en');
@@ -47,7 +47,7 @@ void main() {
   });
 
   group('localeRegex', () {
-    RegExp regex = Utils.localeRegex;
+    RegExp regex = RegexUtils.localeRegex;
 
     test('en', () {
       RegExpMatch? match = regex.firstMatch('en');
@@ -75,7 +75,7 @@ void main() {
   });
 
   group('baseFileRegex', () {
-    RegExp regex = Utils.baseFileRegex;
+    RegExp regex = RegexUtils.baseFileRegex;
 
     test('strings', () {
       RegExpMatch? match = regex.firstMatch('strings');

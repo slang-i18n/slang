@@ -4,7 +4,7 @@ import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
-import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 void generateHeader(
     StringBuffer buffer, I18nConfig config, List<I18nData> allLocales) {
@@ -620,7 +620,7 @@ void _generateHelpers(
   buffer.writeln('// helpers');
   buffer.writeln();
   buffer.writeln(
-      'final _localeRegex = RegExp(r\'^${Utils.LOCALE_REGEX_RAW}\$\');');
+      'final _localeRegex = RegExp(r\'^${RegexUtils.LOCALE_REGEX_RAW}\$\');');
   buffer.writeln('$enumName? _selectLocale(String localeRaw) {');
   buffer.writeln('\tfinal match = _localeRegex.firstMatch(localeRaw);');
   buffer.writeln('\t$enumName? selected;');

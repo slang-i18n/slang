@@ -1,4 +1,4 @@
-class Utils {
+class RegexUtils {
   /// matches $argument or ${argument}
   static RegExp argumentsDartRegex = RegExp(r'([^\\]|^)\$\{?(\w+)\}?');
 

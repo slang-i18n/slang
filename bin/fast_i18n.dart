@@ -6,7 +6,7 @@ import 'package:fast_i18n/src/generator/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
-import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/path_utils.dart';
 
 /// To run this:
@@ -175,7 +175,7 @@ Future<void> generateTranslations({
     // use legacy mode by taking the namespace name
     for (final file in files) {
       final fileNameNoExtension = file.path.getFileNameNoExtension();
-      final baseFile = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
+      final baseFile = RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
       if (baseFile != null) {
         baseName = fileNameNoExtension;
         outputFileName = baseName + buildConfig.outputFilePattern;
@@ -217,7 +217,8 @@ Future<void> generateTranslations({
   for (final file in files) {
     final content = await File(file.path).readAsString();
     final fileNameNoExtension = file.path.getFileNameNoExtension();
-    final baseFileMatch = Utils.baseFileRegex.firstMatch(fileNameNoExtension);
+    final baseFileMatch =
+        RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
     if (baseFileMatch != null) {
       // base file
       final namespace = baseFileMatch.group(1)!;
@@ -237,7 +238,8 @@ Future<void> generateTranslations({
       }
     } else {
       // secondary files (strings_x)
-      final match = Utils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
+      final match =
+          RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
       if (match != null) {
         final namespace = match.group(2)!;
         final language = match.group(3);

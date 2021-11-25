@@ -1,7 +1,7 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
-import 'package:fast_i18n/src/utils.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 /// the super class of every node
 abstract class Node {
@@ -81,8 +81,8 @@ class TextNode extends Node {
 
     if (interpolation == StringInterpolation.dart) {
       // escape single $
-      contentNormalized =
-          contentNormalized.replaceAllMapped(Utils.dollarOnlyRegex, (match) {
+      contentNormalized = contentNormalized
+          .replaceAllMapped(RegexUtils.dollarOnlyRegex, (match) {
         String result = '';
         if (match.group(1) != null) {
           result += match.group(1)!; // pre character
@@ -95,7 +95,7 @@ class TextNode extends Node {
       });
     } else {
       contentNormalized =
-          contentNormalized.replaceAllMapped(Utils.dollarRegex, (match) {
+          contentNormalized.replaceAllMapped(RegexUtils.dollarRegex, (match) {
         if (match.group(1) != null) {
           return '${match.group(1)}\\\$'; // with pre character
         } else {
@@ -109,7 +109,7 @@ class TextNode extends Node {
       case StringInterpolation.dart:
         params = Set<String>();
         contentNormalized = contentNormalized
-            .replaceAllMapped(Utils.argumentsDartRegex, (match) {
+            .replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
           final paramOriginal = match.group(2)!;
           if (paramCase == null) {
             // no transformations
@@ -126,7 +126,7 @@ class TextNode extends Node {
       case StringInterpolation.braces:
         params = Set<String>();
         contentNormalized = contentNormalized
-            .replaceAllMapped(Utils.argumentsBracesRegex, (match) {
+            .replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
           if (match.group(1) == '\\') {
             return '{${match.group(2)}}'; // escape
           }
@@ -146,7 +146,7 @@ class TextNode extends Node {
       case StringInterpolation.doubleBraces:
         params = Set<String>();
         contentNormalized = contentNormalized
-            .replaceAllMapped(Utils.argumentsDoubleBracesRegex, (match) {
+            .replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
           if (match.group(1) == '\\') {
             return '{{${match.group(2)}}}'; // escape
           }
@@ -167,7 +167,7 @@ class TextNode extends Node {
     // detect linked translations
     this.links = Set<String>();
     this.content =
-        contentNormalized.replaceAllMapped(Utils.linkedRegex, (match) {
+        contentNormalized.replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = match.group(1)!;
       links.add(linkedPath);
 
