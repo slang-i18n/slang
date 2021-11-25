@@ -1,5 +1,5 @@
 import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
-import 'package:fast_i18n/src/builder/node_builder.dart';
+import 'package:fast_i18n/src/builder/translation_model_builder.dart';
 import 'package:fast_i18n/src/generator/generate.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
@@ -18,17 +18,10 @@ class GeneratorFacade {
         translationMap.getEntries().map((localeEntry) {
       final locale = localeEntry.key;
       final namespaces = localeEntry.value;
-      final buildResult = NodeBuilder.fromMap(
-        config: buildConfig,
+      return TranslationModelBuilder.build(
+        buildConfig: buildConfig,
         locale: locale,
         map: buildConfig.namespaces ? namespaces : namespaces.values.first,
-      );
-      return I18nData(
-        base: buildConfig.baseLocale == locale,
-        locale: locale,
-        root: buildResult.root,
-        hasCardinal: buildResult.hasCardinal,
-        hasOrdinal: buildResult.hasOrdinal,
       );
     }).toList();
 

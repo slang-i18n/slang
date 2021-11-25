@@ -3,36 +3,26 @@ import 'dart:collection';
 import 'package:fast_i18n/src/generator/generate_translations.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
+import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/string_extensions.dart';
 
-class BuildResult {
-  final ObjectNode root;
-  final bool hasCardinal;
-  final bool hasOrdinal;
-
-  BuildResult({
-    required this.root,
-    required this.hasCardinal,
-    required this.hasOrdinal,
-  });
-}
-
-class NodeBuilder {
-  /// Builds the nodes according to the map
+class TranslationModelBuilder {
+  /// Builds the i18n model for ONE locale
+  ///
   /// The map must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
-  static BuildResult fromMap({
-    required BuildConfig config,
+  static I18nData build({
+    required BuildConfig buildConfig,
     required I18nLocale locale,
     required Map<String, dynamic> map,
   }) {
     final Map<String, Node> destination = {}; // root map
     final Map<String, Node> leavesMap =
         {}; // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural
-    final localeEnum = '${config.enumName}.${locale.enumConstant}';
+    final localeEnum = '${buildConfig.enumName}.${locale.enumConstant}';
     bool hasCardinal = false;
     bool hasOrdinal = false;
 
@@ -43,8 +33,8 @@ class NodeBuilder {
     // Assumption: They are basic linked translations without parameters
     // Reason: Not all TextNodes are built, so final parameters are unknown
     _parseMapNode(
-      config: config,
-      keyCase: config.keyCase,
+      config: buildConfig,
+      keyCase: buildConfig.keyCase,
       localeEnum: localeEnum,
       curr: map,
       destination: destination,
@@ -126,15 +116,17 @@ class NodeBuilder {
 
       if (linkParamMap.values.any((params) => params.isNotEmpty)) {
         // rebuild TextNode because its linked translations have parameters
-        final textNode = TextNode(value.raw, config.stringInterpolation,
-            localeEnum, config.paramCase, linkParamMap);
+        final textNode = TextNode(value.raw, buildConfig.stringInterpolation,
+            localeEnum, buildConfig.paramCase, linkParamMap);
         value.params = textNode.params;
         value.content = textNode.content;
         value.paramTypeMap = paramTypeMap;
       }
     });
 
-    return BuildResult(
+    return I18nData(
+      base: buildConfig.baseLocale == locale,
+      locale: locale,
       root: ObjectNode(destination, ObjectNodeType.classType, null),
       hasCardinal: hasCardinal,
       hasOrdinal: hasOrdinal,
