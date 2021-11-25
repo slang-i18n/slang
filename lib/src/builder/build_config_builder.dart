@@ -1,7 +1,7 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/string_extensions.dart';
+import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/yaml_utils.dart';
 import 'package:yaml/yaml.dart';
 

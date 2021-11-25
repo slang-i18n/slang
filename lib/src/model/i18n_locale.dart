@@ -1,5 +1,5 @@
 import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/string_extensions.dart';
+import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 /// own Locale type to decouple from dart:ui package

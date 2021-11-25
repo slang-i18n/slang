@@ -3,7 +3,7 @@ import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
-import 'package:fast_i18n/src/string_extensions.dart';
+import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 void generateHeader(
