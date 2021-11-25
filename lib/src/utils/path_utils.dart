@@ -1,5 +1,7 @@
 import 'dart:io';
 
+/// Operations on paths
+/// Be aware that builder always uses '/' and therefore it may fail on Windows systems
 class PathUtils {
   /// converts /some/path/file.json to file.json
   static String getFileName(String path) {

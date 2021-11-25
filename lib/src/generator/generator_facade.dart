@@ -1,6 +1,6 @@
 import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
 import 'package:fast_i18n/src/builder/translation_model_builder.dart';
-import 'package:fast_i18n/src/generator/generate.dart';
+import 'package:fast_i18n/src/generator/generator.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
