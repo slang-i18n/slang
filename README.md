@@ -76,7 +76,7 @@ Only files having the `.i18n.json` file extension will be detected.
 The part after the underscore `_` is the actual locale (e.g. en_US, en-US, fr).
 You **must** provide the default translation file (the file without locale extension).
 
-YAML files are also supported. See [File Types](#file-types).
+YAML files are also supported. See [File Types](#-file-types).
 
 ```json5
 // File: strings.i18n.json (mandatory, default, fallback)
@@ -233,6 +233,13 @@ targets:
                 - my.path.to.greet
           interfaces:
             PageData: onboarding.pages
+            PageData2:
+              paths:
+                - my.path
+                - cool.path
+              attributes:
+                - String title
+                - String? content
 ```
 
 Key|Type|Usage|Default
@@ -420,6 +427,32 @@ for (int i = 0; i < t.onboarding.pages.length; i++) {
   PageData currentPage = t.onboarding.pages[i]; // notice the common interface "PageData" here
   String title = currentPage.title; // compile-time safety, title must exist!
   String content = currentPage.content;
+}
+```
+
+You can make some fields optional by specifying the concrete attributes of an interface.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          interfaces:
+            PageData:
+              attributes:
+                - String title
+                - String? content # content is optional, therefore nullable
+                - List<Feature>? features # an optional list of another interface
+```
+
+This would create this mixin:
+
+```dart
+mixin PageData {
+  String get title;
+  String? get content => null;
+  List<Feature>? get features => null;
 }
 ```
 
@@ -662,7 +695,7 @@ String c = t.b.b1['hi there']; // "hi"
 
 ### ➤ Dynamic Keys
 
-A more general solution to [Maps](#maps).
+A more general solution to [Maps](#-maps).
 
 It is supported out of the box. No configuration needed. Please use this sparingly.
 
@@ -809,9 +842,9 @@ It will automatically trigger a rebuild on `setLocale` for all affected widgets.
 
 An exception is thrown by `_missingPluralResolver` because you missed to add `LocaleSettings.setPluralResolver` for the specific language.
 
-See [Pluralization](#pluralization).
+See [Pluralization](#-pluralization).
 
-**How does auto detection work?**
+**How does plural / context detection work?**
 
 You can let the library detect plurals or contexts.
 
@@ -830,6 +863,17 @@ As soon as an unknown item has been detected, then this json node is **not** a p
 ```
 
 For contexts, all enum values must exist.
+
+**How does interface detection work?**
+
+An object / list node will receive a mixin if all children have the same signature.
+
+Then, the library checks:
+
+1. if a concrete interface in `build.yaml` is specified with the same path, then take this
+2. if a concrete interface in `build.yaml` is specified with the same attributes, then take this
+3. if there is already a mixin with the same attributes, then take this
+4. create a new mixin
 
 ## License
 
