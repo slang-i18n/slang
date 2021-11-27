@@ -33,6 +33,10 @@ String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
 String e = t.intro.step[4];                            // with index
 String f = t.error.type['WARNING'];                    // with dynamic key
 String g = t['mainScreen.title'];                      // with fully dynamic key
+
+PageData titlePage = t.onboarding.titlePage;
+PageData page = t.onboarding.pages[2];
+String h = page.title;                                 // with interfaces
 ```
 
 ## Table of Contents
@@ -201,8 +205,7 @@ targets:
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
-          # deprecated
-          output_file_pattern: .g.dart
+          output_file_pattern: .g.dart # deprecated, use output_file_name
           output_file_name: translations.g.dart
           namespaces: false
           translate_var: t
@@ -289,7 +292,7 @@ targets:
       fast_i18n:
         options:
           input_directory: assets/i18n
-          input_file_pattern: .i18n.yaml  # must end with .yaml
+          input_file_pattern: .i18n.yaml # must end with .yaml
 ```
 
 ### ➤ Namespaces
@@ -305,8 +308,8 @@ targets:
     builders:
       fast_i18n:
         options:
-          output_file_name: translations.g.dart  # set file name
-          namespaces: true  # enable this feature
+          output_file_name: translations.g.dart # set file name
+          namespaces: true # enable this feature
 ```
 
 Let's create two namespaces called `widgets` and `dialogs`.
@@ -371,7 +374,7 @@ String d = t.niceList[4]['a map entry']; // "access via key"
 
 ### ➤ Interfaces
 
-Often, lists or maps contain maps having the same structure.
+Often, lists or maps contain maps having the same structure. With polymorphism, you get cleaner and safer code.
 
 ```json
 {
@@ -452,7 +455,8 @@ This would create this mixin:
 ```dart
 mixin PageData {
   String get title;
-  String? get content => null;
+  String get content;
+  String? welcome({required Object name, required Object city}) => null;
   List<Feature>? get features => null;
 }
 ```
