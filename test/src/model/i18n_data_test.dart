@@ -5,13 +5,19 @@ import 'package:test/test.dart';
 
 void main() {
   group('generationComparator', () {
-    final root = ObjectNode({}, ObjectNodeType.classType, null);
+    final root = ObjectNode(
+      parent: null,
+      entries: {},
+      type: ObjectNodeType.classType,
+      contextHint: null,
+    );
     test('without base', () {
       List<I18nData> locales = [
         I18nData(
           base: false,
           locale: I18nLocale.fromString('ee'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -19,6 +25,7 @@ void main() {
           base: false,
           locale: I18nLocale.fromString('aa'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -26,6 +33,7 @@ void main() {
           base: false,
           locale: I18nLocale.fromString('ff'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -33,6 +41,7 @@ void main() {
           base: false,
           locale: I18nLocale.fromString('gg'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -48,6 +57,7 @@ void main() {
           base: false,
           locale: I18nLocale.fromString('ee'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -55,6 +65,7 @@ void main() {
           base: false,
           locale: I18nLocale.fromString('aa'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -62,6 +73,7 @@ void main() {
           base: true,
           locale: I18nLocale.fromString('ff'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),
@@ -69,6 +81,7 @@ void main() {
           base: false,
           locale: I18nLocale.fromString('gg'),
           root: root,
+          interfaces: [],
           hasCardinal: false,
           hasOrdinal: false,
         ),

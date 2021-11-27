@@ -92,4 +92,40 @@ void main() {
       expect(match?.group(1), null);
     });
   });
+
+  group('attributeRegex', () {
+    RegExp regex = RegexUtils.attributeRegex;
+
+    test('String title', () {
+      RegExpMatch? match = regex.firstMatch('String title');
+      expect(match?.group(1), 'String');
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'title');
+      expect(match?.group(5), null);
+    });
+
+    test('String? title', () {
+      RegExpMatch? match = regex.firstMatch('String? title');
+      expect(match?.group(1), 'String');
+      expect(match?.group(3), isNotNull);
+      expect(match?.group(4), 'title');
+      expect(match?.group(5), null);
+    });
+
+    test('String title(a,b,c)', () {
+      RegExpMatch? match = regex.firstMatch('String title(a,b,c)');
+      expect(match?.group(1), 'String');
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'title');
+      expect(match?.group(5), '(a,b,c)');
+    });
+
+    test('Map<String,Page>? pages(count)', () {
+      RegExpMatch? match = regex.firstMatch('Map<String,Page>? pages(count)');
+      expect(match?.group(1), 'Map<String,Page>');
+      expect(match?.group(3), isNotNull);
+      expect(match?.group(4), 'pages');
+      expect(match?.group(5), '(count)');
+    });
+  });
 }

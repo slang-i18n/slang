@@ -112,6 +112,21 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
     print(
         '    - ${contextType.enumName} { ${contextType.enumValues.join(', ')} }');
   }
+  print(
+      ' -> interfaces: ${buildConfig.interfaces.isEmpty ? 'no interfaces' : ''}');
+  for (final interface in buildConfig.interfaces) {
+    print('    - ${interface.name}');
+    print(
+        '      Attributes: ${interface.attributes.isEmpty ? 'no attributes' : ''}');
+    for (final a in interface.attributes) {
+      print(
+          '        - ${a.optional ? '(optional) ' : ''}${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})');
+    }
+    print('      Paths: ${interface.paths.isEmpty ? 'no paths' : ''}');
+    for (final path in interface.paths) {
+      print('        - $path');
+    }
+  }
   print('');
 
   return buildConfig;

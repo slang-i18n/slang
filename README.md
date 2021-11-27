@@ -442,8 +442,9 @@ targets:
             PageData:
               attributes:
                 - String title
-                - String? content # content is optional, therefore nullable
-                - List<Feature>? features # an optional list of another interface
+                - String content
+                - String? welcome(name,city) # optional string with arguments
+                - List<Feature>? features # optional list of another interface
 ```
 
 This would create this mixin:

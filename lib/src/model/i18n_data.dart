@@ -1,4 +1,5 @@
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/node.dart';
 
 typedef int I18nDataComparator(I18nData a, I18nData b);
@@ -8,6 +9,7 @@ class I18nData {
   final bool base; // whether or not this is the base locale
   final I18nLocale locale; // the locale (the part after the underscore)
   final ObjectNode root; // the actual strings
+  final List<Interface> interfaces;
   final bool hasCardinal;
   final bool hasOrdinal;
 
@@ -15,6 +17,7 @@ class I18nData {
     required this.base,
     required this.locale,
     required this.root,
+    required this.interfaces,
     required this.hasCardinal,
     required this.hasOrdinal,
   });

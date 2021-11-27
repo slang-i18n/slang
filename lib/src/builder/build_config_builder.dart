@@ -1,6 +1,8 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/yaml_utils.dart';
 import 'package:yaml/yaml.dart';
@@ -80,6 +82,9 @@ class BuildConfigBuilder {
           BuildConfig.defaultOrdinal,
       contexts: (map['contexts'] as Map<String, dynamic>?)?.toContextTypes() ??
           BuildConfig.defaultContexts,
+      interfaces:
+          (map['interfaces'] as Map<String, dynamic>?)?.toInterfaces() ??
+              BuildConfig.defaultInterfaces,
     );
   }
 }
@@ -98,6 +103,88 @@ extension on Map<String, dynamic> {
             .toList(),
         auto: config['auto'] ?? ContextType.defaultAuto,
         paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
+      );
+    }).toList();
+  }
+
+  /// Parses the 'interfaces' config
+  List<InterfaceConfig> toInterfaces() {
+    return this.entries.map((e) {
+      final interfaceName = e.key.toCase(CaseStyle.pascal);
+      final Set<InterfaceAttribute> attributes;
+      final Set<String> paths;
+      if (e.value is String) {
+        // PageData: welcome.pages
+        attributes = {};
+        paths = {e.value};
+      } else {
+        // PageData:
+        //   paths:
+        //     - path.firstPath
+        //   attributes:
+        //     - String title
+        //     - String? content(name)
+        final interfaceConfig = e.value as Map<String, dynamic>;
+
+        // parse attributes
+        final attributesConfig = interfaceConfig['attributes'] as List?;
+        if (attributesConfig != null) {
+          attributes = {};
+          attributesConfig.forEach((attribute) {
+            final match = RegexUtils.attributeRegex.firstMatch(attribute);
+            if (match == null) {
+              throw 'Interface "$interfaceName" has invalid attributes. "$attribute" could not be parsed.';
+            }
+
+            final returnType = match.group(1)!;
+            final optional = match.group(3) != null;
+            final attributeName = match.group(4)!;
+            final parametersRaw = match.group(5);
+            final Set<AttributeParameter> parameters;
+            if (parametersRaw != null) {
+              // remove brackets, split by comma, use Object as type
+              parameters = parametersRaw
+                  .substring(1, parametersRaw.length - 1)
+                  .split(',')
+                  .map(
+                    (p) => AttributeParameter(
+                        parameterName: p.trim(), type: 'Object'),
+                  )
+                  .toSet();
+            } else {
+              parameters = {};
+            }
+
+            final parsedAttribute = InterfaceAttribute(
+              attributeName: attributeName,
+              returnType: returnType,
+              parameters: parameters,
+              optional: optional,
+            );
+
+            attributes.add(parsedAttribute);
+          });
+        } else {
+          attributes = {};
+        }
+
+        // parse paths
+        final pathsConfig = interfaceConfig['paths'] as List?;
+        if (pathsConfig != null) {
+          paths = pathsConfig.cast<String>().toSet();
+        } else {
+          paths = {};
+        }
+
+        if (attributes.isEmpty && paths.isEmpty) {
+          throw 'Interface "$interfaceName" has no paths nor attributes.';
+        }
+      }
+
+      return InterfaceConfig(
+        name: interfaceName,
+        attributes: attributes,
+        paths: paths,
       );
     }).toList();
   }

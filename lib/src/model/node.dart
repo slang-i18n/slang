@@ -17,13 +17,18 @@ enum ObjectNodeType {
 }
 
 class ObjectNode extends Node {
+  final Node? parent;
   final Map<String, Node> entries;
   final ObjectNodeType type;
-  final bool plainStrings;
+  final bool plainStrings; // Map<String, String> or Map<String, dynamic>
   final ContextType? contextHint; // to save computing power by calc only once
 
-  ObjectNode(this.entries, this.type, this.contextHint)
-      : plainStrings = entries.values
+  ObjectNode({
+    required this.parent,
+    required this.entries,
+    required this.type,
+    required this.contextHint,
+  }) : plainStrings = entries.values
             .every((child) => child is TextNode && child.params.isEmpty);
 
   @override

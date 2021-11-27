@@ -42,4 +42,12 @@ class RegexUtils {
 
   /// matches any string without special characters
   static RegExp baseFileRegex = RegExp(r'^([a-zA-Z0-9]+)?$');
+
+  /// Matches an attribute entry
+  /// String? content(name)
+  /// 1 - String
+  /// 3 - ?
+  /// 4 - content
+  /// 5 - (name,age)
+  static RegExp attributeRegex = RegExp(r'^((\w|\<|\>|,)+)(\?)? (\w+)(\(.+\))?$');
 }

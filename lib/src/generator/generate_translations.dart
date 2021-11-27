@@ -395,7 +395,12 @@ _generateTranslationMapRecursive(
           for (int i = 0; i < value.entries.length; i++)
             i.toString(): value.entries[i]
         };
-        final converted = ObjectNode(entries, ObjectNodeType.classType, null);
+        final converted = ObjectNode(
+          parent: value,
+          entries: entries,
+          type: ObjectNodeType.classType,
+          contextHint: null,
+        );
 
         _generateTranslationMapRecursive(
             buffer, converted, key, config, hasPluralResolver, language);

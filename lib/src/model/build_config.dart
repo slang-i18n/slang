@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 
 /// represents a build.yaml
 class BuildConfig {
@@ -28,6 +29,7 @@ class BuildConfig {
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
+  static const List<InterfaceConfig> defaultInterfaces = <InterfaceConfig>[];
 
   final FileType fileType;
   final I18nLocale baseLocale;
@@ -51,6 +53,7 @@ class BuildConfig {
   final List<String> pluralCardinal;
   final List<String> pluralOrdinal;
   final List<ContextType> contexts;
+  final List<InterfaceConfig> interfaces;
 
   BuildConfig({
     required this.baseLocale,
@@ -74,6 +77,7 @@ class BuildConfig {
     required this.pluralCardinal,
     required this.pluralOrdinal,
     required this.contexts,
+    required this.interfaces,
   }) : fileType = _determineFileType(inputFilePattern);
 
   static FileType _determineFileType(String extension) {
@@ -109,6 +113,7 @@ class BuildConfig {
       pluralCardinal: pluralCardinal,
       pluralOrdinal: pluralOrdinal,
       contexts: contexts,
+      interfaces: interfaces,
     );
   }
 }

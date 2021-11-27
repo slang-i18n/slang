@@ -5,6 +5,7 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
@@ -19,12 +20,12 @@ class TranslationModelBuilder {
     required I18nLocale locale,
     required Map<String, dynamic> map,
   }) {
-    final Map<String, Node> destination = {}; // root map
-    final Map<String, Node> leavesMap =
-        {}; // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural
     final localeEnum = '${buildConfig.enumName}.${locale.enumConstant}';
     bool hasCardinal = false;
     bool hasOrdinal = false;
+
+    // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural
+    final Map<String, Node> leavesMap = {};
 
     // 1st round: Build nodes according to given map
     //
@@ -32,12 +33,11 @@ class TranslationModelBuilder {
     // They will be tracked but not handled
     // Assumption: They are basic linked translations without parameters
     // Reason: Not all TextNodes are built, so final parameters are unknown
-    _parseMapNode(
+    final resultNodeTree = _parseMapNode(
+      curr: map,
       config: buildConfig,
       keyCase: buildConfig.keyCase,
       localeEnum: localeEnum,
-      curr: map,
-      destination: destination,
       leavesMap: leavesMap,
       stack: [],
       cardinalNotifier: () {
@@ -124,26 +124,38 @@ class TranslationModelBuilder {
       }
     });
 
+    // 3rd round: Add interfaces
+    List<Interface> interfaces = [];
+
     return I18nData(
       base: buildConfig.baseLocale == locale,
       locale: locale,
-      root: ObjectNode(destination, ObjectNodeType.classType, null),
+      root: ObjectNode(
+        parent: null,
+        entries: resultNodeTree,
+        type: ObjectNodeType.classType,
+        contextHint: null,
+      ),
+      interfaces: interfaces,
       hasCardinal: hasCardinal,
       hasOrdinal: hasOrdinal,
     );
   }
 
-  static void _parseMapNode({
+  /// Takes the [curr] map which is (a part of) the raw tree from json / yaml
+  /// and returns the node model.
+  static Map<String, Node> _parseMapNode({
+    required Map<String, dynamic> curr,
     required BuildConfig config,
     required CaseStyle? keyCase,
     required String localeEnum,
-    required Map<String, dynamic> curr,
-    required Map<String, Node> destination,
     required Map<String, Node> leavesMap,
     required List<String> stack,
     required Function cardinalNotifier,
     required Function ordinalNotifier,
   }) {
+    final Map<String, Node> resultNodeTree = {};
+
     curr.forEach((key, value) {
       key = key.toCase(keyCase); // transform key if necessary
 
@@ -156,11 +168,11 @@ class TranslationModelBuilder {
           localeEnum,
           config.paramCase,
         );
-        destination[key] = textNode;
+        resultNodeTree[key] = textNode;
         leavesMap[[...stack, key].toNodePath()] = textNode;
       } else {
         final List<String> nextStack = [...stack, key];
-        final Map<String, Node> childrenTarget = Map();
+        final Map<String, Node> children;
 
         if (value is List) {
           // key: [ ...value ]
@@ -168,12 +180,11 @@ class TranslationModelBuilder {
           final Map<String, dynamic> listAsMap = {
             for (int i = 0; i < value.length; i++) i.toString(): value[i],
           };
-          _parseMapNode(
+          children = _parseMapNode(
+            curr: listAsMap,
             config: config,
             keyCase: config.keyCase,
             localeEnum: localeEnum,
-            curr: listAsMap,
-            destination: childrenTarget,
             leavesMap: leavesMap,
             stack: nextStack,
             cardinalNotifier: cardinalNotifier,
@@ -181,54 +192,57 @@ class TranslationModelBuilder {
           );
 
           // finally only take their values, ignoring keys
-          destination[key] = ListNode(childrenTarget.values.toList());
+          resultNodeTree[key] = ListNode(children.values.toList());
         } else {
           // key: { ...value }
-          _parseMapNode(
+          children = _parseMapNode(
+            curr: value,
             config: config,
             keyCase: config.keyCase != config.keyMapCase &&
                     _determineMapType(config, nextStack)
                 ? config.keyMapCase
                 : config.keyCase,
             localeEnum: localeEnum,
-            curr: value,
-            destination: childrenTarget,
             leavesMap: leavesMap,
             stack: nextStack,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
           );
-          _DetectionResult result =
-              _determineNodeType(config, nextStack, childrenTarget);
+          _DetectionResult detectedType =
+              _determineNodeType(config, nextStack, children);
 
           // notify plural and split by comma if necessary
-          if (result.nodeType == ObjectNodeType.context ||
-              result.nodeType == ObjectNodeType.pluralCardinal ||
-              result.nodeType == ObjectNodeType.pluralOrdinal) {
-            if (result.nodeType == ObjectNodeType.pluralCardinal) {
+          if (detectedType.nodeType == ObjectNodeType.context ||
+              detectedType.nodeType == ObjectNodeType.pluralCardinal ||
+              detectedType.nodeType == ObjectNodeType.pluralOrdinal) {
+            if (detectedType.nodeType == ObjectNodeType.pluralCardinal) {
               cardinalNotifier();
-            } else if (result.nodeType == ObjectNodeType.pluralOrdinal) {
+            } else if (detectedType.nodeType == ObjectNodeType.pluralOrdinal) {
               ordinalNotifier();
             }
 
             // split children by comma
-            final entries = childrenTarget.entries.toList();
+            final entries = children.entries.toList();
             for (final entry in entries) {
               final split = entry.key.split(Node.KEY_DELIMITER);
               if (split.length != 1) {
                 // {one,two: hi} -> {one: hi, two: hi}
-                childrenTarget.remove(entry.key);
+                children.remove(entry.key);
                 for (final newChild in split) {
                   // all children have the same value
-                  childrenTarget[newChild] = entry.value;
+                  children[newChild] = entry.value;
                 }
               }
             }
           }
 
-          final node =
-              ObjectNode(childrenTarget, result.nodeType, result.contextHint);
-          destination[key] = node;
+          final node = ObjectNode(
+            parent: null,
+            entries: children,
+            type: detectedType.nodeType,
+            contextHint: detectedType.contextHint,
+          );
+          resultNodeTree[key] = node;
           if (node.type == ObjectNodeType.pluralCardinal ||
               node.type == ObjectNodeType.pluralOrdinal ||
               node.type == ObjectNodeType.context) {
@@ -237,6 +251,8 @@ class TranslationModelBuilder {
         }
       }
     });
+
+    return resultNodeTree;
   }
 
   static _DetectionResult _determineNodeType(
