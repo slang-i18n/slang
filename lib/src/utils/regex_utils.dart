@@ -49,5 +49,6 @@ class RegexUtils {
   /// 3 - ?
   /// 4 - content
   /// 5 - (name,age)
-  static RegExp attributeRegex = RegExp(r'^((\w|\<|\>|,)+)(\?)? (\w+)(\(.+\))?$');
+  static RegExp attributeRegex =
+      RegExp(r'^((\w|\<|\>|,)+)(\?)? (\w+)(\(.+\))?$');
 }

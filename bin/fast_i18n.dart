@@ -169,6 +169,9 @@ Future<void> watchTranslations({
   }
 }
 
+const _defaultPadLeft = 12;
+const _namespacePadLeft = 24;
+
 /// Reads the translations from hard drive and generates the g.dart file
 /// The [files] are already filtered (only translation files!).
 Future<void> generateTranslations({
@@ -229,6 +232,7 @@ Future<void> generateTranslations({
   }
 
   final translationMap = NamespaceTranslationMap();
+  final padLeft = buildConfig.namespaces ? _namespacePadLeft : _defaultPadLeft;
   for (final file in files) {
     final content = await File(file.path).readAsString();
     final fileNameNoExtension = file.path.getFileNameNoExtension();
@@ -248,8 +252,9 @@ Future<void> generateTranslations({
       );
 
       if (verbose) {
+        final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
         print(
-            '${('(base) ' + buildConfig.baseLocale.languageTag).padLeft(12)} -> ${file.path}');
+            '${('(base) $namespaceLog' + buildConfig.baseLocale.languageTag).padLeft(padLeft)} -> ${file.path}');
       }
     } else {
       // secondary files (strings_x)
@@ -276,7 +281,9 @@ Future<void> generateTranslations({
         );
 
         if (verbose) {
-          print('${locale.languageTag.padLeft(12)} -> ${file.path}');
+          final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
+          print(
+              '${(namespaceLog + locale.languageTag).padLeft(padLeft)} -> ${file.path}');
         }
       }
     }
