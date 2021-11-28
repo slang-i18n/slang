@@ -48,8 +48,8 @@ String h = page.title;                                 // with interfaces
     - [Namespaces](#-namespaces)
     - [String Interpolation](#-string-interpolation)
     - [Lists](#-lists)
-    - [Interfaces](#-interfaces)
     - [Linked Translations](#-linked-translations)
+    - [Interfaces](#-interfaces)
     - [Locale Enum](#-locale-enum)
     - [Pluralization](#-pluralization)
     - [Custom Contexts](#-custom-contexts)
@@ -372,6 +372,24 @@ String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
 
+### ➤ Linked Translations
+
+You can link one translation to another. Add the prefix `@:` followed by the translation key.
+
+```json
+{
+  "fields": {
+    "name": "my name is {firstName}",
+    "age": "I am {age} years old"
+  },
+  "introduce": "Hello, @:fields.name and @:fields.age"
+}
+```
+
+```dart
+String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
+```
+
 ### ➤ Interfaces
 
 Often, multiple maps have the same structure. You can create a common super class for that.
@@ -479,24 +497,6 @@ single path|Syntax: `<interface>: <path>`; attributes will be detected automatic
 `paths` only|For multiple nodes; Attributes will be detected automatically
 `attributes` only|All nodes satisfying `attributes` will get the interface.
 both|Specified nodes will get the interface containing the specified attributes
-
-### ➤ Linked Translations
-
-You can link one translation to another. Add the prefix `@:` followed by the translation key.
-
-```json
-{
-  "fields": {
-    "name": "my name is {firstName}",
-    "age": "I am {age} years old"
-  },
-  "introduce": "Hello, @:fields.name and @:fields.age"
-}
-```
-
-```dart
-String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
-```
 
 ### ➤ Locale Enum
 
