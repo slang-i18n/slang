@@ -10,11 +10,12 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/path_utils.dart';
+import 'package:fast_i18n/src/utils/yaml_utils.dart';
 import 'package:glob/glob.dart';
 
 /// Static entry point for build_runner
 Builder i18nBuilder(BuilderOptions options) {
-  final buildConfig = BuildConfigBuilder.fromMap(options.config);
+  final buildConfig = BuildConfigBuilder.fromMap(YamlUtils.deepCast(options.config));
   String outputFilePattern;
   if (buildConfig.outputFileName != null) {
     // new variant
