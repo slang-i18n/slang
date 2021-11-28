@@ -46,7 +46,7 @@ class I18nBuilder implements Builder {
 
     final Glob findAssetsPattern = buildConfig.inputDirectory != null
         ? Glob(
-            '**${buildConfig.inputDirectory}/*${buildConfig.inputFilePattern}')
+            '**${buildConfig.inputDirectory}/**${buildConfig.inputFilePattern}')
         : Glob('**${buildConfig.inputFilePattern}');
 
     // STEP 1: determine base name and output file name / path
