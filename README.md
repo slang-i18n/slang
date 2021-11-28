@@ -374,15 +374,20 @@ String d = t.niceList[4]['a map entry']; // "access via key"
 
 ### ➤ Interfaces
 
-Often, lists or maps contain maps having the same structure. With polymorphism, you get cleaner and safer code.
+Often, multiple maps have the same structure. You can create a common super class for that.
 
 ```json
 {
   "onboarding": {
+    "firstPage": {
+      "title": "Welcome",
+      "content": "Welcome to my app!",
+      "button": "Go"
+    },
     "pages": [
       {
-        "title": "Welcome",
-        "content": "Welcome to my app!"
+        "title": "E2E encryption",
+        "content": "Your data is safe!"
       },
       {
         "title": "Sync",
@@ -408,11 +413,9 @@ Often, lists or maps contain maps having the same structure. With polymorphism, 
 }
 ```
 
-Here we know that all objects inside `pages` and `whatsNew` have the same attributes.
-Thankfully, this library detects that out of the box.
-
-By default, the name of the interface will be something like `IStringsOnboardingPages`.
-Let's rename it to `PageData` for cleaner code.
+Here we know that all objects inside `whatsNew` have the same attributes.
+We also know that `firstPage` and all children in `pages` have common attributes.
+Let's create 2 interface `PageData` and `NewsData`.
 
 ```yaml
 # File: build.yaml
@@ -422,7 +425,11 @@ targets:
       fast_i18n:
         options:
           interfaces:
-            PageData: onboarding.pages
+            PageData:
+              attributes:
+                - String title
+                - String content
+            NewsData: onboarding.whatsNew.*
 ```
 
 ```dart
@@ -460,6 +467,18 @@ mixin PageData {
   List<Feature>? get features => null;
 }
 ```
+
+Config|Type|Description
+---|---|---
+`paths`|`List<String>`|List of paths, this interface will be applied; `.*` is allowed at the end
+`attributes`|`List<String>`|List of attributes
+
+Mode|Description
+---|---
+single path|Syntax: `<interface>: <path>`; attributes will be detected automatically
+`paths` only|For multiple nodes; Attributes will be detected automatically
+`attributes` only|All nodes satisfying `attributes` will get the interface.
+both|Specified nodes will get the interface containing the specified attributes
 
 ### ➤ Linked Translations
 
