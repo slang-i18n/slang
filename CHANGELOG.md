@@ -1,3 +1,49 @@
+## 5.5.0
+
+**Namespaces**
+
+Split your translations into different files. Each file represents a namespace:
+
+```
+i18n/
+  widgets/
+    - widgets.i18n.json
+    - widgets_fr.i18n.json
+  dialogs/
+    - dialogs.i18n.json
+    - dialogs_fr.i18n.json
+```
+
+**Interfaces**
+
+Create common super classes for different nodes. This allows for more type safety. Instead of `List<dynamic>`, we can have `List<PageData>`
+
+```json
+{
+  "pages": [
+    {
+      "title": "E2E encryption",
+      "content": "Your data is safe!"
+    },
+    {
+      "title": "Sync",
+      "content": "Synchronize all your devices!"
+    }
+  ]
+}
+```
+
+With the generated mixin:
+
+```dart
+mixin PageData {
+  String get title;
+  String get content;
+}
+```
+
+See updated README for further information about those features.
+
 ## 5.4.0
 
 - feat: add default plural resolvers for Spanish, French and Italian (Thanks to @SimoneBressan)

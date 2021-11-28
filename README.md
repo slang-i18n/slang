@@ -70,7 +70,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.4.0
+  fast_i18n: 5.5.0
 ```
 
 **Step 2: Create JSON files**
@@ -322,6 +322,20 @@ i18n/
 - dialogs_fr.i18n.json
 ```
 
+You can also use different folders. Only file names matters!
+
+```
+i18n/
+  widgets/
+    - widgets.i18n.json
+    - widgets_fr.i18n.json
+  dialogs/
+    - dialogs.i18n.json
+    - dialogs_fr.i18n.json
+```
+
+Now access the translations:
+
 ```dart
 // t.<namespace>.<path>
 String a = t.widgets.welcomeCard.title;
@@ -432,8 +446,8 @@ Often, multiple maps have the same structure. You can create a common super clas
 ```
 
 Here we know that all objects inside `whatsNew` have the same attributes.
-We also know that `firstPage` and all children in `pages` have common attributes.
-Let's create 2 interface `PageData` and `NewsData`.
+We also know that `firstPage` and all children of `pages` have common attributes.
+Let's create 2 interfaces `PageData` and `NewsData`.
 
 ```yaml
 # File: build.yaml
@@ -488,7 +502,7 @@ mixin PageData {
 
 Config|Type|Description
 ---|---|---
-`paths`|`List<String>`|List of paths, this interface will be applied; `.*` is allowed at the end
+`paths`|`List<String>`|List of paths; Use `.*` to target all children of a node (non-recursive)
 `attributes`|`List<String>`|List of attributes
 
 Mode|Description
@@ -496,7 +510,7 @@ Mode|Description
 single path|Syntax: `<interface>: <path>`; attributes will be detected automatically
 `paths` only|For multiple nodes; Attributes will be detected automatically
 `attributes` only|All nodes satisfying `attributes` will get the interface.
-both|Specified nodes will get the interface containing the specified attributes
+both|Specified nodes will get the interface with the specified attributes
 
 ### ➤ Locale Enum
 
