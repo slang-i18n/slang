@@ -888,17 +888,6 @@ As soon as an unknown item has been detected, then this json node is **not** a p
 
 For contexts, all enum values must exist.
 
-**How does interface detection work?**
-
-An object / list node will receive a mixin if all children have the same signature.
-
-Then, the library checks:
-
-1. if a concrete interface in `build.yaml` is specified with the same path, then take this
-2. if a concrete interface in `build.yaml` is specified with the same attributes, then take this
-3. if there is already a mixin with the same attributes, then take this
-4. create a new mixin
-
 ## License
 
 MIT License
