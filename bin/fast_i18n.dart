@@ -117,14 +117,15 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   for (final interface in buildConfig.interfaces) {
     print('    - ${interface.name}');
     print(
-        '      Attributes: ${interface.attributes.isEmpty ? 'no attributes' : ''}');
+        '        Attributes: ${interface.attributes.isEmpty ? 'no attributes' : ''}');
     for (final a in interface.attributes) {
       print(
-          '        - ${a.optional ? '(optional) ' : ''}${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})');
+          '          - ${a.optional ? '(optional) ' : ''}${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})');
     }
-    print('      Paths: ${interface.paths.isEmpty ? 'no paths' : ''}');
+    print('        Paths: ${interface.paths.isEmpty ? 'no paths' : ''}');
     for (final path in interface.paths) {
-      print('        - $path');
+      print(
+          '          - ${path.isContainer ? 'children of: ' : ''}${path.path}');
     }
   }
   print('');

@@ -112,11 +112,11 @@ extension on Map<String, dynamic> {
     return this.entries.map((e) {
       final interfaceName = e.key.toCase(CaseStyle.pascal);
       final Set<InterfaceAttribute> attributes;
-      final Set<String> paths;
+      final List<InterfacePath> paths;
       if (e.value is String) {
         // PageData: welcome.pages
         attributes = {};
-        paths = {e.value};
+        paths = [InterfacePath(e.value)];
       } else {
         // PageData:
         //   paths:
@@ -171,9 +171,12 @@ extension on Map<String, dynamic> {
         // parse paths
         final pathsConfig = interfaceConfig['paths'] as List?;
         if (pathsConfig != null) {
-          paths = pathsConfig.cast<String>().toSet();
+          paths = pathsConfig
+              .cast<String>()
+              .map((path) => InterfacePath(path))
+              .toList();
         } else {
-          paths = {};
+          paths = [];
         }
 
         if (attributes.isEmpty && paths.isEmpty) {

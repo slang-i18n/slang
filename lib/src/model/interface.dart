@@ -6,13 +6,25 @@ final _setEquality = SetEquality();
 class InterfaceConfig {
   final String name;
   final Set<InterfaceAttribute> attributes;
-  final Set<String> paths;
+  final List<InterfacePath> paths;
 
   InterfaceConfig({
     required this.name,
     required this.attributes,
     required this.paths,
   });
+}
+
+class InterfacePath {
+  final String path;
+
+  /// true, if the path ends with '.*', all children have the same interface
+  /// false, otherwise, i.e. this path itself will get an interface
+  final bool isContainer;
+
+  InterfacePath(String path)
+      : path = path.replaceAll('.*', ''),
+        isContainer = path.endsWith('.*');
 }
 
 /// The interface model used for generation

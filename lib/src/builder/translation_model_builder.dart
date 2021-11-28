@@ -133,6 +133,10 @@ class TranslationModelBuilder {
 
     // 3rd round: Add interfaces
 
+    // Interfaces with no specified path
+    // will be applied globally
+    Set<Interface> globalInterfaces = {};
+
     // Interface Name -> Interface
     // This may be smaller than [pathInterfaceNameMap] because the user may
     // specify an interface without attributes - in this case the interface
@@ -140,24 +144,39 @@ class TranslationModelBuilder {
     Map<String, Interface> nameInterfaceMap = {};
 
     // Path -> Interface Name
+    Map<String, String> pathInterfaceContainerMap = {};
+
+    // Path -> Interface Name
     Map<String, String> pathInterfaceNameMap = {};
 
     // add from build config
     buildConfig.interfaces.forEach((interfaceConfig) {
-      interfaceConfig.paths.forEach((path) {
-        pathInterfaceNameMap[path] = interfaceConfig.name;
-      });
-
+      final Interface? interface;
       if (interfaceConfig.attributes.isNotEmpty) {
-        final interface = interfaceConfig.toInterface();
+        interface = interfaceConfig.toInterface();
         nameInterfaceMap[interface.name] = interface;
+      } else {
+        interface = null;
+      }
+
+      if (interfaceConfig.paths.isEmpty && interface != null) {
+        globalInterfaces.add(interface);
+      } else {
+        interfaceConfig.paths.forEach((path) {
+          if (path.isContainer) {
+            pathInterfaceContainerMap[path.path] = interfaceConfig.name;
+          } else {
+            pathInterfaceNameMap[path.path] = interfaceConfig.name;
+          }
+        });
       }
     });
 
     final resultInterfaces = _applyInterfaceAndGenericsRecursive(
       curr: root,
-      predefinedInterfaces: nameInterfaceMap.values.toList(growable: false),
+      globalInterfaces: globalInterfaces,
       nameInterfaceMap: nameInterfaceMap,
+      pathInterfaceContainerNameMap: pathInterfaceContainerMap,
       pathInterfaceNameMap: pathInterfaceNameMap,
     ).toList();
 
@@ -348,8 +367,9 @@ class TranslationModelBuilder {
   /// Returns the resulting interface list
   static Iterable<Interface> _applyInterfaceAndGenericsRecursive({
     required IterableNode curr,
-    required List<Interface> predefinedInterfaces,
+    required Set<Interface> globalInterfaces,
     required Map<String, Interface> nameInterfaceMap,
+    required Map<String, String> pathInterfaceContainerNameMap,
     required Map<String, String> pathInterfaceNameMap,
   }) {
     final Iterable<Node> children;
@@ -362,31 +382,49 @@ class TranslationModelBuilder {
       throw 'This should not happen';
     }
 
+    // first calculate for children (post order!)
     children.forEach((child) {
       if (child is IterableNode) {
         _applyInterfaceAndGenericsRecursive(
           curr: child,
-          predefinedInterfaces: predefinedInterfaces,
+          globalInterfaces: globalInterfaces,
           nameInterfaceMap: nameInterfaceMap,
+          pathInterfaceContainerNameMap: pathInterfaceContainerNameMap,
           pathInterfaceNameMap: pathInterfaceNameMap,
         );
       }
     });
 
-    final interface = _determineInterface(
+    if (curr is ObjectNode) {
+      // check if this node itself is an interface
+      final interface = _determineInterface(
+        node: curr,
+        globalInterfaces: globalInterfaces,
+        nameInterfaceMap: nameInterfaceMap,
+        pathInterfaceNameMap: pathInterfaceNameMap,
+      );
+      if (interface != null) {
+        curr.setInterface(interface);
+
+        // in case this interface is new
+        nameInterfaceMap[interface.name] = interface;
+      }
+    }
+
+    final containerInterface = _determineInterfaceForContainer(
       node: curr,
-      predefinedInterfaces: predefinedInterfaces,
+      globalInterfaces: globalInterfaces,
       nameInterfaceMap: nameInterfaceMap,
-      pathInterfaceNameMap: pathInterfaceNameMap,
+      pathInterfaceContainerNameMap: pathInterfaceContainerNameMap,
     );
-    if (interface != null) {
-      curr.setGenericType(interface.name);
+    if (containerInterface != null) {
+      curr.setGenericType(containerInterface.name);
       children
           .cast<ObjectNode>()
-          .forEach((child) => child.setInterface(interface));
+          .forEach((child) => child.setInterface(containerInterface));
 
       // in case this interface is new
-      nameInterfaceMap[interface.name] = interface;
+      nameInterfaceMap[containerInterface.name] = containerInterface;
     }
 
     return nameInterfaceMap.values;
@@ -396,14 +434,14 @@ class TranslationModelBuilder {
   /// No side effects.
   ///
   /// [node] this node
-  /// [predefinedInterfaces] interfaces with attributes specified in build conf
+  /// [globalInterfaces] interfaces with attributes specified in build conf
   /// [nameInterfaceMap] Interface Name -> Interface, may grow if interfaces with unknown attributes get resolved
-  /// [pathInterfaceNameMap] Path -> Interface Name, as in build conf
-  static Interface? _determineInterface({
+  /// [pathInterfaceContainerNameMap] Path -> Interface Name, as in build conf
+  static Interface? _determineInterfaceForContainer({
     required IterableNode node,
-    required List<Interface> predefinedInterfaces,
+    required Set<Interface> globalInterfaces,
     required Map<String, Interface> nameInterfaceMap,
-    required Map<String, String> pathInterfaceNameMap,
+    required Map<String, String> pathInterfaceContainerNameMap,
   }) {
     final List<ObjectNode> children;
     if (node is ListNode) {
@@ -424,7 +462,7 @@ class TranslationModelBuilder {
     }
 
     // first check if the path is specified to be an interface (via build config)
-    final specifiedInterface = pathInterfaceNameMap[node.path];
+    final specifiedInterface = pathInterfaceContainerNameMap[node.path];
     if (specifiedInterface != null) {
       final existingInterface = nameInterfaceMap[specifiedInterface];
       if (existingInterface != null) {
@@ -464,10 +502,56 @@ class TranslationModelBuilder {
       // lets find the first interface that satisfy this hypothetical interface
       // only one interface is allowed because generics do not allow unions
       final potentialInterface =
-          predefinedInterfaces.cast<Interface?>().firstWhere(
+          globalInterfaces.cast<Interface?>().firstWhere(
                 (interface) => Interface.satisfyRequiredSet(
                     requiredSet: interface!.attributes,
                     testSet: commonAttributes),
+                orElse: () => null,
+              );
+      return potentialInterface;
+    }
+  }
+
+  /// Returns the interface of the object node.
+  /// No side effects.
+  ///
+  /// [node] this node
+  /// [globalInterfaces] interfaces with attributes specified in build conf
+  /// [nameInterfaceMap] Interface Name -> Interface, may grow if interfaces with unknown attributes get resolved
+  /// [pathInterfaceNameMap] Path -> Interface Name, as in build conf
+  static Interface? _determineInterface({
+    required ObjectNode node,
+    required Set<Interface> globalInterfaces,
+    required Map<String, Interface> nameInterfaceMap,
+    required Map<String, String> pathInterfaceNameMap,
+  }) {
+    // first check if the path is specified to be an interface (via build config)
+    final specifiedInterface = pathInterfaceNameMap[node.path];
+    if (specifiedInterface != null) {
+      final existingInterface = nameInterfaceMap[specifiedInterface];
+      if (existingInterface != null) {
+        // user has specified path and attributes for this interface
+        return existingInterface;
+      }
+    }
+
+    // find attributes
+    final attributes = _parseAttributes(node);
+
+    if (specifiedInterface != null) {
+      // user has specified the path but not the concrete attributes
+      // create the corresponding concrete interface here
+      return Interface(
+        name: specifiedInterface,
+        attributes: attributes,
+      );
+    } else {
+      // lets find the first interface that satisfy this hypothetical interface
+      // only one interface is allowed because generics do not allow unions
+      final potentialInterface =
+          globalInterfaces.cast<Interface?>().firstWhere(
+                (interface) => Interface.satisfyRequiredSet(
+                    requiredSet: interface!.attributes, testSet: attributes),
                 orElse: () => null,
               );
       return potentialInterface;
