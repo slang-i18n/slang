@@ -74,18 +74,20 @@ void _generateClass(
   buffer.writeln();
 
   final mixinStr =
-      node.interface != null ? 'with ${node.interface!.name} ' : '';
+      node.interface != null ? ' with ${node.interface!.name}' : '';
 
   if (base) {
-    buffer.writeln('class $finalClassName $mixinStr{');
+    buffer.writeln('class $finalClassName$mixinStr {');
   } else {
     final baseClassName =
         getClassName(parentName: className, locale: config.baseLocale);
-    final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.none
-        ? 'implements'
-        : 'extends';
-    buffer.writeln(
-        'class $finalClassName $fallbackStrategy $baseClassName $mixinStr{');
+
+    if (config.fallbackStrategy == FallbackStrategy.none) {
+      buffer.writeln(
+          'class $finalClassName$mixinStr implements $baseClassName {');
+    } else {
+      buffer.writeln('class $finalClassName extends $baseClassName$mixinStr {');
+    }
   }
 
   if (config.fallbackStrategy == FallbackStrategy.none || base)
