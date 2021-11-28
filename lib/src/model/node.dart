@@ -27,10 +27,9 @@ abstract class IterableNode extends Node {
   String? _genericType;
   String? get genericType => _genericType;
 
-  IterableNode(String path) : super(path);
+  IterableNode(String path, this._genericType) : super(path);
 
   void setGenericType(String genericType) {
-    assert(_genericType == null);
     _genericType = genericType;
   }
 }
@@ -46,7 +45,6 @@ enum ObjectNodeType {
 class ObjectNode extends IterableNode {
   final Map<String, Node> entries;
   final ObjectNodeType type;
-  final bool plainStrings; // Map<String, String> or Map<String, dynamic>
   final ContextType? contextHint; // to save computing power by calc only once
 
   /// If not null, then this node has an interface (mixin)
@@ -58,9 +56,12 @@ class ObjectNode extends IterableNode {
     required this.entries,
     required this.type,
     required this.contextHint,
-  })  : plainStrings = entries.values
-            .every((child) => child is TextNode && child.params.isEmpty),
-        super(path);
+  }) : super(
+            path,
+            entries.values
+                    .every((child) => child is TextNode && child.params.isEmpty)
+                ? 'String'
+                : null);
 
   void setInterface(Interface interface) {
     _interface = interface;
@@ -72,12 +73,13 @@ class ObjectNode extends IterableNode {
 
 class ListNode extends IterableNode {
   final List<Node> entries;
-  final bool plainStrings;
 
   ListNode({required String path, required this.entries})
-      : plainStrings =
-            entries.every((child) => child is TextNode && child.params.isEmpty),
-        super(path);
+      : super(
+            path,
+            entries.every((child) => child is TextNode && child.params.isEmpty)
+                ? 'String'
+                : null);
 
   @override
   String toString() => entries.toString();

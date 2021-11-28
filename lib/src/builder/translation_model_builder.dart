@@ -501,13 +501,11 @@ class TranslationModelBuilder {
     } else {
       // lets find the first interface that satisfy this hypothetical interface
       // only one interface is allowed because generics do not allow unions
-      final potentialInterface =
-          globalInterfaces.cast<Interface?>().firstWhere(
-                (interface) => Interface.satisfyRequiredSet(
-                    requiredSet: interface!.attributes,
-                    testSet: commonAttributes),
-                orElse: () => null,
-              );
+      final potentialInterface = globalInterfaces.cast<Interface?>().firstWhere(
+            (interface) => Interface.satisfyRequiredSet(
+                requiredSet: interface!.attributes, testSet: commonAttributes),
+            orElse: () => null,
+          );
       return potentialInterface;
     }
   }
@@ -548,12 +546,11 @@ class TranslationModelBuilder {
     } else {
       // lets find the first interface that satisfy this hypothetical interface
       // only one interface is allowed because generics do not allow unions
-      final potentialInterface =
-          globalInterfaces.cast<Interface?>().firstWhere(
-                (interface) => Interface.satisfyRequiredSet(
-                    requiredSet: interface!.attributes, testSet: attributes),
-                orElse: () => null,
-              );
+      final potentialInterface = globalInterfaces.cast<Interface?>().firstWhere(
+            (interface) => Interface.satisfyRequiredSet(
+                requiredSet: interface!.attributes, testSet: attributes),
+            orElse: () => null,
+          );
       return potentialInterface;
     }
   }
@@ -577,8 +574,6 @@ class TranslationModelBuilder {
         parameters = {}; // lists never have parameters
         if (child.genericType != null) {
           returnType = 'List<${child.genericType}>';
-        } else if (child.plainStrings) {
-          returnType = 'List<String>';
         } else {
           returnType = 'List<dynamic>';
         }
@@ -586,8 +581,6 @@ class TranslationModelBuilder {
         parameters = {}; // objects never have parameters
         if (child.genericType != null) {
           returnType = 'Map<String, ${child.genericType}>';
-        } else if (child.plainStrings) {
-          returnType = 'Map<String, String>';
         } else {
           returnType = 'Map<String, dynamic>';
         }

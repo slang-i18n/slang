@@ -126,9 +126,7 @@ void _generateClass(
             'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
-      String type = value.genericType != null
-          ? value.genericType!
-          : (value.plainStrings ? 'String' : 'dynamic');
+      String type = value.genericType != null ? value.genericType! : 'dynamic';
       buffer.write('List<$type>$optional get $key => ');
       _generateList(config, base, locale, hasPluralResolver, buffer, queue,
           className, value.entries, 0);
@@ -147,9 +145,8 @@ void _generateClass(
           break;
         case ObjectNodeType.map:
           // inline map
-          String type = value.genericType != null
-              ? value.genericType!
-              : (value.plainStrings ? 'String' : 'dynamic');
+          String type =
+              value.genericType != null ? value.genericType! : 'dynamic';
           buffer.write('Map<String, $type>$optional get $key => ');
           _generateMap(config, base, locale, hasPluralResolver, buffer, queue,
               childClassNoLocale, value.entries, 0);
