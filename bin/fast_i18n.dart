@@ -305,7 +305,7 @@ Future<void> generateTranslations({
     if (buildConfig.outputFileName == null && buildConfig.namespaces) {
       print('');
       print(
-          'WARNING: Please specify "outputFileName". Using fallback file name for now.');
+          'WARNING: Please specify "output_file_name". Using fallback file name for now.');
     }
 
     print('');

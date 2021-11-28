@@ -15,7 +15,8 @@ import 'package:glob/glob.dart';
 
 /// Static entry point for build_runner
 Builder i18nBuilder(BuilderOptions options) {
-  final buildConfig = BuildConfigBuilder.fromMap(YamlUtils.deepCast(options.config));
+  final buildConfig =
+      BuildConfigBuilder.fromMap(YamlUtils.deepCast(options.config));
   String outputFilePattern;
   if (buildConfig.outputFileName != null) {
     // new variant
@@ -154,7 +155,7 @@ class I18nBuilder implements Builder {
     if (buildConfig.outputFileName == null && buildConfig.namespaces) {
       print('');
       print(
-          'WARNING: Please specify "outputFileName". Using fallback file name for now.');
+          'WARNING: Please specify "output_file_name". Using fallback file name for now.');
     }
   }
 
