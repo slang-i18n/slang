@@ -30,8 +30,42 @@ class Interface {
 
   @override
   bool operator ==(Object other) {
-    return other is Interface &&
-        _setEquality.equals(attributes, other.attributes);
+    return other is Interface && equalAttributes(attributes, other.attributes);
+  }
+
+  static bool equalAttributes(
+    Set<InterfaceAttribute> a,
+    Set<InterfaceAttribute> b,
+  ) {
+    return _setEquality.equals(a, b);
+  }
+
+  /// True if,
+  /// every non-optional attribute in [requiredSet] also exists in [testSet].
+  /// every optional attribute in [requiredSet] which also exist in [testSet] must have the same signature.
+  static bool satisfyRequiredSet({
+    required Set<InterfaceAttribute> requiredSet,
+    required Set<InterfaceAttribute> testSet,
+  }) {
+    for (final attribute in requiredSet) {
+      if (attribute.optional) {
+        for (final testAttribute in testSet) {
+          if (attribute.attributeName == testAttribute.attributeName) {
+            if (attribute.returnType != testAttribute.returnType ||
+                !_setEquality.equals(
+                    attribute.parameters, testAttribute.parameters)) {
+              // this optional attribute also exists in testSet but with a different signature
+              return false;
+            }
+            break;
+          }
+        }
+      } else if (!testSet.contains(attribute)) {
+        // this non-optional attribute does not exist in testSet
+        return false;
+      }
+    }
+    return true;
   }
 }
 
@@ -82,5 +116,11 @@ class AttributeParameter {
     return other is AttributeParameter &&
         parameterName == other.parameterName &&
         type == other.type;
+  }
+}
+
+extension InterfaceConfigExt on InterfaceConfig {
+  Interface toInterface() {
+    return Interface(name: name, attributes: attributes);
   }
 }

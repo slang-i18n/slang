@@ -3,6 +3,7 @@ import 'package:fast_i18n/src/builder/translation_model_builder.dart';
 import 'package:fast_i18n/src/generator/generator.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 
 class GeneratorFacade {
@@ -30,11 +31,24 @@ class GeneratorFacade {
     // sort: base locale, then all other locales
     translationList.sort(I18nData.generationComparator);
 
+    // combine all interfaces of all locales
+    // if one interface appears on more than one locale, then the interface of
+    // the base locale will have precedence
+    Map<String, Interface> interfaceMap = {};
+    translationList.forEach((locale) {
+      locale.interfaces.forEach((interface) {
+        if (!interfaceMap.containsKey(interface)) {
+          interfaceMap[interface.name] = interface;
+        }
+      });
+    });
+
     // build config
     final config = I18nConfigBuilder.build(
       baseName: baseName,
       buildConfig: buildConfig,
       translationList: translationList,
+      interfaces: interfaceMap.values.toList(),
     );
 
     if (showPluralHint && config.hasPlurals()) {

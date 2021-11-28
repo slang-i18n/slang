@@ -54,6 +54,8 @@ void generateHeader(
 
   _generateContextEnums(buffer: buffer, config: config);
 
+  _generateInterfaces(buffer: buffer, config: config);
+
   _generateExtensions(
       buffer: buffer,
       config: config,
@@ -353,6 +355,40 @@ void _generateContextEnums({
     buffer.writeln('enum ${contextType.enumName} {');
     for (final enumValue in contextType.enumValues) {
       buffer.writeln('\t$enumValue,');
+    }
+    buffer.writeln('}');
+  }
+}
+
+void _generateInterfaces({
+  required StringBuffer buffer,
+  required I18nConfig config,
+}) {
+  buffer.writeln();
+  buffer.writeln('// interfaces generated as mixins');
+
+  for (final interface in config.interface) {
+    buffer.writeln();
+    buffer.writeln('mixin ${interface.name} {');
+    for (final attribute in interface.attributes) {
+      final nullable = attribute.optional ? '?' : '';
+      final defaultNull = attribute.optional ? ' => null' : '';
+      if (attribute.parameters.isEmpty) {
+        // simple text nodes or others
+        buffer.writeln(
+            '\t${attribute.returnType}$nullable get ${attribute.attributeName}$defaultNull;');
+      } else {
+        // this should be a text node
+        buffer.write(
+            '\t${attribute.returnType}$nullable ${attribute.attributeName}({');
+        bool first = true;
+        for (final param in attribute.parameters) {
+          if (!first) buffer.write(', ');
+          buffer.write('required ${param.type} ${param.parameterName}');
+          first = false;
+        }
+        buffer.writeln('})$defaultNull;');
+      }
     }
     buffer.writeln('}');
   }

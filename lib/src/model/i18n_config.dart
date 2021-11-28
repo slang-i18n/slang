@@ -1,6 +1,7 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 
 /// general config, applies to all locales
@@ -16,6 +17,7 @@ class I18nConfig {
   final TranslationClassVisibility translationClassVisibility;
   final bool renderFlatMap;
   final List<ContextType> contexts;
+  final List<Interface> interface; // may include more than in build config
 
   I18nConfig({
     required this.baseName,
@@ -29,6 +31,7 @@ class I18nConfig {
     required this.translationClassVisibility,
     required this.renderFlatMap,
     required this.contexts,
+    required this.interface,
   });
 
   Set<String> getRenderedPluralResolvers() {

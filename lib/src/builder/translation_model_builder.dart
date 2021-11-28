@@ -34,12 +34,12 @@ class TranslationModelBuilder {
     // Assumption: They are basic linked translations without parameters
     // Reason: Not all TextNodes are built, so final parameters are unknown
     final resultNodeTree = _parseMapNode(
+      parentPath: '',
       curr: map,
       config: buildConfig,
       keyCase: buildConfig.keyCase,
       localeEnum: localeEnum,
       leavesMap: leavesMap,
-      stack: [],
       cardinalNotifier: () {
         hasCardinal = true;
       },
@@ -116,27 +116,56 @@ class TranslationModelBuilder {
 
       if (linkParamMap.values.any((params) => params.isNotEmpty)) {
         // rebuild TextNode because its linked translations have parameters
-        final textNode = TextNode(value.raw, buildConfig.stringInterpolation,
-            localeEnum, buildConfig.paramCase, linkParamMap);
-        value.params = textNode.params;
-        value.content = textNode.content;
-        value.paramTypeMap = paramTypeMap;
+        value.updateWithLinkParams(
+          linkParamMap: linkParamMap,
+          paramTypeMap: paramTypeMap,
+        );
       }
     });
 
+    // imaginary root node
+    final root = ObjectNode(
+      path: '',
+      entries: resultNodeTree,
+      type: ObjectNodeType.classType,
+      contextHint: null,
+    );
+
     // 3rd round: Add interfaces
-    List<Interface> interfaces = [];
+
+    // Interface Name -> Interface
+    // This may be smaller than [pathInterfaceNameMap] because the user may
+    // specify an interface without attributes - in this case the interface
+    // will be determined.
+    Map<String, Interface> nameInterfaceMap = {};
+
+    // Path -> Interface Name
+    Map<String, String> pathInterfaceNameMap = {};
+
+    // add from build config
+    buildConfig.interfaces.forEach((interfaceConfig) {
+      interfaceConfig.paths.forEach((path) {
+        pathInterfaceNameMap[path] = interfaceConfig.name;
+      });
+
+      if (interfaceConfig.attributes.isNotEmpty) {
+        final interface = interfaceConfig.toInterface();
+        nameInterfaceMap[interface.name] = interface;
+      }
+    });
+
+    final resultInterfaces = _applyInterfaceAndGenericsRecursive(
+      curr: root,
+      predefinedInterfaces: nameInterfaceMap.values.toList(growable: false),
+      nameInterfaceMap: nameInterfaceMap,
+      pathInterfaceNameMap: pathInterfaceNameMap,
+    ).toList();
 
     return I18nData(
       base: buildConfig.baseLocale == locale,
       locale: locale,
-      root: ObjectNode(
-        parent: null,
-        entries: resultNodeTree,
-        type: ObjectNodeType.classType,
-        contextHint: null,
-      ),
-      interfaces: interfaces,
+      root: root,
+      interfaces: resultInterfaces,
       hasCardinal: hasCardinal,
       hasOrdinal: hasOrdinal,
     );
@@ -145,12 +174,12 @@ class TranslationModelBuilder {
   /// Takes the [curr] map which is (a part of) the raw tree from json / yaml
   /// and returns the node model.
   static Map<String, Node> _parseMapNode({
+    required String parentPath,
     required Map<String, dynamic> curr,
     required BuildConfig config,
     required CaseStyle? keyCase,
     required String localeEnum,
     required Map<String, Node> leavesMap,
-    required List<String> stack,
     required Function cardinalNotifier,
     required Function ordinalNotifier,
   }) {
@@ -158,20 +187,21 @@ class TranslationModelBuilder {
 
     curr.forEach((key, value) {
       key = key.toCase(keyCase); // transform key if necessary
+      final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
 
       if (value is String || value is num) {
         // leaf
         // key: 'value'
         final textNode = TextNode(
-          value.toString(),
-          config.stringInterpolation,
-          localeEnum,
-          config.paramCase,
+          path: currPath,
+          raw: value.toString(),
+          interpolation: config.stringInterpolation,
+          localeEnum: localeEnum,
+          paramCase: config.paramCase,
         );
         resultNodeTree[key] = textNode;
-        leavesMap[[...stack, key].toNodePath()] = textNode;
+        leavesMap[currPath] = textNode;
       } else {
-        final List<String> nextStack = [...stack, key];
         final Map<String, Node> children;
 
         if (value is List) {
@@ -181,35 +211,40 @@ class TranslationModelBuilder {
             for (int i = 0; i < value.length; i++) i.toString(): value[i],
           };
           children = _parseMapNode(
+            parentPath: currPath,
             curr: listAsMap,
             config: config,
             keyCase: config.keyCase,
             localeEnum: localeEnum,
             leavesMap: leavesMap,
-            stack: nextStack,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
           );
 
           // finally only take their values, ignoring keys
-          resultNodeTree[key] = ListNode(children.values.toList());
+          final node = ListNode(
+            path: currPath,
+            entries: children.values.toList(),
+          );
+          _setParent(node, children.values);
+          resultNodeTree[key] = node;
         } else {
           // key: { ...value }
           children = _parseMapNode(
+            parentPath: currPath,
             curr: value,
             config: config,
             keyCase: config.keyCase != config.keyMapCase &&
-                    _determineMapType(config, nextStack)
+                    config.maps.contains(currPath)
                 ? config.keyMapCase
                 : config.keyCase,
             localeEnum: localeEnum,
             leavesMap: leavesMap,
-            stack: nextStack,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
           );
           _DetectionResult detectedType =
-              _determineNodeType(config, nextStack, children);
+              _determineNodeType(config, currPath, children);
 
           // notify plural and split by comma if necessary
           if (detectedType.nodeType == ObjectNodeType.context ||
@@ -237,16 +272,17 @@ class TranslationModelBuilder {
           }
 
           final node = ObjectNode(
-            parent: null,
+            path: currPath,
             entries: children,
             type: detectedType.nodeType,
             contextHint: detectedType.contextHint,
           );
+          _setParent(node, children.values);
           resultNodeTree[key] = node;
           if (node.type == ObjectNodeType.pluralCardinal ||
               node.type == ObjectNodeType.pluralOrdinal ||
               node.type == ObjectNodeType.context) {
-            leavesMap[nextStack.toNodePath()] = node;
+            leavesMap[currPath] = node;
           }
         }
       }
@@ -255,9 +291,12 @@ class TranslationModelBuilder {
     return resultNodeTree;
   }
 
+  static void _setParent(Node parent, Iterable<Node> children) {
+    children.forEach((child) => child.setParent(parent));
+  }
+
   static _DetectionResult _determineNodeType(
-      BuildConfig config, List<String> stack, Map<String, Node> children) {
-    String nodePath = stack.toNodePath();
+      BuildConfig config, String nodePath, Map<String, Node> children) {
     if (config.maps.contains(nodePath)) {
       return _DetectionResult(ObjectNodeType.map);
     } else if (config.pluralCardinal.contains(nodePath)) {
@@ -304,9 +343,180 @@ class TranslationModelBuilder {
     }
   }
 
-  /// light version of [_determineNodeType] only checking map type
-  static bool _determineMapType(BuildConfig config, List<String> stack) {
-    return config.maps.contains(stack.toNodePath());
+  /// Traverses the tree in post order and finds interfaces
+  /// Sets interface and genericType for the affected nodes
+  /// Returns the resulting interface list
+  static Iterable<Interface> _applyInterfaceAndGenericsRecursive({
+    required IterableNode curr,
+    required List<Interface> predefinedInterfaces,
+    required Map<String, Interface> nameInterfaceMap,
+    required Map<String, String> pathInterfaceNameMap,
+  }) {
+    final Iterable<Node> children;
+
+    if (curr is ListNode) {
+      children = curr.entries;
+    } else if (curr is ObjectNode) {
+      children = curr.entries.values;
+    } else {
+      throw 'This should not happen';
+    }
+
+    children.forEach((child) {
+      if (child is IterableNode) {
+        _applyInterfaceAndGenericsRecursive(
+          curr: child,
+          predefinedInterfaces: predefinedInterfaces,
+          nameInterfaceMap: nameInterfaceMap,
+          pathInterfaceNameMap: pathInterfaceNameMap,
+        );
+      }
+    });
+
+    final interface = _determineInterface(
+      node: curr,
+      predefinedInterfaces: predefinedInterfaces,
+      nameInterfaceMap: nameInterfaceMap,
+      pathInterfaceNameMap: pathInterfaceNameMap,
+    );
+    if (interface != null) {
+      curr.setGenericType(interface.name);
+      children
+          .cast<ObjectNode>()
+          .forEach((child) => child.setInterface(interface));
+
+      // in case this interface is new
+      nameInterfaceMap[interface.name] = interface;
+    }
+
+    return nameInterfaceMap.values;
+  }
+
+  /// Returns the interface of the list or object node.
+  /// No side effects.
+  ///
+  /// [node] this node
+  /// [predefinedInterfaces] interfaces with attributes specified in build conf
+  /// [nameInterfaceMap] Interface Name -> Interface, may grow if interfaces with unknown attributes get resolved
+  /// [pathInterfaceNameMap] Path -> Interface Name, as in build conf
+  static Interface? _determineInterface({
+    required IterableNode node,
+    required List<Interface> predefinedInterfaces,
+    required Map<String, Interface> nameInterfaceMap,
+    required Map<String, String> pathInterfaceNameMap,
+  }) {
+    final List<ObjectNode> children;
+    if (node is ListNode) {
+      if (node.entries.every((child) => child is ObjectNode)) {
+        children = node.entries.cast<ObjectNode>().toList();
+      } else {
+        return null;
+      }
+    } else {
+      if ((node as ObjectNode)
+          .entries
+          .values
+          .every((child) => child is ObjectNode)) {
+        children = node.entries.values.cast<ObjectNode>().toList();
+      } else {
+        return null;
+      }
+    }
+
+    // first check if the path is specified to be an interface (via build config)
+    final specifiedInterface = pathInterfaceNameMap[node.path];
+    if (specifiedInterface != null) {
+      final existingInterface = nameInterfaceMap[specifiedInterface];
+      if (existingInterface != null) {
+        // user has specified path and attributes for this interface
+        return existingInterface;
+      }
+    }
+
+    // find minimum attribute set all object nodes have in common
+    // and a super set containing all attributes of all object nodes
+    final commonAttributes = _parseAttributes(children.first);
+    final allAttributes = {...commonAttributes};
+    children.skip(1).forEach((child) {
+      final currAttributes = _parseAttributes(child);
+      allAttributes.addAll(currAttributes);
+      commonAttributes
+          .removeWhere((attribute) => !currAttributes.contains(attribute));
+    });
+    final optionalAttributes = allAttributes
+        .difference(commonAttributes)
+        .map((attribute) => InterfaceAttribute(
+              attributeName: attribute.attributeName,
+              returnType: attribute.returnType,
+              parameters: attribute.parameters,
+              optional: true,
+            ))
+        .toSet();
+
+    if (specifiedInterface != null) {
+      // user has specified the path but not the concrete attributes
+      // create the corresponding concrete interface here
+      return Interface(
+        name: specifiedInterface,
+        attributes: {...commonAttributes, ...optionalAttributes},
+      );
+    } else {
+      // lets find the first interface that satisfy this hypothetical interface
+      // only one interface is allowed because generics do not allow unions
+      final potentialInterface =
+          predefinedInterfaces.cast<Interface?>().firstWhere(
+                (interface) => Interface.satisfyRequiredSet(
+                    requiredSet: interface!.attributes,
+                    testSet: commonAttributes),
+                orElse: () => null,
+              );
+      return potentialInterface;
+    }
+  }
+
+  /// Finds the attributes of the object node.
+  /// No side effects.
+  static Set<InterfaceAttribute> _parseAttributes(ObjectNode node) {
+    return node.entries.entries.map((entry) {
+      final child = entry.value;
+      String returnType;
+      Set<AttributeParameter> parameters;
+      if (child is TextNode) {
+        returnType = 'String';
+        parameters = child.params.map((p) {
+          return AttributeParameter(
+            parameterName: p,
+            type: child.paramTypeMap[p] ?? 'Object',
+          );
+        }).toSet();
+      } else if (child is ListNode) {
+        parameters = {}; // lists never have parameters
+        if (child.genericType != null) {
+          returnType = 'List<${child.genericType}>';
+        } else if (child.plainStrings) {
+          returnType = 'List<String>';
+        } else {
+          returnType = 'List<dynamic>';
+        }
+      } else if (child is ObjectNode) {
+        parameters = {}; // objects never have parameters
+        if (child.genericType != null) {
+          returnType = 'Map<String, ${child.genericType}>';
+        } else if (child.plainStrings) {
+          returnType = 'Map<String, String>';
+        } else {
+          returnType = 'Map<String, dynamic>';
+        }
+      } else {
+        throw 'This should not happen';
+      }
+      return InterfaceAttribute(
+        attributeName: entry.key,
+        returnType: returnType,
+        parameters: parameters,
+        optional: false,
+      );
+    }).toSet();
   }
 }
 
@@ -315,10 +525,4 @@ class _DetectionResult {
   final ContextType? contextHint;
 
   _DetectionResult(this.nodeType, [this.contextHint]);
-}
-
-extension on List<String> {
-  String toNodePath() {
-    return this.join('.');
-  }
 }

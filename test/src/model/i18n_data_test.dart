@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('generationComparator', () {
     final root = ObjectNode(
-      parent: null,
+      path: '',
       entries: {},
       type: ObjectNodeType.classType,
       contextHint: null,

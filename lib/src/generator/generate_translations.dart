@@ -14,9 +14,9 @@ const CONTEXT_PARAMETER = 'context';
 /// decides which class should be generated
 class ClassTask {
   final String className;
-  final Map<String, Node> members;
+  final ObjectNode node;
 
-  ClassTask(this.className, this.members);
+  ClassTask(this.className, this.node);
 }
 
 /// generates all classes of one locale
@@ -28,9 +28,10 @@ void generateTranslations(
 
   queue.add(ClassTask(
     getClassNameRoot(
-        baseName: config.baseName,
-        visibility: config.translationClassVisibility),
-    localeData.root.entries,
+      baseName: config.baseName,
+      visibility: config.translationClassVisibility,
+    ),
+    localeData.root,
   ));
 
   // only for the first class
@@ -48,7 +49,7 @@ void generateTranslations(
         buffer,
         queue,
         task.className,
-        task.members,
+        task.node,
         root);
 
     root = false;
@@ -65,22 +66,26 @@ void _generateClass(
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
-  Map<String, Node> currMembers,
+  ObjectNode node,
   bool root,
 ) {
   final finalClassName = getClassName(parentName: className, locale: locale);
 
   buffer.writeln();
 
+  final mixinStr =
+      node.interface != null ? 'with ${node.interface!.name} ' : '';
+
   if (base) {
-    buffer.writeln('class $finalClassName {');
+    buffer.writeln('class $finalClassName $mixinStr{');
   } else {
     final baseClassName =
         getClassName(parentName: className, locale: config.baseLocale);
     final fallbackStrategy = config.fallbackStrategy == FallbackStrategy.none
         ? 'implements'
         : 'extends';
-    buffer.writeln('class $finalClassName $fallbackStrategy $baseClassName {');
+    buffer.writeln(
+        'class $finalClassName $fallbackStrategy $baseClassName $mixinStr{');
   }
 
   if (config.fallbackStrategy == FallbackStrategy.none || base)
@@ -95,19 +100,24 @@ void _generateClass(
     buffer.writeln('\tstatic $finalClassName get instance => _instance;');
   buffer.writeln();
 
-  currMembers.forEach((key, value) {
+  node.entries.forEach((key, value) {
     buffer.write('\t');
-    if (!base) buffer.write('@override ');
+    if (!base ||
+        node.interface?.attributes
+                .any((attribute) => attribute.attributeName == key) ==
+            true) buffer.write('@override ');
 
     if (value is TextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('String get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
-            'String $key${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\';');
+            'String $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
-      String type = value.plainStrings ? 'String' : 'dynamic';
+      String type = value.genericType != null
+          ? value.genericType!
+          : (value.plainStrings ? 'String' : 'dynamic');
       buffer.write('List<$type> get $key => ');
       _generateList(config, base, locale, hasPluralResolver, buffer, queue,
           className, value.entries, 0);
@@ -118,7 +128,7 @@ void _generateClass(
       switch (value.type) {
         case ObjectNodeType.classType:
           // generate a class later on
-          queue.add(ClassTask(childClassNoLocale, value.entries));
+          queue.add(ClassTask(childClassNoLocale, value));
           String childClassWithLocale = getClassName(
               parentName: className, childName: key, locale: locale);
           buffer.writeln(
@@ -126,7 +136,9 @@ void _generateClass(
           break;
         case ObjectNodeType.map:
           // inline map
-          String type = value.plainStrings ? 'String' : 'dynamic';
+          String type = value.genericType != null
+              ? value.genericType!
+              : (value.plainStrings ? 'String' : 'dynamic');
           buffer.write('Map<String, $type> get $key => ');
           _generateMap(config, base, locale, hasPluralResolver, buffer, queue,
               childClassNoLocale, value.entries, 0);
@@ -196,7 +208,7 @@ void _generateMap(
         buffer.writeln('\'$key\': \'${value.content}\',');
       } else {
         buffer.writeln(
-            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\',');
+            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
@@ -209,7 +221,7 @@ void _generateMap(
       switch (value.type) {
         case ObjectNodeType.classType:
           // generate a class later on
-          queue.add(ClassTask(childClassNoLocale, value.entries));
+          queue.add(ClassTask(childClassNoLocale, value));
           String childClassWithLocale = getClassName(
               parentName: className, childName: key, locale: locale);
           buffer.writeln('\'$key\': $childClassWithLocale._instance,');
@@ -281,7 +293,7 @@ void _generateList(
         buffer.writeln('\'${value.content}\',');
       } else {
         buffer.writeln(
-            '${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\',');
+            '${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
       _generateList(config, base, locale, hasPluralResolver, buffer, queue,
@@ -294,7 +306,7 @@ void _generateList(
       switch (value.type) {
         case ObjectNodeType.classType:
           // generate a class later on
-          queue.add(ClassTask(childClassNoLocale, value.entries));
+          queue.add(ClassTask(childClassNoLocale, value));
           String childClassWithLocale = getClassName(
               parentName: className, childName: key, locale: locale);
           buffer.writeln('$childClassWithLocale._instance,');
@@ -357,12 +369,11 @@ generateTranslationMap(
 
     buffer.writeln('\t${config.enumName}.${localeData.locale.enumConstant}: {');
     _generateTranslationMapRecursive(
-      buffer,
-      localeData.root,
-      '',
-      config,
-      hasPluralResolver,
-      language,
+      buffer: buffer,
+      curr: localeData.root,
+      config: config,
+      hasPluralResolver: hasPluralResolver,
+      language: language,
     );
     buffer.writeln('\t},');
   }
@@ -370,77 +381,73 @@ generateTranslationMap(
   buffer.writeln('};');
 }
 
-_generateTranslationMapRecursive(
-  StringBuffer buffer,
-  Node parent,
-  String path,
-  I18nConfig config,
-  bool hasPluralResolver,
-  String language,
-) {
-  if (parent is ObjectNode) {
-    parent.entries.forEach((key, value) {
-      if (path.isNotEmpty) key = '$path.$key';
-
-      if (value is TextNode) {
-        if (value.params.isEmpty) {
-          buffer.writeln('\t\t\'$key\': \'${value.content}\',');
-        } else {
-          buffer.writeln(
-              '\t\t\'$key\': ${_toParameterList(value.params, value.paramTypeMap, config)} => \'${value.content}\',');
-        }
-      } else if (value is ListNode) {
-        // convert ListNode to ObjectNode with index as object keys
-        final Map<String, Node> entries = {
-          for (int i = 0; i < value.entries.length; i++)
-            i.toString(): value.entries[i]
-        };
-        final converted = ObjectNode(
-          parent: value,
-          entries: entries,
-          type: ObjectNodeType.classType,
-          contextHint: null,
-        );
-
-        _generateTranslationMapRecursive(
-            buffer, converted, key, config, hasPluralResolver, language);
-      } else if (value is ObjectNode) {
-        if (value.type == ObjectNodeType.pluralCardinal ||
-            value.type == ObjectNodeType.pluralOrdinal) {
-          buffer.write('\t\t\'$key\': ');
-          _addPluralizationCall(
-            buffer: buffer,
-            config: config,
-            hasPluralResolver: hasPluralResolver,
-            language: language,
-            cardinal: value.type == ObjectNodeType.pluralCardinal,
-            key: key,
-            children: value.entries,
-            depth: 1,
-          );
-        } else if (value.type == ObjectNodeType.context) {
-          buffer.write('\t\t\'$key\': ');
-          _addContextCall(
-            buffer: buffer,
-            config: config,
-            contextEnumName: value.contextHint!.enumName,
-            children: value.entries,
-            depth: 1,
-          );
-        } else {
-          // recursive
-          _generateTranslationMapRecursive(
-              buffer, value, key, config, hasPluralResolver, language);
-        }
-      }
+_generateTranslationMapRecursive({
+  required StringBuffer buffer,
+  required Node curr,
+  required I18nConfig config,
+  required bool hasPluralResolver,
+  required String language,
+}) {
+  if (curr is TextNode) {
+    if (curr.params.isEmpty) {
+      buffer.writeln('\t\t\'${curr.path}\': \'${curr.content}\',');
+    } else {
+      buffer.writeln(
+          '\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
+    }
+  } else if (curr is ListNode) {
+    curr.entries.forEach((child) {
+      _generateTranslationMapRecursive(
+        buffer: buffer,
+        curr: child,
+        config: config,
+        hasPluralResolver: hasPluralResolver,
+        language: language,
+      );
     });
+  } else if (curr is ObjectNode) {
+    if (curr.type == ObjectNodeType.pluralCardinal ||
+        curr.type == ObjectNodeType.pluralOrdinal) {
+      buffer.write('\t\t\'${curr.path}\': ');
+      _addPluralizationCall(
+        buffer: buffer,
+        config: config,
+        hasPluralResolver: hasPluralResolver,
+        language: language,
+        cardinal: curr.type == ObjectNodeType.pluralCardinal,
+        key: curr.path,
+        children: curr.entries,
+        depth: 1,
+      );
+    } else if (curr.type == ObjectNodeType.context) {
+      buffer.write('\t\t\'${curr.path}\': ');
+      _addContextCall(
+        buffer: buffer,
+        config: config,
+        contextEnumName: curr.contextHint!.enumName,
+        children: curr.entries,
+        depth: 1,
+      );
+    } else {
+      // recursive
+      curr.entries.values.forEach((child) {
+        _generateTranslationMapRecursive(
+          buffer: buffer,
+          curr: child,
+          config: config,
+          hasPluralResolver: hasPluralResolver,
+          language: language,
+        );
+      });
+    }
+  } else {
+    throw 'This should not happen';
   }
 }
 
 /// returns the parameter list
 /// e.g. ({required Object name, required Object age})
-String _toParameterList(
-    Set<String> params, Map<String, String> paramTypeMap, I18nConfig config) {
+String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
   StringBuffer buffer = StringBuffer();
   buffer.write('({');
   bool first = true;
@@ -454,6 +461,7 @@ String _toParameterList(
   return buffer.toString();
 }
 
+/// [key] is only used for debugging purposes
 void _addPluralizationCall(
     {required StringBuffer buffer,
     required I18nConfig config,

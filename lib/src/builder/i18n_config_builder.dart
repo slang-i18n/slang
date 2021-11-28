@@ -2,6 +2,7 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/model/pluralization_resolvers.dart';
 
@@ -10,6 +11,7 @@ class I18nConfigBuilder {
     required String baseName,
     required BuildConfig buildConfig,
     required List<I18nData> translationList,
+    required List<Interface> interfaces,
   }) {
     Map<String, RuleSet> renderedCardinalResolvers = {};
     Map<String, RuleSet> renderedOrdinalResolvers = {};
@@ -46,6 +48,7 @@ class I18nConfigBuilder {
       translationClassVisibility: buildConfig.translationClassVisibility,
       renderFlatMap: buildConfig.renderFlatMap,
       contexts: buildConfig.contexts,
+      interface: interfaces,
     );
   }
 }
