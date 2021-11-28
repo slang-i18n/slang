@@ -578,11 +578,44 @@ class TranslationModelBuilder {
           returnType = 'List<dynamic>';
         }
       } else if (child is ObjectNode) {
-        parameters = {}; // objects never have parameters
-        if (child.genericType != null) {
-          returnType = 'Map<String, ${child.genericType}>';
-        } else {
-          returnType = 'Map<String, dynamic>';
+        switch (child.type) {
+          case ObjectNodeType.classType:
+          case ObjectNodeType.map:
+            parameters = {}; // objects never have parameters
+            if (child.genericType != null) {
+              returnType = 'Map<String, ${child.genericType}>';
+            } else {
+              returnType = 'Map<String, dynamic>';
+            }
+            break;
+          case ObjectNodeType.pluralCardinal:
+          case ObjectNodeType.pluralOrdinal:
+            parameters = {
+              AttributeParameter(parameterName: 'count', type: 'num'),
+              ...child.entries.values
+                  .cast<TextNode>()
+                  .map((text) => text.params)
+                  .expand((param) => param)
+                  .where((param) => param != 'count')
+                  .map((param) =>
+                      AttributeParameter(parameterName: param, type: 'Object'))
+            };
+            returnType = 'String';
+            break;
+          case ObjectNodeType.context:
+            parameters = {
+              AttributeParameter(
+                  parameterName: 'context', type: child.contextHint!.enumName),
+              ...child.entries.values
+                  .cast<TextNode>()
+                  .map((text) => text.params)
+                  .expand((param) => param)
+                  .where((param) => param != 'context')
+                  .map((param) =>
+                      AttributeParameter(parameterName: param, type: 'Object'))
+            };
+            returnType = 'String';
+            break;
         }
       } else {
         throw 'This should not happen';
