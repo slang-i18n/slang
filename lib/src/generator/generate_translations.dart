@@ -109,18 +109,27 @@ void _generateClass(
                 .any((attribute) => attribute.attributeName == key) ==
             true) buffer.write('@override ');
 
+    // even if this attribute exist, it has to satisfy the same signature as
+    // specified in the interface
+    // this error seems to occur when using in combination with "extends"
+    final optional = node.interface?.attributes.any((attribute) =>
+                attribute.optional && attribute.attributeName == key) ==
+            true
+        ? '?'
+        : '';
+
     if (value is TextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('String get $key => \'${value.content}\';');
+        buffer.writeln('String$optional get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
-            'String $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
+            'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
     } else if (value is ListNode) {
       String type = value.genericType != null
           ? value.genericType!
           : (value.plainStrings ? 'String' : 'dynamic');
-      buffer.write('List<$type> get $key => ');
+      buffer.write('List<$type>$optional get $key => ');
       _generateList(config, base, locale, hasPluralResolver, buffer, queue,
           className, value.entries, 0);
     } else if (value is ObjectNode) {
@@ -134,21 +143,21 @@ void _generateClass(
           String childClassWithLocale = getClassName(
               parentName: className, childName: key, locale: locale);
           buffer.writeln(
-              '$childClassWithLocale get $key => $childClassWithLocale._instance;');
+              '$childClassWithLocale$optional get $key => $childClassWithLocale._instance;');
           break;
         case ObjectNodeType.map:
           // inline map
           String type = value.genericType != null
               ? value.genericType!
               : (value.plainStrings ? 'String' : 'dynamic');
-          buffer.write('Map<String, $type> get $key => ');
+          buffer.write('Map<String, $type>$optional get $key => ');
           _generateMap(config, base, locale, hasPluralResolver, buffer, queue,
               childClassNoLocale, value.entries, 0);
           break;
         case ObjectNodeType.pluralCardinal:
         case ObjectNodeType.pluralOrdinal:
           // pluralization
-          buffer.write('String $key');
+          buffer.write('String$optional $key');
           _addPluralizationCall(
             buffer: buffer,
             config: config,
@@ -162,7 +171,7 @@ void _generateClass(
           break;
         case ObjectNodeType.context:
           // custom context
-          buffer.write('String $key');
+          buffer.write('String$optional $key');
           _addContextCall(
             buffer: buffer,
             config: config,
