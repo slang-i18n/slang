@@ -108,11 +108,11 @@ YAML files are also supported. See [File Types](#-file-types).
 
 **Step 3: Generate the dart code**
 
-```
+```text
 flutter pub run fast_i18n
 ```
 alternative (but slower):
-```
+```text
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
@@ -314,7 +314,7 @@ targets:
 
 Let's create two namespaces called `widgets` and `dialogs`.
 
-```
+```text
 i18n/
 - widgets.i18n.json
 - widgets_fr.i18n.json
@@ -324,7 +324,7 @@ i18n/
 
 You can also use different folders. Only file names matters!
 
-```
+```text
 i18n/
   widgets/
     - widgets.i18n.json
@@ -411,21 +411,6 @@ Often, multiple maps have the same structure. You can create a common super clas
 ```json
 {
   "onboarding": {
-    "firstPage": {
-      "title": "Welcome",
-      "content": "Welcome to my app!",
-      "button": "Go"
-    },
-    "pages": [
-      {
-        "title": "E2E encryption",
-        "content": "Your data is safe!"
-      },
-      {
-        "title": "Sync",
-        "content": "Synchronize all your devices!"
-      }
-    ],
     "whatsNew": {
       "v2": {
         "title": "New in 2.0",
@@ -445,9 +430,7 @@ Often, multiple maps have the same structure. You can create a common super clas
 }
 ```
 
-Here we know that all objects inside `whatsNew` have the same attributes.
-We also know that `firstPage` and all children of `pages` have common attributes.
-Let's create 2 interfaces `PageData` and `NewsData`.
+Here we know that all objects inside `whatsNew` have the same attributes. Let's name these objects `ChangeData`.
 
 ```yaml
 # File: build.yaml
@@ -457,22 +440,22 @@ targets:
       fast_i18n:
         options:
           interfaces:
-            PageData:
-              attributes:
-                - String title
-                - String content
-            NewsData: onboarding.whatsNew.*
+            ChangeData: onboarding.whatsNew.*
 ```
 
 ```dart
-for (int i = 0; i < t.onboarding.pages.length; i++) {
-  PageData currentPage = t.onboarding.pages[i]; // notice the common interface "PageData" here
-  String title = currentPage.title; // compile-time safety, title must exist!
-  String content = currentPage.content;
+void myFunction(ChangeData changes) {
+  String title = changes.title;
+  List<String> rows = changes.rows;
+}
+
+void main() {
+  myFunction(t.onboarding.whatsNew.v2);
+  myFunction(t.onboarding.whatsNew.v3);
 }
 ```
 
-You can make some fields optional by specifying the concrete attributes of an interface.
+You can customize the fields.
 
 ```yaml
 targets:
@@ -481,10 +464,10 @@ targets:
       fast_i18n:
         options:
           interfaces:
-            PageData:
+            ChangeData:
               attributes:
                 - String title
-                - String content
+                - List<String> rows
                 - String? welcome(name,city) # optional string with arguments
                 - List<Feature>? features # optional list of another interface
 ```
@@ -492,25 +475,24 @@ targets:
 This would create this mixin:
 
 ```dart
-mixin PageData {
+mixin ChangeData {
   String get title;
-  String get content;
+  List<String> get rows;
   String? welcome({required Object name, required Object city}) => null;
   List<Feature>? get features => null;
 }
 ```
 
-Config|Type|Description
----|---|---
-`paths`|`List<String>`|List of paths; Use `.*` to target all children of a node (non-recursive)
-`attributes`|`List<String>`|List of attributes
+Each interface can either have one path, multiple paths (via `paths`), multiple `attributes`, or both: ``paths`` and ``attributes``.
+
+For paths, use `.*` to target all children of a node (non-recursive).
 
 Mode|Description
 ---|---
-single path|Syntax: `<interface>: <path>`; attributes will be detected automatically
-`paths` only|For multiple nodes; Attributes will be detected automatically
-`attributes` only|All nodes satisfying `attributes` will get the interface.
-both|Specified nodes will get the interface with the specified attributes
+single path|**One** node; `<interface>: <path>`; Attributes will be **detected** automatically
+`paths` only|**Multiple** nodes; Attributes will be **detected** automatically
+`attributes` only|**All** nodes satisfying `attributes` will get the **predefined** interface.
+both|**Multiple** nodes will get the **predefined** interface
 
 ### ➤ Locale Enum
 
