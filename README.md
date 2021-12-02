@@ -308,8 +308,9 @@ targets:
     builders:
       fast_i18n:
         options:
-          output_file_name: translations.g.dart # set file name
           namespaces: true # enable this feature
+          output_directory: lib/i18n # optional
+          output_file_name: translations.g.dart # set file name (mandatory)
 ```
 
 Let's create two namespaces called `widgets` and `dialogs`.
@@ -322,7 +323,7 @@ i18n/
 - dialogs_fr.i18n.json
 ```
 
-You can also use different folders. Only file names matters!
+You can also use different folders. Only file name matters!
 
 ```text
 i18n/
