@@ -4,7 +4,7 @@
 
 Split your translations into different files. Each file represents a namespace:
 
-```
+```text
 i18n/
   widgets/
     - widgets.i18n.json
