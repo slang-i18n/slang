@@ -237,11 +237,11 @@ targets:
               paths:
                 - my.path.to.greet
           interfaces:
-            PageData: onboarding.pages
+            PageData: onboarding.pages.*
             PageData2:
               paths:
                 - my.path
-                - cool.path
+                - cool.pages.*
               attributes:
                 - String title
                 - String? content
