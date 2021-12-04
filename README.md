@@ -51,6 +51,7 @@ String h = page.title;                                 // with interfaces
     - [Linked Translations](#-linked-translations)
     - [Interfaces](#-interfaces)
     - [Locale Enum](#-locale-enum)
+    - [Dependency Injection](#-dependency-injection)
     - [Pluralization](#-pluralization)
     - [Custom Contexts](#-custom-contexts)
     - [Maps](#-maps)
@@ -482,6 +483,38 @@ List<AppLocale> locales = AppLocale.values; // list all supported locales
 Locale locale = AppLocale.en.flutterLocale; // convert to native flutter locale
 String tag = AppLocale.en.languageTag; // convert to string tag (e.g. en-US)
 final t = AppLocale.en.translations; // get translations of one locale
+```
+
+### ➤ Dependency Injection
+
+A follow-up feature of locale enums.
+
+You can use your own dependency injection and inject the required translations!
+
+Please set the translations classes public:
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          translation_class_visibility: public
+```
+
+```dart
+final englishTranslations = AppLocale.en.translations;
+final germanTranslations = AppLocale.de.translations;
+
+final String a = germanTranslations.welcome.title; // access the translation
+
+// using get_it
+final getIt = GetIt.instance;
+getIt.registerSingleton<StringsEn>(AppLocale.de.translations); // set German
+final String b = getIt<StringsEn>().welcome.title; // access the translation
+getIt.unregister<StringsEn>();
+getIt.registerSingleton<StringsEn>(AppLocale.en.translations); // switch to English
 ```
 
 ### ➤ Pluralization
