@@ -458,44 +458,9 @@ void main() {
 }
 ```
 
-You can customize the fields.
+You can customize the attributes and use different node selectors. 
 
-```yaml
-targets:
-  $default:
-    builders:
-      fast_i18n:
-        options:
-          interfaces:
-            ChangeData:
-              attributes:
-                - String title
-                - List<String> rows
-                - String? welcome(name,city) # optional string with arguments
-                - List<Feature>? features # optional list of another interface
-```
-
-This would create this mixin:
-
-```dart
-mixin ChangeData {
-  String get title;
-  List<String> get rows;
-  String? welcome({required Object name, required Object city}) => null;
-  List<Feature>? get features => null;
-}
-```
-
-Each interface can either have one path, multiple paths (via `paths`), multiple `attributes`, or both: ``paths`` and ``attributes``.
-
-For paths, use `.*` to target all children of a node (non-recursive).
-
-Mode|Description
----|---
-single path|**One** node; `<interface>: <path>`; Attributes will be **detected** automatically
-`paths` only|**Multiple** nodes; Attributes will be **detected** automatically
-`attributes` only|**All** nodes satisfying `attributes` will get the **predefined** interface.
-both|**Multiple** nodes will get the **predefined** interface
+Please read the [Wiki](https://github.com/Tienisto/flutter-fast-i18n/wiki/Interfaces).
 
 ### ➤ Locale Enum
 
