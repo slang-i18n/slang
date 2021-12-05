@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  * 
- * Built on 2021-10-09 at 22:19 UTC
+ * Built on 2021-12-05 at 22:30 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -138,6 +138,8 @@ class LocaleSettings {
 }
 
 // context enums
+
+// interfaces generated as mixins
 
 // extensions for AppLocale
 

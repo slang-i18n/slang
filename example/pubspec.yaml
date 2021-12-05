@@ -16,7 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
-  fast_i18n: ^5.3.0 # add this
+  fast_i18n: ^5.5.0 # add this
   build_runner: any # and this
 
 flutter:
