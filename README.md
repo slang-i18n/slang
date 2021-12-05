@@ -82,7 +82,7 @@ Only files having the `.i18n.json` file extension will be detected.
 The part after the underscore `_` is the actual locale (e.g. en_US, en-US, fr).
 You **must** provide the default translation file (the file without locale extension).
 
-YAML files are also supported (see [File Types](#-file-types)).
+YAML and CSV files are also supported (see [File Types](#-file-types)).
 
 Writing translations into assets folder requires extra configuration (see [FAQ](#faq)).
 
