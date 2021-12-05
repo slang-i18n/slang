@@ -1,3 +1,7 @@
+## 5.6.0
+
+- feat: add CSV support
+
 ## 5.5.0
 
 **Namespaces**
