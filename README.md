@@ -536,8 +536,6 @@ final String a = germanTranslations.welcome.title; // access the translation
 final getIt = GetIt.instance;
 getIt.registerSingleton<StringsEn>(AppLocale.de.translations); // set German
 final String b = getIt<StringsEn>().welcome.title; // access the translation
-getIt.unregister<StringsEn>();
-getIt.registerSingleton<StringsEn>(AppLocale.en.translations); // switch to English
 ```
 
 ### ➤ Pluralization
