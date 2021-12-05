@@ -58,6 +58,7 @@ String h = page.title;                                 // with interfaces
     - [Dynamic Keys](#-dynamic-keys)
     - [Fallback](#-fallback)
     - [Recasing](#-recasing)
+    - [Compact CSV](#-compact-csv)
     - [Auto Rebuild](#-auto-rebuild)
 - [API](#api)
 - [FAQ](#faq)
@@ -283,9 +284,9 @@ Type|Supported|Note
 ---|---|---
 JSON|✔|by default
 YAML|✔|update `input_file_pattern`
-CSV|TODO|
+CSV|✔|update `input_file_pattern`
 
-To change to YAML, please modify input file pattern
+To change to YAML or CSV, please modify input file pattern
 
 ```yaml
 # File: build.yaml
@@ -295,8 +296,30 @@ targets:
       fast_i18n:
         options:
           input_directory: assets/i18n
-          input_file_pattern: .i18n.yaml # must end with .yaml
+          input_file_pattern: .i18n.yaml # must end with .json, .yaml or .csv
 ```
+
+**JSON Example**
+```json
+{
+  "welcome": {
+    "title": "Welcome $name"
+  }
+}
+```
+
+**YAML Example**
+```yaml
+welcome:
+  title: Welcome $name
+```
+
+**CSV Example**
+```csv
+welcome.title,Welcome $name
+```
+
+You can also combine multiple locales (see [Compact CSV](#-compact-csv)).
 
 ### ➤ Namespaces
 
@@ -791,6 +814,19 @@ targets:
 ```dart
 String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
+```
+
+### ➤ Compact CSV
+
+Normally, you create a new csv file for each locale:
+`strings.i18n.csv`, `strings_fr.i18n.csv`, etc.
+
+You can also merge multiple locales into one single csv file! To do this,
+you need at least 3 columns. The first row contains the locale names.
+
+```csv
+key,en,de-DE
+welcome.title,Welcome $name,Willkommen $name
 ```
 
 ### ➤ Auto Rebuild
