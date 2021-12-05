@@ -120,7 +120,7 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
         '        Attributes: ${interface.attributes.isEmpty ? 'no attributes' : ''}');
     for (final a in interface.attributes) {
       print(
-          '          - ${a.optional ? '(optional) ' : ''}${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})');
+          '          - ${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})${a.optional ? ' (optional)' : ''}');
     }
     print('        Paths: ${interface.paths.isEmpty ? 'no paths' : ''}');
     for (final path in interface.paths) {
@@ -243,19 +243,48 @@ Future<void> generateTranslations({
       // base file
       final namespace = baseFileMatch.group(1)!;
 
-      translationMap.add(
-        locale: buildConfig.baseLocale,
-        namespace: namespace,
-        translations: TranslationMapBuilder.fromString(
-          buildConfig.fileType,
-          content,
-        ),
-      );
+      if (buildConfig.fileType == FileType.csv &&
+          TranslationMapBuilder.isCompactCSV(content)) {
+        // compact csv
 
-      if (verbose) {
-        final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
-        print(
-            '${('(base) $namespaceLog' + buildConfig.baseLocale.languageTag).padLeft(padLeft)} -> ${file.path}');
+        final translations = TranslationMapBuilder.fromString(
+          FileType.csv,
+          content,
+        );
+
+        translations.forEach((key, value) {
+          final locale = I18nLocale.fromString(key);
+          final localeTranslations = value as Map<String, dynamic>;
+          translationMap.add(
+            locale: locale,
+            namespace: namespace,
+            translations: localeTranslations,
+          );
+
+          if (verbose) {
+            final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
+            final base = locale == buildConfig.baseLocale ? '(base) ' : '';
+            print(
+                '${('$base$namespaceLog${locale.languageTag}').padLeft(padLeft)} -> ${file.path}');
+          }
+        });
+      } else {
+        // json, yaml or normal csv
+
+        translationMap.add(
+          locale: buildConfig.baseLocale,
+          namespace: namespace,
+          translations: TranslationMapBuilder.fromString(
+            buildConfig.fileType,
+            content,
+          ),
+        );
+
+        if (verbose) {
+          final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
+          print(
+              '${('(base) $namespaceLog${buildConfig.baseLocale.languageTag}').padLeft(padLeft)} -> ${file.path}');
+        }
       }
     } else {
       // secondary files (strings_x)

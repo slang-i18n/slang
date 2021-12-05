@@ -107,14 +107,37 @@ class I18nBuilder implements Builder {
       if (baseFileMatch != null) {
         // base file
         final namespace = baseFileMatch.group(1)!;
-        translationMap.add(
-          locale: buildConfig.baseLocale,
-          namespace: namespace,
-          translations: TranslationMapBuilder.fromString(
-            buildConfig.fileType,
+
+        if (buildConfig.fileType == FileType.csv &&
+            TranslationMapBuilder.isCompactCSV(content)) {
+          // compact csv
+
+          final translations = TranslationMapBuilder.fromString(
+            FileType.csv,
             content,
-          ),
-        );
+          );
+
+          translations.forEach((key, value) {
+            final locale = I18nLocale.fromString(key);
+            final localeTranslations = value as Map<String, dynamic>;
+            translationMap.add(
+              locale: locale,
+              namespace: namespace,
+              translations: localeTranslations,
+            );
+          });
+        } else {
+          // json, yaml or normal csv
+
+          translationMap.add(
+            locale: buildConfig.baseLocale,
+            namespace: namespace,
+            translations: TranslationMapBuilder.fromString(
+              buildConfig.fileType,
+              content,
+            ),
+          );
+        }
       } else {
         // secondary files (strings_x)
         final match =

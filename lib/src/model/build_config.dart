@@ -85,6 +85,8 @@ class BuildConfig {
       return FileType.json;
     } else if (extension.endsWith('.yaml')) {
       return FileType.yaml;
+    } else if (extension.endsWith('.csv')) {
+      return FileType.csv;
     } else {
       throw 'Input file pattern must end with .json or .yaml (Input: $extension)';
     }
@@ -118,7 +120,7 @@ class BuildConfig {
   }
 }
 
-enum FileType { json, yaml }
+enum FileType { json, yaml, csv }
 enum FallbackStrategy { none, baseLocale }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }
