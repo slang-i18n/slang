@@ -327,7 +327,7 @@ You can also combine multiple locales (see [Compact CSV](#-compact-csv)).
 
 ### ➤ Namespaces
 
-You can split the translations into multiple files. Each file represents a namespace.
+You can split the translations into multiple files. Each file `<namespace>_<locale?>.i18n.json` represents a namespace.
 
 This feature is disabled by default for single-file usage. You must enable it.
 
@@ -824,7 +824,7 @@ Normally, you create a new csv file for each locale:
 `strings.i18n.csv`, `strings_fr.i18n.csv`, etc.
 
 You can also merge multiple locales into one single csv file! To do this,
-you need at least 3 columns. The first row contains the locale names.
+you need at least 3 columns. The first row contains the locale names. Please avoid locales in file names!
 
 ```csv
 key,en,de-DE
