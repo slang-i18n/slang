@@ -9,7 +9,7 @@
 ![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Lightweight i18n solution. Use JSON or YAML files to create typesafe translations.
+Lightweight i18n solution. Use JSON, YAML or CSV files to create typesafe translations.
 
 ## About this library
 
