@@ -48,13 +48,13 @@ class TranslationMapBuilder {
       for (int rowIndex = 1; rowIndex < parsed.length; rowIndex++) {
         // start at second row
         final row = parsed[rowIndex];
-        if (row.length != locales.length + 1) {
+        if (row.length < locales.length + 1) {
           throw 'CSV row at index $rowIndex must have ${locales.length + 1} columns but only has ${row.length}.';
         }
 
         for (int localeIndex = 0; localeIndex < locales.length; localeIndex++) {
           final locale = locales[localeIndex];
-          _addStringToMap(
+          addStringToMap(
             map: result[locale],
             destinationPath: parsed[rowIndex][0],
             leafContent: parsed[rowIndex][localeIndex + 1],
@@ -65,7 +65,7 @@ class TranslationMapBuilder {
     } else {
       // normal csv
       for (final row in parsed) {
-        _addStringToMap(
+        addStringToMap(
           map: result,
           destinationPath: row[0],
           leafContent: row[1],
@@ -76,29 +76,85 @@ class TranslationMapBuilder {
   }
 
   /// Adds a string (leaf) to the map at the specified path
-  static void _addStringToMap({
+  static void addStringToMap({
     required Map<String, dynamic> map,
     required String destinationPath,
     required String leafContent,
   }) {
     final pathList = destinationPath.split('.');
-    Map<String, dynamic> curr = map;
+    dynamic curr = map; // may be a Map<String, dynamic> or List<dynamic>
     for (int i = 0; i < pathList.length; i++) {
       final subPath = pathList[i];
+      final subPathInt = int.tryParse(subPath);
+
+      final nextSubPath = i + 1 < pathList.length ? pathList[i + 1] : null;
+      final nextIsList =
+          nextSubPath != null ? int.tryParse(nextSubPath) != null : false;
+
       if (i == pathList.length - 1) {
         // destination
-        curr[subPath] = leafContent;
+        if (subPathInt != null) {
+          if (!(curr is List)) {
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
+          }
+          addAndFill(
+            list: curr,
+            index: subPathInt,
+            element: leafContent,
+            overwrite: true,
+          );
+        } else {
+          if (!(curr is Map)) {
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
+          }
+          curr[subPath] = leafContent;
+        }
       } else {
         // make sure that the path to the leaf exists
-        if (curr.containsKey(subPath)) {
-          if (!(curr[subPath] is Map<String, dynamic>)) {
-            throw 'The leaf "$destinationPath" cannot be added because "$subPath" is already specified as a leaf.';
+        if (subPathInt != null) {
+          // list mode
+          if (!(curr is List)) {
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
           }
+
+          addAndFill(
+            list: curr,
+            index: subPathInt,
+            element: nextIsList ? <dynamic>[] : <String, dynamic>{},
+            overwrite: false,
+          );
+          curr = curr[subPathInt];
         } else {
-          curr[subPath] = <String, dynamic>{};
+          // map mode
+          if (!(curr is Map)) {
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
+          }
+
+          if (!curr.containsKey(subPath)) {
+            curr[subPath] = nextIsList ? <dynamic>[] : <String, dynamic>{};
+          }
+
+          curr = curr[subPath];
         }
-        curr = curr[subPath];
       }
+    }
+  }
+
+  /// Adds an element to the list
+  /// If the list is too small, then the previous items will set to null
+  static void addAndFill({
+    required List list,
+    required int index,
+    required dynamic element,
+    required bool overwrite,
+  }) {
+    final missing = index + 1 - list.length;
+    for (int i = 0; i < missing; i++) {
+      list.add(null);
+    }
+
+    if (overwrite || list[index] == null) {
+      list[index] = element;
     }
   }
 }

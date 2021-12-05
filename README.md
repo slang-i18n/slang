@@ -311,13 +311,17 @@ targets:
 **YAML Example**
 ```yaml
 welcome:
-  title: Welcome $name
+  title: Welcome $name # some comment
 ```
 
 **CSV Example**
 ```csv
 welcome.title,Welcome $name
+welcome.pages.0.title,First Page
+welcome.pages.1.title,Second Page
 ```
+
+Use integers to specify lists.
 
 You can also combine multiple locales (see [Compact CSV](#-compact-csv)).
 
