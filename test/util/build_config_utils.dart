@@ -1,6 +1,7 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 
 final defaultLocale = I18nLocale.fromString(BuildConfig.defaultBaseLocale);
 
@@ -31,6 +32,7 @@ final baseConfig = BuildConfig(
 
 extension BuildConfigCopy on BuildConfig {
   BuildConfig copyWith({
+    String? inputFilePattern,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
     List<String>? maps,
@@ -38,12 +40,13 @@ extension BuildConfigCopy on BuildConfig {
     List<String>? pluralCardinal,
     List<String>? pluralOrdinal,
     List<ContextType>? contexts,
+    List<InterfaceConfig>? interfaces,
   }) {
     return BuildConfig(
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       inputDirectory: inputDirectory,
-      inputFilePattern: inputFilePattern,
+      inputFilePattern: inputFilePattern ?? this.inputFilePattern,
       outputDirectory: outputDirectory,
       outputFilePattern: outputFilePattern,
       outputFileName: outputFileName,
@@ -61,7 +64,7 @@ extension BuildConfigCopy on BuildConfig {
       pluralCardinal: pluralCardinal ?? this.pluralCardinal,
       pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
       contexts: contexts ?? this.contexts,
-      interfaces: interfaces,
+      interfaces: interfaces ?? this.interfaces,
     );
   }
 }

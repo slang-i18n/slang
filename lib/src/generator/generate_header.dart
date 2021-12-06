@@ -7,7 +7,11 @@ import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 void generateHeader(
-    StringBuffer buffer, I18nConfig config, List<I18nData> allLocales) {
+  StringBuffer buffer,
+  I18nConfig config,
+  List<I18nData> allLocales,
+  DateTime now,
+) {
   const String baseLocaleVar = '_baseLocale';
   const String currLocaleVar = '_currLocale';
   const String translationProviderKey = '_translationProviderKey';
@@ -21,7 +25,11 @@ void generateHeader(
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
 
   _generateHeaderComment(
-      buffer: buffer, config: config, translations: allLocales);
+    buffer: buffer,
+    config: config,
+    translations: allLocales,
+    now: now,
+  );
 
   _generateImports(buffer);
 
@@ -79,22 +87,23 @@ void generateHeader(
   _generateHelpers(buffer: buffer, config: config);
 }
 
-void _generateHeaderComment(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> translations}) {
-  final now = DateTime.now().toUtc();
+void _generateHeaderComment({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> translations,
+  required DateTime now,
+}) {
   final int translationCount = translations.fold(
       0, (prev, curr) => prev + _countTranslations(curr.root));
 
   buffer.writeln();
   buffer.writeln('/*');
   buffer.writeln(' * Generated file. Do not edit.');
-  buffer.writeln(' * ');
+  buffer.writeln(' *');
   buffer.writeln(' * Locales: ${translations.length}');
   buffer.writeln(
       ' * Strings: $translationCount ${translations.length != 1 ? '(${(translationCount / translations.length).toStringAsFixed(1)} per locale)' : ''}');
-  buffer.writeln(' * ');
+  buffer.writeln(' *');
   buffer.writeln(
       ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} UTC');
   buffer.writeln(' */');

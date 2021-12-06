@@ -13,6 +13,7 @@ class GeneratorFacade {
     required String baseName,
     required NamespaceTranslationMap translationMap,
     bool showPluralHint = false,
+    DateTime? now,
   }) {
     // combine namespaces
     final List<I18nData> translationList =
@@ -65,6 +66,7 @@ class GeneratorFacade {
     return Generator.generate(
       config: config,
       translations: translationList,
+      now: now,
     );
   }
 }

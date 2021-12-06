@@ -24,7 +24,7 @@ void main() {
         overwrite: false,
       );
       expect(list, ['a', 'b']);
-      expect(added, false);
+      expect(added, true);
     });
 
     test('with overwrite', () {

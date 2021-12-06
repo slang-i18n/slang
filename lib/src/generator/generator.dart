@@ -9,10 +9,11 @@ class Generator {
   static String generate({
     required I18nConfig config,
     required List<I18nData> translations,
+    required DateTime? now,
   }) {
     StringBuffer buffer = StringBuffer();
 
-    generateHeader(buffer, config, translations);
+    generateHeader(buffer, config, translations, now ?? DateTime.now().toUtc());
 
     buffer.writeln();
     buffer.writeln('// translations');

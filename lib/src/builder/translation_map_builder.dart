@@ -158,11 +158,12 @@ class TranslationMapBuilder {
     required dynamic element,
     required bool overwrite,
   }) {
-    if (list.length == index) {
-      list.add(element);
-      return true;
-    } else if (overwrite && index < list.length) {
-      list[index] = element;
+    if (index <= list.length) {
+      if (index == list.length) {
+        list.add(element);
+      } else if (overwrite) {
+        list[index] = element;
+      }
       return true;
     } else {
       return false;
