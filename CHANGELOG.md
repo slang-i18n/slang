@@ -1,6 +1,7 @@
 ## 5.6.0
 
 - feat: add CSV support
+- feat: make optional class members (from interfaces) non-nullable when possible
 
 ## 5.5.0
 

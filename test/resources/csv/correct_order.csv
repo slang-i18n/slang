@@ -1,4 +1,10 @@
 key,en,de
+onboarding.welcome,Welcome $name,Willkommen $name
+bye,Bye $firstName,Tschüss $firstName
 onboarding.pages.0.title,First Page,Erste Seite
-onboarding.pages.0.content,First Page Content,Erste Seiteninhalt
+onboarding.pages.0.content,First Page Content,Erster Seiteninhalt
 onboarding.pages.1.title,Second Page,Zweite Seite
+group.users.zero,No Users and @:onboarding.welcome,Keine Nutzer und @:onboarding.welcome
+group.users.one,One User,Ein Nutzer
+group.users.other,$count Users and @:bye,$count Nutzer und @:bye
+a,Hello @:group.users,Hallo @:group.users

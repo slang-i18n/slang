@@ -3,7 +3,7 @@
  * Generated file. Do not edit.
  *
  * Locales: 2
- * Strings: 6 (3.0 per locale)
+ * Strings: 18 (9.0 per locale)
  *
  * Built on 2020-07-26 at 00:00 UTC
  */
@@ -125,6 +125,16 @@ class LocaleSettings {
 			.toList();
 	}
 
+	/// Sets plural resolvers.
+	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
+	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
+	/// Only language part matters, script and country parts are ignored
+	/// Rendered Resolvers: ['en', 'de']
+	static void setPluralResolver({required String language, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		if (cardinalResolver != null) _pluralResolversCardinal[language] = cardinalResolver;
+		if (ordinalResolver != null) _pluralResolversOrdinal[language] = ordinalResolver;
+	}
+
 }
 
 // context enums
@@ -224,7 +234,32 @@ class _InheritedLocaleData extends InheritedWidget {
 	}
 }
 
-// pluralization feature not used
+// pluralization resolvers
+
+// map: language -> resolver
+typedef PluralResolver = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
+Map<String, PluralResolver> _pluralResolversCardinal = {};
+Map<String, PluralResolver> _pluralResolversOrdinal = {};
+
+// prepared by fast_i18n
+
+String _pluralCardinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	if (n == 0) {
+		return zero ?? other!;
+	} else if (n == 1) {
+		return one ?? other!;
+	}
+	return other!;
+}
+
+String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+	if (n == 0) {
+		return zero ?? other!;
+	} else if (n == 1) {
+		return one ?? other!;
+	}
+	return other!;
+}
 
 // helpers
 
@@ -266,6 +301,9 @@ class _StringsEn {
 	static final _StringsEn _instance = _StringsEn._();
 
 	_StringsOnboardingEn get onboarding => _StringsOnboardingEn._instance;
+	String bye({required Object firstName}) => 'Bye $firstName';
+	_StringsGroupEn get group => _StringsGroupEn._instance;
+	String a({required Object name, required num count, required Object firstName}) => 'Hello ${AppLocale.en.translations.group.users(name: name, count: count, firstName: firstName)}';
 
 	/// A flat map containing all translations.
 	dynamic operator[](String key) {
@@ -278,10 +316,23 @@ class _StringsOnboardingEn {
 
 	static final _StringsOnboardingEn _instance = _StringsOnboardingEn._();
 
+	String welcome({required Object name}) => 'Welcome $name';
 	List<PageData> get pages => [
 		_StringsOnboarding0i0En._instance,
 		_StringsOnboarding0i1En._instance,
 	];
+}
+
+class _StringsGroupEn {
+	_StringsGroupEn._(); // no constructor
+
+	static final _StringsGroupEn _instance = _StringsGroupEn._();
+
+	String users({required num count, required Object name, required Object firstName}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
+		zero: 'No Users and ${AppLocale.en.translations.onboarding.welcome(name: name)}',
+		one: 'One User',
+		other: '$count Users and ${AppLocale.en.translations.bye(firstName: firstName)}',
+	);
 }
 
 class _StringsOnboarding0i0En with PageData {
@@ -290,7 +341,7 @@ class _StringsOnboarding0i0En with PageData {
 	static final _StringsOnboarding0i0En _instance = _StringsOnboarding0i0En._();
 
 	@override String get title => 'First Page';
-	@override String? get content => 'First Page Content';
+	@override String get content => 'First Page Content';
 }
 
 class _StringsOnboarding0i1En with PageData {
@@ -307,6 +358,9 @@ class _StringsDe implements _StringsEn {
 	static final _StringsDe _instance = _StringsDe._();
 
 	@override _StringsOnboardingDe get onboarding => _StringsOnboardingDe._instance;
+	@override String bye({required Object firstName}) => 'Tschüss $firstName';
+	@override _StringsGroupDe get group => _StringsGroupDe._instance;
+	@override String a({required Object name, required num count, required Object firstName}) => 'Hallo ${AppLocale.de.translations.group.users(name: name, count: count, firstName: firstName)}';
 
 	/// A flat map containing all translations.
 	@override
@@ -320,10 +374,23 @@ class _StringsOnboardingDe implements _StringsOnboardingEn {
 
 	static final _StringsOnboardingDe _instance = _StringsOnboardingDe._();
 
+	@override String welcome({required Object name}) => 'Willkommen $name';
 	@override List<PageData> get pages => [
 		_StringsOnboarding0i0De._instance,
 		_StringsOnboarding0i1De._instance,
 	];
+}
+
+class _StringsGroupDe implements _StringsGroupEn {
+	_StringsGroupDe._(); // no constructor
+
+	static final _StringsGroupDe _instance = _StringsGroupDe._();
+
+	@override String users({required num count, required Object name, required Object firstName}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+		zero: 'Keine Nutzer und ${AppLocale.de.translations.onboarding.welcome(name: name)}',
+		one: 'Ein Nutzer',
+		other: '$count Nutzer und ${AppLocale.de.translations.bye(firstName: firstName)}',
+	);
 }
 
 class _StringsOnboarding0i0De with PageData implements _StringsOnboarding0i0En {
@@ -332,7 +399,7 @@ class _StringsOnboarding0i0De with PageData implements _StringsOnboarding0i0En {
 	static final _StringsOnboarding0i0De _instance = _StringsOnboarding0i0De._();
 
 	@override String get title => 'Erste Seite';
-	@override String? get content => 'Erste Seiteninhalt';
+	@override String get content => 'Erster Seiteninhalt';
 }
 
 class _StringsOnboarding0i1De with PageData implements _StringsOnboarding0i1En {
@@ -347,13 +414,29 @@ class _StringsOnboarding0i1De with PageData implements _StringsOnboarding0i1En {
 /// Only for edge cases! For simple maps, use the map function of this library.
 late Map<AppLocale, Map<String, dynamic>> _translationMap = {
 	AppLocale.en: {
+		'onboarding.welcome': ({required Object name}) => 'Welcome $name',
 		'onboarding.pages.0.title': 'First Page',
 		'onboarding.pages.0.content': 'First Page Content',
 		'onboarding.pages.1.title': 'Second Page',
+		'bye': ({required Object firstName}) => 'Bye $firstName',
+		'group.users': ({required num count, required Object name, required Object firstName}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
+			zero: 'No Users and ${AppLocale.en.translations.onboarding.welcome(name: name)}',
+			one: 'One User',
+			other: '$count Users and ${AppLocale.en.translations.bye(firstName: firstName)}',
+		),
+		'a': ({required Object name, required num count, required Object firstName}) => 'Hello ${AppLocale.en.translations.group.users(name: name, count: count, firstName: firstName)}',
 	},
 	AppLocale.de: {
+		'onboarding.welcome': ({required Object name}) => 'Willkommen $name',
 		'onboarding.pages.0.title': 'Erste Seite',
-		'onboarding.pages.0.content': 'Erste Seiteninhalt',
+		'onboarding.pages.0.content': 'Erster Seiteninhalt',
 		'onboarding.pages.1.title': 'Zweite Seite',
+		'bye': ({required Object firstName}) => 'Tschüss $firstName',
+		'group.users': ({required num count, required Object name, required Object firstName}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+			zero: 'Keine Nutzer und ${AppLocale.de.translations.onboarding.welcome(name: name)}',
+			one: 'Ein Nutzer',
+			other: '$count Nutzer und ${AppLocale.de.translations.bye(firstName: firstName)}',
+		),
+		'a': ({required Object name, required num count, required Object firstName}) => 'Hallo ${AppLocale.de.translations.group.users(name: name, count: count, firstName: firstName)}',
 	},
 };
