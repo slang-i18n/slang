@@ -1,2 +1,3 @@
-/test/resources/ text
+* text=auto
+/test/resources/** -text
 /test/resources/**/*.g.dart text eol=lf
