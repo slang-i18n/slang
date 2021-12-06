@@ -97,12 +97,16 @@ class TranslationMapBuilder {
           if (!(curr is List)) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
           }
-          addAndFill(
+          final added = addToList(
             list: curr,
             index: subPathInt,
             element: leafContent,
             overwrite: true,
           );
+
+          if (!added) {
+            throw 'The leaf "$destinationPath" cannot be added because there are missing indices.';
+          }
         } else {
           if (!(curr is Map)) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
@@ -117,12 +121,17 @@ class TranslationMapBuilder {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
           }
 
-          addAndFill(
+          final added = addToList(
             list: curr,
             index: subPathInt,
             element: nextIsList ? <dynamic>[] : <String, dynamic>{},
             overwrite: false,
           );
+
+          if (!added) {
+            throw 'The leaf "$destinationPath" cannot be added because there are missing indices.';
+          }
+
           curr = curr[subPathInt];
         } else {
           // map mode
@@ -141,20 +150,22 @@ class TranslationMapBuilder {
   }
 
   /// Adds an element to the list
-  /// If the list is too small, then the previous items will set to null
-  static void addAndFill({
+  /// Adding must be in the correct order, so if the list is too small, then it won't be added
+  /// Returns true, if the element was added
+  static bool addToList({
     required List list,
     required int index,
     required dynamic element,
     required bool overwrite,
   }) {
-    final missing = index + 1 - list.length;
-    for (int i = 0; i < missing; i++) {
-      list.add(null);
-    }
-
-    if (overwrite || list[index] == null) {
+    if (list.length == index) {
+      list.add(element);
+      return true;
+    } else if (overwrite && index < list.length) {
       list[index] = element;
+      return true;
+    } else {
+      return false;
     }
   }
 }
