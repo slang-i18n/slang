@@ -1,1 +1,2 @@
+/test/resources/ text
 /test/resources/**/*.g.dart text eol=lf
