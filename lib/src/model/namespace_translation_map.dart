@@ -7,9 +7,10 @@ class NamespaceTranslationMap {
   final _internalMap = <I18nLocale, Map<String, Map<String, dynamic>>>{};
 
   /// Add a namespace and its translations
-  void add({
+  /// Namespace may be ignored if this feature is not used
+  void addTranslations({
     required I18nLocale locale,
-    required String namespace,
+    String namespace = 'not relevant',
     required Map<String, dynamic> translations,
   }) {
     if (!_internalMap.containsKey(locale)) {

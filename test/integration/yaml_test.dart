@@ -6,48 +6,40 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/assets_utils.dart';
+import '../util/resources_utils.dart';
 import '../util/datetime_utils.dart';
 
 void main() {
-  late String yamlEnContent;
-  late String yamlDeContent;
+  late String enInput;
+  late String deInput;
+  late String buildYaml;
   late String expectedOutput;
-  late String buildConfigContent;
 
   setUp(() {
-    yamlEnContent = loadAsset('yaml_en.yaml');
-    yamlDeContent = loadAsset('yaml_de.yaml');
-    expectedOutput = loadAsset('expected.output');
-    buildConfigContent = loadAsset('build_config.yaml');
+    enInput = loadResource('yaml_en.yaml');
+    deInput = loadResource('yaml_de.yaml');
+    buildYaml = loadResource('build_config.yaml');
+    expectedOutput = loadResource('expected.output');
   });
 
   test('yaml', () {
-    final parsedEn = TranslationMapBuilder.fromString(
-      FileType.yaml,
-      yamlEnContent,
-    );
-
-    final parsedDe = TranslationMapBuilder.fromString(
-      FileType.yaml,
-      yamlDeContent,
-    );
-
-    final buildConfig = BuildConfigBuilder.fromYaml(buildConfigContent)!;
-
     final result = GeneratorFacade.generate(
-      buildConfig: buildConfig,
+      buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!,
       baseName: 'translations',
       translationMap: NamespaceTranslationMap()
-        ..add(
+        ..addTranslations(
           locale: I18nLocale.fromString('en'),
-          namespace: '',
-          translations: parsedEn,
+          translations: TranslationMapBuilder.fromString(
+            FileType.yaml,
+            enInput,
+          ),
         )
-        ..add(
+        ..addTranslations(
           locale: I18nLocale.fromString('de'),
-          namespace: '',
-          translations: parsedDe,
+          translations: TranslationMapBuilder.fromString(
+            FileType.yaml,
+            deInput,
+          ),
         ),
       showPluralHint: false,
       now: birthDate,

@@ -6,45 +6,41 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/assets_utils.dart';
+import '../util/resources_utils.dart';
 import '../util/datetime_utils.dart';
 
 void main() {
-  late String csvCompactContent;
-  late String csvEnContent;
-  late String csvDeContent;
+  late String compactInput;
+  late String enInput;
+  late String deInput;
+  late String buildYaml;
   late String expectedOutput;
-  late String buildConfigContent;
 
   setUp(() {
-    csvCompactContent = loadAsset('csv_compact.csv');
-    csvEnContent = loadAsset('csv_en.csv');
-    csvDeContent = loadAsset('csv_de.csv');
-    expectedOutput = loadAsset('expected.output');
-    buildConfigContent = loadAsset('build_config.yaml');
+    compactInput = loadResource('csv_compact.csv');
+    enInput = loadResource('csv_en.csv');
+    deInput = loadResource('csv_de.csv');
+    buildYaml = loadResource('build_config.yaml');
+    expectedOutput = loadResource('expected.output');
   });
 
   group('csv', () {
     test('compact csv', () {
       final parsed = TranslationMapBuilder.fromString(
         FileType.csv,
-        csvCompactContent,
+        compactInput,
       );
 
-      final buildConfig = BuildConfigBuilder.fromYaml(buildConfigContent)!;
-
       final result = GeneratorFacade.generate(
-        buildConfig: buildConfig,
+        buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!,
         baseName: 'translations',
         translationMap: NamespaceTranslationMap()
-          ..add(
+          ..addTranslations(
             locale: I18nLocale.fromString('en'),
-            namespace: '',
             translations: parsed['en'],
           )
-          ..add(
+          ..addTranslations(
             locale: I18nLocale.fromString('de'),
-            namespace: '',
             translations: parsed['de'],
           ),
         showPluralHint: false,
@@ -55,31 +51,23 @@ void main() {
     });
 
     test('separated csv', () {
-      final parsedEn = TranslationMapBuilder.fromString(
-        FileType.csv,
-        csvEnContent,
-      );
-
-      final parsedDe = TranslationMapBuilder.fromString(
-        FileType.csv,
-        csvDeContent,
-      );
-
-      final buildConfig = BuildConfigBuilder.fromYaml(buildConfigContent)!;
-
       final result = GeneratorFacade.generate(
-        buildConfig: buildConfig,
+        buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!,
         baseName: 'translations',
         translationMap: NamespaceTranslationMap()
-          ..add(
+          ..addTranslations(
             locale: I18nLocale.fromString('en'),
-            namespace: '',
-            translations: parsedEn,
+            translations: TranslationMapBuilder.fromString(
+              FileType.csv,
+              enInput,
+            ),
           )
-          ..add(
+          ..addTranslations(
             locale: I18nLocale.fromString('de'),
-            namespace: '',
-            translations: parsedDe,
+            translations: TranslationMapBuilder.fromString(
+              FileType.csv,
+              deInput,
+            ),
           ),
         showPluralHint: false,
         now: birthDate,

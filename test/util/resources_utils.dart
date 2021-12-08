@@ -1,7 +1,7 @@
 import 'dart:io';
 
-String loadAsset(String path) {
-  return File("$_testDirectory/resources/$path").readAsStringSync();
+String loadResource(String path) {
+  return File("$_testDirectory/integration/resources/$path").readAsStringSync();
 }
 
 // From https://github.com/flutter/flutter/issues/20907#issuecomment-466185328

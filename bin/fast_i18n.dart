@@ -255,7 +255,7 @@ Future<void> generateTranslations({
         translations.forEach((key, value) {
           final locale = I18nLocale.fromString(key);
           final localeTranslations = value as Map<String, dynamic>;
-          translationMap.add(
+          translationMap.addTranslations(
             locale: locale,
             namespace: namespace,
             translations: localeTranslations,
@@ -271,7 +271,7 @@ Future<void> generateTranslations({
       } else {
         // json, yaml or normal csv
 
-        translationMap.add(
+        translationMap.addTranslations(
           locale: buildConfig.baseLocale,
           namespace: namespace,
           translations: TranslationMapBuilder.fromString(
@@ -301,7 +301,7 @@ Future<void> generateTranslations({
           country: country,
         );
 
-        translationMap.add(
+        translationMap.addTranslations(
           locale: locale,
           namespace: namespace,
           translations: TranslationMapBuilder.fromString(

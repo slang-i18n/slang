@@ -120,7 +120,7 @@ class I18nBuilder implements Builder {
           translations.forEach((key, value) {
             final locale = I18nLocale.fromString(key);
             final localeTranslations = value as Map<String, dynamic>;
-            translationMap.add(
+            translationMap.addTranslations(
               locale: locale,
               namespace: namespace,
               translations: localeTranslations,
@@ -129,7 +129,7 @@ class I18nBuilder implements Builder {
         } else {
           // json, yaml or normal csv
 
-          translationMap.add(
+          translationMap.addTranslations(
             locale: buildConfig.baseLocale,
             namespace: namespace,
             translations: TranslationMapBuilder.fromString(
@@ -153,7 +153,7 @@ class I18nBuilder implements Builder {
             country: country,
           );
 
-          translationMap.add(
+          translationMap.addTranslations(
             locale: locale,
             namespace: namespace,
             translations: TranslationMapBuilder.fromString(
