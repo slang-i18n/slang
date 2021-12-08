@@ -75,11 +75,33 @@ class ListNode extends IterableNode {
   final List<Node> entries;
 
   ListNode({required String path, required this.entries})
-      : super(
-            path,
-            entries.every((child) => child is TextNode && child.params.isEmpty)
-                ? 'String'
-                : null);
+      : super(path, _determineGenericType(entries));
+
+  static String? _determineGenericType(List<Node> entries) {
+    if (entries.every((child) => child is TextNode && child.params.isEmpty)) {
+      return 'String';
+    }
+    if (entries.every((child) => child is ListNode)) {
+      String? childGenericType = (entries.first as ListNode).genericType;
+      for (final child in entries) {
+        if (childGenericType != (child as ListNode).genericType) {
+          childGenericType = 'dynamic'; // default
+        }
+      }
+      return 'List<$childGenericType>';
+    }
+    if (entries.every(
+        (child) => child is ObjectNode && child.type == ObjectNodeType.map)) {
+      String? childGenericType = (entries.first as ObjectNode).genericType;
+      for (final child in entries) {
+        if (childGenericType != (child as ObjectNode).genericType) {
+          childGenericType = 'dynamic'; // default
+        }
+      }
+      return 'Map<String,$childGenericType>';
+    }
+    return null;
+  }
 
   @override
   String toString() => entries.toString();
