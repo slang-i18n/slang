@@ -1,8 +1,29 @@
 import 'package:fast_i18n/src/builder/translation_map_builder.dart';
+import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group(TranslationMapBuilder.addToList, () {
+  group('TranslationMapBuilder.fromString', () {
+    group(FileType.csv, () {
+      test('wrong order', () {
+        expect(
+          () => TranslationMapBuilder.fromString(
+            FileType.csv,
+            [
+              'key,en,de',
+              'onboarding.pages.1.title,Second Page,Zweite Seite',
+              'onboarding.pages.0.title,First Page,Erste Seite',
+              'onboarding.pages.0.content,First Page Content,Erster Seiteninhalt',
+            ].join('\r\n'),
+          ),
+          throwsA(
+              'The leaf "onboarding.pages.1.title" cannot be added because there are missing indices.'),
+        );
+      });
+    });
+  });
+
+  group('TranslationMapBuilder.addToList', () {
     test('add first item', () {
       final list = [];
       final added = TranslationMapBuilder.addToList(

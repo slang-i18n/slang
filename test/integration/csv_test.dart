@@ -12,13 +12,11 @@ import '../util/datetime_utils.dart';
 
 void main() {
   late String correctCsvContent;
-  late String wrongCsvContent;
   late String expectedOutput;
 
   setUp(() {
-    correctCsvContent = loadAsset('csv/correct_order.csv');
-    wrongCsvContent = loadAsset('csv/wrong_order.csv');
-    expectedOutput = loadAsset('csv/correct_order_output.g.dart');
+    correctCsvContent = loadAsset('csv_test.csv');
+    expectedOutput = loadAsset('expected_output.g.dart');
   });
 
   test('correct csv', () {
@@ -57,16 +55,5 @@ void main() {
     );
 
     expect(result, expectedOutput);
-  });
-
-  test('wrong csv', () {
-    expect(() {
-      return TranslationMapBuilder.fromString(
-        FileType.csv,
-        wrongCsvContent,
-      );
-    },
-        throwsA(
-            'The leaf "onboarding.pages.1.title" cannot be added because there are missing indices.'));
   });
 }
