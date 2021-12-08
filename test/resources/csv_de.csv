@@ -1,0 +1,18 @@
+onboarding.welcome,Willkommen {fullName}
+onboarding.bye,Tschüss {firstName}
+onboarding.pages.0.title,Erste Seite
+onboarding.pages.0.content,Erster Seiteninhalt
+onboarding.pages.1.title,Zweite Seite
+group.users.zero,Keine Nutzer und @:onboarding.welcome
+group.users.one,Ein Nutzer
+group.users.other,{count} Nutzer und @:onboarding.bye
+onboarding.greet.male,Hallo Herr {lastName} und @:onboarding.welcome
+onboarding.greet.female,Hallo Frau {lastName} und @:onboarding.bye
+onboarding.welcomeLinkedPlural,Hallo @:group.users
+onboarding.welcomeLinkedContext,Hallo @:onboarding.greet
+onboarding.welcomeFullLink,Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
+end.stringPages.0,1. Seite
+end.stringPages.1,2. Seite
+end.pages.0.unknown,Unbekannter Fehler
+end.pages.1.with space,Ein Fehler
+end.pages.1.with second space,Ein 2. Fehler

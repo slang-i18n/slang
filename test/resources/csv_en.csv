@@ -1,0 +1,18 @@
+onboarding.welcome,Welcome {fullName}
+onboarding.bye,Bye {firstName}
+onboarding.pages.0.title,First Page
+onboarding.pages.0.content,First Page Content
+onboarding.pages.1.title,Second Page
+group.users.zero,No Users and @:onboarding.welcome
+group.users.one,One User
+group.users.other,{count} Users and @:onboarding.bye
+onboarding.greet.male,Hello Mr {lastName} and @:onboarding.welcome
+onboarding.greet.female,Hello Ms {lastName} and @:onboarding.bye
+onboarding.welcomeLinkedPlural,Hello @:group.users
+onboarding.welcomeLinkedContext,Hello @:onboarding.greet
+onboarding.welcomeFullLink,Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
+end.stringPages.0,1st Page
+end.stringPages.1,2nd Page
+end.pages.0.unknown,Unknown Error
+end.pages.1.with space,An Error
+end.pages.1.with second space,An 2nd Error

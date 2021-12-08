@@ -1,0 +1,26 @@
+onboarding:
+  welcome: Willkommen {fullName}
+  bye: Tschüss {firstName}
+  pages:
+    - title: Erste Seite
+      content: Erster Seiteninhalt
+    - title: Zweite Seite
+  greet:
+    male: Hallo Herr {lastName} und @:onboarding.welcome
+    female: Hallo Frau {lastName} und @:onboarding.bye
+  welcomeLinkedPlural: Hallo @:group.users
+  welcomeLinkedContext: Hallo @:onboarding.greet
+  welcomeFullLink: Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
+group:
+  users:
+    zero: Keine Nutzer und @:onboarding.welcome
+    one: Ein Nutzer
+    other: "{count} Nutzer und @:onboarding.bye"
+end:
+  stringPages:
+    - 1. Seite
+    - 2. Seite
+  pages:
+    - unknown: Unbekannter Fehler
+    - with space: Ein Fehler
+      with second space: Ein 2. Fehler
