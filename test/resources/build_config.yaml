@@ -1,0 +1,20 @@
+# this file should not be named 'build.yaml' because we also want to ignore it using custom runner
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          base_locale: en
+          input_file_pattern: .i18n.csv # will be modified for each integration test
+          output_file_name: translations.g.dart # currently set manually for each test
+          maps:
+            - end.pages.0
+            - end.pages.1
+          contexts:
+            GenderContext:
+              enum:
+                - male
+                - female
+          interfaces:
+            PageData: onboarding.pages.*
+            EndData: end

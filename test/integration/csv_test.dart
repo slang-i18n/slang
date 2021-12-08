@@ -1,8 +1,8 @@
+import 'package:fast_i18n/src/builder/build_config_builder.dart';
 import 'package:fast_i18n/src/builder/translation_map_builder.dart';
 import 'package:fast_i18n/src/generator/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,34 +11,27 @@ import '../util/build_config_utils.dart';
 import '../util/datetime_utils.dart';
 
 void main() {
-  late String correctCsvContent;
+  late String csvContent;
   late String expectedOutput;
+  late String buildConfigContent;
 
   setUp(() {
-    correctCsvContent = loadAsset('csv_test.csv');
-    expectedOutput = loadAsset('expected_output.g.dart');
+    csvContent = loadAsset('csv_compact.csv');
+    expectedOutput = loadAsset('expected.output');
+    buildConfigContent = loadAsset('build_config.yaml');
   });
 
-  test('correct csv', () {
+  test('compact csv', () {
     final parsed = TranslationMapBuilder.fromString(
       FileType.csv,
-      correctCsvContent,
+      csvContent,
     );
 
+    final buildConfig = BuildConfigBuilder.fromYaml(buildConfigContent)!;
+
     final result = GeneratorFacade.generate(
-      buildConfig: baseConfig.copyWith(
-        inputFilePattern: '.csv',
-        interfaces: [
-          InterfaceConfig(
-            name: 'PageData',
-            attributes: {},
-            paths: [
-              InterfacePath('onboarding.pages.*'),
-            ],
-          ),
-        ],
-      ),
-      baseName: 'strings',
+      buildConfig: buildConfig.copyWith(inputFilePattern: '.csv'),
+      baseName: 'translations',
       translationMap: NamespaceTranslationMap()
         ..add(
           locale: I18nLocale.fromString('en'),
