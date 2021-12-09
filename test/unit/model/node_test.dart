@@ -5,6 +5,202 @@ import 'package:test/test.dart';
 void main() {
   const localeEnum = 'AppLocale.en';
 
+  group(ListNode, () {
+    final interpolation = StringInterpolation.braces;
+
+    test('Plain strings', () {
+      final node = ListNode(path: '', entries: [
+        TextNode(
+          path: '',
+          raw: 'Hello',
+          interpolation: interpolation,
+          localeEnum: localeEnum,
+        ),
+        TextNode(
+          path: '',
+          raw: 'Hi',
+          interpolation: interpolation,
+          localeEnum: localeEnum,
+        ),
+      ]);
+
+      expect(node.genericType, 'String');
+    });
+
+    test('Parameterized strings', () {
+      final node = ListNode(path: '', entries: [
+        TextNode(
+          path: '',
+          raw: 'Hello',
+          interpolation: interpolation,
+          localeEnum: localeEnum,
+        ),
+        TextNode(
+          path: '',
+          raw: 'Hi {name}',
+          interpolation: interpolation,
+          localeEnum: localeEnum,
+        ),
+      ]);
+
+      expect(node.genericType, 'dynamic');
+    });
+
+    test('Nested list', () {
+      final node = ListNode(path: '', entries: [
+        ListNode(path: '', entries: [
+          TextNode(
+            path: '',
+            raw: 'Hello',
+            interpolation: interpolation,
+            localeEnum: localeEnum,
+          ),
+          TextNode(
+            path: '',
+            raw: 'Hi {name}',
+            interpolation: interpolation,
+            localeEnum: localeEnum,
+          ),
+        ]),
+        ListNode(path: '', entries: [
+          TextNode(
+            path: '',
+            raw: 'Hello',
+            interpolation: interpolation,
+            localeEnum: localeEnum,
+          ),
+          TextNode(
+            path: '',
+            raw: 'Hi {name}',
+            interpolation: interpolation,
+            localeEnum: localeEnum,
+          ),
+        ]),
+      ]);
+
+      expect(node.genericType, 'List<dynamic>');
+    });
+
+    test('Deeper Nested list', () {
+      final node = ListNode(path: '', entries: [
+        ListNode(path: '', entries: [
+          ListNode(path: '', entries: [
+            TextNode(
+              path: '',
+              raw: 'Hello',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+            TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+          ]),
+        ]),
+        ListNode(path: '', entries: [
+          ListNode(path: '', entries: [
+            TextNode(
+              path: '',
+              raw: 'Hello',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+            TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+          ]),
+          ListNode(path: '', entries: [
+            TextNode(
+              path: '',
+              raw: 'Hello',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+            TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            )
+          ]),
+        ]),
+      ]);
+
+      expect(node.genericType, 'List<List<String>>');
+    });
+
+    test('Class', () {
+      final node = ListNode(path: '', entries: [
+        ObjectNode(
+          path: '',
+          entries: {
+            'key0': TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+          },
+          type: ObjectNodeType.classType,
+          contextHint: null,
+        ),
+        ObjectNode(
+          path: '',
+          entries: {
+            'key0': TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+          },
+          type: ObjectNodeType.classType,
+          contextHint: null,
+        ),
+      ]);
+
+      expect(node.genericType, 'dynamic');
+    });
+
+    test('Map', () {
+      final node = ListNode(path: '', entries: [
+        ObjectNode(
+          path: '',
+          entries: {
+            'key0': TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+          },
+          type: ObjectNodeType.map,
+          contextHint: null,
+        ),
+        ObjectNode(
+          path: '',
+          entries: {
+            'key0': TextNode(
+              path: '',
+              raw: 'Hi',
+              interpolation: interpolation,
+              localeEnum: localeEnum,
+            ),
+          },
+          type: ObjectNodeType.map,
+          contextHint: null,
+        ),
+      ]);
+
+      expect(node.genericType, 'Map<String, String>');
+    });
+  });
+
   group(TextNode, () {
     group(StringInterpolation.dart, () {
       test('no arguments', () {

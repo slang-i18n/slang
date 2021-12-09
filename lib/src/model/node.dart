@@ -24,8 +24,8 @@ abstract class Node {
 abstract class IterableNode extends Node {
   /// If not null, then all its children have a specific interface.
   /// This overwrites the [plainStrings] attribute.
-  String? _genericType;
-  String? get genericType => _genericType;
+  String _genericType;
+  String get genericType => _genericType;
 
   IterableNode(String path, this._genericType) : super(path);
 
@@ -61,7 +61,7 @@ class ObjectNode extends IterableNode {
             entries.values
                     .every((child) => child is TextNode && child.params.isEmpty)
                 ? 'String'
-                : null);
+                : 'dynamic');
 
   void setInterface(Interface interface) {
     _interface = interface;
@@ -77,7 +77,7 @@ class ListNode extends IterableNode {
   ListNode({required String path, required this.entries})
       : super(path, _determineGenericType(entries));
 
-  static String? _determineGenericType(List<Node> entries) {
+  static String _determineGenericType(List<Node> entries) {
     if (entries.every((child) => child is TextNode && child.params.isEmpty)) {
       return 'String';
     }
@@ -98,9 +98,9 @@ class ListNode extends IterableNode {
           childGenericType = 'dynamic'; // default
         }
       }
-      return 'Map<String,$childGenericType>';
+      return 'Map<String, $childGenericType>';
     }
-    return null;
+    return 'dynamic';
   }
 
   @override

@@ -572,21 +572,13 @@ class TranslationModelBuilder {
         }).toSet();
       } else if (child is ListNode) {
         parameters = {}; // lists never have parameters
-        if (child.genericType != null) {
-          returnType = 'List<${child.genericType}>';
-        } else {
-          returnType = 'List<dynamic>';
-        }
+        returnType = 'List<${child.genericType}>';
       } else if (child is ObjectNode) {
         switch (child.type) {
           case ObjectNodeType.classType:
           case ObjectNodeType.map:
             parameters = {}; // objects never have parameters
-            if (child.genericType != null) {
-              returnType = 'Map<String, ${child.genericType}>';
-            } else {
-              returnType = 'Map<String, dynamic>';
-            }
+            returnType = 'Map<String, ${child.genericType}>';
             break;
           case ObjectNodeType.pluralCardinal:
           case ObjectNodeType.pluralOrdinal:

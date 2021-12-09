@@ -153,7 +153,7 @@ mixin PageData {
 
 mixin EndData {
 	List<String> get stringPages;
-	List<Map<String,String>> get pages;
+	List<Map<String, String>> get pages;
 }
 
 // extensions for AppLocale
@@ -363,7 +363,7 @@ class _TranslationsEndEn with EndData {
 		'1st Page',
 		'2nd Page',
 	];
-	@override List<Map<String,String>> get pages => [
+	@override List<Map<String, String>> get pages => [
 		{
 			'unknown': 'Unknown Error',
 		},
@@ -450,7 +450,7 @@ class _TranslationsEndDe with EndData implements _TranslationsEndEn {
 		'1. Seite',
 		'2. Seite',
 	];
-	@override List<Map<String,String>> get pages => [
+	@override List<Map<String, String>> get pages => [
 		{
 			'unknown': 'Unbekannter Fehler',
 		},
