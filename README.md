@@ -252,29 +252,29 @@ targets:
 Key|Type|Usage|Default
 ---|---|---|---
 `base_locale`|`String`|locale of default json|`en`
-`fallback_strategy`|`none`, `base_locale`|handle missing translations|`none`
+`fallback_strategy`|`none`, `base_locale`|handle missing translations [(i)](#-fallback)|`none`
 `input_directory`|`String`|path to input directory|`null`
 `input_file_pattern`|`String`|input file pattern, must end with .json or .yaml|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
-`namespaces`|`Boolean`|split into multiple files|`false`
+`namespaces`|`Boolean`|split into multiple files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
 `translation_class_visibility`|`private`, `public`|class visibility|`private`
-`key_case`|`camel`, `pascal`, `snake`|transform keys (optional)|`null`
-`key_map_case`|`camel`, `pascal`, `snake`|transform keys for maps (optional)|`null`
-`param_case`|`camel`, `pascal`, `snake`|transform parameters (optional)|`null`
-`string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode|`dart`
-`flat_map`|`Boolean`|generate flat map|`true`
-`maps`|`List<String>`|entries which should be accessed via keys|`[]`
-`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically|`cardinal`
+`key_case`|`camel`, `pascal`, `snake`|transform keys (optional) [(i)](#-recasing)|`null`
+`key_map_case`|`camel`, `pascal`, `snake`|transform keys for maps (optional) [(i)](#-recasing)|`null`
+`param_case`|`camel`, `pascal`, `snake`|transform parameters (optional) [(i)](#-recasing)|`null`
+`string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode [(i)](#-string-interpolation)|`dart`
+`flat_map`|`Boolean`|generate flat map [(i)](#-dynamic-keys--flat-map)|`true`
+`maps`|`List<String>`|entries which should be accessed via keys [(i)](#-maps)|`[]`
+`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically [(i)](#-pluralization)|`cardinal`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
 `pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
-`<context>`/`enum`|`List<String>`|context forms|no default
+`<context>`/`enum`|`List<String>`|context forms [(i)](#-custom-contexts)|no default
 `<context>`/`auto`|`Boolean`|auto detect context|`true`
 `<context>`/`paths`|`List<String>`|entries using this context|`[]`
-`children of interfaces`|`Pairs of Alias:Path`|alias interfaces|`null`
+`children of interfaces`|`Pairs of Alias:Path`|alias interfaces [(i)](#-interfaces)|`null`
 
 ## Features
 
