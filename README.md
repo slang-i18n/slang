@@ -55,7 +55,7 @@ String h = page.title;                                 // with interfaces
     - [Pluralization](#-pluralization)
     - [Custom Contexts](#-custom-contexts)
     - [Maps](#-maps)
-    - [Dynamic Keys](#-dynamic-keys)
+    - [Dynamic Keys](#-dynamic-keys--flat-map)
     - [Fallback](#-fallback)
     - [Recasing](#-recasing)
     - [Compact CSV](#-compact-csv)
@@ -739,11 +739,13 @@ String b = t.b.b0; // "hey"
 String c = t.b.b1['hi there']; // "hi"
 ```
 
-### ➤ Dynamic Keys
+### ➤ Dynamic Keys / Flat Map
 
-A more general solution to [Maps](#-maps).
+A more general solution to [Maps](#-maps). **ALL** translations are accessible via an one-dimensional map.
 
-It is supported out of the box. No configuration needed. Please use this sparingly.
+It is supported out of the box. No configuration needed.
+
+This can be disabled globally by setting `flat_map: false`.
 
 ```dart
 String a = t['myPath.anotherPath'];
@@ -810,7 +812,7 @@ targets:
           key_map_case: pascal
           param_case: snake
           maps:
-            - myMap
+            - myMap # all paths must be cased accordingly
 ```
 
 ```dart
