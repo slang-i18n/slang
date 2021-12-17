@@ -133,52 +133,57 @@ class TranslationModelBuilder {
 
     // 3rd round: Add interfaces
 
-    // Interfaces with no specified path
-    // will be applied globally
-    Set<Interface> globalInterfaces = {};
+    final List<Interface> resultInterfaces;
+    if (buildConfig.interfaces.isEmpty) {
+      resultInterfaces = [];
+    } else {
+      // Interfaces with no specified path
+      // will be applied globally
+      Set<Interface> globalInterfaces = {};
 
-    // Interface Name -> Interface
-    // This may be smaller than [pathInterfaceNameMap] because the user may
-    // specify an interface without attributes - in this case the interface
-    // will be determined.
-    Map<String, Interface> nameInterfaceMap = {};
+      // Interface Name -> Interface
+      // This may be smaller than [pathInterfaceNameMap] because the user may
+      // specify an interface without attributes - in this case the interface
+      // will be determined.
+      Map<String, Interface> nameInterfaceMap = {};
 
-    // Path -> Interface Name
-    Map<String, String> pathInterfaceContainerMap = {};
+      // Path -> Interface Name
+      Map<String, String> pathInterfaceContainerMap = {};
 
-    // Path -> Interface Name
-    Map<String, String> pathInterfaceNameMap = {};
+      // Path -> Interface Name
+      Map<String, String> pathInterfaceNameMap = {};
 
-    // add from build config
-    buildConfig.interfaces.forEach((interfaceConfig) {
-      final Interface? interface;
-      if (interfaceConfig.attributes.isNotEmpty) {
-        interface = interfaceConfig.toInterface();
-        nameInterfaceMap[interface.name] = interface;
-      } else {
-        interface = null;
-      }
+      // add from build config
+      buildConfig.interfaces.forEach((interfaceConfig) {
+        final Interface? interface;
+        if (interfaceConfig.attributes.isNotEmpty) {
+          interface = interfaceConfig.toInterface();
+          nameInterfaceMap[interface.name] = interface;
+        } else {
+          interface = null;
+        }
 
-      if (interfaceConfig.paths.isEmpty && interface != null) {
-        globalInterfaces.add(interface);
-      } else {
-        interfaceConfig.paths.forEach((path) {
-          if (path.isContainer) {
-            pathInterfaceContainerMap[path.path] = interfaceConfig.name;
-          } else {
-            pathInterfaceNameMap[path.path] = interfaceConfig.name;
-          }
-        });
-      }
-    });
+        if (interfaceConfig.paths.isEmpty && interface != null) {
+          globalInterfaces.add(interface);
+        } else {
+          interfaceConfig.paths.forEach((path) {
+            if (path.isContainer) {
+              pathInterfaceContainerMap[path.path] = interfaceConfig.name;
+            } else {
+              pathInterfaceNameMap[path.path] = interfaceConfig.name;
+            }
+          });
+        }
+      });
 
-    final resultInterfaces = _applyInterfaceAndGenericsRecursive(
-      curr: root,
-      globalInterfaces: globalInterfaces,
-      nameInterfaceMap: nameInterfaceMap,
-      pathInterfaceContainerNameMap: pathInterfaceContainerMap,
-      pathInterfaceNameMap: pathInterfaceNameMap,
-    ).toList();
+      resultInterfaces = _applyInterfaceAndGenericsRecursive(
+        curr: root,
+        globalInterfaces: globalInterfaces,
+        nameInterfaceMap: nameInterfaceMap,
+        pathInterfaceContainerNameMap: pathInterfaceContainerMap,
+        pathInterfaceNameMap: pathInterfaceNameMap,
+      ).toList();
+    }
 
     return I18nData(
       base: buildConfig.baseLocale == locale,
