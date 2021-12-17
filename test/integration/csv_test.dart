@@ -7,7 +7,6 @@ import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../util/resources_utils.dart';
-import '../util/datetime_utils.dart';
 
 void main() {
   late String compactInput;
@@ -44,7 +43,6 @@ void main() {
             translations: parsed['de'],
           ),
         showPluralHint: false,
-        now: birthDate,
       );
 
       expect(result, expectedOutput);
@@ -70,7 +68,6 @@ void main() {
             ),
           ),
         showPluralHint: false,
-        now: birthDate,
       );
 
       expect(result, expectedOutput);

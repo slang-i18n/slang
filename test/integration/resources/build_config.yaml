@@ -8,6 +8,7 @@ targets:
           input_file_pattern: .i18n.csv # will be ignored anyways because we put in manually
           output_file_name: translations.g.dart # currently set manually for each test
           string_interpolation: braces
+          timestamp: false # make every test deterministic
           maps:
             - end.pages.0
             - end.pages.1
