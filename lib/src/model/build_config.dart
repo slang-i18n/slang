@@ -24,6 +24,7 @@ class BuildConfig {
   static const StringInterpolation defaultStringInterpolation =
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
+  static const bool defaultRenderTimestamp = true;
   static const List<String> defaultMaps = <String>[];
   static const PluralAuto defaultPluralAuto = PluralAuto.cardinal;
   static const List<String> defaultCardinal = <String>[];
@@ -48,6 +49,7 @@ class BuildConfig {
   final CaseStyle? paramCase;
   final StringInterpolation stringInterpolation;
   final bool renderFlatMap;
+  final bool renderTimestamp;
   final List<String> maps;
   final PluralAuto pluralAuto;
   final List<String> pluralCardinal;
@@ -72,6 +74,7 @@ class BuildConfig {
     required this.paramCase,
     required this.stringInterpolation,
     required this.renderFlatMap,
+    required this.renderTimestamp,
     required this.maps,
     required this.pluralAuto,
     required this.pluralCardinal,
@@ -110,6 +113,7 @@ class BuildConfig {
       paramCase: paramCase,
       stringInterpolation: stringInterpolation,
       renderFlatMap: renderFlatMap,
+      renderTimestamp: renderTimestamp,
       maps: maps,
       pluralAuto: pluralAuto,
       pluralCardinal: pluralCardinal,

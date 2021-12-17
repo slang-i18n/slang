@@ -73,6 +73,7 @@ class BuildConfigBuilder {
           (map['string_interpolation'] as String?)?.toStringInterpolation() ??
               BuildConfig.defaultStringInterpolation,
       renderFlatMap: map['flat_map'] ?? BuildConfig.defaultRenderFlatMap,
+      renderTimestamp: map['timestamp'] ?? BuildConfig.defaultRenderTimestamp,
       maps: map['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
       pluralAuto: (map['pluralization']?['auto'] as String?)?.toPluralAuto() ??
           BuildConfig.defaultPluralAuto,

@@ -103,9 +103,13 @@ void _generateHeaderComment({
   buffer.writeln(' * Locales: ${translations.length}');
   buffer.writeln(
       ' * Strings: $translationCount ${translations.length != 1 ? '(${(translationCount / translations.length).toStringAsFixed(1)} per locale)' : ''}');
-  buffer.writeln(' *');
-  buffer.writeln(
-      ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} UTC');
+
+  if (config.renderTimestamp) {
+    buffer.writeln(' *');
+    buffer.writeln(
+        ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} UTC');
+  }
+
   buffer.writeln(' */');
 }
 

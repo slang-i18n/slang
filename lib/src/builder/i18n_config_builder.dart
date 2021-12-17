@@ -47,6 +47,7 @@ class I18nConfigBuilder {
       enumName: buildConfig.enumName,
       translationClassVisibility: buildConfig.translationClassVisibility,
       renderFlatMap: buildConfig.renderFlatMap,
+      renderTimestamp: buildConfig.renderTimestamp,
       contexts: buildConfig.contexts,
       interface: interfaces,
     );

@@ -16,6 +16,7 @@ class I18nConfig {
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
   final bool renderFlatMap;
+  final bool renderTimestamp;
   final List<ContextType> contexts;
   final List<Interface> interface; // may include more than in build config
 
@@ -30,6 +31,7 @@ class I18nConfig {
     required this.enumName,
     required this.translationClassVisibility,
     required this.renderFlatMap,
+    required this.renderTimestamp,
     required this.contexts,
     required this.interface,
   });

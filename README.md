@@ -220,6 +220,7 @@ targets:
           param_case: pascal
           string_interpolation: double_braces
           flat_map: false
+          timestamp: true
           maps:
             - error.codes
             - category
@@ -267,6 +268,7 @@ Key|Type|Usage|Default
 `param_case`|`camel`, `pascal`, `snake`|transform parameters (optional) [(i)](#-recasing)|`null`
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode [(i)](#-string-interpolation)|`dart`
 `flat_map`|`Boolean`|generate flat map [(i)](#-dynamic-keys--flat-map)|`true`
+`timestamp`|`Boolean`|write "Build on" timestamp|`true`
 `maps`|`List<String>`|entries which should be accessed via keys [(i)](#-maps)|`[]`
 `pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically [(i)](#-pluralization)|`cardinal`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`

@@ -102,6 +102,7 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   print(
       ' -> stringInterpolation: ${buildConfig.stringInterpolation.getEnumName()}');
   print(' -> renderFlatMap: ${buildConfig.renderFlatMap}');
+  print(' -> renderTimestamp: ${buildConfig.renderTimestamp}');
   print(' -> maps: ${buildConfig.maps}');
   print(' -> pluralization/auto: ${buildConfig.pluralAuto.getEnumName()}');
   print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
