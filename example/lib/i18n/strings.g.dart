@@ -1,11 +1,11 @@
 
 /*
  * Generated file. Do not edit.
- * 
+ *
  * Locales: 2
  * Strings: 12 (6.0 per locale)
- * 
- * Built on 2021-12-05 at 22:30 UTC
+ *
+ * Built on 2021-12-18 at 20:46 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -302,9 +302,7 @@ class _StringsEn {
 	};
 
 	/// A flat map containing all translations.
-	dynamic operator[](String key) {
-		return _translationMap[AppLocale.en]![key];
-	}
+	dynamic operator[](String key) => _translationMapEn[key];
 }
 
 class _StringsMainScreenEn {
@@ -332,10 +330,7 @@ class _StringsDe implements _StringsEn {
 	};
 
 	/// A flat map containing all translations.
-	@override
-	dynamic operator[](String key) {
-		return _translationMap[AppLocale.de]![key];
-	}
+	@override dynamic operator[](String key) => _translationMapDe[key];
 }
 
 class _StringsMainScreenDe implements _StringsMainScreenEn {
@@ -351,27 +346,27 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 	@override String get tapMe => 'Drück mich';
 }
 
-/// A flat map containing all translations.
+/// Flat map(s) containing all translations.
 /// Only for edge cases! For simple maps, use the map function of this library.
-late Map<AppLocale, Map<String, dynamic>> _translationMap = {
-	AppLocale.en: {
-		'mainScreen.title': 'An English Title',
-		'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
+
+late final Map<String, dynamic> _translationMapEn = {
+	'mainScreen.title': 'An English Title',
+	'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
 			one: 'You pressed $count time.',
 			other: 'You pressed $count times.',
 		),
-		'mainScreen.tapMe': 'Tap me',
-		'locales.en': 'English',
-		'locales.de': 'German',
-	},
-	AppLocale.de: {
-		'mainScreen.title': 'Ein deutscher Titel',
-		'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+	'mainScreen.tapMe': 'Tap me',
+	'locales.en': 'English',
+	'locales.de': 'German',
+};
+
+late final Map<String, dynamic> _translationMapDe = {
+	'mainScreen.title': 'Ein deutscher Titel',
+	'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
 			one: 'Du hast einmal gedrückt.',
 			other: 'Du hast $count mal gedrückt.',
 		),
-		'mainScreen.tapMe': 'Drück mich',
-		'locales.en': 'Englisch',
-		'locales.de': 'Deutsch',
-	},
+	'mainScreen.tapMe': 'Drück mich',
+	'locales.en': 'Englisch',
+	'locales.de': 'Deutsch',
 };
