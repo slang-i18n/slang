@@ -12,8 +12,8 @@ extension StringExtensions on String {
 
   /// transforms the string to the specified case
   /// if case is null, then no transformation will be applied
-  String toCase(CaseStyle? keyCase) {
-    switch (keyCase) {
+  String toCase(CaseStyle? style) {
+    switch (style) {
       case CaseStyle.camel:
         return _getWords(this)
             .mapIndexed((index, word) =>
@@ -26,9 +26,15 @@ extension StringExtensions on String {
       case null:
         return this;
       default:
-        print('Unknown key case: $keyCase');
+        print('Unknown case: $style');
         return this;
     }
+  }
+
+  /// de-DE will be interpreted as [de,DE]
+  /// normally, it would be [de,D,E] which we do not want
+  String toCaseOfLocale(CaseStyle style) {
+    return this.toLowerCase().toCase(style);
   }
 }
 

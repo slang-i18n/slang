@@ -8,6 +8,8 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 
+part 'generate_translation_map.dart';
+
 const PLURAL_PARAMETER = 'count';
 const CONTEXT_PARAMETER = 'context';
 
@@ -183,11 +185,10 @@ void _generateClass(
     // add map operator for translation map
     buffer.writeln();
     buffer.writeln('\t/// A flat map containing all translations.');
-    if (!base) buffer.writeln('\t@override');
-    buffer.writeln('\tdynamic operator[](String key) {');
+    buffer.write('\t');
+    if (!base) buffer.write('@override ');
     buffer.writeln(
-        '\t\treturn _translationMap[${config.enumName}.${locale.enumConstant}]![key];');
-    buffer.writeln('\t}');
+        'dynamic operator[](String key) => _translationMap${locale.languageTag.toCaseOfLocale(CaseStyle.pascal)}[key];');
   }
 
   buffer.writeln('}');
@@ -357,98 +358,6 @@ void _generateList(
     buffer.writeln(';');
   } else {
     buffer.writeln(',');
-  }
-}
-
-generateTranslationMap(
-    StringBuffer buffer, I18nConfig config, List<I18nData> translations) {
-  buffer.writeln();
-  buffer.writeln('/// A flat map containing all translations.');
-  buffer.writeln(
-      '/// Only for edge cases! For simple maps, use the map function of this library.');
-  buffer.writeln(
-      'late Map<${config.enumName}, Map<String, dynamic>> _translationMap = {');
-
-  for (I18nData localeData in translations) {
-    final language =
-        localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE;
-    final hasPluralResolver = config.hasPluralResolver(language);
-
-    buffer.writeln('\t${config.enumName}.${localeData.locale.enumConstant}: {');
-    _generateTranslationMapRecursive(
-      buffer: buffer,
-      curr: localeData.root,
-      config: config,
-      hasPluralResolver: hasPluralResolver,
-      language: language,
-    );
-    buffer.writeln('\t},');
-  }
-
-  buffer.writeln('};');
-}
-
-_generateTranslationMapRecursive({
-  required StringBuffer buffer,
-  required Node curr,
-  required I18nConfig config,
-  required bool hasPluralResolver,
-  required String language,
-}) {
-  if (curr is TextNode) {
-    if (curr.params.isEmpty) {
-      buffer.writeln('\t\t\'${curr.path}\': \'${curr.content}\',');
-    } else {
-      buffer.writeln(
-          '\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
-    }
-  } else if (curr is ListNode) {
-    curr.entries.forEach((child) {
-      _generateTranslationMapRecursive(
-        buffer: buffer,
-        curr: child,
-        config: config,
-        hasPluralResolver: hasPluralResolver,
-        language: language,
-      );
-    });
-  } else if (curr is ObjectNode) {
-    if (curr.type == ObjectNodeType.pluralCardinal ||
-        curr.type == ObjectNodeType.pluralOrdinal) {
-      buffer.write('\t\t\'${curr.path}\': ');
-      _addPluralizationCall(
-        buffer: buffer,
-        config: config,
-        hasPluralResolver: hasPluralResolver,
-        language: language,
-        cardinal: curr.type == ObjectNodeType.pluralCardinal,
-        key: curr.path,
-        children: curr.entries,
-        depth: 1,
-      );
-    } else if (curr.type == ObjectNodeType.context) {
-      buffer.write('\t\t\'${curr.path}\': ');
-      _addContextCall(
-        buffer: buffer,
-        config: config,
-        contextEnumName: curr.contextHint!.enumName,
-        children: curr.entries,
-        depth: 1,
-      );
-    } else {
-      // recursive
-      curr.entries.values.forEach((child) {
-        _generateTranslationMapRecursive(
-          buffer: buffer,
-          curr: child,
-          config: config,
-          hasPluralResolver: hasPluralResolver,
-          language: language,
-        );
-      });
-    }
-  } else {
-    throw 'This should not happen';
   }
 }
 
