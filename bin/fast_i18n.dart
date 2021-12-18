@@ -363,7 +363,26 @@ Future<void> generateTranslations({
     }
 
     print('');
-    print('Output: $outputFilePath');
+    if (buildConfig.outputFormat == OutputFormat.singleFile) {
+      print('Output: $outputFilePath');
+    } else {
+      print('Output:');
+      print(' -> $outputFilePath');
+      for (final locale in result.translations.keys) {
+        print(' -> ${BuildResultPaths.localePath(
+          outputPath: outputFilePath,
+          locale: locale,
+          pathSeparator: Platform.pathSeparator,
+        )}');
+      }
+      if (result.flatMap != null) {
+        print(' -> ${BuildResultPaths.flatMapPath(
+          outputPath: outputFilePath,
+          pathSeparator: Platform.pathSeparator,
+        )}');
+      }
+      print('');
+    }
 
     if (stopwatch != null)
       print('Translations generated successfully. (${stopwatch.elapsed})');
