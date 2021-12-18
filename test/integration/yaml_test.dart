@@ -43,6 +43,6 @@ void main() {
       showPluralHint: false,
     );
 
-    expect(result, expectedOutput);
+    expect(result.joinAsSingleOutput(), expectedOutput);
   });
 }

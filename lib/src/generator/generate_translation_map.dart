@@ -1,11 +1,17 @@
 part of 'generate_translations.dart';
 
-generateTranslationMap(
-  StringBuffer buffer,
+String generateTranslationMap(
   I18nConfig config,
   List<I18nData> translations,
 ) {
-  buffer.writeln();
+  final buffer = StringBuffer();
+
+  if (config.outputFormat == OutputFormat.multipleFiles) {
+    // this is a part file
+    buffer.writeln('part of \'${config.baseName}.g.dart\';');
+    buffer.writeln();
+  }
+
   buffer.writeln('/// Flat map(s) containing all translations.');
   buffer.writeln(
       '/// Only for edge cases! For simple maps, use the map function of this library.');
@@ -27,6 +33,8 @@ generateTranslationMap(
     );
     buffer.writeln('};');
   }
+
+  return buffer.toString();
 }
 
 _generateTranslationMapRecursive({

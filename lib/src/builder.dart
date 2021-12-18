@@ -173,7 +173,29 @@ class I18nBuilder implements Builder {
     );
 
     // STEP 4: write output to hard drive
-    File(outputFilePath).writeAsStringSync(result);
+    if (buildConfig.outputFormat == OutputFormat.singleFile) {
+      // single file
+      File(outputFilePath).writeAsStringSync(result.joinAsSingleOutput());
+    } else {
+      // multiple files
+      File(BuildResultPaths.mainPath(outputFilePath))
+          .writeAsStringSync(result.header);
+      for (final entry in result.translations.entries) {
+        final locale = entry.key;
+        final localeTranslations = entry.value;
+        File(BuildResultPaths.localePath(
+          outputPath: outputFilePath,
+          locale: locale,
+          pathSeparator: Platform.pathSeparator,
+        )).writeAsStringSync(localeTranslations);
+      }
+      if (result.flatMap != null) {
+        File(BuildResultPaths.flatMapPath(
+          outputPath: outputFilePath,
+          pathSeparator: Platform.pathSeparator,
+        )).writeAsStringSync(result.flatMap!);
+      }
+    }
 
     if (buildConfig.outputFileName == null && buildConfig.namespaces) {
       print('');

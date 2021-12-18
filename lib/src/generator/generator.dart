@@ -1,30 +1,30 @@
 import 'package:fast_i18n/src/generator/generate_header.dart';
 import 'package:fast_i18n/src/generator/generate_translations.dart';
+import 'package:fast_i18n/src/model/build_result.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 
 class Generator {
   /// main generate function
   /// returns a string representing the content of the .g.dart file
-  static String generate({
+  static BuildResult generate({
     required I18nConfig config,
     required List<I18nData> translations,
   }) {
-    StringBuffer buffer = StringBuffer();
-
-    generateHeader(buffer, config, translations, DateTime.now().toUtc());
-
-    buffer.writeln();
-    buffer.writeln('// translations');
-
-    for (I18nData localeData in translations) {
-      generateTranslations(buffer, config, localeData);
-    }
-
+    final header = generateHeader(config, translations);
+    final list = Map.fromEntries(translations
+        .map((t) => MapEntry(t.locale, generateTranslations(config, t))));
+    final String? flatMap;
     if (config.renderFlatMap) {
-      generateTranslationMap(buffer, config, translations);
+      flatMap = generateTranslationMap(config, translations);
+    } else {
+      flatMap = null;
     }
 
-    return buffer.toString();
+    return BuildResult(
+      header: header,
+      translations: list,
+      flatMap: flatMap,
+    );
   }
 }

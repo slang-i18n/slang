@@ -88,6 +88,7 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
       ' -> outputDirectory: ${buildConfig.outputDirectory != null ? buildConfig.outputDirectory : 'null (directory of input)'}');
   print(' -> outputFilePattern (deprecated): ${buildConfig.outputFilePattern}');
   print(' -> outputFileName: ${buildConfig.outputFileName}');
+  print(' -> outputFileFormat: ${buildConfig.outputFormat.getEnumName()}');
   print(' -> namespaces: ${buildConfig.namespaces}');
   print(' -> translateVar: ${buildConfig.translateVar}');
   print(' -> enumName: ${buildConfig.enumName}');
@@ -185,7 +186,8 @@ Future<void> generateTranslations({
   // STEP 1: determine base name and output file name / path
   String? baseName;
   String? outputFileName;
-  String outputFilePath;
+  final String outputFilePath;
+
   if (buildConfig.outputFileName != null) {
     // use newer version
     // this will have a default non-null value in the future (6.0.0+)
@@ -329,7 +331,29 @@ Future<void> generateTranslations({
   );
 
   // STEP 4: write output to hard drive
-  await File(outputFilePath).writeAsString(result);
+  if (buildConfig.outputFormat == OutputFormat.singleFile) {
+    // single file
+    File(outputFilePath).writeAsStringSync(result.joinAsSingleOutput());
+  } else {
+    // multiple files
+    File(BuildResultPaths.mainPath(outputFilePath))
+        .writeAsStringSync(result.header);
+    for (final entry in result.translations.entries) {
+      final locale = entry.key;
+      final localeTranslations = entry.value;
+      File(BuildResultPaths.localePath(
+        outputPath: outputFilePath,
+        locale: locale,
+        pathSeparator: Platform.pathSeparator,
+      )).writeAsStringSync(localeTranslations);
+    }
+    if (result.flatMap != null) {
+      File(BuildResultPaths.flatMapPath(
+        outputPath: outputFilePath,
+        pathSeparator: Platform.pathSeparator,
+      )).writeAsStringSync(result.flatMap!);
+    }
+  }
 
   if (verbose) {
     if (buildConfig.outputFileName == null && buildConfig.namespaces) {

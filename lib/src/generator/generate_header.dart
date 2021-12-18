@@ -1,16 +1,16 @@
 import 'package:fast_i18n/src/generator/helper.dart';
+import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
+import 'package:fast_i18n/src/utils/path_utils.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 
-void generateHeader(
-  StringBuffer buffer,
+String generateHeader(
   I18nConfig config,
   List<I18nData> allLocales,
-  DateTime now,
 ) {
   const String baseLocaleVar = '_baseLocale';
   const String currLocaleVar = '_currLocale';
@@ -24,14 +24,24 @@ void generateHeader(
   const String pluralResolverMapCardinal = '_pluralResolversCardinal';
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
 
+  final buffer = StringBuffer();
+
   _generateHeaderComment(
     buffer: buffer,
     config: config,
     translations: allLocales,
-    now: now,
+    now: DateTime.now().toUtc(),
   );
 
   _generateImports(buffer);
+
+  if (config.outputFormat == OutputFormat.multipleFiles) {
+    _generateParts(
+      buffer: buffer,
+      config: config,
+      locales: allLocales,
+    );
+  }
 
   _generateLocaleVariables(
       buffer: buffer,
@@ -85,6 +95,8 @@ void generateHeader(
       pluralResolverOrdinal: pluralResolverMapOrdinal);
 
   _generateHelpers(buffer: buffer, config: config);
+
+  return buffer.toString();
 }
 
 void _generateHeaderComment({
@@ -116,6 +128,22 @@ void _generateHeaderComment({
 void _generateImports(StringBuffer buffer) {
   buffer.writeln();
   buffer.writeln('import \'package:flutter/widgets.dart\';');
+}
+
+void _generateParts({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> locales,
+}) {
+  buffer.writeln();
+  for (final locale in locales) {
+    buffer.writeln(
+        'part \'${BuildResultPaths.localePath(outputPath: config.baseName, locale: locale.locale, pathSeparator: 'not needed')}\';');
+  }
+  if (config.renderFlatMap) {
+    buffer.writeln(
+        'part \'${BuildResultPaths.flatMapPath(outputPath: config.baseName, pathSeparator: 'not needed')}\';');
+  }
 }
 
 void _generateLocaleVariables(

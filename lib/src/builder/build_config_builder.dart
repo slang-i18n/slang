@@ -56,6 +56,8 @@ class BuildConfigBuilder {
           map['output_file_pattern'] ?? BuildConfig.defaultOutputFilePattern,
       outputFileName:
           map['output_file_name'] ?? BuildConfig.defaultOutputFileName,
+      outputFormat: (map['output_format'] as String?)?.toOutputFormat() ??
+          BuildConfig.defaultOutputFormat,
       namespaces: map['namespaces'] ?? BuildConfig.defaultNamespaces,
       translateVar: map['translate_var'] ?? BuildConfig.defaultTranslateVar,
       enumName: map['enum_name'] ?? BuildConfig.defaultEnumName,

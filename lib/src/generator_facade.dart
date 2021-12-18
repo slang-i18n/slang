@@ -2,13 +2,14 @@ import 'package:fast_i18n/src/builder/i18n_config_builder.dart';
 import 'package:fast_i18n/src/builder/translation_model_builder.dart';
 import 'package:fast_i18n/src/generator/generator.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/model/build_result.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
 import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 
 class GeneratorFacade {
   /// Common step used by custom runner and builder to get the .g.dart content
-  static String generate({
+  static BuildResult generate({
     required BuildConfig buildConfig,
     required String baseName,
     required NamespaceTranslationMap translationMap,

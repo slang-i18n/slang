@@ -9,6 +9,7 @@ class I18nConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
   final FallbackStrategy fallbackStrategy;
+  final OutputFormat outputFormat;
   final Map<String, RuleSet> renderedCardinalResolvers;
   final Map<String, RuleSet> renderedOrdinalResolvers;
   final Set<String> unsupportedPluralLanguages; // resolvers needed
@@ -24,6 +25,7 @@ class I18nConfig {
     required this.baseName,
     required this.baseLocale,
     required this.fallbackStrategy,
+    required this.outputFormat,
     required this.renderedCardinalResolvers,
     required this.renderedOrdinalResolvers,
     required this.unsupportedPluralLanguages,

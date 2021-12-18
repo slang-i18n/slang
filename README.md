@@ -211,6 +211,7 @@ targets:
           output_directory: lib/i18n
           output_file_pattern: .g.dart # deprecated, use output_file_name
           output_file_name: translations.g.dart
+          output_format: single_file
           namespaces: false
           translate_var: t
           enum_name: AppLocale
@@ -259,6 +260,7 @@ Key|Type|Usage|Default
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
+`output_format`|`single_file`, `multiple_files`|generate single or multiple files|`single_file`
 `namespaces`|`Boolean`|split into multiple files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`

@@ -13,6 +13,7 @@ class BuildConfig {
   static const String? defaultOutputDirectory = null;
   static const String defaultOutputFilePattern = '.g.dart';
   static const String? defaultOutputFileName = null;
+  static const OutputFormat defaultOutputFormat = OutputFormat.singleFile;
   static const bool defaultNamespaces = false;
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
@@ -38,8 +39,9 @@ class BuildConfig {
   final String? inputDirectory;
   final String inputFilePattern;
   final String? outputDirectory;
-  final String outputFilePattern;
+  final String outputFilePattern; // deprecated
   final String? outputFileName;
+  final OutputFormat outputFormat;
   final bool namespaces;
   final String translateVar;
   final String enumName;
@@ -65,6 +67,7 @@ class BuildConfig {
     required this.outputDirectory,
     required this.outputFilePattern,
     required this.outputFileName,
+    required this.outputFormat,
     required this.namespaces,
     required this.translateVar,
     required this.enumName,
@@ -104,6 +107,7 @@ class BuildConfig {
       outputDirectory: outputDirectory?.toAbsolutePath(),
       outputFilePattern: outputFilePattern,
       outputFileName: outputFileName,
+      outputFormat: outputFormat,
       namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,
@@ -126,6 +130,7 @@ class BuildConfig {
 
 enum FileType { json, yaml, csv }
 enum FallbackStrategy { none, baseLocale }
+enum OutputFormat { singleFile, multipleFiles }
 enum StringInterpolation { dart, braces, doubleBraces }
 enum TranslationClassVisibility { private, public }
 enum CaseStyle { camel, pascal, snake }
@@ -138,6 +143,17 @@ extension Parser on String {
         return FallbackStrategy.none;
       case 'base_locale':
         return FallbackStrategy.baseLocale;
+      default:
+        return null;
+    }
+  }
+
+  OutputFormat? toOutputFormat() {
+    switch (this) {
+      case 'single_file':
+        return OutputFormat.singleFile;
+      case 'multiple_files':
+        return OutputFormat.multipleFiles;
       default:
         return null;
     }

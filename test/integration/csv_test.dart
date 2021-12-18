@@ -45,7 +45,7 @@ void main() {
         showPluralHint: false,
       );
 
-      expect(result, expectedOutput);
+      expect(result.joinAsSingleOutput(), expectedOutput);
     });
 
     test('separated csv', () {
@@ -70,7 +70,7 @@ void main() {
         showPluralHint: false,
       );
 
-      expect(result, expectedOutput);
+      expect(result.joinAsSingleOutput(), expectedOutput);
     });
   });
 }

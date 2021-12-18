@@ -24,9 +24,14 @@ class ClassTask {
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-void generateTranslations(
-    StringBuffer buffer, I18nConfig config, I18nData localeData) {
-  Queue<ClassTask> queue = Queue<ClassTask>();
+String generateTranslations(I18nConfig config, I18nData localeData) {
+  final queue = Queue<ClassTask>();
+  final buffer = StringBuffer();
+
+  if (config.outputFormat == OutputFormat.multipleFiles) {
+    // this is a part file
+    buffer.writeln('part of \'${config.baseName}.g.dart\';');
+  }
 
   queue.add(ClassTask(
     getClassNameRoot(
@@ -56,6 +61,8 @@ void generateTranslations(
 
     root = false;
   } while (queue.isNotEmpty);
+
+  return buffer.toString();
 }
 
 /// generates a class and all of its members of ONE locale
