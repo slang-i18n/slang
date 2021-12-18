@@ -73,7 +73,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.6.0
+  fast_i18n: 5.7.0
 ```
 
 **Step 2: Create JSON files**
@@ -271,7 +271,7 @@ Key|Type|Usage|Default
 `param_case`|`camel`, `pascal`, `snake`|transform parameters (optional) [(i)](#-recasing)|`null`
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode [(i)](#-string-interpolation)|`dart`
 `flat_map`|`Boolean`|generate flat map [(i)](#-dynamic-keys--flat-map)|`true`
-`timestamp`|`Boolean`|write "Build on" timestamp|`true`
+`timestamp`|`Boolean`|write "Built on" timestamp|`true`
 `maps`|`List<String>`|entries which should be accessed via keys [(i)](#-maps)|`[]`
 `pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically [(i)](#-pluralization)|`cardinal`
 `pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
@@ -845,9 +845,7 @@ This will generate the following files:
 
 ```text
 translations.g.dart - main file
-translations_en.g.dart - English translations
-translations_de.g.dart - German translations
-translations_<locale>.g.dart - any other translations
+translations_<locale>.g.dart - translation classes
 translations_map.g.dart - flat translation maps
 ```
 
@@ -924,6 +922,10 @@ targets:
 Yes. Please set `fallback_strategy: base_locale` in `build.yaml`.
 
 Now you can leave out translations in secondary languages. Missing translations will fallback to base locale.
+
+**Can I prevent the timestamp `Built on` from updating?**
+
+No, but you can disable the timestamp altogether. Set `timestamp: false` in `build.yaml`.
 
 **Why setLocale doesn't work?**
 

@@ -1,6 +1,7 @@
 ## 5.7.0
 
 - feat: add option to disable timestamp generation
+- feat: add option to split output file
 - perf: flat translation map now declared separately for each locale
 
 ## 5.6.0
