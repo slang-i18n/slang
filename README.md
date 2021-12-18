@@ -58,6 +58,7 @@ String h = page.title;                                 // with interfaces
     - [Dynamic Keys](#-dynamic-keys--flat-map)
     - [Fallback](#-fallback)
     - [Recasing](#-recasing)
+    - [Output Format](#-output-format)
     - [Compact CSV](#-compact-csv)
     - [Auto Rebuild](#-auto-rebuild)
 - [API](#api)
@@ -260,7 +261,7 @@ Key|Type|Usage|Default
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
-`output_format`|`single_file`, `multiple_files`|generate single or multiple files|`single_file`
+`output_format`|`single_file`, `multiple_files`|generate single or multiple files [(i)](#-output-format)|`single_file`
 `namespaces`|`Boolean`|split into multiple files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
@@ -823,6 +824,34 @@ targets:
 String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
 ```
+
+### ➤ Output Format
+
+By default, a single `.g.dart` file will be generated.
+
+You can split this file into multiple ones to improve readability and IDE performance.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          output_file_name: translations.g.dart
+          output_format: multiple_files # set this
+```
+
+This will generate the following files:
+
+```text
+translations.g.dart - main file
+translations_en.g.dart - English translations
+translations_de.g.dart - German translations
+translations_<locale>.g.dart - any other translations
+translations_map.g.dart - flat translation maps
+```
+
+You only need to import the main file!
 
 ### ➤ Compact CSV
 
