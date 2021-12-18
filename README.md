@@ -261,8 +261,8 @@ Key|Type|Usage|Default
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
-`output_format`|`single_file`, `multiple_files`|generate single or multiple files [(i)](#-output-format)|`single_file`
-`namespaces`|`Boolean`|split into multiple files [(i)](#-namespaces)|`false`
+`output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
+`namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
 `translation_class_visibility`|`private`, `public`|class visibility|`private`
