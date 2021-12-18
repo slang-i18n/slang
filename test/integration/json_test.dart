@@ -18,7 +18,7 @@ void main() {
     enInput = loadResource('json_en.json');
     deInput = loadResource('json_de.json');
     buildYaml = loadResource('build_config.yaml');
-    expectedOutput = loadResource('expected.output');
+    expectedOutput = loadResource('expected_single.output');
   });
 
   test('json', () {

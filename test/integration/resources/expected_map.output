@@ -1,0 +1,58 @@
+part of 'translations.g.dart';
+
+/// Flat map(s) containing all translations.
+/// Only for edge cases! For simple maps, use the map function of this library.
+
+late final Map<String, dynamic> _translationMapEn = {
+	'onboarding.welcome': ({required Object fullName}) => 'Welcome $fullName',
+	'onboarding.bye': ({required Object firstName}) => 'Bye $firstName',
+	'onboarding.pages.0.title': 'First Page',
+	'onboarding.pages.0.content': 'First Page Content',
+	'onboarding.pages.1.title': 'Second Page',
+	'onboarding.greet': ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+			switch (context) {
+				case GenderContext.male: return 'Hello Mr $lastName and ${AppLocale.en.translations.onboarding.welcome(fullName: fullName)}';
+				case GenderContext.female: return 'Hello Ms $lastName and ${AppLocale.en.translations.onboarding.bye(firstName: firstName)}';
+			}
+		},
+	'onboarding.welcomeLinkedPlural': ({required num count, required Object fullName, required Object firstName}) => 'Hello ${AppLocale.en.translations.group.users(count: count, fullName: fullName, firstName: firstName)}',
+	'onboarding.welcomeLinkedContext': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${AppLocale.en.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
+	'onboarding.welcomeFullLink': ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${AppLocale.en.translations.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${AppLocale.en.translations.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
+	'group.users': ({required num count, required Object fullName, required Object firstName}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
+			zero: 'No Users and ${AppLocale.en.translations.onboarding.welcome(fullName: fullName)}',
+			one: 'One User',
+			other: '$count Users and ${AppLocale.en.translations.onboarding.bye(firstName: firstName)}',
+		),
+	'end.stringPages.0': '1st Page',
+	'end.stringPages.1': '2nd Page',
+	'end.pages.0.unknown': 'Unknown Error',
+	'end.pages.1.with space': 'An Error',
+	'end.pages.1.with second space': 'An 2nd Error',
+};
+
+late final Map<String, dynamic> _translationMapDe = {
+	'onboarding.welcome': ({required Object fullName}) => 'Willkommen $fullName',
+	'onboarding.bye': ({required Object firstName}) => 'Tschüss $firstName',
+	'onboarding.pages.0.title': 'Erste Seite',
+	'onboarding.pages.0.content': 'Erster Seiteninhalt',
+	'onboarding.pages.1.title': 'Zweite Seite',
+	'onboarding.greet': ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+			switch (context) {
+				case GenderContext.male: return 'Hallo Herr $lastName und ${AppLocale.de.translations.onboarding.welcome(fullName: fullName)}';
+				case GenderContext.female: return 'Hallo Frau $lastName und ${AppLocale.de.translations.onboarding.bye(firstName: firstName)}';
+			}
+		},
+	'onboarding.welcomeLinkedPlural': ({required num count, required Object fullName, required Object firstName}) => 'Hallo ${AppLocale.de.translations.group.users(count: count, fullName: fullName, firstName: firstName)}',
+	'onboarding.welcomeLinkedContext': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${AppLocale.de.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
+	'onboarding.welcomeFullLink': ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${AppLocale.de.translations.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${AppLocale.de.translations.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
+	'group.users': ({required num count, required Object fullName, required Object firstName}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+			zero: 'Keine Nutzer und ${AppLocale.de.translations.onboarding.welcome(fullName: fullName)}',
+			one: 'Ein Nutzer',
+			other: '$count Nutzer und ${AppLocale.de.translations.onboarding.bye(firstName: firstName)}',
+		),
+	'end.stringPages.0': '1. Seite',
+	'end.stringPages.1': '2. Seite',
+	'end.pages.0.unknown': 'Unbekannter Fehler',
+	'end.pages.1.with space': 'Ein Fehler',
+	'end.pages.1.with second space': 'Ein 2. Fehler',
+};

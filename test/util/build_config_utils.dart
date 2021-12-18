@@ -35,6 +35,7 @@ final baseConfig = BuildConfig(
 extension BuildConfigCopy on BuildConfig {
   BuildConfig copyWith({
     String? inputFilePattern,
+    OutputFormat? outputFormat,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
     List<String>? maps,
@@ -52,7 +53,7 @@ extension BuildConfigCopy on BuildConfig {
       outputDirectory: outputDirectory,
       outputFilePattern: outputFilePattern,
       outputFileName: outputFileName,
-      outputFormat: outputFormat,
+      outputFormat: outputFormat ?? this.outputFormat,
       namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,

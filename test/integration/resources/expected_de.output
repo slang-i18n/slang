@@ -1,0 +1,85 @@
+part of 'translations.g.dart';
+
+class _TranslationsDe implements _TranslationsEn {
+	_TranslationsDe._(); // no constructor
+
+	static final _TranslationsDe _instance = _TranslationsDe._();
+
+	@override _TranslationsOnboardingDe get onboarding => _TranslationsOnboardingDe._instance;
+	@override _TranslationsGroupDe get group => _TranslationsGroupDe._instance;
+	@override _TranslationsEndDe get end => _TranslationsEndDe._instance;
+
+	/// A flat map containing all translations.
+	@override dynamic operator[](String key) => _translationMapDe[key];
+}
+
+class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
+	_TranslationsOnboardingDe._(); // no constructor
+
+	static final _TranslationsOnboardingDe _instance = _TranslationsOnboardingDe._();
+
+	@override String welcome({required Object fullName}) => 'Willkommen $fullName';
+	@override String bye({required Object firstName}) => 'Tschüss $firstName';
+	@override List<PageData> get pages => [
+		_TranslationsOnboarding0i0De._instance,
+		_TranslationsOnboarding0i1De._instance,
+	];
+	@override String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+		switch (context) {
+			case GenderContext.male: return 'Hallo Herr $lastName und ${AppLocale.de.translations.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female: return 'Hallo Frau $lastName und ${AppLocale.de.translations.onboarding.bye(firstName: firstName)}';
+		}
+	}
+	@override String welcomeLinkedPlural({required num count, required Object fullName, required Object firstName}) => 'Hallo ${AppLocale.de.translations.group.users(count: count, fullName: fullName, firstName: firstName)}';
+	@override String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${AppLocale.de.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+	@override String welcomeFullLink({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${AppLocale.de.translations.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${AppLocale.de.translations.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+}
+
+class _TranslationsGroupDe implements _TranslationsGroupEn {
+	_TranslationsGroupDe._(); // no constructor
+
+	static final _TranslationsGroupDe _instance = _TranslationsGroupDe._();
+
+	@override String users({required num count, required Object fullName, required Object firstName}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+		zero: 'Keine Nutzer und ${AppLocale.de.translations.onboarding.welcome(fullName: fullName)}',
+		one: 'Ein Nutzer',
+		other: '$count Nutzer und ${AppLocale.de.translations.onboarding.bye(firstName: firstName)}',
+	);
+}
+
+class _TranslationsEndDe with EndData implements _TranslationsEndEn {
+	_TranslationsEndDe._(); // no constructor
+
+	static final _TranslationsEndDe _instance = _TranslationsEndDe._();
+
+	@override List<String> get stringPages => [
+		'1. Seite',
+		'2. Seite',
+	];
+	@override List<Map<String, String>> get pages => [
+		{
+			'unknown': 'Unbekannter Fehler',
+		},
+		{
+			'with space': 'Ein Fehler',
+			'with second space': 'Ein 2. Fehler',
+		},
+	];
+}
+
+class _TranslationsOnboarding0i0De with PageData implements _TranslationsOnboarding0i0En {
+	_TranslationsOnboarding0i0De._(); // no constructor
+
+	static final _TranslationsOnboarding0i0De _instance = _TranslationsOnboarding0i0De._();
+
+	@override String get title => 'Erste Seite';
+	@override String get content => 'Erster Seiteninhalt';
+}
+
+class _TranslationsOnboarding0i1De with PageData implements _TranslationsOnboarding0i1En {
+	_TranslationsOnboarding0i1De._(); // no constructor
+
+	static final _TranslationsOnboarding0i1De _instance = _TranslationsOnboarding0i1De._();
+
+	@override String get title => 'Zweite Seite';
+}
