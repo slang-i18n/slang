@@ -186,13 +186,13 @@ class I18nBuilder implements Builder {
         File(BuildResultPaths.localePath(
           outputPath: outputFilePath,
           locale: locale,
-          pathSeparator: Platform.pathSeparator,
+          pathSeparator: '/',
         )).writeAsStringSync(localeTranslations);
       }
       if (result.flatMap != null) {
         File(BuildResultPaths.flatMapPath(
           outputPath: outputFilePath,
-          pathSeparator: Platform.pathSeparator,
+          pathSeparator: '/',
         )).writeAsStringSync(result.flatMap!);
       }
     }
