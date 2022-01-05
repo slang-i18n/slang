@@ -1,5 +1,6 @@
 part of 'translations.g.dart';
 
+// Path: <root>
 class _TranslationsEn {
 	_TranslationsEn._(); // no constructor
 
@@ -13,6 +14,7 @@ class _TranslationsEn {
 	dynamic operator[](String key) => _translationMapEn[key];
 }
 
+// Path: onboarding
 class _TranslationsOnboardingEn {
 	_TranslationsOnboardingEn._(); // no constructor
 
@@ -35,6 +37,7 @@ class _TranslationsOnboardingEn {
 	String welcomeFullLink({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${AppLocale.en.translations.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${AppLocale.en.translations.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 }
 
+// Path: group
 class _TranslationsGroupEn {
 	_TranslationsGroupEn._(); // no constructor
 
@@ -47,6 +50,7 @@ class _TranslationsGroupEn {
 	);
 }
 
+// Path: end
 class _TranslationsEndEn with EndData {
 	_TranslationsEndEn._(); // no constructor
 
@@ -67,6 +71,7 @@ class _TranslationsEndEn with EndData {
 	];
 }
 
+// Path: onboarding.pages.0
 class _TranslationsOnboarding0i0En with PageData {
 	_TranslationsOnboarding0i0En._(); // no constructor
 
@@ -76,6 +81,7 @@ class _TranslationsOnboarding0i0En with PageData {
 	@override String get content => 'First Page Content';
 }
 
+// Path: onboarding.pages.1
 class _TranslationsOnboarding0i1En with PageData {
 	_TranslationsOnboarding0i1En._(); // no constructor
 
