@@ -78,9 +78,15 @@ void _generateClass(
   ObjectNode node,
   bool root,
 ) {
-  final finalClassName = getClassName(parentName: className, locale: locale);
-
   buffer.writeln();
+
+  if (root) {
+    buffer.writeln('// Path: <root>');
+  } else {
+    buffer.writeln('// Path: ${node.path}');
+  }
+
+  final finalClassName = getClassName(parentName: className, locale: locale);
 
   final mixinStr =
       node.interface != null ? ' with ${node.interface!.name}' : '';

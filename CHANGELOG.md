@@ -1,3 +1,7 @@
+## 5.8.0
+
+- feat: add path comment to every generated class
+
 ## 5.7.0
 
 - feat: add option `timestamp` to disable timestamp generation
