@@ -78,17 +78,30 @@ dev_dependencies:
 
 **Step 2: Create JSON files**
 
-Create these files inside your `lib` directory. Preferably in one common package like `lib/i18n`.
-Only files having the `.i18n.json` file extension will be detected.
-The part after the underscore `_` is the actual locale (e.g. en_US, en-US, fr).
-You **must** provide the default translation file (the file without locale extension).
+Create these files inside your `lib` directory. For example, `lib/i18n`.
 
 YAML and CSV files are also supported (see [File Types](#-file-types)).
 
 Writing translations into assets folder requires extra configuration (see [FAQ](#faq)).
 
+Format:
+```text
+<namespace>_<locale?>.<ext>
+```
+
+You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings` or `translations`.
+
+Example:
+```text
+lib/
+ └── i18n/
+      └── strings.i18n.json
+      └── strings_de.i18n.json
+      └── strings_zh-CN.i18n.json <-- example for country codes
+```
+
 ```json5
-// File: strings.i18n.json (mandatory, default, fallback)
+// File: strings.i18n.json (mandatory, base locale)
 {
   "hello": "Hello $name",
   "save": "Save",
@@ -257,7 +270,7 @@ Key|Type|Usage|Default
 `base_locale`|`String`|locale of default json|`en`
 `fallback_strategy`|`none`, `base_locale`|handle missing translations [(i)](#-fallback)|`none`
 `input_directory`|`String`|path to input directory|`null`
-`input_file_pattern`|`String`|input file pattern, must end with .json or .yaml|`.i18n.json`
+`input_file_pattern`|`String`|input file pattern, must end with .json, .yaml or .csv|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
 `output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
@@ -332,7 +345,7 @@ You can also combine multiple locales (see [Compact CSV](#-compact-csv)).
 
 ### ➤ Namespaces
 
-You can split the translations into multiple files. Each file `<namespace>_<locale?>.i18n.json` represents a namespace.
+You can split the translations into multiple files. Each file represents a namespace.
 
 This feature is disabled by default for single-file usage. You must enable it.
 
@@ -351,23 +364,37 @@ targets:
 Let's create two namespaces called `widgets` and `dialogs`.
 
 ```text
+<namespace>_<locale?>.<ext>
+```
+
+```text
 i18n/
-- widgets.i18n.json
-- widgets_fr.i18n.json
-- dialogs.i18n.json
-- dialogs_fr.i18n.json
+ └── widgets.i18n.json
+ └── widgets_fr.i18n.json
+ └── dialogs.i18n.json
+ └── dialogs_fr.i18n.json
 ```
 
 You can also use different folders. Only file name matters!
 
 ```text
 i18n/
-  widgets/
-    - widgets.i18n.json
-    - widgets_fr.i18n.json
-  dialogs/
-    - dialogs.i18n.json
-    - dialogs_fr.i18n.json
+ └── widgets/
+      └── widgets.i18n.json
+      └── widgets_fr.i18n.json
+ └── dialogs/
+      └── dialogs.i18n.json
+      └── dialogs_fr.i18n.json
+```
+
+```text
+i18n/
+ └── base/
+      └── widgets.i18n.json
+      └── dialogs.i18n.json
+ └── fr/
+      └── widgets_fr.i18n.json
+      └── dialogs_fr.i18n.json
 ```
 
 Now access the translations:
@@ -384,11 +411,11 @@ There are three modes configurable via `string_interpolation` in `build.yaml`.
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
-Mode|Translation|Call
----|---|---
-`dart (default)`|`Hello $name. I am ${height}m.`|`t.myKey(name: 'Tom', height: 1.73)`
-`braces`|`Hello {name}`|`t.myKey(name: 'Anna')`
-`double_braces`|`Hello {{name}}`|`t.myKey(name: 'Tom')`
+Mode|Example
+---|---
+`dart (default)`|`Hello $name. I am ${height}m.`
+`braces`|`Hello {name}`
+`double_braces`|`Hello {{name}}`
 
 ### ➤ Lists
 
