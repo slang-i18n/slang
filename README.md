@@ -333,15 +333,14 @@ welcome:
 ```
 
 **CSV Example**
+
+> Use integers to specify lists. You can also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
+
 ```csv
 welcome.title,Welcome $name
 welcome.pages.0.title,First Page
 welcome.pages.1.title,Second Page
 ```
-
-Use integers to specify lists.
-
-You can also combine multiple locales (see [Compact CSV](#-compact-csv)).
 
 ### ➤ Namespaces
 
@@ -660,10 +659,9 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
-By default, the parameter name will be `count`. You can change that by adding a hint.
+By default, the parameter name is `count`. You can change that by adding a hint using brackets.
 
-```json5
-// File: strings.i18n.json
+```json
 {
   "someKey": {
     "apple(appleCount)": {
@@ -735,8 +733,7 @@ targets:
 
 In contrast to pluralization, you **must** provide all forms. Collapse it to save space.
 
-```json5
-// File: strings.i18n.json
+```json
 {
   "greet": {
     "male,female": "Hello $name"
@@ -744,19 +741,19 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 }
 ```
 
-Similarly to plurals, the parameter name will be `context` by default. You can change that by adding a hint.
+Similarly to plurals, the parameter name is `context` by default. You can change that by adding a hint using brackets.
 
-```json5
-// File: strings.i18n.json
+```json
 {
   "greet(gender)": {
-    "male,female": "Hello $name"
+    "male": "Hello Mr",
+    "female": "Hello Ms"
   }
 }
 ```
 
 ```dart
-String a = t.greet(gender: GenderContext.female, name: 'Anna'); // notice 'gender' instead of 'context'
+String a = t.greet(gender: GenderContext.female); // notice 'gender' instead of 'context'
 ```
 
 ### ➤ Maps
@@ -1017,6 +1014,28 @@ As soon as an unknown item has been detected, then this json node is **not** a p
 ```
 
 For contexts, all enum values must exist.
+
+**How can I use multiple plurals in one sentence?**
+
+You may use linked translations to solve this problem.
+
+```json
+{
+  "apples(appleCount)": {
+    "one": "one apple",
+    "other": "{appleCount} apples"
+  },
+  "bananas(bananaCount)": {
+    "one": "one banana",
+    "other": "{bananaCount} bananas"
+  },
+  "sentence": "I have @:apples and @:bananas"
+}
+```
+
+```dart
+String a = t.sentence(appleCount: 1, bananaCount: 2); // two different plural parameters!
+```
 
 ## License
 

@@ -1,6 +1,6 @@
 ## 5.8.0
 
-- feat: allow for custom parameter names in plurals or contexts (`count` and `context` were hardcoded)
+- feat: allow custom parameter names in plurals or contexts (`count` and `context` were hardcoded previously)
 - feat: add path comment to every generated class
 
 ## 5.7.0
