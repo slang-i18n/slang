@@ -56,3 +56,24 @@ extension QuantityExtensions on Quantity {
     }
   }
 }
+
+extension QuantityParser on String {
+  Quantity? toQuantity() {
+    switch (this) {
+      case 'zero':
+        return Quantity.zero;
+      case 'one':
+        return Quantity.one;
+      case 'two':
+        return Quantity.two;
+      case 'few':
+        return Quantity.few;
+      case 'many':
+        return Quantity.many;
+      case 'other':
+        return Quantity.other;
+      default:
+        return null;
+    }
+  }
+}

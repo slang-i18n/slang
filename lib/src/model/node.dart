@@ -1,12 +1,13 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/interface.dart';
+import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 /// the super class of every node
 abstract class Node {
-  static const KEY_DELIMITER = ','; // used by context
+  static const KEY_DELIMITER = ','; // used by plural or context
 
   final String path;
   Node? _parent;
@@ -19,6 +20,10 @@ abstract class Node {
     _parent = parent;
   }
 }
+
+/// Flag for leaves
+/// Leaves are: TextNode, PluralNode and ContextNode
+abstract class LeafNode {}
 
 /// the super class for list and object nodes
 abstract class IterableNode extends Node {
@@ -34,18 +39,9 @@ abstract class IterableNode extends Node {
   }
 }
 
-enum ObjectNodeType {
-  classType, // represent this object as class
-  map, // as Map<String,dynamic>
-  pluralCardinal, // as function
-  pluralOrdinal, // as function
-  context, // as function
-}
-
 class ObjectNode extends IterableNode {
   final Map<String, Node> entries;
-  final ObjectNodeType type;
-  final ContextType? contextHint; // to save computing power by calc only once
+  final bool isMap;
 
   /// If not null, then this node has an interface (mixin)
   Interface? _interface;
@@ -54,8 +50,7 @@ class ObjectNode extends IterableNode {
   ObjectNode({
     required String path,
     required this.entries,
-    required this.type,
-    required this.contextHint,
+    required this.isMap,
   }) : super(
             path,
             entries.values
@@ -88,17 +83,16 @@ class ListNode extends IterableNode {
           childGenericType = 'dynamic'; // default
         }
       }
-      return 'List<$childGenericType>';
+      return 'List<$childGenericType>'; // all lists have the same generic type
     }
-    if (entries.every(
-        (child) => child is ObjectNode && child.type == ObjectNodeType.map)) {
+    if (entries.every((child) => child is ObjectNode && child.isMap)) {
       String? childGenericType = (entries.first as ObjectNode).genericType;
       for (final child in entries) {
         if (childGenericType != (child as ObjectNode).genericType) {
           childGenericType = 'dynamic'; // default
         }
       }
-      return 'Map<String, $childGenericType>';
+      return 'Map<String, $childGenericType>'; // all maps have same generics
     }
     return 'dynamic';
   }
@@ -107,7 +101,40 @@ class ListNode extends IterableNode {
   String toString() => entries.toString();
 }
 
-class TextNode extends Node {
+enum PluralType {
+  cardinal,
+  ordinal,
+}
+
+class PluralNode extends Node implements LeafNode {
+  final PluralType pluralType;
+  final Map<Quantity, TextNode> quantities;
+
+  PluralNode({
+    required String path,
+    required this.pluralType,
+    required this.quantities,
+  }) : super(path);
+
+  @override
+  String toString() => quantities.toString();
+}
+
+class ContextNode extends Node implements LeafNode {
+  final ContextType context;
+  final Map<String, TextNode> entries;
+
+  ContextNode({
+    required String path,
+    required this.context,
+    required this.entries,
+  }) : super(path);
+
+  @override
+  String toString() => entries.toString();
+}
+
+class TextNode extends Node implements LeafNode {
   /// The original string
   final String raw;
 

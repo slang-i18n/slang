@@ -753,6 +753,10 @@ int _countTranslations(Node node) {
       sum += _countTranslations(entry);
     }
     return sum;
+  } else if (node is PluralNode) {
+    return node.quantities.entries.length;
+  } else if (node is ContextNode) {
+    return node.entries.entries.length;
   } else {
     return 0;
   }

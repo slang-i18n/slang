@@ -52,6 +52,7 @@ _generateTranslationMapRecursive({
           '\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
     }
   } else if (curr is ListNode) {
+    // recursive
     curr.entries.forEach((child) {
       _generateTranslationMapRecursive(
         buffer: buffer,
@@ -62,40 +63,37 @@ _generateTranslationMapRecursive({
       );
     });
   } else if (curr is ObjectNode) {
-    if (curr.type == ObjectNodeType.pluralCardinal ||
-        curr.type == ObjectNodeType.pluralOrdinal) {
-      buffer.write('\t\'${curr.path}\': ');
-      _addPluralizationCall(
+    // recursive
+    curr.entries.values.forEach((child) {
+      _generateTranslationMapRecursive(
         buffer: buffer,
+        curr: child,
         config: config,
         hasPluralResolver: hasPluralResolver,
         language: language,
-        cardinal: curr.type == ObjectNodeType.pluralCardinal,
-        key: curr.path,
-        children: curr.entries,
-        depth: 1,
       );
-    } else if (curr.type == ObjectNodeType.context) {
-      buffer.write('\t\'${curr.path}\': ');
-      _addContextCall(
-        buffer: buffer,
-        config: config,
-        contextEnumName: curr.contextHint!.enumName,
-        children: curr.entries,
-        depth: 1,
-      );
-    } else {
-      // recursive
-      curr.entries.values.forEach((child) {
-        _generateTranslationMapRecursive(
-          buffer: buffer,
-          curr: child,
-          config: config,
-          hasPluralResolver: hasPluralResolver,
-          language: language,
-        );
-      });
-    }
+    });
+  } else if (curr is PluralNode) {
+    buffer.write('\t\'${curr.path}\': ');
+    _addPluralizationCall(
+      buffer: buffer,
+      config: config,
+      hasPluralResolver: hasPluralResolver,
+      language: language,
+      pluralType: curr.pluralType,
+      key: curr.path,
+      children: curr.quantities,
+      depth: 1,
+    );
+  } else if (curr is ContextNode) {
+    buffer.write('\t\'${curr.path}\': ');
+    _addContextCall(
+      buffer: buffer,
+      config: config,
+      contextEnumName: curr.context.enumName,
+      children: curr.entries,
+      depth: 1,
+    );
   } else {
     throw 'This should not happen';
   }

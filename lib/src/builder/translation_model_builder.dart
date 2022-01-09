@@ -24,8 +24,8 @@ class TranslationModelBuilder {
     bool hasCardinal = false;
     bool hasOrdinal = false;
 
-    // flat map for leaves, i.e. a) TextNode or b) ObjectNode of type context or plural
-    final Map<String, Node> leavesMap = {};
+    // flat map for leaves (TextNode, PluralNode, ContextNode)
+    final Map<String, LeafNode> leavesMap = {};
 
     // 1st round: Build nodes according to given map
     //
@@ -60,49 +60,53 @@ class TranslationModelBuilder {
       final linkParamMap = <String, Set<String>>{};
       final paramTypeMap = <String, String>{};
       value.links.forEach((link) {
-        final currParam = <String>{};
+        final paramSet = <String>{};
         final visitedLinks = <String>{};
-        final queue = Queue<String>();
-        queue.add(link);
+        final pathQueue = Queue<String>();
+        pathQueue.add(link);
 
-        while (queue.isNotEmpty) {
-          final currLink = queue.removeFirst();
+        while (pathQueue.isNotEmpty) {
+          final currLink = pathQueue.removeFirst();
           final linkedNode = leavesMap[currLink];
           if (linkedNode == null) {
-            throw '"$key" is linked to "$currLink" but it is undefined (${locale.languageTag}).';
+            throw '"$key" is linked to "$currLink" but it is undefined (locale: ${locale.languageTag}).';
           }
 
           visitedLinks.add(currLink);
 
           if (linkedNode is TextNode) {
-            currParam.addAll(linkedNode.params);
+            paramSet.addAll(linkedNode.params);
 
             // lookup links
             linkedNode.links.forEach((child) {
               if (!visitedLinks.contains(child)) {
-                queue.add(child);
+                pathQueue.add(child);
               }
             });
-          } else if (linkedNode is ObjectNode) {
-            final paramSet = linkedNode.entries.values
-                .map((e) => (e as TextNode).params)
+          } else if (linkedNode is PluralNode || linkedNode is ContextNode) {
+            final Iterable<TextNode> textNodes = linkedNode is PluralNode
+                ? linkedNode.quantities.values
+                : (linkedNode as ContextNode).entries.values;
+            final linkedParamSet = textNodes
+                .map((e) => e.params)
                 .expand((params) => params)
                 .toSet();
-            if (linkedNode.type == ObjectNodeType.context) {
-              paramSet.add(CONTEXT_PARAMETER);
-              paramTypeMap[CONTEXT_PARAMETER] =
-                  linkedNode.contextHint!.enumName;
-            } else {
-              paramSet.add(PLURAL_PARAMETER);
+
+            if (linkedNode is PluralNode) {
+              linkedParamSet.add(PLURAL_PARAMETER);
               paramTypeMap[PLURAL_PARAMETER] = 'num';
+            } else if (linkedNode is ContextNode) {
+              linkedParamSet.add(CONTEXT_PARAMETER);
+              paramTypeMap[CONTEXT_PARAMETER] = linkedNode.context.enumName;
             }
-            currParam.addAll(paramSet);
+
+            paramSet.addAll(linkedParamSet);
 
             // lookup links of children
-            linkedNode.entries.values.forEach((element) {
-              (element as TextNode).links.forEach((child) {
+            textNodes.forEach((element) {
+              element.links.forEach((child) {
                 if (!visitedLinks.contains(child)) {
-                  queue.add(child);
+                  pathQueue.add(child);
                 }
               });
             });
@@ -111,7 +115,7 @@ class TranslationModelBuilder {
           }
         }
 
-        linkParamMap[link] = currParam;
+        linkParamMap[link] = paramSet;
       });
 
       if (linkParamMap.values.any((params) => params.isNotEmpty)) {
@@ -127,8 +131,7 @@ class TranslationModelBuilder {
     final root = ObjectNode(
       path: '',
       entries: resultNodeTree,
-      type: ObjectNodeType.classType,
-      contextHint: null,
+      isMap: false,
     );
 
     // 3rd round: Add interfaces
@@ -203,7 +206,7 @@ class TranslationModelBuilder {
     required BuildConfig config,
     required CaseStyle? keyCase,
     required String localeEnum,
-    required Map<String, Node> leavesMap,
+    required Map<String, LeafNode> leavesMap,
     required Function cardinalNotifier,
     required Function ordinalNotifier,
   }) {
@@ -254,7 +257,7 @@ class TranslationModelBuilder {
           resultNodeTree[key] = node;
         } else {
           // key: { ...value }
-          children = _parseMapNode(
+          final children = _parseMapNode(
             parentPath: currPath,
             curr: value,
             config: config,
@@ -267,46 +270,70 @@ class TranslationModelBuilder {
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
           );
+
+          Node node;
           _DetectionResult detectedType =
               _determineNodeType(config, currPath, children);
 
           // notify plural and split by comma if necessary
-          if (detectedType.nodeType == ObjectNodeType.context ||
-              detectedType.nodeType == ObjectNodeType.pluralCardinal ||
-              detectedType.nodeType == ObjectNodeType.pluralOrdinal) {
-            if (detectedType.nodeType == ObjectNodeType.pluralCardinal) {
+          if (detectedType.nodeType == _DetectionType.context ||
+              detectedType.nodeType == _DetectionType.pluralCardinal ||
+              detectedType.nodeType == _DetectionType.pluralOrdinal) {
+            if (detectedType.nodeType == _DetectionType.pluralCardinal) {
               cardinalNotifier();
-            } else if (detectedType.nodeType == ObjectNodeType.pluralOrdinal) {
+            } else if (detectedType.nodeType == _DetectionType.pluralOrdinal) {
               ordinalNotifier();
             }
 
-            // split children by comma
+            // split children by comma for plurals and contexts
+            final digestedMap = <String, TextNode>{};
             final entries = children.entries.toList();
             for (final entry in entries) {
               final split = entry.key.split(Node.KEY_DELIMITER);
-              if (split.length != 1) {
+              if (split.length == 1) {
+                // keep as is
+                digestedMap[entry.key] = entry.value as TextNode;
+              } else {
+                // split!
                 // {one,two: hi} -> {one: hi, two: hi}
-                children.remove(entry.key);
                 for (final newChild in split) {
-                  // all children have the same value
-                  children[newChild] = entry.value;
+                  digestedMap[newChild] = entry.value as TextNode;
                 }
               }
             }
+
+            if (detectedType.nodeType == _DetectionType.context) {
+              node = ContextNode(
+                path: currPath,
+                context: detectedType.contextHint!,
+                entries: digestedMap,
+              );
+            } else {
+              node = PluralNode(
+                path: currPath,
+                pluralType:
+                    detectedType.nodeType == _DetectionType.pluralCardinal
+                        ? PluralType.cardinal
+                        : PluralType.ordinal,
+                quantities: digestedMap.map((key, value) {
+                  // assume that parsing to quantity never fails (hence, never null)
+                  // because detection was correct
+                  return MapEntry(key.toQuantity()!, value);
+                }),
+              );
+            }
+          } else {
+            node = ObjectNode(
+              path: currPath,
+              entries: children,
+              isMap: detectedType.nodeType == _DetectionType.map,
+            );
           }
 
-          final node = ObjectNode(
-            path: currPath,
-            entries: children,
-            type: detectedType.nodeType,
-            contextHint: detectedType.contextHint,
-          );
           _setParent(node, children.values);
           resultNodeTree[key] = node;
-          if (node.type == ObjectNodeType.pluralCardinal ||
-              node.type == ObjectNodeType.pluralOrdinal ||
-              node.type == ObjectNodeType.context) {
-            leavesMap[currPath] = node;
+          if (node is PluralNode || node is ContextNode) {
+            leavesMap[currPath] = node as LeafNode;
           }
         }
       }
@@ -320,13 +347,16 @@ class TranslationModelBuilder {
   }
 
   static _DetectionResult _determineNodeType(
-      BuildConfig config, String nodePath, Map<String, Node> children) {
+    BuildConfig config,
+    String nodePath,
+    Map<String, Node> children,
+  ) {
     if (config.maps.contains(nodePath)) {
-      return _DetectionResult(ObjectNodeType.map);
+      return _DetectionResult(_DetectionType.map);
     } else if (config.pluralCardinal.contains(nodePath)) {
-      return _DetectionResult(ObjectNodeType.pluralCardinal);
+      return _DetectionResult(_DetectionType.pluralCardinal);
     } else if (config.pluralOrdinal.contains(nodePath)) {
-      return _DetectionResult(ObjectNodeType.pluralOrdinal);
+      return _DetectionResult(_DetectionType.pluralOrdinal);
     } else {
       final childrenSplitByComma =
           children.keys.expand((key) => key.split(Node.KEY_DELIMITER)).toList();
@@ -340,9 +370,9 @@ class TranslationModelBuilder {
         if (isPlural) {
           switch (config.pluralAuto) {
             case PluralAuto.cardinal:
-              return _DetectionResult(ObjectNodeType.pluralCardinal);
+              return _DetectionResult(_DetectionType.pluralCardinal);
             case PluralAuto.ordinal:
-              return _DetectionResult(ObjectNodeType.pluralOrdinal);
+              return _DetectionResult(_DetectionType.pluralOrdinal);
             case PluralAuto.off:
               break;
           }
@@ -356,14 +386,15 @@ class TranslationModelBuilder {
               childrenSplitByComma
                   .every((key) => contextType.enumValues.any((e) => e == key));
           if (isContext) {
-            return _DetectionResult(ObjectNodeType.context, contextType);
+            return _DetectionResult(_DetectionType.context, contextType);
           }
         } else if (contextType.paths.contains(nodePath)) {
-          return _DetectionResult(ObjectNodeType.context, contextType);
+          return _DetectionResult(_DetectionType.context, contextType);
         }
       }
 
-      return _DetectionResult(ObjectNodeType.classType);
+      // fallback: every node is a class by default
+      return _DetectionResult(_DetectionType.classType);
     }
   }
 
@@ -579,41 +610,33 @@ class TranslationModelBuilder {
         parameters = {}; // lists never have parameters
         returnType = 'List<${child.genericType}>';
       } else if (child is ObjectNode) {
-        switch (child.type) {
-          case ObjectNodeType.classType:
-          case ObjectNodeType.map:
-            parameters = {}; // objects never have parameters
-            returnType = 'Map<String, ${child.genericType}>';
-            break;
-          case ObjectNodeType.pluralCardinal:
-          case ObjectNodeType.pluralOrdinal:
-            parameters = {
-              AttributeParameter(parameterName: 'count', type: 'num'),
-              ...child.entries.values
-                  .cast<TextNode>()
-                  .map((text) => text.params)
-                  .expand((param) => param)
-                  .where((param) => param != 'count')
-                  .map((param) =>
-                      AttributeParameter(parameterName: param, type: 'Object'))
-            };
-            returnType = 'String';
-            break;
-          case ObjectNodeType.context:
-            parameters = {
-              AttributeParameter(
-                  parameterName: 'context', type: child.contextHint!.enumName),
-              ...child.entries.values
-                  .cast<TextNode>()
-                  .map((text) => text.params)
-                  .expand((param) => param)
-                  .where((param) => param != 'context')
-                  .map((param) =>
-                      AttributeParameter(parameterName: param, type: 'Object'))
-            };
-            returnType = 'String';
-            break;
-        }
+        parameters = {}; // objects never have parameters
+        returnType = 'Map<String, ${child.genericType}>';
+      } else if (child is PluralNode) {
+        parameters = {
+          AttributeParameter(parameterName: 'count', type: 'num'),
+          ...child.quantities.values
+              .cast<TextNode>()
+              .map((text) => text.params)
+              .expand((param) => param)
+              .where((param) => param != 'count')
+              .map((param) =>
+                  AttributeParameter(parameterName: param, type: 'Object'))
+        };
+        returnType = 'String';
+      } else if (child is ContextNode) {
+        parameters = {
+          AttributeParameter(
+              parameterName: 'context', type: child.context.enumName),
+          ...child.entries.values
+              .cast<TextNode>()
+              .map((text) => text.params)
+              .expand((param) => param)
+              .where((param) => param != 'context')
+              .map((param) =>
+                  AttributeParameter(parameterName: param, type: 'Object'))
+        };
+        returnType = 'String';
       } else {
         throw 'This should not happen';
       }
@@ -627,8 +650,16 @@ class TranslationModelBuilder {
   }
 }
 
+enum _DetectionType {
+  classType,
+  map,
+  pluralCardinal,
+  pluralOrdinal,
+  context,
+}
+
 class _DetectionResult {
-  final ObjectNodeType nodeType;
+  final _DetectionType nodeType;
   final ContextType? contextHint;
 
   _DetectionResult(this.nodeType, [this.contextHint]);

@@ -146,8 +146,7 @@ void main() {
               localeEnum: localeEnum,
             ),
           },
-          type: ObjectNodeType.classType,
-          contextHint: null,
+          isMap: false,
         ),
         ObjectNode(
           path: '',
@@ -159,8 +158,7 @@ void main() {
               localeEnum: localeEnum,
             ),
           },
-          type: ObjectNodeType.classType,
-          contextHint: null,
+          isMap: false,
         ),
       ]);
 
@@ -179,8 +177,7 @@ void main() {
               localeEnum: localeEnum,
             ),
           },
-          type: ObjectNodeType.map,
-          contextHint: null,
+          isMap: true,
         ),
         ObjectNode(
           path: '',
@@ -192,8 +189,7 @@ void main() {
               localeEnum: localeEnum,
             ),
           },
-          type: ObjectNodeType.map,
-          contextHint: null,
+          isMap: true,
         ),
       ]);
 

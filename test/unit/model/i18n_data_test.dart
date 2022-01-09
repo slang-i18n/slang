@@ -8,8 +8,7 @@ void main() {
     final root = ObjectNode(
       path: '',
       entries: {},
-      type: ObjectNodeType.classType,
-      contextHint: null,
+      isMap: false,
     );
     test('without base', () {
       List<I18nData> locales = [
