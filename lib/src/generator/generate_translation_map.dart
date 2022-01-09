@@ -81,6 +81,7 @@ _generateTranslationMapRecursive({
       hasPluralResolver: hasPluralResolver,
       language: language,
       pluralType: curr.pluralType,
+      pluralParamName: curr.paramName,
       key: curr.path,
       children: curr.quantities,
       depth: 1,
@@ -91,6 +92,7 @@ _generateTranslationMapRecursive({
       buffer: buffer,
       config: config,
       contextEnumName: curr.context.enumName,
+      contextParamName: curr.paramName,
       children: curr.entries,
       depth: 1,
     );

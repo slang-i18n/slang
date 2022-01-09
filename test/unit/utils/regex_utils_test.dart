@@ -128,4 +128,28 @@ void main() {
       expect(match?.group(5), '(count)');
     });
   });
+
+  group('paramHintRegex', () {
+    RegExp regex = RegexUtils.paramHintRegex;
+
+    test('some_key', () {
+      RegExpMatch? match = regex.firstMatch('some_key');
+      expect(match, null);
+    });
+
+    test('some_key(abc)', () {
+      RegExpMatch? match = regex.firstMatch('some_key(abc)');
+      expect(match?.group(1), 'abc');
+    });
+
+    test('myKey(cool_parameter)', () {
+      RegExpMatch? match = regex.firstMatch('myKey(cool_parameter)');
+      expect(match?.group(1), 'cool_parameter');
+    });
+
+    test('my key(cool_parameter)', () {
+      RegExpMatch? match = regex.firstMatch('my key(cool_parameter)');
+      expect(match, null);
+    });
+  });
 }

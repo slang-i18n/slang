@@ -51,4 +51,9 @@ class RegexUtils {
   /// 5 - (name,age)
   static RegExp attributeRegex =
       RegExp(r'^((\w|\<|\>|,)+)(\?)? (\w+)(\(.+\))?$');
+
+  /// Matches a parameter hint in a key if it exists
+  /// greet(gender)
+  /// 1 - gender
+  static RegExp paramHintRegex = RegExp(r'^\w+\((\w+)\)$');
 }

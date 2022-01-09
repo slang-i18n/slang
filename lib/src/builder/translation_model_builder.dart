@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:fast_i18n/src/generator/generate_translations.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
@@ -8,6 +7,7 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
+import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 
 class TranslationModelBuilder {
@@ -93,11 +93,11 @@ class TranslationModelBuilder {
                 .toSet();
 
             if (linkedNode is PluralNode) {
-              linkedParamSet.add(PLURAL_PARAMETER);
-              paramTypeMap[PLURAL_PARAMETER] = 'num';
+              linkedParamSet.add(linkedNode.paramName);
+              paramTypeMap[linkedNode.paramName] = 'num';
             } else if (linkedNode is ContextNode) {
-              linkedParamSet.add(CONTEXT_PARAMETER);
-              paramTypeMap[CONTEXT_PARAMETER] = linkedNode.context.enumName;
+              linkedParamSet.add(linkedNode.paramName);
+              paramTypeMap[linkedNode.paramName] = linkedNode.context.enumName;
             }
 
             paramSet.addAll(linkedParamSet);
@@ -213,7 +213,11 @@ class TranslationModelBuilder {
     final Map<String, Node> resultNodeTree = {};
 
     curr.forEach((key, value) {
-      key = key.toCase(keyCase); // transform key if necessary
+      final originalKey = key;
+
+      // transform key if necessary
+      // the part after '(' is considered as the parameter hint for plurals or contexts
+      key = key.split('(').first.toCase(keyCase);
       final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
 
       if (value is String || value is num) {
@@ -302,11 +306,14 @@ class TranslationModelBuilder {
               }
             }
 
+            final String? paramNameHint =
+                RegexUtils.paramHintRegex.firstMatch(originalKey)?.group(1);
             if (detectedType.nodeType == _DetectionType.context) {
               node = ContextNode(
                 path: currPath,
                 context: detectedType.contextHint!,
                 entries: digestedMap,
+                parameterName: paramNameHint,
               );
             } else {
               node = PluralNode(
@@ -320,6 +327,7 @@ class TranslationModelBuilder {
                   // because detection was correct
                   return MapEntry(key.toQuantity()!, value);
                 }),
+                parameterName: paramNameHint,
               );
             }
           } else {
@@ -614,12 +622,12 @@ class TranslationModelBuilder {
         returnType = 'Map<String, ${child.genericType}>';
       } else if (child is PluralNode) {
         parameters = {
-          AttributeParameter(parameterName: 'count', type: 'num'),
+          AttributeParameter(parameterName: child.paramName, type: 'num'),
           ...child.quantities.values
               .cast<TextNode>()
               .map((text) => text.params)
               .expand((param) => param)
-              .where((param) => param != 'count')
+              .where((param) => param != child.paramName)
               .map((param) =>
                   AttributeParameter(parameterName: param, type: 'Object'))
         };
@@ -627,12 +635,12 @@ class TranslationModelBuilder {
       } else if (child is ContextNode) {
         parameters = {
           AttributeParameter(
-              parameterName: 'context', type: child.context.enumName),
+              parameterName: child.paramName, type: child.context.enumName),
           ...child.entries.values
               .cast<TextNode>()
               .map((text) => text.params)
               .expand((param) => param)
-              .where((param) => param != 'context')
+              .where((param) => param != child.paramName)
               .map((param) =>
                   AttributeParameter(parameterName: param, type: 'Object'))
         };

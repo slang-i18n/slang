@@ -109,12 +109,15 @@ enum PluralType {
 class PluralNode extends Node implements LeafNode {
   final PluralType pluralType;
   final Map<Quantity, TextNode> quantities;
+  final String paramName; // name of the plural parameter
 
   PluralNode({
     required String path,
     required this.pluralType,
     required this.quantities,
-  }) : super(path);
+    required String? parameterName,
+  })  : this.paramName = parameterName ?? 'count',
+        super(path);
 
   @override
   String toString() => quantities.toString();
@@ -123,12 +126,15 @@ class PluralNode extends Node implements LeafNode {
 class ContextNode extends Node implements LeafNode {
   final ContextType context;
   final Map<String, TextNode> entries;
+  final String paramName; // name of the context parameter
 
   ContextNode({
     required String path,
     required this.context,
     required this.entries,
-  }) : super(path);
+    required String? parameterName,
+  })  : this.paramName = parameterName ?? 'context',
+        super(path);
 
   @override
   String toString() => entries.toString();

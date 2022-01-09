@@ -11,9 +11,6 @@ import 'package:fast_i18n/src/utils/string_extensions.dart';
 
 part 'generate_translation_map.dart';
 
-const PLURAL_PARAMETER = 'count';
-const CONTEXT_PARAMETER = 'context';
-
 /// decides which class should be generated
 class ClassTask {
   final String className;
@@ -171,6 +168,7 @@ void _generateClass(
         hasPluralResolver: hasPluralResolver,
         language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
         pluralType: value.pluralType,
+        pluralParamName: value.paramName,
         key: key,
         children: value.quantities,
         depth: 0,
@@ -181,6 +179,7 @@ void _generateClass(
         buffer: buffer,
         config: config,
         contextEnumName: value.context.enumName,
+        contextParamName: value.paramName,
         children: value.entries,
         depth: 0,
       );
@@ -247,20 +246,23 @@ void _generateMap(
     } else if (value is PluralNode) {
       buffer.write('\'$key\': ');
       _addPluralizationCall(
-          buffer: buffer,
-          config: config,
-          hasPluralResolver: hasPluralResolver,
-          language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
-          pluralType: value.pluralType,
-          key: key,
-          children: value.quantities,
-          depth: depth + 1);
+        buffer: buffer,
+        config: config,
+        hasPluralResolver: hasPluralResolver,
+        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        pluralType: value.pluralType,
+        pluralParamName: value.paramName,
+        key: key,
+        children: value.quantities,
+        depth: depth + 1,
+      );
     } else if (value is ContextNode) {
       buffer.write('\'$key\': ');
       _addContextCall(
         buffer: buffer,
         config: config,
         contextEnumName: value.context.enumName,
+        contextParamName: value.paramName,
         children: value.entries,
         depth: depth + 1,
       );
@@ -324,19 +326,22 @@ void _generateList(
       }
     } else if (value is PluralNode) {
       _addPluralizationCall(
-          buffer: buffer,
-          config: config,
-          hasPluralResolver: hasPluralResolver,
-          language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
-          pluralType: value.pluralType,
-          key: key,
-          children: value.quantities,
-          depth: depth + 1);
+        buffer: buffer,
+        config: config,
+        hasPluralResolver: hasPluralResolver,
+        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        pluralType: value.pluralType,
+        pluralParamName: value.paramName,
+        key: key,
+        children: value.quantities,
+        depth: depth + 1,
+      );
     } else if (value is ContextNode) {
       _addContextCall(
         buffer: buffer,
         config: config,
         contextEnumName: value.context.enumName,
+        contextParamName: value.paramName,
         children: value.entries,
         depth: depth + 1,
       );
@@ -371,15 +376,17 @@ String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
 }
 
 /// [key] is only used for debugging purposes
-void _addPluralizationCall(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required bool hasPluralResolver,
-    required String language,
-    required PluralType pluralType,
-    required String key,
-    required Map<Quantity, TextNode> children,
-    required int depth}) {
+void _addPluralizationCall({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required bool hasPluralResolver,
+  required String language,
+  required PluralType pluralType,
+  required String pluralParamName,
+  required String key,
+  required Map<Quantity, TextNode> children,
+  required int depth,
+}) {
   final textNodeList = children.values.toList();
 
   if (textNodeList.isEmpty) {
@@ -391,10 +398,10 @@ void _addPluralizationCall(
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
   }
-  final params = paramSet.where((p) => p != PLURAL_PARAMETER).toList();
+  final params = paramSet.where((p) => p != pluralParamName).toList();
 
   // parameters with count as first number
-  buffer.write('({required num $PLURAL_PARAMETER');
+  buffer.write('({required num $pluralParamName');
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -408,14 +415,14 @@ void _addPluralizationCall(
     // call predefined resolver
     if (pluralType == PluralType.cardinal) {
       buffer.writeln(
-          '_pluralCardinal${language.capitalize()})($PLURAL_PARAMETER,');
+          '_pluralCardinal${language.capitalize()})($pluralParamName,');
     } else {
-      buffer.writeln(
-          '_pluralOrdinal${language.capitalize()})($PLURAL_PARAMETER,');
+      buffer
+          .writeln('_pluralOrdinal${language.capitalize()})($pluralParamName,');
     }
   } else {
     // throw error
-    buffer.writeln('_missingPluralResolver(\'$language\'))($PLURAL_PARAMETER,');
+    buffer.writeln('_missingPluralResolver(\'$language\'))($pluralParamName,');
   }
 
   final keys = children.keys.toList();
@@ -438,6 +445,7 @@ void _addContextCall(
     {required StringBuffer buffer,
     required I18nConfig config,
     required String contextEnumName,
+    required String contextParamName,
     required Map<String, Node> children,
     required int depth}) {
   final textNodeList = children.values.cast<TextNode>().toList();
@@ -447,10 +455,10 @@ void _addContextCall(
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
   }
-  final params = paramSet.where((p) => p != CONTEXT_PARAMETER).toList();
+  final params = paramSet.where((p) => p != contextParamName).toList();
 
   // parameters with context as first parameter
-  buffer.write('({required $contextEnumName $CONTEXT_PARAMETER');
+  buffer.write('({required $contextEnumName $contextParamName');
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -458,7 +466,7 @@ void _addContextCall(
   buffer.writeln('}) {');
 
   _addTabs(buffer, depth + 2);
-  buffer.writeln('switch ($CONTEXT_PARAMETER) {');
+  buffer.writeln('switch ($contextParamName) {');
 
   final keys = children.keys.toList();
   for (int i = 0; i < textNodeList.length; i++) {
