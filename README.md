@@ -1041,7 +1041,7 @@ String a = t.sentence(appleCount: 1, bananaCount: 2); // two different plural pa
 
 MIT License
 
-Copyright (c) 2020-2021 Tien Do Nam
+Copyright (c) 2020-2022 Tien Do Nam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
