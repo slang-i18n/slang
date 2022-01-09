@@ -80,10 +80,7 @@ _generateTranslationMapRecursive({
       config: config,
       hasPluralResolver: hasPluralResolver,
       language: language,
-      pluralType: curr.pluralType,
-      pluralParamName: curr.paramName,
-      key: curr.path,
-      children: curr.quantities,
+      node: curr,
       depth: 1,
     );
   } else if (curr is ContextNode) {
@@ -91,9 +88,7 @@ _generateTranslationMapRecursive({
     _addContextCall(
       buffer: buffer,
       config: config,
-      contextEnumName: curr.context.enumName,
-      contextParamName: curr.paramName,
-      children: curr.entries,
+      node: curr,
       depth: 1,
     );
   } else {

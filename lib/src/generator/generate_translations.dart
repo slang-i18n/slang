@@ -167,10 +167,7 @@ void _generateClass(
         config: config,
         hasPluralResolver: hasPluralResolver,
         language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
-        pluralType: value.pluralType,
-        pluralParamName: value.paramName,
-        key: key,
-        children: value.quantities,
+        node: value,
         depth: 0,
       );
     } else if (value is ContextNode) {
@@ -178,9 +175,7 @@ void _generateClass(
       _addContextCall(
         buffer: buffer,
         config: config,
-        contextEnumName: value.context.enumName,
-        contextParamName: value.paramName,
-        children: value.entries,
+        node: value,
         depth: 0,
       );
     }
@@ -250,10 +245,7 @@ void _generateMap(
         config: config,
         hasPluralResolver: hasPluralResolver,
         language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
-        pluralType: value.pluralType,
-        pluralParamName: value.paramName,
-        key: key,
-        children: value.quantities,
+        node: value,
         depth: depth + 1,
       );
     } else if (value is ContextNode) {
@@ -261,9 +253,7 @@ void _generateMap(
       _addContextCall(
         buffer: buffer,
         config: config,
-        contextEnumName: value.context.enumName,
-        contextParamName: value.paramName,
-        children: value.entries,
+        node: value,
         depth: depth + 1,
       );
     }
@@ -296,7 +286,6 @@ void _generateList(
 
   for (int i = 0; i < currList.length; i++) {
     final Node value = currList[i];
-    final String key = depth.toString() + 'i' + i.toString();
 
     _addTabs(buffer, depth + 2);
     if (value is TextNode) {
@@ -310,7 +299,8 @@ void _generateList(
       _generateList(config, base, locale, hasPluralResolver, buffer, queue,
           className, value.entries, depth + 1);
     } else if (value is ObjectNode) {
-      String childClassNoLocale =
+      final String key = depth.toString() + 'i' + i.toString();
+      final String childClassNoLocale =
           getClassName(parentName: className, childName: key);
 
       if (value.isMap) {
@@ -330,19 +320,14 @@ void _generateList(
         config: config,
         hasPluralResolver: hasPluralResolver,
         language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
-        pluralType: value.pluralType,
-        pluralParamName: value.paramName,
-        key: key,
-        children: value.quantities,
+        node: value,
         depth: depth + 1,
       );
     } else if (value is ContextNode) {
       _addContextCall(
         buffer: buffer,
         config: config,
-        contextEnumName: value.context.enumName,
-        contextParamName: value.paramName,
-        children: value.entries,
+        node: value,
         depth: depth + 1,
       );
     }
@@ -375,22 +360,18 @@ String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
   return buffer.toString();
 }
 
-/// [key] is only used for debugging purposes
 void _addPluralizationCall({
   required StringBuffer buffer,
   required I18nConfig config,
   required bool hasPluralResolver,
   required String language,
-  required PluralType pluralType,
-  required String pluralParamName,
-  required String key,
-  required Map<Quantity, TextNode> children,
+  required PluralNode node,
   required int depth,
 }) {
-  final textNodeList = children.values.toList();
+  final textNodeList = node.quantities.values.toList();
 
   if (textNodeList.isEmpty) {
-    throw ('$key is empty but it is marked for pluralization.');
+    throw ('${node.path} is empty but it is marked for pluralization.');
   }
 
   // parameters are union sets over all plural forms
@@ -398,10 +379,10 @@ void _addPluralizationCall({
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
   }
-  final params = paramSet.where((p) => p != pluralParamName).toList();
+  final params = paramSet.where((p) => p != node.paramName).toList();
 
   // parameters with count as first number
-  buffer.write('({required num $pluralParamName');
+  buffer.write('({required num ${node.paramName}');
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -409,26 +390,26 @@ void _addPluralizationCall({
 
   // custom resolver has precedence
   buffer.write(
-      '}) => (_pluralResolvers${pluralType == PluralType.cardinal ? 'Cardinal' : 'Ordinal'}[\'$language\'] ?? ');
+      '}) => (_pluralResolvers${node.pluralType == PluralType.cardinal ? 'Cardinal' : 'Ordinal'}[\'$language\'] ?? ');
 
   if (hasPluralResolver) {
     // call predefined resolver
-    if (pluralType == PluralType.cardinal) {
+    if (node.pluralType == PluralType.cardinal) {
       buffer.writeln(
-          '_pluralCardinal${language.capitalize()})($pluralParamName,');
+          '_pluralCardinal${language.capitalize()})(${node.paramName},');
     } else {
-      buffer
-          .writeln('_pluralOrdinal${language.capitalize()})($pluralParamName,');
+      buffer.writeln(
+          '_pluralOrdinal${language.capitalize()})(${node.paramName},');
     }
   } else {
     // throw error
-    buffer.writeln('_missingPluralResolver(\'$language\'))($pluralParamName,');
+    buffer.writeln('_missingPluralResolver(\'$language\'))(${node.paramName},');
   }
 
-  final keys = children.keys.toList();
-  for (int i = 0; i < textNodeList.length; i++) {
+  for (final quantity in node.quantities.entries) {
     _addTabs(buffer, depth + 2);
-    buffer.writeln('${keys[i].paramName()}: \'${textNodeList[i].content}\',');
+    buffer
+        .writeln('${quantity.key.paramName()}: \'${quantity.value.content}\',');
   }
 
   _addTabs(buffer, depth + 1);
@@ -441,24 +422,23 @@ void _addPluralizationCall({
   }
 }
 
-void _addContextCall(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String contextEnumName,
-    required String contextParamName,
-    required Map<String, Node> children,
-    required int depth}) {
-  final textNodeList = children.values.cast<TextNode>().toList();
+void _addContextCall({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required ContextNode node,
+  required int depth,
+}) {
+  final textNodeList = node.entries.values.toList();
 
   // parameters are union sets over all plural forms
   final paramSet = <String>{};
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
   }
-  final params = paramSet.where((p) => p != contextParamName).toList();
+  final params = paramSet.where((p) => p != node.paramName).toList();
 
   // parameters with context as first parameter
-  buffer.write('({required $contextEnumName $contextParamName');
+  buffer.write('({required ${node.context.enumName} ${node.paramName}');
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -466,13 +446,12 @@ void _addContextCall(
   buffer.writeln('}) {');
 
   _addTabs(buffer, depth + 2);
-  buffer.writeln('switch ($contextParamName) {');
+  buffer.writeln('switch (${node.paramName}) {');
 
-  final keys = children.keys.toList();
-  for (int i = 0; i < textNodeList.length; i++) {
+  for (final entry in node.entries.entries) {
     _addTabs(buffer, depth + 3);
     buffer.writeln(
-        'case $contextEnumName.${keys[i]}: return \'${textNodeList[i].content}\';');
+        'case ${node.context.enumName}.${entry.key}: return \'${entry.value.content}\';');
   }
 
   _addTabs(buffer, depth + 2);
