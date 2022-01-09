@@ -760,7 +760,7 @@ String a = t.greet(gender: GenderContext.female); // notice 'gender' instead of 
 
 You can access each translation via string keys by defining maps.
 
-Define the maps in your `build.yaml`. Each configuration item represents the translation tree separated by dots.
+Define maps in your `build.yaml`.
 
 Keep in mind that all nice features like autocompletion are gone.
 
