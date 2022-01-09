@@ -582,8 +582,6 @@ Some languages have support out of the box. See [here](https://github.com/Tienis
 
 Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
 
-You can access the `num count` but it is optional.
-
 ```json5
 // File: strings.i18n.json
 {
@@ -662,6 +660,24 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
+By default, the parameter name will be `count`. You can change that by adding a hint.
+
+```json5
+// File: strings.i18n.json
+{
+  "someKey": {
+    "apple(appleCount)": {
+      "one": "I have $appleCount apple.",
+      "other": "I have $appleCount apples."
+    }
+  }
+}
+```
+
+```dart
+String a = t.someKey.apple(appleCount: 2); // notice 'appleCount' instead of 'count'
+```
+
 ### ➤ Custom Contexts
 
 You can utilize custom contexts to differentiate between male and female forms.
@@ -726,6 +742,21 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
     "male,female": "Hello $name"
   }
 }
+```
+
+Similarly to plurals, the parameter name will be `context` by default. You can change that by adding a hint.
+
+```json5
+// File: strings.i18n.json
+{
+  "greet(gender)": {
+    "male,female": "Hello $name"
+  }
+}
+```
+
+```dart
+String a = t.greet(gender: GenderContext.female, name: 'Anna'); // notice 'gender' instead of 'context'
 ```
 
 ### ➤ Maps
