@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  build: ^2.2.0
+  build: ^2.2.1
   collection: ^1.15.0
   csv: ^5.0.1
   glob: ^2.0.2
