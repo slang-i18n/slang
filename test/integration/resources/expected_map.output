@@ -15,6 +15,13 @@ late final Map<String, dynamic> _translationMapEn = {
 				case GenderContext.female: return 'Hello Ms $lastName and ${AppLocale.en.translations.onboarding.bye(firstName: firstName)}';
 			}
 		},
+	'onboarding.greet2': ({required GenderContext gender}) {
+			switch (gender) {
+				case GenderContext.male: return 'Hello Mr';
+				case GenderContext.female: return 'Hello Ms';
+			}
+		},
+	'onboarding.greetCombination': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${AppLocale.en.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${AppLocale.en.translations.onboarding.greet2(gender: gender)}',
 	'onboarding.welcomeLinkedPlural': ({required num count, required Object fullName, required Object firstName}) => 'Hello ${AppLocale.en.translations.group.users(count: count, fullName: fullName, firstName: firstName)}',
 	'onboarding.welcomeLinkedContext': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${AppLocale.en.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
 	'onboarding.welcomeFullLink': ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${AppLocale.en.translations.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${AppLocale.en.translations.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
@@ -42,6 +49,13 @@ late final Map<String, dynamic> _translationMapDe = {
 				case GenderContext.female: return 'Hallo Frau $lastName und ${AppLocale.de.translations.onboarding.bye(firstName: firstName)}';
 			}
 		},
+	'onboarding.greet2': ({required GenderContext gender}) {
+			switch (gender) {
+				case GenderContext.male: return 'Hallo Herr';
+				case GenderContext.female: return 'Hallo Frau';
+			}
+		},
+	'onboarding.greetCombination': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${AppLocale.de.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${AppLocale.de.translations.onboarding.greet2(gender: gender)}',
 	'onboarding.welcomeLinkedPlural': ({required num count, required Object fullName, required Object firstName}) => 'Hallo ${AppLocale.de.translations.group.users(count: count, fullName: fullName, firstName: firstName)}',
 	'onboarding.welcomeLinkedContext': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${AppLocale.de.translations.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
 	'onboarding.welcomeFullLink': ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${AppLocale.de.translations.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${AppLocale.de.translations.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',

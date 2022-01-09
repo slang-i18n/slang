@@ -9,6 +9,9 @@ group.users.one,One User,Ein Nutzer
 group.users.other,{count} Users and @:onboarding.bye,{count} Nutzer und @:onboarding.bye
 onboarding.greet.male,Hello Mr {lastName} and @:onboarding.welcome,Hallo Herr {lastName} und @:onboarding.welcome
 onboarding.greet.female,Hello Ms {lastName} and @:onboarding.bye,Hallo Frau {lastName} und @:onboarding.bye
+onboarding.greet2(gender).male,Hello Mr,Hallo Herr
+onboarding.greet2(gender).female,Hello Ms,Hallo Frau
+onboarding.greetCombination,"@:onboarding.greet, @:onboarding.greet2","@:onboarding.greet, @:onboarding.greet2"
 onboarding.welcomeLinkedPlural,Hello @:group.users,Hallo @:group.users
 onboarding.welcomeLinkedContext,Hello @:onboarding.greet,Hallo @:onboarding.greet
 onboarding.welcomeFullLink,Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext,Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext

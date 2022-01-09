@@ -15,6 +15,11 @@
       "male": "Hallo Herr {lastName} und @:onboarding.welcome",
       "female": "Hallo Frau {lastName} und @:onboarding.bye"
     },
+    "greet2(gender)": {
+      "male": "Hallo Herr",
+      "female": "Hallo Frau"
+    },
+    "greetCombination": "@:onboarding.greet, @:onboarding.greet2",
     "welcomeLinkedPlural": "Hallo @:group.users",
     "welcomeLinkedContext": "Hallo @:onboarding.greet",
     "welcomeFullLink": "Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext"
