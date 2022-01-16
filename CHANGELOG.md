@@ -6,7 +6,7 @@ Plural resolvers are now part of the translation class.
 
 Meaning, you can now build your own instance without relying on `LocaleSettings`.
 
-This is entirely optional! You can still use the onboard `LocaleSettings` solution.
+This is entirely optional! You can still use the included `LocaleSettings` solution.
 
 ```dart
 // riverpod example

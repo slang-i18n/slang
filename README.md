@@ -34,9 +34,9 @@ String e = t.intro.step[4];                            // with index
 String f = t.error.type['WARNING'];                    // with dynamic key
 String g = t['mainScreen.title'];                      // with fully dynamic key
 
-PageData titlePage = t.onboarding.titlePage;
+PageData titlePage = t.onboarding.titlePage;           // with interfaces
 PageData page = t.onboarding.pages[2];
-String h = page.title;                                 // with interfaces
+String h = page.title;
 ```
 
 ## Table of Contents
@@ -154,6 +154,18 @@ void initState() {
   LocaleSettings.setLocaleRaw(storedLocale);
 }
 ```
+
+c) use dependency injection (aka *I handle it myself*)
+
+```dart
+final english = AppLocale.en.build();
+final german = AppLocale.de.build();
+
+// read
+String a = german.login.success;
+```
+
+You can ignore step 4a and 5 (but not 4b) if you handle the locale yourself.
 
 **Step 4a: Flutter locale**
 
@@ -334,7 +346,7 @@ welcome:
 
 **CSV Example**
 
-> Use integers to specify lists. You can also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
+You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
 
 ```csv
 welcome.title,Welcome $name
@@ -545,7 +557,9 @@ final t = AppLocale.en.translations; // get translations of one locale
 
 ### ➤ Dependency Injection
 
-A follow-up feature of locale enums.
+If you don't like the included `LocaleSettings` solution:
+
+It is possible to create translation instances that do not depend on `LocaleSettings`.
 
 You can use your own dependency injection and inject the required translations!
 
@@ -562,15 +576,14 @@ targets:
 ```
 
 ```dart
-final englishTranslations = AppLocale.en.translations;
-final germanTranslations = AppLocale.de.translations;
+// riverpod example
+final _en = AppLocale.en.build(cardinalResolver: myEnResolver);
+final _de = AppLocale.de.build(cardinalResolver: myDeResolver);
+final translationProvider = StateProvider<StringsEn>((ref) => _en);
 
-final String a = germanTranslations.welcome.title; // access the translation
-
-// using get_it
-final getIt = GetIt.instance;
-getIt.registerSingleton<StringsEn>(AppLocale.de.translations); // set German
-final String b = getIt<StringsEn>().welcome.title; // access the translation
+// access the current instance
+final t = ref.watch(translationProvider);
+String a = t.welcome.title;
 ```
 
 ### ➤ Pluralization
