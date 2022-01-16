@@ -82,9 +82,15 @@ void _generateClass(
     buffer.writeln('// Path: ${node.path}');
   }
 
-  final rootClassName = getClassNameRoot(baseName: config.baseName, visibility: config.translationClassVisibility, locale: localeData.locale);
-  final finalClassName =
-      getClassName(parentName: className, locale: localeData.locale);
+  final rootClassName = getClassNameRoot(
+    baseName: config.baseName,
+    visibility: config.translationClassVisibility,
+    locale: localeData.locale,
+  );
+  final finalClassName = getClassName(
+    parentName: className,
+    locale: localeData.locale,
+  );
 
   final mixinStr =
       node.interface != null ? ' with ${node.interface!.name}' : '';
@@ -114,8 +120,7 @@ void _generateClass(
         '\t/// Constructing via the enum [${config.enumName}.build] is preferred.');
 
     if (!config.hasPlurals() && !callSuperConstructor) {
-      buffer.writeln(
-          '\t$finalClassName.build();');
+      buffer.writeln('\t$finalClassName.build();');
     } else {
       if (config.hasPlurals()) {
         buffer.writeln(
@@ -163,7 +168,8 @@ void _generateClass(
     }
   } else {
     if (callSuperConstructor) {
-      buffer.writeln('\t$finalClassName._($rootClassName root) : this._root = root, super._(root);');
+      buffer.writeln(
+          '\t$finalClassName._($rootClassName root) : this._root = root, super._(root);');
     } else {
       buffer.writeln('\t$finalClassName._(this._root);');
     }

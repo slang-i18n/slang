@@ -76,8 +76,7 @@ void main() {
       );
       final textNode = result.root.entries['b'] as TextNode;
       expect(textNode.params, {'p1', 'p2'});
-      expect(textNode.content,
-          r'Hello ${_root.a(p1: p1, p2: p2)}');
+      expect(textNode.content, r'Hello ${_root.a(p1: p1, p2: p2)}');
     });
 
     test('linked translations with parameters recursive', () {
@@ -111,8 +110,7 @@ void main() {
       final textNode = result.root.entries['b'] as TextNode;
       expect(textNode.params, {'p1', 'count'});
       expect(textNode.paramTypeMap, {'count': 'num'});
-      expect(textNode.content,
-          r'Hello ${_root.a(p1: p1, count: count)}');
+      expect(textNode.content, r'Hello ${_root.a(p1: p1, count: count)}');
     });
 
     test('linked translation with context', () {
@@ -137,8 +135,7 @@ void main() {
       final textNode = result.root.entries['b'] as TextNode;
       expect(textNode.params, {'p1', 'context'});
       expect(textNode.paramTypeMap, {'context': 'GenderCon'});
-      expect(textNode.content,
-          r'Hello ${_root.a(p1: p1, context: context)}');
+      expect(textNode.content, r'Hello ${_root.a(p1: p1, context: context)}');
     });
   });
 }

@@ -217,8 +217,7 @@ void main() {
       test('one argument with link', () {
         final test = '\$apple is linked to @:wow!';
         final node = TextNode.test(test, StringInterpolation.dart);
-        expect(node.content,
-            '\$apple is linked to \${_root.wow}!');
+        expect(node.content, '\$apple is linked to \${_root.wow}!');
         expect(node.params, {'apple'});
       });
 
@@ -304,8 +303,7 @@ void main() {
       test('one argument with link', () {
         final test = '{apple} is linked to @:wow!';
         final node = TextNode.test(test, StringInterpolation.braces);
-        expect(node.content,
-            '\$apple is linked to \${_root.wow}!');
+        expect(node.content, '\$apple is linked to \${_root.wow}!');
         expect(node.params, {'apple'});
       });
 
