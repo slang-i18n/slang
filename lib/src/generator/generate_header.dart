@@ -539,8 +539,13 @@ void _generateExtensions({
   buffer.writeln(
       '\t/// final t = AppLocale.${config.baseLocale.enumConstant}.build(); // build');
   buffer.writeln('\t/// String a = t.my.path; // access');
-  buffer.writeln(
-      '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
+  if (config.hasPlurals()) {
+    buffer.writeln(
+        '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
+  } else {
+    buffer.writeln('\t$baseClassName build() {');
+  }
+
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     final className = getClassNameRoot(
@@ -548,8 +553,14 @@ void _generateExtensions({
       locale: locale.locale,
       visibility: config.translationClassVisibility,
     );
-    buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+
+    if (config.hasPlurals()) {
+      buffer.writeln(
+          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+    } else {
+      buffer.writeln(
+          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build();');
+    }
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');

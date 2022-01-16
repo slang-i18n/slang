@@ -82,6 +82,7 @@ void _generateClass(
     buffer.writeln('// Path: ${node.path}');
   }
 
+  final rootClassName = getClassNameRoot(baseName: config.baseName, visibility: config.translationClassVisibility, locale: localeData.locale);
   final finalClassName =
       getClassName(parentName: className, locale: localeData.locale);
 
@@ -112,31 +113,29 @@ void _generateClass(
     buffer.writeln(
         '\t/// Constructing via the enum [${config.enumName}.build] is preferred.');
 
-    if (!hasPluralResolver && !callSuperConstructor) {
+    if (!config.hasPlurals() && !callSuperConstructor) {
       buffer.writeln(
-          '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver});');
+          '\t$finalClassName.build();');
     } else {
-      buffer.writeln(
-          '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
-      buffer.write('\t\t:\t');
-      bool first = true;
-      if (localeData.hasCardinal) {
-        buffer.write('_cardinalResolver = cardinalResolver');
-        first = false;
+      if (config.hasPlurals()) {
+        buffer.writeln(
+            '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
+      } else {
+        buffer.writeln('\t$finalClassName.build()');
       }
-      if (localeData.hasOrdinal) {
-        if (!first) {
-          buffer.writeln(',');
-          buffer.write('\t\t\t');
-        }
-        buffer.write('_ordinalResolver = ordinalResolver');
+
+      buffer.write('\t\t: ');
+
+      if (config.hasPlurals()) {
+        buffer.writeln('_cardinalResolver = cardinalResolver,');
+        buffer.write('\t\t  _ordinalResolver = ordinalResolver');
       }
       if (callSuperConstructor) {
-        if (!first) {
+        if (config.hasPlurals()) {
           buffer.writeln(',');
-          buffer.write('\t\t\t');
+          buffer.write('\t\t  ');
         }
-        buffer.write('super._()');
+        buffer.write('super.build()');
       }
       buffer.writeln(';');
     }
@@ -155,19 +154,16 @@ void _generateClass(
           '\tlate final Map<String, dynamic> _flatMap = _buildFlatMap();');
     }
 
-    if (hasPluralResolver) {
+    if (config.hasPlurals()) {
       buffer.writeln();
-      buffer.writeln('\t// Plural resolvers');
-      if (localeData.hasCardinal) {
-        buffer.writeln('\tfinal PluralResolver? _cardinalResolver;');
-      }
-      if (localeData.hasOrdinal) {
-        buffer.writeln('\tfinal PluralResolver? _ordinalResolver;');
-      }
+      buffer.writeln('\t// ignore: unused_field');
+      buffer.writeln('\tfinal PluralResolver? _cardinalResolver;');
+      buffer.writeln('\t// ignore: unused_field');
+      buffer.writeln('\tfinal PluralResolver? _ordinalResolver;');
     }
   } else {
     if (callSuperConstructor) {
-      buffer.writeln('\t$finalClassName._(this._root) : super._();');
+      buffer.writeln('\t$finalClassName._($rootClassName root) : this._root = root, super._(root);');
     } else {
       buffer.writeln('\t$finalClassName._(this._root);');
     }
@@ -183,11 +179,9 @@ void _generateClass(
   }
 
   if (root) {
-    buffer.writeln(
-        'late final ${getClassNameRoot(baseName: config.baseName, visibility: config.translationClassVisibility, locale: localeData.locale)} _root = this;');
+    buffer.writeln('late final $rootClassName _root = this;');
   } else {
-    buffer.writeln(
-        'final ${getClassNameRoot(baseName: config.baseName, visibility: config.translationClassVisibility, locale: localeData.locale)} _root;');
+    buffer.writeln('final $rootClassName _root;');
   }
 
   buffer.writeln();
