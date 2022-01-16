@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:fast_i18n/src/generator/helper.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
@@ -19,7 +20,7 @@ String generateHeader(
   final String baseClassName = getClassNameRoot(
       baseName: config.baseName,
       visibility: config.translationClassVisibility,
-      locale: config.baseLocale.languageTag);
+      locale: config.baseLocale);
   const String pluralResolverType = 'PluralResolver';
   const String pluralResolverMapCardinal = '_pluralResolversCardinal';
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
@@ -44,57 +45,76 @@ String generateHeader(
   }
 
   _generateLocaleVariables(
-      buffer: buffer,
-      config: config,
-      baseLocaleVar: baseLocaleVar,
-      currLocaleVar: currLocaleVar);
+    buffer: buffer,
+    config: config,
+    baseLocaleVar: baseLocaleVar,
+    currLocaleVar: currLocaleVar,
+  );
 
-  _generateEnum(buffer: buffer, config: config, allLocales: allLocales);
+  _generateEnum(
+    buffer: buffer,
+    config: config,
+    allLocales: allLocales,
+  );
 
   _generateTranslationGetter(
-      buffer: buffer,
-      config: config,
-      baseClassName: baseClassName,
-      currLocaleVar: currLocaleVar,
-      translateVarInternal: translateVarInternal);
+    buffer: buffer,
+    config: config,
+    baseClassName: baseClassName,
+    currLocaleVar: currLocaleVar,
+    translateVarInternal: translateVarInternal,
+  );
 
   _generateLocaleSettings(
-      buffer: buffer,
-      config: config,
-      allLocales: allLocales,
-      baseLocaleVar: baseLocaleVar,
-      currLocaleVar: currLocaleVar,
-      translateVarInternal: translateVarInternal,
-      translationProviderKey: translationProviderKey,
-      pluralResolverType: pluralResolverType,
-      pluralResolverCardinal: pluralResolverMapCardinal,
-      pluralResolverOrdinal: pluralResolverMapOrdinal);
+    buffer: buffer,
+    config: config,
+    allLocales: allLocales,
+    baseLocaleVar: baseLocaleVar,
+    currLocaleVar: currLocaleVar,
+    translateVarInternal: translateVarInternal,
+    translationProviderKey: translationProviderKey,
+    pluralResolverType: pluralResolverType,
+    pluralResolverCardinal: pluralResolverMapCardinal,
+    pluralResolverOrdinal: pluralResolverMapOrdinal,
+  );
 
   _generateContextEnums(buffer: buffer, config: config);
 
   _generateInterfaces(buffer: buffer, config: config);
 
+  _generateInstances(
+    buffer: buffer,
+    config: config,
+    allLocales: allLocales,
+  );
+
   _generateExtensions(
-      buffer: buffer,
-      config: config,
-      allLocales: allLocales,
-      baseClassName: baseClassName);
+    buffer: buffer,
+    config: config,
+    allLocales: allLocales,
+    baseClassName: baseClassName,
+  );
 
   _generateTranslationWrapper(
-      buffer: buffer,
-      config: config,
-      baseClassName: baseClassName,
-      translationProviderKey: translationProviderKey,
-      currLocaleVar: currLocaleVar);
+    buffer: buffer,
+    config: config,
+    baseClassName: baseClassName,
+    translationProviderKey: translationProviderKey,
+    currLocaleVar: currLocaleVar,
+  );
 
   _generatePluralResolvers(
-      buffer: buffer,
-      config: config,
-      pluralResolverType: pluralResolverType,
-      pluralResolverCardinal: pluralResolverMapCardinal,
-      pluralResolverOrdinal: pluralResolverMapOrdinal);
+    buffer: buffer,
+    config: config,
+    pluralResolverType: pluralResolverType,
+    pluralResolverCardinal: pluralResolverMapCardinal,
+    pluralResolverOrdinal: pluralResolverMapOrdinal,
+  );
 
-  _generateHelpers(buffer: buffer, config: config);
+  _generateHelpers(
+    buffer: buffer,
+    config: config,
+  );
 
   return buffer.toString();
 }
@@ -252,17 +272,18 @@ void _generateTranslationGetter(
   buffer.writeln('}');
 }
 
-void _generateLocaleSettings(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> allLocales,
-    required String baseLocaleVar,
-    required String currLocaleVar,
-    required String translateVarInternal,
-    required String translationProviderKey,
-    required String pluralResolverType,
-    required String pluralResolverCardinal,
-    required String pluralResolverOrdinal}) {
+void _generateLocaleSettings({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> allLocales,
+  required String baseLocaleVar,
+  required String currLocaleVar,
+  required String translateVarInternal,
+  required String translationProviderKey,
+  required String pluralResolverType,
+  required String pluralResolverCardinal,
+  required String pluralResolverOrdinal,
+}) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
 
@@ -351,7 +372,7 @@ void _generateLocaleSettings(
     buffer.writeln(
         '\t/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart');
     buffer.writeln(
-        '\t/// Only language part matters, script and country parts are ignored');
+        '\t/// Either specify [language], or [locale]. Locale has precedence.');
     buffer.write('\t/// Rendered Resolvers: [');
     final renderedResolvers = config.getRenderedPluralResolvers().toList();
     for (int i = 0; i < renderedResolvers.length; i++) {
@@ -371,11 +392,39 @@ void _generateLocaleSettings(
     }
 
     buffer.writeln(
-        '\tstatic void setPluralResolver({required String language, $pluralResolverType? cardinalResolver, $pluralResolverType? ordinalResolver}) {');
-    buffer.writeln(
-        '\t\tif (cardinalResolver != null) $pluralResolverCardinal[language] = cardinalResolver;');
-    buffer.writeln(
-        '\t\tif (ordinalResolver != null) $pluralResolverOrdinal[language] = ordinalResolver;');
+        '\tstatic void setPluralResolver({String? language, $enumName? locale, $pluralResolverType? cardinalResolver, $pluralResolverType? ordinalResolver}) {');
+    buffer.writeln('\t\tfinal List<$enumName> locales;');
+    buffer.writeln('\t\tif (locale != null) {');
+    buffer.writeln('\t\t\tlocales = [locale];');
+    buffer.writeln('\t\t} else {');
+    buffer.writeln('\t\t\tswitch (language) {');
+    allLocales.groupListsBy((l) => l.locale.language).forEach((key, value) {
+      buffer.writeln('\t\t\t\tcase \'$key\':');
+      buffer.writeln(
+          '\t\t\t\t\tlocales = [${value.map((l) => '$enumName.${l.locale.enumConstant}').join(',')}];');
+      buffer.writeln('\t\t\t\t\tbreak;');
+    });
+    buffer.writeln('\t\t\t\tdefault:');
+    buffer.writeln('\t\t\t\t\tlocales = [];');
+    buffer.writeln('\t\t\t}');
+    buffer.writeln('\t\t}');
+
+    buffer.writeln('\t\tlocales.forEach((curr) {');
+    buffer.writeln('\t\t\tswitch(curr) {');
+    for (final locale in allLocales) {
+      final className = getClassNameRoot(
+        baseName: config.baseName,
+        locale: locale.locale,
+        visibility: config.translationClassVisibility,
+      );
+      buffer.writeln('\t\t\t\tcase $enumName.${locale.locale.enumConstant}:');
+      buffer.writeln(
+          '\t\t\t\t\t_translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+      buffer.writeln('\t\t\t\t\tbreak;');
+    }
+    buffer.writeln('\t\t\t}');
+    buffer.writeln('\t\t});');
+
     buffer.writeln('\t}');
   }
 
@@ -435,6 +484,26 @@ void _generateInterfaces({
   }
 }
 
+void _generateInstances({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> allLocales,
+}) {
+  buffer.writeln();
+  buffer.writeln('// translation instances');
+  buffer.writeln();
+
+  for (I18nData locale in allLocales) {
+    final className = getClassNameRoot(
+      baseName: config.baseName,
+      locale: locale.locale,
+      visibility: config.translationClassVisibility,
+    );
+    buffer.writeln(
+        '$className _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build();');
+  }
+}
+
 void _generateExtensions({
   required StringBuffer buffer,
   required I18nConfig config,
@@ -447,18 +516,44 @@ void _generateExtensions({
   buffer.writeln('// extensions for $enumName');
   buffer.writeln();
   buffer.writeln('extension ${enumName}Extensions on $enumName {');
+  buffer.writeln();
+  buffer
+      .writeln('\t/// Gets the translation instance managed by this library.');
+  buffer.writeln('\t/// [TranslationProvider] is using this instance.');
+  buffer.writeln('\t/// The plural resolvers are set via [LocaleSettings].');
   buffer.writeln('\t$baseClassName get translations {');
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
-    String className = getClassNameRoot(
-        baseName: config.baseName,
-        locale: locale.locale.languageTag,
-        visibility: config.translationClassVisibility);
     buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className._instance;');
+        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)};');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
+
+  buffer.writeln();
+  buffer.writeln('\t/// Gets a new translation instance.');
+  buffer.writeln('\t/// [LocaleSettings] has no effect here.');
+  buffer.writeln('\t/// Suitable for dependency injection and unit tests.');
+  buffer.writeln('\t///');
+  buffer.writeln('\t/// Usage:');
+  buffer.writeln(
+      '\t/// final t = AppLocale.${config.baseLocale.enumConstant}.build(); // build');
+  buffer.writeln('\t/// String a = t.my.path; // access');
+  buffer.writeln(
+      '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    final className = getClassNameRoot(
+      baseName: config.baseName,
+      locale: locale.locale,
+      visibility: config.translationClassVisibility,
+    );
+    buffer.writeln(
+        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+  }
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+
   buffer.writeln();
   buffer.writeln('\tString get languageTag {');
   buffer.writeln('\t\tswitch (this) {');
@@ -606,13 +701,8 @@ void _generatePluralResolvers({
   buffer.writeln('// pluralization resolvers');
 
   buffer.writeln();
-  buffer.writeln('// map: language -> resolver');
   buffer.writeln(
       'typedef $pluralResolverType = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
-  buffer.writeln(
-      'Map<String, $pluralResolverType> $pluralResolverCardinal = {};');
-  buffer
-      .writeln('Map<String, $pluralResolverType> $pluralResolverOrdinal = {};');
 
   if (config.unsupportedPluralLanguages.isNotEmpty) {
     buffer.writeln();

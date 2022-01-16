@@ -170,14 +170,12 @@ class TextNode extends Node implements LeafNode {
   /// Several configs, persisted into node to make it easier to copy
   /// See [withLinkParamMap]
   final StringInterpolation interpolation;
-  final String localeEnum;
   final CaseStyle? paramCase;
 
   TextNode({
     required String path,
     required this.raw,
     required this.interpolation,
-    required this.localeEnum,
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
   }) : super(path) {
@@ -280,26 +278,24 @@ class TextNode extends Node implements LeafNode {
 
       if (linkParamMap == null) {
         // assume no parameters
-        return '\${$localeEnum.translations.$linkedPath}';
+        return '\${_root.$linkedPath}';
       }
 
       final linkedParams = linkParamMap[linkedPath]!;
       params.addAll(linkedParams);
       final parameterString =
           linkedParams.map((param) => '$param: $param').join(', ');
-      return '\${$localeEnum.translations.$linkedPath($parameterString)}';
+      return '\${_root.$linkedPath($parameterString)}';
     });
   }
 
   /// A special constructor for tests
-  factory TextNode.test(
-      String raw, StringInterpolation interpolation, String localeEnum,
+  factory TextNode.test(String raw, StringInterpolation interpolation,
       [CaseStyle? paramCase]) {
     return TextNode(
       path: '',
       raw: raw,
       interpolation: interpolation,
-      localeEnum: localeEnum,
       paramCase: paramCase,
     );
   }
@@ -317,7 +313,6 @@ class TextNode extends Node implements LeafNode {
       path: path,
       raw: raw,
       interpolation: interpolation,
-      localeEnum: localeEnum,
       paramCase: paramCase,
       linkParamMap: linkParamMap,
     );

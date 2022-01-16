@@ -1,3 +1,24 @@
+## 5.9.0
+
+**Dependency Injection**
+
+Plural resolvers are now part of the translation class.
+
+Meaning, you can now build your own instance without relying on `LocaleSettings`.
+
+This is entirely optional! You can still use the onboard `LocaleSettings` solution.
+
+```dart
+// riverpod example
+final _en = AppLocale.en.build(cardinalResolver: myEnResolver);
+final _de = AppLocale.de.build(cardinalResolver: myDeResolver);
+final translationProvider = StateProvider<StringsEn>((ref) => _en);
+
+// access the current instance
+final t = ref.watch(translationProvider);
+String a = t.welcome.title;
+```
+
 ## 5.8.0
 
 - feat: allow custom parameter names in plurals or contexts (`count` and `context` were hardcoded previously)

@@ -4,11 +4,13 @@ import 'package:fast_i18n/src/utils/string_extensions.dart';
 
 String getClassNameRoot({
   required String baseName,
-  String locale = '',
+  I18nLocale? locale,
   required TranslationClassVisibility visibility,
 }) {
   String result = baseName.toCase(CaseStyle.pascal) +
-      locale.toCaseOfLocale(CaseStyle.pascal);
+      (locale != null
+          ? locale.languageTag.toCaseOfLocale(CaseStyle.pascal)
+          : '');
   if (visibility == TranslationClassVisibility.private) result = '_' + result;
   return result;
 }

@@ -23,7 +23,10 @@ String generateTranslationMap(
 
     buffer.writeln();
     buffer.writeln(
-        'late final Map<String, dynamic> _translationMap${localeData.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = {');
+        'extension on ${getClassNameRoot(baseName: config.baseName, locale: localeData.locale, visibility: config.translationClassVisibility)} {');
+    buffer.writeln('\tMap<String, dynamic> _buildFlatMap() {');
+
+    buffer.writeln('\t\treturn {');
     _generateTranslationMapRecursive(
       buffer: buffer,
       curr: localeData.root,
@@ -31,7 +34,9 @@ String generateTranslationMap(
       hasPluralResolver: hasPluralResolver,
       language: language,
     );
-    buffer.writeln('};');
+    buffer.writeln('\t\t};');
+    buffer.writeln('\t}');
+    buffer.writeln('}');
   }
 
   return buffer.toString();
@@ -46,10 +51,10 @@ _generateTranslationMapRecursive({
 }) {
   if (curr is TextNode) {
     if (curr.params.isEmpty) {
-      buffer.writeln('\t\'${curr.path}\': \'${curr.content}\',');
+      buffer.writeln('\t\t\t\'${curr.path}\': \'${curr.content}\',');
     } else {
       buffer.writeln(
-          '\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
+          '\t\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
     }
   } else if (curr is ListNode) {
     // recursive
@@ -74,22 +79,22 @@ _generateTranslationMapRecursive({
       );
     });
   } else if (curr is PluralNode) {
-    buffer.write('\t\'${curr.path}\': ');
+    buffer.write('\t\t\t\'${curr.path}\': ');
     _addPluralizationCall(
       buffer: buffer,
       config: config,
       hasPluralResolver: hasPluralResolver,
       language: language,
       node: curr,
-      depth: 1,
+      depth: 2,
     );
   } else if (curr is ContextNode) {
-    buffer.write('\t\'${curr.path}\': ');
+    buffer.write('\t\t\t\'${curr.path}\': ');
     _addContextCall(
       buffer: buffer,
       config: config,
       node: curr,
-      depth: 1,
+      depth: 2,
     );
   } else {
     throw 'This should not happen';

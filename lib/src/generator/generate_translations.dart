@@ -47,8 +47,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
 
     _generateClass(
         config,
-        localeData.base,
-        localeData.locale,
+        localeData,
         config.hasPluralResolver(
             localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE),
         buffer,
@@ -67,8 +66,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
 /// adds subclasses to the queue
 void _generateClass(
   I18nConfig config,
-  bool base,
-  I18nLocale locale,
+  I18nData localeData,
   bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
@@ -84,12 +82,13 @@ void _generateClass(
     buffer.writeln('// Path: ${node.path}');
   }
 
-  final finalClassName = getClassName(parentName: className, locale: locale);
+  final finalClassName =
+      getClassName(parentName: className, locale: localeData.locale);
 
   final mixinStr =
       node.interface != null ? ' with ${node.interface!.name}' : '';
 
-  if (base) {
+  if (localeData.base) {
     buffer.writeln('class $finalClassName$mixinStr {');
   } else {
     final baseClassName =
@@ -103,21 +102,99 @@ void _generateClass(
     }
   }
 
-  if (config.fallbackStrategy == FallbackStrategy.none || base)
-    buffer.writeln('\t$finalClassName._(); // no constructor');
-  else
-    buffer.writeln('\t$finalClassName._() : super._(); // no constructor');
+  // constructor and custom fields
+  final callSuperConstructor = !localeData.base &&
+      config.fallbackStrategy == FallbackStrategy.baseLocale;
+  if (root) {
+    buffer.writeln();
+    buffer.writeln(
+        '\t/// You can call this constructor and build your own translation instance of this locale.');
+    buffer.writeln(
+        '\t/// Constructing via the enum [${config.enumName}.build] is preferred.');
+
+    if (!hasPluralResolver && !callSuperConstructor) {
+      buffer.writeln(
+          '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver});');
+    } else {
+      buffer.writeln(
+          '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
+      buffer.write('\t\t:\t');
+      bool first = true;
+      if (localeData.hasCardinal) {
+        buffer.write('_cardinalResolver = cardinalResolver');
+        first = false;
+      }
+      if (localeData.hasOrdinal) {
+        if (!first) {
+          buffer.writeln(',');
+          buffer.write('\t\t\t');
+        }
+        buffer.write('_ordinalResolver = ordinalResolver');
+      }
+      if (callSuperConstructor) {
+        if (!first) {
+          buffer.writeln(',');
+          buffer.write('\t\t\t');
+        }
+        buffer.write('super._()');
+      }
+      buffer.writeln(';');
+    }
+
+    if (config.renderFlatMap) {
+      // flat map
+      buffer.writeln();
+      buffer.writeln('\t/// Access flat map');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
+      buffer.writeln('dynamic operator[](String key) => _flatMap[key];');
+
+      buffer.writeln();
+      buffer.writeln('\t// Internal flat map initialized lazily');
+      buffer.writeln(
+          '\tlate final Map<String, dynamic> _flatMap = _buildFlatMap();');
+    }
+
+    if (hasPluralResolver) {
+      buffer.writeln();
+      buffer.writeln('\t// Plural resolvers');
+      if (localeData.hasCardinal) {
+        buffer.writeln('\tfinal PluralResolver? _cardinalResolver;');
+      }
+      if (localeData.hasOrdinal) {
+        buffer.writeln('\tfinal PluralResolver? _ordinalResolver;');
+      }
+    }
+  } else {
+    if (callSuperConstructor) {
+      buffer.writeln('\t$finalClassName._(this._root) : super._();');
+    } else {
+      buffer.writeln('\t$finalClassName._(this._root);');
+    }
+  }
+
+  // root
+  buffer.writeln();
+  buffer.writeln('\t// ignore: unused_field');
+  if (!localeData.base) {
+    buffer.write('\t@override ');
+  } else {
+    buffer.write('\t');
+  }
+
+  if (root) {
+    buffer.writeln(
+        'late final ${getClassNameRoot(baseName: config.baseName, visibility: config.translationClassVisibility, locale: localeData.locale)} _root = this;');
+  } else {
+    buffer.writeln(
+        'final ${getClassNameRoot(baseName: config.baseName, visibility: config.translationClassVisibility, locale: localeData.locale)} _root;');
+  }
 
   buffer.writeln();
-  buffer.writeln(
-      '\tstatic final $finalClassName _instance = $finalClassName._();');
-  if (config.translationClassVisibility == TranslationClassVisibility.public)
-    buffer.writeln('\tstatic $finalClassName get instance => _instance;');
-  buffer.writeln();
-
+  buffer.writeln('\t// Translations');
   node.entries.forEach((key, value) {
     buffer.write('\t');
-    if (!base ||
+    if (!localeData.base ||
         node.interface?.attributes
                 .any((attribute) => attribute.attributeName == key) ==
             true) buffer.write('@override ');
@@ -141,8 +218,8 @@ void _generateClass(
       }
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
-      _generateList(config, base, locale, hasPluralResolver, buffer, queue,
-          className, value.entries, 0);
+      _generateList(config, localeData.base, localeData.locale,
+          hasPluralResolver, buffer, queue, className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -150,15 +227,23 @@ void _generateClass(
       if (value.isMap) {
         // inline map
         buffer.write('Map<String, ${value.genericType}>$optional get $key => ');
-        _generateMap(config, base, locale, hasPluralResolver, buffer, queue,
-            childClassNoLocale, value.entries, 0);
+        _generateMap(
+            config,
+            localeData.base,
+            localeData.locale,
+            hasPluralResolver,
+            buffer,
+            queue,
+            childClassNoLocale,
+            value.entries,
+            0);
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
-        String childClassWithLocale =
-            getClassName(parentName: className, childName: key, locale: locale);
+        String childClassWithLocale = getClassName(
+            parentName: className, childName: key, locale: localeData.locale);
         buffer.writeln(
-            '$childClassWithLocale$optional get $key => $childClassWithLocale._instance;');
+            'late final $childClassWithLocale$optional $key = $childClassWithLocale._(_root);');
       }
     } else if (value is PluralNode) {
       buffer.write('String$optional $key');
@@ -166,7 +251,7 @@ void _generateClass(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
         node: value,
         depth: 0,
       );
@@ -180,16 +265,6 @@ void _generateClass(
       );
     }
   });
-
-  if (root && config.renderFlatMap) {
-    // add map operator for translation map
-    buffer.writeln();
-    buffer.writeln('\t/// A flat map containing all translations.');
-    buffer.write('\t');
-    if (!base) buffer.write('@override ');
-    buffer.writeln(
-        'dynamic operator[](String key) => _translationMap${locale.languageTag.toCaseOfLocale(CaseStyle.pascal)}[key];');
-  }
 
   buffer.writeln('}');
 }
@@ -236,7 +311,7 @@ void _generateMap(
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale =
             getClassName(parentName: className, childName: key, locale: locale);
-        buffer.writeln('\'$key\': $childClassWithLocale._instance,');
+        buffer.writeln('\'$key\': $childClassWithLocale._(_root),');
       }
     } else if (value is PluralNode) {
       buffer.write('\'$key\': ');
@@ -312,7 +387,7 @@ void _generateList(
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale =
             getClassName(parentName: className, childName: key, locale: locale);
-        buffer.writeln('$childClassWithLocale._instance,');
+        buffer.writeln('$childClassWithLocale._(_root),');
       }
     } else if (value is PluralNode) {
       _addPluralizationCall(
@@ -390,7 +465,7 @@ void _addPluralizationCall({
 
   // custom resolver has precedence
   buffer.write(
-      '}) => (_pluralResolvers${node.pluralType == PluralType.cardinal ? 'Cardinal' : 'Ordinal'}[\'$language\'] ?? ');
+      '}) => (${node.pluralType == PluralType.cardinal ? '_root._cardinalResolver' : '_root._ordinalResolver'} ?? ');
 
   if (hasPluralResolver) {
     // call predefined resolver

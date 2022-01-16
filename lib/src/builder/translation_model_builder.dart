@@ -20,7 +20,6 @@ class TranslationModelBuilder {
     required I18nLocale locale,
     required Map<String, dynamic> map,
   }) {
-    final localeEnum = '${buildConfig.enumName}.${locale.enumConstant}';
     bool hasCardinal = false;
     bool hasOrdinal = false;
 
@@ -38,7 +37,6 @@ class TranslationModelBuilder {
       curr: map,
       config: buildConfig,
       keyCase: buildConfig.keyCase,
-      localeEnum: localeEnum,
       leavesMap: leavesMap,
       cardinalNotifier: () {
         hasCardinal = true;
@@ -205,7 +203,6 @@ class TranslationModelBuilder {
     required Map<String, dynamic> curr,
     required BuildConfig config,
     required CaseStyle? keyCase,
-    required String localeEnum,
     required Map<String, LeafNode> leavesMap,
     required Function cardinalNotifier,
     required Function ordinalNotifier,
@@ -227,7 +224,6 @@ class TranslationModelBuilder {
           path: currPath,
           raw: value.toString(),
           interpolation: config.stringInterpolation,
-          localeEnum: localeEnum,
           paramCase: config.paramCase,
         );
         resultNodeTree[key] = textNode;
@@ -246,7 +242,6 @@ class TranslationModelBuilder {
             curr: listAsMap,
             config: config,
             keyCase: config.keyCase,
-            localeEnum: localeEnum,
             leavesMap: leavesMap,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
@@ -269,7 +264,6 @@ class TranslationModelBuilder {
                     config.maps.contains(currPath)
                 ? config.keyMapCase
                 : config.keyCase,
-            localeEnum: localeEnum,
             leavesMap: leavesMap,
             cardinalNotifier: cardinalNotifier,
             ordinalNotifier: ordinalNotifier,
