@@ -62,7 +62,7 @@ void main() {
       );
       final textNode = result.root.entries['b'] as TextNode;
       expect(textNode.params, <String>{});
-      expect(textNode.content, r'Hello ${AppLocale.en.translations.a}');
+      expect(textNode.content, r'Hello ${_root.a}');
     });
 
     test('one link 2 parameters straight', () {
@@ -77,7 +77,7 @@ void main() {
       final textNode = result.root.entries['b'] as TextNode;
       expect(textNode.params, {'p1', 'p2'});
       expect(textNode.content,
-          r'Hello ${AppLocale.en.translations.a(p1: p1, p2: p2)}');
+          r'Hello ${_root.a(p1: p1, p2: p2)}');
     });
 
     test('linked translations with parameters recursive', () {
@@ -93,7 +93,7 @@ void main() {
       final textNode = result.root.entries['b'] as TextNode;
       expect(textNode.params, {'p1', 'p2', 'p3', 'p4'});
       expect(textNode.content,
-          r'Hello $p3 ${AppLocale.en.translations.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
+          r'Hello $p3 ${_root.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
     });
 
     test('linked translation with plural', () {
@@ -112,7 +112,7 @@ void main() {
       expect(textNode.params, {'p1', 'count'});
       expect(textNode.paramTypeMap, {'count': 'num'});
       expect(textNode.content,
-          r'Hello ${AppLocale.en.translations.a(p1: p1, count: count)}');
+          r'Hello ${_root.a(p1: p1, count: count)}');
     });
 
     test('linked translation with context', () {
@@ -138,7 +138,7 @@ void main() {
       expect(textNode.params, {'p1', 'context'});
       expect(textNode.paramTypeMap, {'context': 'GenderCon'});
       expect(textNode.content,
-          r'Hello ${AppLocale.en.translations.a(p1: p1, context: context)}');
+          r'Hello ${_root.a(p1: p1, context: context)}');
     });
   });
 }

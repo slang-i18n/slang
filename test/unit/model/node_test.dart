@@ -218,7 +218,7 @@ void main() {
         final test = '\$apple is linked to @:wow!';
         final node = TextNode.test(test, StringInterpolation.dart);
         expect(node.content,
-            '\$apple is linked to \${AppLocale.en.translations.wow}!');
+            '\$apple is linked to \${_root.wow}!');
         expect(node.params, {'apple'});
       });
 
@@ -236,7 +236,7 @@ void main() {
         final node =
             TextNode.test(test, StringInterpolation.dart, CaseStyle.camel);
         expect(node.content,
-            r'Nice $coolHi $wow ${yes} ${noYes} ${AppLocale.en.translations.hello_world.yes}');
+            r'Nice $coolHi $wow ${yes} ${noYes} ${_root.hello_world.yes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
 
@@ -244,7 +244,7 @@ void main() {
         final test = r'@:.c @:a @:hi @:wow. @:nice.cool';
         final node = TextNode.test(test, StringInterpolation.dart);
         expect(node.content,
-            r'@:.c ${AppLocale.en.translations.a} ${AppLocale.en.translations.hi} ${AppLocale.en.translations.wow}. ${AppLocale.en.translations.nice.cool}');
+            r'@:.c ${_root.a} ${_root.hi} ${_root.wow}. ${_root.nice.cool}');
         expect(node.params, <String>{});
       });
     });
@@ -305,7 +305,7 @@ void main() {
         final test = '{apple} is linked to @:wow!';
         final node = TextNode.test(test, StringInterpolation.braces);
         expect(node.content,
-            '\$apple is linked to \${AppLocale.en.translations.wow}!');
+            '\$apple is linked to \${_root.wow}!');
         expect(node.params, {'apple'});
       });
 

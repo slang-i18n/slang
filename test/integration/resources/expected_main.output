@@ -130,11 +130,34 @@ class LocaleSettings {
 	/// Sets plural resolvers.
 	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
-	/// Only language part matters, script and country parts are ignored
+	/// Either specify [language], or [locale]. Locale has precedence.
 	/// Rendered Resolvers: ['en', 'de']
-	static void setPluralResolver({required String language, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
-		if (cardinalResolver != null) _pluralResolversCardinal[language] = cardinalResolver;
-		if (ordinalResolver != null) _pluralResolversOrdinal[language] = ordinalResolver;
+	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		final List<AppLocale> locales;
+		if (locale != null) {
+			locales = [locale];
+		} else {
+			switch (language) {
+				case 'en':
+					locales = [AppLocale.en];
+					break;
+				case 'de':
+					locales = [AppLocale.de];
+					break;
+				default:
+					locales = [];
+			}
+		}
+		locales.forEach((curr) {
+			switch(curr) {
+				case AppLocale.en:
+					_translationsEn = _TranslationsEn.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+					break;
+				case AppLocale.de:
+					_translationsDe = _TranslationsDe.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+					break;
+			}
+		});
 	}
 
 }
@@ -158,13 +181,36 @@ mixin EndData {
 	List<Map<String, String>> get pages;
 }
 
+// translation instances
+
+_TranslationsEn _translationsEn = _TranslationsEn.build();
+_TranslationsDe _translationsDe = _TranslationsDe.build();
+
 // extensions for AppLocale
 
 extension AppLocaleExtensions on AppLocale {
+
+	/// Gets the translation instance managed by this library.
+	/// [TranslationProvider] is using this instance.
+	/// The plural resolvers are set via [LocaleSettings].
 	_TranslationsEn get translations {
 		switch (this) {
-			case AppLocale.en: return _TranslationsEn._instance;
-			case AppLocale.de: return _TranslationsDe._instance;
+			case AppLocale.en: return _translationsEn;
+			case AppLocale.de: return _translationsDe;
+		}
+	}
+
+	/// Gets a new translation instance.
+	/// [LocaleSettings] has no effect here.
+	/// Suitable for dependency injection and unit tests.
+	///
+	/// Usage:
+	/// final t = AppLocale.en.build(); // build
+	/// String a = t.my.path; // access
+	_TranslationsEn build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		switch (this) {
+			case AppLocale.en: return _TranslationsEn.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+			case AppLocale.de: return _TranslationsDe.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
 		}
 	}
 
@@ -248,10 +294,7 @@ class _InheritedLocaleData extends InheritedWidget {
 
 // pluralization resolvers
 
-// map: language -> resolver
 typedef PluralResolver = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
-Map<String, PluralResolver> _pluralResolversCardinal = {};
-Map<String, PluralResolver> _pluralResolversOrdinal = {};
 
 // prepared by fast_i18n
 
