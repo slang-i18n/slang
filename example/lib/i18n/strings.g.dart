@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2021-12-18 at 20:46 UTC
+ * Built on 2022-01-16 at 14:28 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -290,6 +290,7 @@ AppLocale? _selectLocale(String localeRaw) {
 
 // translations
 
+// Path: <root>
 class _StringsEn {
 	_StringsEn._(); // no constructor
 
@@ -305,6 +306,7 @@ class _StringsEn {
 	dynamic operator[](String key) => _translationMapEn[key];
 }
 
+// Path: mainScreen
 class _StringsMainScreenEn {
 	_StringsMainScreenEn._(); // no constructor
 
@@ -318,6 +320,7 @@ class _StringsMainScreenEn {
 	String get tapMe => 'Tap me';
 }
 
+// Path: <root>
 class _StringsDe implements _StringsEn {
 	_StringsDe._(); // no constructor
 
@@ -333,6 +336,7 @@ class _StringsDe implements _StringsEn {
 	@override dynamic operator[](String key) => _translationMapDe[key];
 }
 
+// Path: mainScreen
 class _StringsMainScreenDe implements _StringsMainScreenEn {
 	_StringsMainScreenDe._(); // no constructor
 
