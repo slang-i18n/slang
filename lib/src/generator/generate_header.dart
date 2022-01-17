@@ -78,6 +78,12 @@ String generateHeader(
     pluralResolverOrdinal: pluralResolverMapOrdinal,
   );
 
+  _generateUtilClass(
+    buffer: buffer,
+    config: config,
+    baseLocaleVar: baseLocaleVar,
+  );
+
   _generateContextEnums(buffer: buffer, config: config);
 
   _generateInterfaces(buffer: buffer, config: config);
@@ -286,6 +292,7 @@ void _generateLocaleSettings({
 }) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
+  final String utilsClass = '${enumName}Utils';
 
   buffer.writeln();
   buffer.writeln('class $settingsClass {');
@@ -294,16 +301,9 @@ void _generateLocaleSettings({
   buffer.writeln();
   buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln(
-      '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag');
   buffer.writeln('\tstatic $enumName useDeviceLocale() {');
-  buffer.writeln(
-      '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
-  buffer.writeln('\t\tif (deviceLocale != null) {');
-  buffer.writeln('\t\t\treturn setLocaleRaw(deviceLocale);');
-  buffer.writeln('\t\t} else {');
-  buffer.writeln('\t\t\treturn setLocale($baseLocaleVar);');
-  buffer.writeln('\t\t}');
+  buffer.writeln('\t\tfinal locale = $utilsClass.findDeviceLocale();');
+  buffer.writeln('\t\treturn setLocale(locale);');
   buffer.writeln('\t}');
 
   buffer.writeln();
@@ -326,23 +326,19 @@ void _generateLocaleSettings({
   buffer.writeln('\t/// Sets locale using string tag (e.g. en_US, de-DE, fr)');
   buffer.writeln('\t/// Fallbacks to base locale.');
   buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\tstatic $enumName setLocaleRaw(String localeRaw) {');
-  buffer.writeln('\t\tfinal selected = _selectLocale(localeRaw);');
-  buffer.writeln('\t\treturn setLocale(selected ?? $baseLocaleVar);');
+  buffer.writeln('\tstatic $enumName setLocaleRaw(String rawLocale) {');
+  buffer.writeln('\t\tfinal locale = $utilsClass.parse(rawLocale);');
+  buffer.writeln('\t\treturn setLocale(locale);');
   buffer.writeln('\t}');
 
   buffer.writeln();
   buffer.writeln('\t/// Gets current locale.');
-  buffer.writeln(
-      '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.currentLocale.languageTag');
   buffer.writeln('\tstatic $enumName get currentLocale {');
   buffer.writeln('\t\treturn $currLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln();
   buffer.writeln('\t/// Gets base locale.');
-  buffer.writeln(
-      '\t/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.baseLocale.languageTag');
   buffer.writeln('\tstatic $enumName get baseLocale {');
   buffer.writeln('\t\treturn $baseLocaleVar;');
   buffer.writeln('\t}');
@@ -428,7 +424,43 @@ void _generateLocaleSettings({
     buffer.writeln('\t}');
   }
 
+  buffer.writeln('}');
+}
+
+void _generateUtilClass({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String baseLocaleVar,
+}) {
+  final String enumName = config.enumName;
+  final String utilsClass = '${enumName}Utils';
+
   buffer.writeln();
+  buffer.writeln('/// Provides utility functions without any side effects.');
+  buffer.writeln('class $utilsClass {');
+  buffer.writeln('\t$utilsClass._(); // no constructor');
+
+  buffer.writeln();
+  buffer.writeln('\t/// Returns the locale of the device as the enum type.');
+  buffer.writeln('\t/// Fallbacks to base locale.');
+  buffer.writeln('\tstatic $enumName findDeviceLocale() {');
+  buffer.writeln(
+      '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
+  buffer.writeln('\t\tif (deviceLocale != null) {');
+  buffer.writeln('\t\t\tfinal typedLocale = _selectLocale(deviceLocale);');
+  buffer.writeln('\t\t\tif (typedLocale != null) {');
+  buffer.writeln('\t\t\t\treturn typedLocale;');
+  buffer.writeln('\t\t\t}');
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t\treturn $baseLocaleVar;');
+  buffer.writeln('\t}');
+
+  buffer.writeln();
+  buffer.writeln('\t/// Returns the enum type of the raw locale.');
+  buffer.writeln('\t/// Fallbacks to base locale.');
+  buffer.writeln('\tstatic $enumName parse(String rawLocale) {');
+  buffer.writeln('\t\treturn _selectLocale(rawLocale) ?? $baseLocaleVar;');
+  buffer.writeln('\t}');
 
   buffer.writeln('}');
 }
@@ -500,7 +532,7 @@ void _generateInstances({
       visibility: config.translationClassVisibility,
     );
     buffer.writeln(
-        '$className _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build();');
+        'late $className _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build();');
   }
 }
 
