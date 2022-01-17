@@ -1,23 +1,25 @@
 ## 5.9.0
 
-**Dependency Injection**
+**Dependency Injection (optional)**
 
 Plural resolvers are now part of the translation class.
 
-Meaning, you can now build your own instance without relying on `LocaleSettings`.
+Meaning, you can now build your own instance without relying on `LocaleSettings` or any other side effects.
 
 This is entirely optional! You can still use the included `LocaleSettings` solution.
 
 ```dart
 // riverpod example
-final _en = AppLocale.en.build(cardinalResolver: myEnResolver);
-final _de = AppLocale.de.build(cardinalResolver: myDeResolver);
-final translationProvider = StateProvider<StringsEn>((ref) => _en);
+final english = AppLocale.en.build(cardinalResolver: myEnResolver);
+final german = AppLocale.de.build(cardinalResolver: myDeResolver);
+final translationProvider = StateProvider<StringsEn>((ref) => german);
 
 // access the current instance
 final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
+
+For more information, see [Tutorial](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md).
 
 ## 5.8.0
 

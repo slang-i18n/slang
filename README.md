@@ -97,7 +97,7 @@ lib/
  └── i18n/
       └── strings.i18n.json
       └── strings_de.i18n.json
-      └── strings_zh-CN.i18n.json <-- example for country codes
+      └── strings_zh-CN.i18n.json <-- example for country code
 ```
 
 ```json5
@@ -155,7 +155,7 @@ void initState() {
 }
 ```
 
-c) use dependency injection (aka *I handle it myself*)
+c) use dependency injection (aka *"I handle it myself"*)
 
 ```dart
 final english = AppLocale.en.build();
@@ -531,7 +531,7 @@ void main() {
 
 You can customize the attributes and use different node selectors. 
 
-Please read the [Wiki](https://github.com/Tienisto/flutter-fast-i18n/wiki/Interfaces).
+For further information about interfaces: [Click here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/interfaces.md)
 
 ### ➤ Locale Enum
 
@@ -547,11 +547,9 @@ enum AppLocale {
 ```
 
 ```dart
-// use cases
-LocaleSettings.setLocale(AppLocale.en); // set locale
-List<AppLocale> locales = AppLocale.values; // list all supported locales
-Locale locale = AppLocale.en.flutterLocale; // convert to native flutter locale
-String tag = AppLocale.en.languageTag; // convert to string tag (e.g. en-US)
+// extension methods
+Locale locale = AppLocale.en.flutterLocale; // to native flutter locale
+String tag = AppLocale.en.languageTag; // to string tag (e.g. en-US)
 final t = AppLocale.en.translations; // get translations of one locale
 ```
 
@@ -563,7 +561,7 @@ It is possible to create translation instances that do not depend on `LocaleSett
 
 You can use your own dependency injection and inject the required translations!
 
-Please set the translations classes public:
+Please set the translation classes public:
 
 ```yaml
 # File: build.yaml
@@ -585,6 +583,8 @@ final translationProvider = StateProvider<StringsEn>((ref) => _en);
 final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
+
+For further information about dependency injection: [Click here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md)
 
 ### ➤ Pluralization
 
