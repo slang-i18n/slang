@@ -63,6 +63,7 @@ String h = page.title;
     - [Auto Rebuild](#-auto-rebuild)
 - [API](#api)
 - [FAQ](#faq)
+- [Further Reading](#further-reading)
 
 ## Getting Started
 
@@ -86,7 +87,7 @@ Writing translations into assets folder requires extra configuration (see [FAQ](
 
 Format:
 ```text
-<namespace>_<locale?>.<ext>
+<namespace>_<locale?>.<extension>
 ```
 
 You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings` or `translations`.
@@ -316,7 +317,7 @@ JSON|✔|by default
 YAML|✔|update `input_file_pattern`
 CSV|✔|update `input_file_pattern`
 
-To change to YAML or CSV, please modify input file pattern
+To change to YAML or CSV, please modify `input_file_pattern`.
 
 ```yaml
 # File: build.yaml
@@ -375,7 +376,7 @@ targets:
 Let's create two namespaces called `widgets` and `dialogs`.
 
 ```text
-<namespace>_<locale?>.<ext>
+<namespace>_<locale?>.<extension>
 ```
 
 ```text
@@ -400,7 +401,7 @@ i18n/
 
 ```text
 i18n/
- └── base/
+ └── en/
       └── widgets.i18n.json
       └── dialogs.i18n.json
  └── fr/
@@ -480,7 +481,7 @@ String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and 
 
 ### ➤ Interfaces
 
-Often, multiple maps have the same structure. You can create a common super class for that.
+Often, multiple objects have the same attributes. You can create a common super class for that.
 
 ```json
 {
@@ -531,7 +532,7 @@ void main() {
 
 You can customize the attributes and use different node selectors. 
 
-For further information about interfaces: [Click here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/interfaces.md)
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/interfaces.md).
 
 ### ➤ Locale Enum
 
@@ -555,9 +556,9 @@ final t = AppLocale.en.translations; // get translations of one locale
 
 ### ➤ Dependency Injection
 
-If you don't like the included `LocaleSettings` solution:
+In case you don't like the included `LocaleSettings` solution.
 
-It is possible to create translation instances that do not depend on `LocaleSettings`.
+It is possible to create translation instances that do not depend on `LocaleSettings` or any other side effects.
 
 You can use your own dependency injection and inject the required translations!
 
@@ -573,18 +574,19 @@ targets:
           translation_class_visibility: public
 ```
 
+Example using the `riverpod` library:
+
 ```dart
-// riverpod example
-final _en = AppLocale.en.build(cardinalResolver: myEnResolver);
-final _de = AppLocale.de.build(cardinalResolver: myDeResolver);
-final translationProvider = StateProvider<StringsEn>((ref) => _en);
+final english = AppLocale.en.build(cardinalResolver: myEnResolver);
+final german = AppLocale.de.build(cardinalResolver: myDeResolver);
+final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
 
 // access the current instance
 final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-For further information about dependency injection: [Click here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md)
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md).
 
 ### ➤ Pluralization
 
@@ -672,14 +674,14 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
-By default, the parameter name is `count`. You can change that by adding a hint using brackets.
+By default, the parameter name is `count`. You can change that by adding a hint.
 
 ```json
 {
   "someKey": {
     "apple(appleCount)": {
-      "one": "I have $appleCount apple.",
-      "other": "I have $appleCount apples."
+      "one": "I have one apple.",
+      "other": "I have multiple apples."
     }
   }
 }
@@ -754,7 +756,7 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 }
 ```
 
-Similarly to plurals, the parameter name is `context` by default. You can change that by adding a hint using brackets.
+Similarly to plurals, the parameter name is `context` by default. You can change that by adding a hint.
 
 ```json
 {
@@ -912,9 +914,13 @@ targets:
 This will generate the following files:
 
 ```text
-translations.g.dart - main file
-translations_<locale>.g.dart - translation classes
-translations_map.g.dart - flat translation maps
+lib/
+ └── i18n/
+      └── translations.g.dart <-- main file
+      └── translations_en.g.dart <-- translation classes
+      └── translations_de.g.dart <-- translation classes
+      └── ...
+      └── translations_map.g.dart <-- translations stored in flat maps
 ```
 
 You only need to import the main file!
@@ -930,6 +936,12 @@ you need at least 3 columns. The first row contains the locale names. Please avo
 ```csv
 key,en,de-DE
 welcome.title,Welcome $name,Willkommen $name
+```
+
+```text
+assets/
+ └── i18n/
+      └── strings.i18n.csv <-- contains all locales
 ```
 
 ### ➤ Auto Rebuild
@@ -1049,6 +1061,24 @@ You may use linked translations to solve this problem.
 ```dart
 String a = t.sentence(appleCount: 1, bananaCount: 2); // two different plural parameters!
 ```
+
+**What's the difference between `AppLocale.en.translations` and `AppLocale.en.build()`?**
+
+The plural resolvers of `AppLocale.<locale>.translations` must be set via `LocaleSettings.setPluralResolver`.
+Therefore, calls on `LocaleSettings` has side effects on `AppLocale.<locale>.translations`.
+
+When you call `AppLocale.<locale>.build()`, there are no side effects.
+
+Furthermore, the first method returns the instance managed by this library.
+The second one always returns a new instance.
+
+## Further Reading
+
+In depth tutorials about several topics:
+
+[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/interfaces.md)
+
+[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md)
 
 ## License
 
