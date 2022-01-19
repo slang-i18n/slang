@@ -613,17 +613,24 @@ String a = t.someKey.apple(count: 1); // I have 1 apple.
 String b = t.someKey.apple(count: 2); // I have 2 apples.
 ```
 
-Plurals are interpreted as cardinals by default. You can configure or disable it.
+The detected plurals are **cardinals** by default.
+
+In general, you will probably use only this variant. Ordinals are rarely used.
+If your project only has cardinals, then you don't need to configure anything! It works out of the box.
+
+However, if you have ordinals, then you will need some configurations.
 
 ```json5
 // File: strings.i18n.json
 {
   "someKey": {
     "apple": {
+      // cardinal
       "one": "I have $count apple.",
       "other": "I have $count apples."
     },
     "place": {
+      // ordinal (rarely used)
       "one": "${count}st place.",
       "two": "${count}nd place.",
       "few": "${count}rd place.",
