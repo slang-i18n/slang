@@ -19,7 +19,7 @@ final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-For more information, checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md).
+For more information, checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md).
 
 ## 5.8.0
 

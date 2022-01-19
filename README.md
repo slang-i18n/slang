@@ -74,7 +74,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.8.0
+  fast_i18n: 5.9.0
 ```
 
 **Step 2: Create JSON files**
@@ -532,7 +532,7 @@ void main() {
 
 You can customize the attributes and use different node selectors. 
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/interfaces.md).
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md).
 
 ### ➤ Locale Enum
 
@@ -586,7 +586,7 @@ final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md).
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md).
 
 ### ➤ Pluralization
 
@@ -1083,9 +1083,9 @@ The second one always returns a new instance.
 
 In depth tutorials about several topics:
 
-[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/interfaces.md)
+[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md)
 
-[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/docs/dependency_injection.md)
+[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md)
 
 ## License
 
