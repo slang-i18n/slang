@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-01-16 at 14:28 UTC
+ * Built on 2022-01-23 at 19:06 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -67,14 +67,9 @@ class LocaleSettings {
 
 	/// Uses locale of the device, fallbacks to base locale.
 	/// Returns the locale which has been set.
-	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.useDeviceLocale().languageTag
 	static AppLocale useDeviceLocale() {
-		final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
-		if (deviceLocale != null) {
-			return setLocaleRaw(deviceLocale);
-		} else {
-			return setLocale(_baseLocale);
-		}
+		final locale = AppLocaleUtils.findDeviceLocale();
+		return setLocale(locale);
 	}
 
 	/// Sets locale
@@ -94,19 +89,17 @@ class LocaleSettings {
 	/// Sets locale using string tag (e.g. en_US, de-DE, fr)
 	/// Fallbacks to base locale.
 	/// Returns the locale which has been set.
-	static AppLocale setLocaleRaw(String localeRaw) {
-		final selected = _selectLocale(localeRaw);
-		return setLocale(selected ?? _baseLocale);
+	static AppLocale setLocaleRaw(String rawLocale) {
+		final locale = AppLocaleUtils.parse(rawLocale);
+		return setLocale(locale);
 	}
 
 	/// Gets current locale.
-	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.currentLocale.languageTag
 	static AppLocale get currentLocale {
 		return _currLocale;
 	}
 
 	/// Gets base locale.
-	/// Hint for pre 4.x.x developers: You can access the raw string via LocaleSettings.baseLocale.languageTag
 	static AppLocale get baseLocale {
 		return _baseLocale;
 	}
@@ -128,26 +121,95 @@ class LocaleSettings {
 	/// Sets plural resolvers.
 	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
-	/// Only language part matters, script and country parts are ignored
+	/// Either specify [language], or [locale]. Locale has precedence.
 	/// Rendered Resolvers: ['en', 'de']
-	static void setPluralResolver({required String language, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
-		if (cardinalResolver != null) _pluralResolversCardinal[language] = cardinalResolver;
-		if (ordinalResolver != null) _pluralResolversOrdinal[language] = ordinalResolver;
+	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		final List<AppLocale> locales;
+		if (locale != null) {
+			locales = [locale];
+		} else {
+			switch (language) {
+				case 'en':
+					locales = [AppLocale.en];
+					break;
+				case 'de':
+					locales = [AppLocale.de];
+					break;
+				default:
+					locales = [];
+			}
+		}
+		locales.forEach((curr) {
+			switch(curr) {
+				case AppLocale.en:
+					_translationsEn = _StringsEn.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+					break;
+				case AppLocale.de:
+					_translationsDe = _StringsDe.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+					break;
+			}
+		});
+	}
+}
+
+/// Provides utility functions without any side effects.
+class AppLocaleUtils {
+	AppLocaleUtils._(); // no constructor
+
+	/// Returns the locale of the device as the enum type.
+	/// Fallbacks to base locale.
+	static AppLocale findDeviceLocale() {
+		final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+		if (deviceLocale != null) {
+			final typedLocale = _selectLocale(deviceLocale);
+			if (typedLocale != null) {
+				return typedLocale;
+			}
+		}
+		return _baseLocale;
 	}
 
+	/// Returns the enum type of the raw locale.
+	/// Fallbacks to base locale.
+	static AppLocale parse(String rawLocale) {
+		return _selectLocale(rawLocale) ?? _baseLocale;
+	}
 }
 
 // context enums
 
 // interfaces generated as mixins
 
+// translation instances
+
+late _StringsEn _translationsEn = _StringsEn.build();
+late _StringsDe _translationsDe = _StringsDe.build();
+
 // extensions for AppLocale
 
 extension AppLocaleExtensions on AppLocale {
+
+	/// Gets the translation instance managed by this library.
+	/// [TranslationProvider] is using this instance.
+	/// The plural resolvers are set via [LocaleSettings].
 	_StringsEn get translations {
 		switch (this) {
-			case AppLocale.en: return _StringsEn._instance;
-			case AppLocale.de: return _StringsDe._instance;
+			case AppLocale.en: return _translationsEn;
+			case AppLocale.de: return _translationsDe;
+		}
+	}
+
+	/// Gets a new translation instance.
+	/// [LocaleSettings] has no effect here.
+	/// Suitable for dependency injection and unit tests.
+	///
+	/// Usage:
+	/// final t = AppLocale.en.build(); // build
+	/// String a = t.my.path; // access
+	_StringsEn build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		switch (this) {
+			case AppLocale.en: return _StringsEn.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+			case AppLocale.de: return _StringsDe.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
 		}
 	}
 
@@ -231,10 +293,7 @@ class _InheritedLocaleData extends InheritedWidget {
 
 // pluralization resolvers
 
-// map: language -> resolver
 typedef PluralResolver = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
-Map<String, PluralResolver> _pluralResolversCardinal = {};
-Map<String, PluralResolver> _pluralResolversOrdinal = {};
 
 // prepared by fast_i18n
 
@@ -292,28 +351,45 @@ AppLocale? _selectLocale(String localeRaw) {
 
 // Path: <root>
 class _StringsEn {
-	_StringsEn._(); // no constructor
 
-	static final _StringsEn _instance = _StringsEn._();
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	_StringsEn.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: _cardinalResolver = cardinalResolver,
+		  _ordinalResolver = ordinalResolver;
 
-	_StringsMainScreenEn get mainScreen => _StringsMainScreenEn._instance;
+	/// Access flat map
+	dynamic operator[](String key) => _flatMap[key];
+
+	// Internal flat map initialized lazily
+	late final Map<String, dynamic> _flatMap = _buildFlatMap();
+
+	// ignore: unused_field
+	final PluralResolver? _cardinalResolver;
+	// ignore: unused_field
+	final PluralResolver? _ordinalResolver;
+
+	// ignore: unused_field
+	late final _StringsEn _root = this;
+
+	// Translations
+	late final _StringsMainScreenEn mainScreen = _StringsMainScreenEn._(_root);
 	Map<String, String> get locales => {
 		'en': 'English',
 		'de': 'German',
 	};
-
-	/// A flat map containing all translations.
-	dynamic operator[](String key) => _translationMapEn[key];
 }
 
 // Path: mainScreen
 class _StringsMainScreenEn {
-	_StringsMainScreenEn._(); // no constructor
+	_StringsMainScreenEn._(this._root);
 
-	static final _StringsMainScreenEn _instance = _StringsMainScreenEn._();
+	// ignore: unused_field
+	final _StringsEn _root;
 
+	// Translations
 	String get title => 'An English Title';
-	String counter({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
+	String counter({required num count}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
 		one: 'You pressed $count time.',
 		other: 'You pressed $count times.',
 	);
@@ -322,28 +398,45 @@ class _StringsMainScreenEn {
 
 // Path: <root>
 class _StringsDe implements _StringsEn {
-	_StringsDe._(); // no constructor
 
-	static final _StringsDe _instance = _StringsDe._();
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	_StringsDe.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: _cardinalResolver = cardinalResolver,
+		  _ordinalResolver = ordinalResolver;
 
-	@override _StringsMainScreenDe get mainScreen => _StringsMainScreenDe._instance;
+	/// Access flat map
+	@override dynamic operator[](String key) => _flatMap[key];
+
+	// Internal flat map initialized lazily
+	late final Map<String, dynamic> _flatMap = _buildFlatMap();
+
+	// ignore: unused_field
+	final PluralResolver? _cardinalResolver;
+	// ignore: unused_field
+	final PluralResolver? _ordinalResolver;
+
+	// ignore: unused_field
+	@override late final _StringsDe _root = this;
+
+	// Translations
+	@override late final _StringsMainScreenDe mainScreen = _StringsMainScreenDe._(_root);
 	@override Map<String, String> get locales => {
 		'en': 'Englisch',
 		'de': 'Deutsch',
 	};
-
-	/// A flat map containing all translations.
-	@override dynamic operator[](String key) => _translationMapDe[key];
 }
 
 // Path: mainScreen
 class _StringsMainScreenDe implements _StringsMainScreenEn {
-	_StringsMainScreenDe._(); // no constructor
+	_StringsMainScreenDe._(this._root);
 
-	static final _StringsMainScreenDe _instance = _StringsMainScreenDe._();
+	// ignore: unused_field
+	@override final _StringsDe _root;
 
+	// Translations
 	@override String get title => 'Ein deutscher Titel';
-	@override String counter({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
+	@override String counter({required num count}) => (_root._cardinalResolver ?? _pluralCardinalDe)(count,
 		one: 'Du hast einmal gedrückt.',
 		other: 'Du hast $count mal gedrückt.',
 	);
@@ -353,24 +446,32 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 /// Flat map(s) containing all translations.
 /// Only for edge cases! For simple maps, use the map function of this library.
 
-late final Map<String, dynamic> _translationMapEn = {
-	'mainScreen.title': 'An English Title',
-	'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['en'] ?? _pluralCardinalEn)(count,
-			one: 'You pressed $count time.',
-			other: 'You pressed $count times.',
-		),
-	'mainScreen.tapMe': 'Tap me',
-	'locales.en': 'English',
-	'locales.de': 'German',
-};
+extension on _StringsEn {
+	Map<String, dynamic> _buildFlatMap() {
+		return {
+			'mainScreen.title': 'An English Title',
+			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
+				one: 'You pressed $count time.',
+				other: 'You pressed $count times.',
+			),
+			'mainScreen.tapMe': 'Tap me',
+			'locales.en': 'English',
+			'locales.de': 'German',
+		};
+	}
+}
 
-late final Map<String, dynamic> _translationMapDe = {
-	'mainScreen.title': 'Ein deutscher Titel',
-	'mainScreen.counter': ({required num count}) => (_pluralResolversCardinal['de'] ?? _pluralCardinalDe)(count,
-			one: 'Du hast einmal gedrückt.',
-			other: 'Du hast $count mal gedrückt.',
-		),
-	'mainScreen.tapMe': 'Drück mich',
-	'locales.en': 'Englisch',
-	'locales.de': 'Deutsch',
-};
+extension on _StringsDe {
+	Map<String, dynamic> _buildFlatMap() {
+		return {
+			'mainScreen.title': 'Ein deutscher Titel',
+			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? _pluralCardinalDe)(count,
+				one: 'Du hast einmal gedrückt.',
+				other: 'Du hast $count mal gedrückt.',
+			),
+			'mainScreen.tapMe': 'Drück mich',
+			'locales.en': 'Englisch',
+			'locales.de': 'Deutsch',
+		};
+	}
+}
