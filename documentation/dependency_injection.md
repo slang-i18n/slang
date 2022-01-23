@@ -43,11 +43,13 @@ String a = t.welcome.title;
 To make things easier, there are some utility functions in `AppLocaleUtils`.
 
 ```dart
-final deviceLocale = AppLocaleUtils.findDeviceLocale();
-final specificLocale = AppLocaleUtils.parse('en_US');
+// get locale as enum
+final AppLocale deviceLocale = AppLocaleUtils.findDeviceLocale();
+final AppLocale specificLocale = AppLocaleUtils.parse('en_US');
 
+// build instance
 final StringsEn translations;
-switch (specificLocale) {
+switch (specificLocale) { // exhaustive switch
   case AppLocale.en:
     translations = AppLocale.en.build(cardinalResolver: myEnResolver);
     // ...
