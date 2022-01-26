@@ -24,19 +24,19 @@ You can see an example of the generated file [here](https://github.com/Tienisto/
 This is how you access the translations:
 
 ```dart
-final t = Translations.of(context); // optional, there is also a static getter without context
+final t = Translations.of(context); // there is also a static getter without context
 
 String a = t.mainScreen.title;                         // simple use case
 String b = t.game.end.highscore(score: 32.6);          // with parameters
-String c = t.items(count: 2);                          // with pluralization (using count)
+String c = t.items(count: 2);                          // with pluralization
 String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
 String e = t.intro.step[4];                            // with index
 String f = t.error.type['WARNING'];                    // with dynamic key
 String g = t['mainScreen.title'];                      // with fully dynamic key
 
-PageData titlePage = t.onboarding.titlePage;           // with interfaces
-PageData page = t.onboarding.pages[2];
-String h = page.title;
+PageData page0 = t.onboarding.pages[0];                // with interfaces
+PageData page1 = t.onboarding.pages[1];
+String h = page1.title; // type-safe call
 ```
 
 ## Table of Contents
@@ -292,9 +292,9 @@ Key|Type|Usage|Default
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
 `translation_class_visibility`|`private`, `public`|class visibility|`private`
-`key_case`|`camel`, `pascal`, `snake`|transform keys (optional) [(i)](#-recasing)|`null`
-`key_map_case`|`camel`, `pascal`, `snake`|transform keys for maps (optional) [(i)](#-recasing)|`null`
-`param_case`|`camel`, `pascal`, `snake`|transform parameters (optional) [(i)](#-recasing)|`null`
+`key_case`|`null`, `camel`, `pascal`, `snake`|transform keys (optional) [(i)](#-recasing)|`null`
+`key_map_case`|`null`, `camel`, `pascal`, `snake`|transform keys for maps (optional) [(i)](#-recasing)|`null`
+`param_case`|`null`, `camel`, `pascal`, `snake`|transform parameters (optional) [(i)](#-recasing)|`null`
 `string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode [(i)](#-string-interpolation)|`dart`
 `flat_map`|`Boolean`|generate flat map [(i)](#-dynamic-keys--flat-map)|`true`
 `timestamp`|`Boolean`|write "Built on" timestamp|`true`
@@ -556,13 +556,13 @@ final t = AppLocale.en.translations; // get translations of one locale
 
 ### ➤ Dependency Injection
 
-In case you don't like the included `LocaleSettings` solution.
+You don't like the included `LocaleSettings` solution?
 
-It is possible to create translation instances that do not depend on `LocaleSettings` or any other side effects.
+Then you can use your own dependency injection solution!
 
-You can use your own dependency injection and inject the required translations!
+Just create custom translation instances that don't depend on `LocaleSettings` or any other side effects.
 
-Please set the translation classes public:
+First, set the translation classes public:
 
 ```yaml
 # File: build.yaml
