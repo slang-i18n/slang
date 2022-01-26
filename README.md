@@ -962,32 +962,6 @@ Just run this command:
 flutter pub run fast_i18n watch
 ```
 
-## API                                                                                   
-                                                                                         
-When the dart code has been generated, you will see some useful classes and functions    
-                                                                                         
-`t` - the translate variable for simple translations                                     
-                                                                                         
-`Translations.of(context)` - translations which reacts to locale changes                 
-                                                                                         
-`TranslationProvider` - App wrapper, used for `Translations.of(context)`                 
-                                                                                         
-`LocaleSettings.useDeviceLocale()` - use the locale of the device                        
-                                                                                         
-`LocaleSettings.setLocale(AppLocale.en)` - change the locale                             
-                                                                                         
-`LocaleSettings.setLocaleRaw('de')` - change the locale                                  
-                                                                                         
-`LocaleSettings.currentLocale` - get the current locale                                  
-                                                                                         
-`LocaleSettings.baseLocale` - get the base locale                                        
-                                                                                         
-`LocaleSettings.supportedLocalesRaw` - get the supported locales                         
-                                                                                         
-`LocaleSettings.supportedLocales` - see step 4a                                          
-                                                                                         
-`LocaleSettings.setPluralResolver` - set pluralization resolver for unsupported languages
-
 ## FAQ
 
 **Can I write the json files in the asset folder?**
