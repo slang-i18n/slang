@@ -74,7 +74,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.9.0
+  fast_i18n: 5.10.0
 ```
 
 **Step 2: Create JSON files**
@@ -239,6 +239,7 @@ targets:
           output_file_pattern: .g.dart # deprecated, use output_file_name
           output_file_name: translations.g.dart
           output_format: single_file
+          locale_handling: true
           namespaces: false
           translate_var: t
           enum_name: AppLocale
@@ -288,6 +289,7 @@ Key|Type|Usage|Default
 `output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
 `output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
+`locale_handling`|`Boolean`|generate locale handling logic [(i)](#-dependency-injection)|`true`
 `namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
@@ -562,7 +564,7 @@ Then you can use your own dependency injection solution!
 
 Just create custom translation instances that don't depend on `LocaleSettings` or any other side effects.
 
-First, set the translation classes public:
+First, set the following configuration:
 
 ```yaml
 # File: build.yaml
@@ -571,6 +573,7 @@ targets:
     builders:
       fast_i18n:
         options:
+          locale_handling: false # remove t, LocaleSettings, etc.
           translation_class_visibility: public
 ```
 

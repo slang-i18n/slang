@@ -1,3 +1,7 @@
+## 5.10.0
+
+- feat: add option `locale_handling: false` to not generate `t` and `LocaleSettings`
+
 ## 5.9.0
 
 **Dependency Injection (optional)**
