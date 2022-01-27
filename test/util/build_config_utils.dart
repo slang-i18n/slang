@@ -37,6 +37,7 @@ extension BuildConfigCopy on BuildConfig {
   BuildConfig copyWith({
     String? inputFilePattern,
     OutputFormat? outputFormat,
+    bool? renderLocaleHandling,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
     List<String>? maps,
@@ -55,7 +56,7 @@ extension BuildConfigCopy on BuildConfig {
       outputFilePattern: outputFilePattern,
       outputFileName: outputFileName,
       outputFormat: outputFormat ?? this.outputFormat,
-      renderLocaleHandling: renderLocaleHandling,
+      renderLocaleHandling: renderLocaleHandling ?? this.renderLocaleHandling,
       namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,
