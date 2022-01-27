@@ -57,26 +57,28 @@ String generateHeader(
     allLocales: allLocales,
   );
 
-  _generateTranslationGetter(
-    buffer: buffer,
-    config: config,
-    baseClassName: baseClassName,
-    currLocaleVar: currLocaleVar,
-    translateVarInternal: translateVarInternal,
-  );
+  if (config.renderLocaleHandling) {
+    _generateTranslationGetter(
+      buffer: buffer,
+      config: config,
+      baseClassName: baseClassName,
+      currLocaleVar: currLocaleVar,
+      translateVarInternal: translateVarInternal,
+    );
 
-  _generateLocaleSettings(
-    buffer: buffer,
-    config: config,
-    allLocales: allLocales,
-    baseLocaleVar: baseLocaleVar,
-    currLocaleVar: currLocaleVar,
-    translateVarInternal: translateVarInternal,
-    translationProviderKey: translationProviderKey,
-    pluralResolverType: pluralResolverType,
-    pluralResolverCardinal: pluralResolverMapCardinal,
-    pluralResolverOrdinal: pluralResolverMapOrdinal,
-  );
+    _generateLocaleSettings(
+      buffer: buffer,
+      config: config,
+      allLocales: allLocales,
+      baseLocaleVar: baseLocaleVar,
+      currLocaleVar: currLocaleVar,
+      translateVarInternal: translateVarInternal,
+      translationProviderKey: translationProviderKey,
+      pluralResolverType: pluralResolverType,
+      pluralResolverCardinal: pluralResolverMapCardinal,
+      pluralResolverOrdinal: pluralResolverMapOrdinal,
+    );
+  }
 
   _generateUtilClass(
     buffer: buffer,
@@ -88,11 +90,13 @@ String generateHeader(
 
   _generateInterfaces(buffer: buffer, config: config);
 
-  _generateInstances(
-    buffer: buffer,
-    config: config,
-    allLocales: allLocales,
-  );
+  if (config.renderLocaleHandling) {
+    _generateInstances(
+      buffer: buffer,
+      config: config,
+      allLocales: allLocales,
+    );
+  }
 
   _generateExtensions(
     buffer: buffer,
@@ -101,13 +105,15 @@ String generateHeader(
     baseClassName: baseClassName,
   );
 
-  _generateTranslationWrapper(
-    buffer: buffer,
-    config: config,
-    baseClassName: baseClassName,
-    translationProviderKey: translationProviderKey,
-    currLocaleVar: currLocaleVar,
-  );
+  if (config.renderLocaleHandling) {
+    _generateTranslationWrapper(
+      buffer: buffer,
+      config: config,
+      baseClassName: baseClassName,
+      translationProviderKey: translationProviderKey,
+      currLocaleVar: currLocaleVar,
+    );
+  }
 
   _generatePluralResolvers(
     buffer: buffer,
@@ -172,23 +178,28 @@ void _generateParts({
   }
 }
 
-void _generateLocaleVariables(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseLocaleVar,
-    required String currLocaleVar}) {
+void _generateLocaleVariables({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String baseLocaleVar,
+  required String currLocaleVar,
+}) {
   final String enumName = config.enumName;
 
   buffer.writeln();
   buffer.writeln(
       'const $enumName $baseLocaleVar = $enumName.${config.baseLocale.enumConstant};');
-  buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
+
+  if (config.renderLocaleHandling) {
+    buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
+  }
 }
 
-void _generateEnum(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required List<I18nData> allLocales}) {
+void _generateEnum({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> allLocales,
+}) {
   final String enumName = config.enumName;
   final String baseLocaleEnumConstant =
       '$enumName.${config.baseLocale.enumConstant}';
@@ -212,12 +223,13 @@ void _generateEnum(
   buffer.writeln('}');
 }
 
-void _generateTranslationGetter(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseClassName,
-    required String currLocaleVar,
-    required String translateVarInternal}) {
+void _generateTranslationGetter({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String baseClassName,
+  required String currLocaleVar,
+  required String translateVarInternal,
+}) {
   const String translationsClass = 'Translations';
   final String translateVar = config.translateVariable;
 
@@ -548,23 +560,28 @@ void _generateExtensions({
   buffer.writeln('// extensions for $enumName');
   buffer.writeln();
   buffer.writeln('extension ${enumName}Extensions on $enumName {');
-  buffer.writeln();
-  buffer
-      .writeln('\t/// Gets the translation instance managed by this library.');
-  buffer.writeln('\t/// [TranslationProvider] is using this instance.');
-  buffer.writeln('\t/// The plural resolvers are set via [LocaleSettings].');
-  buffer.writeln('\t$baseClassName get translations {');
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
+
+  if (config.renderLocaleHandling) {
+    buffer.writeln();
     buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)};');
+        '\t/// Gets the translation instance managed by this library.');
+    buffer.writeln('\t/// [TranslationProvider] is using this instance.');
+    buffer.writeln('\t/// The plural resolvers are set via [LocaleSettings].');
+    buffer.writeln('\t$baseClassName get translations {');
+    buffer.writeln('\t\tswitch (this) {');
+    for (I18nData locale in allLocales) {
+      buffer.writeln(
+          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)};');
+    }
+    buffer.writeln('\t\t}');
+    buffer.writeln('\t}');
   }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
 
   buffer.writeln();
   buffer.writeln('\t/// Gets a new translation instance.');
-  buffer.writeln('\t/// [LocaleSettings] has no effect here.');
+  if (config.renderLocaleHandling) {
+    buffer.writeln('\t/// [LocaleSettings] has no effect here.');
+  }
   buffer.writeln('\t/// Suitable for dependency injection and unit tests.');
   buffer.writeln('\t///');
   buffer.writeln('\t/// Usage:');
@@ -645,12 +662,13 @@ void _generateExtensions({
   buffer.writeln('}');
 }
 
-void _generateTranslationWrapper(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseClassName,
-    required String translationProviderKey,
-    required String currLocaleVar}) {
+void _generateTranslationWrapper({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String baseClassName,
+  required String translationProviderKey,
+  required String currLocaleVar,
+}) {
   const String translationProviderClass = 'TranslationProvider';
   const String translationProviderStateClass = '_TranslationProviderState';
   const String inheritedClass = '_InheritedLocaleData';

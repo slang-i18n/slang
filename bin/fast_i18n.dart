@@ -89,6 +89,7 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
   print(' -> outputFilePattern (deprecated): ${buildConfig.outputFilePattern}');
   print(' -> outputFileName: ${buildConfig.outputFileName}');
   print(' -> outputFileFormat: ${buildConfig.outputFormat.getEnumName()}');
+  print(' -> renderLocaleHandling: ${buildConfig.renderLocaleHandling}');
   print(' -> namespaces: ${buildConfig.namespaces}');
   print(' -> translateVar: ${buildConfig.translateVar}');
   print(' -> enumName: ${buildConfig.enumName}');

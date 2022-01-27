@@ -41,6 +41,7 @@ class I18nConfigBuilder {
       baseLocale: buildConfig.baseLocale,
       fallbackStrategy: buildConfig.fallbackStrategy,
       outputFormat: buildConfig.outputFormat,
+      renderLocaleHandling: buildConfig.renderLocaleHandling,
       renderedCardinalResolvers: renderedCardinalResolvers,
       renderedOrdinalResolvers: renderedOrdinalResolvers,
       unsupportedPluralLanguages: unsupportedPluralLanguages,

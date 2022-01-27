@@ -14,6 +14,7 @@ class BuildConfig {
   static const String defaultOutputFilePattern = '.g.dart';
   static const String? defaultOutputFileName = null;
   static const OutputFormat defaultOutputFormat = OutputFormat.singleFile;
+  static const bool defaultRenderLocaleHandling = true;
   static const bool defaultNamespaces = false;
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
@@ -42,6 +43,7 @@ class BuildConfig {
   final String outputFilePattern; // deprecated
   final String? outputFileName;
   final OutputFormat outputFormat;
+  final bool renderLocaleHandling;
   final bool namespaces;
   final String translateVar;
   final String enumName;
@@ -68,6 +70,7 @@ class BuildConfig {
     required this.outputFilePattern,
     required this.outputFileName,
     required this.outputFormat,
+    required this.renderLocaleHandling,
     required this.namespaces,
     required this.translateVar,
     required this.enumName,
@@ -108,6 +111,7 @@ class BuildConfig {
       outputFilePattern: outputFilePattern,
       outputFileName: outputFileName,
       outputFormat: outputFormat,
+      renderLocaleHandling: renderLocaleHandling,
       namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,
