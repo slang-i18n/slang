@@ -61,7 +61,6 @@ String h = page1.title; // type-safe call
     - [Output Format](#-output-format)
     - [Compact CSV](#-compact-csv)
     - [Auto Rebuild](#-auto-rebuild)
-- [API](#api)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 
@@ -352,6 +351,10 @@ welcome:
 You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
 
 ```csv
+key,translation
+```
+
+```csv
 welcome.title,Welcome $name
 welcome.pages.0.title,First Page
 welcome.pages.1.title,Second Page
@@ -573,7 +576,7 @@ targets:
     builders:
       fast_i18n:
         options:
-          locale_handling: false # remove t, LocaleSettings, etc.
+          locale_handling: false # remove unused t variable, LocaleSettings, etc.
           translation_class_visibility: public
 ```
 
@@ -937,11 +940,16 @@ You only need to import the main file!
 
 ### ➤ Compact CSV
 
-Normally, you create a new csv file for each locale:
+Normally, you would create a new csv file for each locale:
 `strings.i18n.csv`, `strings_fr.i18n.csv`, etc.
 
 You can also merge multiple locales into one single csv file! To do this,
-you need at least 3 columns. The first row contains the locale names. Please avoid locales in file names!
+you need at least 3 columns. The first row contains the locale names. This library should detect that, so no configuration is needed.
+
+```csv
+   ,locale_0,locale_1, ... ,locale_n
+key,string_0,string_1, ... ,string_n
+```
 
 ```csv
 key,en,de-DE
