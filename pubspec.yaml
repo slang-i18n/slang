@@ -1,8 +1,7 @@
 name: fast_i18n
 description: Localization / Internationalization (i18n) solution. Use JSON, YAML or CSV files to create typesafe translations via source generation.
-version: 5.9.0
+version: 5.10.0
 homepage: https://github.com/Tienisto/flutter-fast-i18n
-publish_to: https://pub.dev
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
