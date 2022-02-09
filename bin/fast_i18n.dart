@@ -6,6 +6,7 @@ import 'package:fast_i18n/src/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
+import 'package:fast_i18n/src/utils/file_utils.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/path_utils.dart';
 
@@ -332,27 +333,39 @@ Future<void> generateTranslations({
   );
 
   // STEP 4: write output to hard drive
+  FileUtils.createMissingFolders(filePath: outputFilePath);
   if (buildConfig.outputFormat == OutputFormat.singleFile) {
     // single file
-    File(outputFilePath).writeAsStringSync(result.joinAsSingleOutput());
+    FileUtils.writeFile(
+      path: outputFilePath,
+      content: result.joinAsSingleOutput(),
+    );
   } else {
     // multiple files
-    File(BuildResultPaths.mainPath(outputFilePath))
-        .writeAsStringSync(result.header);
+    FileUtils.writeFile(
+      path: BuildResultPaths.mainPath(outputFilePath),
+      content: result.header,
+    );
     for (final entry in result.translations.entries) {
       final locale = entry.key;
       final localeTranslations = entry.value;
-      File(BuildResultPaths.localePath(
-        outputPath: outputFilePath,
-        locale: locale,
-        pathSeparator: Platform.pathSeparator,
-      )).writeAsStringSync(localeTranslations);
+      FileUtils.writeFile(
+        path: BuildResultPaths.localePath(
+          outputPath: outputFilePath,
+          locale: locale,
+          pathSeparator: Platform.pathSeparator,
+        ),
+        content: localeTranslations,
+      );
     }
     if (result.flatMap != null) {
-      File(BuildResultPaths.flatMapPath(
-        outputPath: outputFilePath,
-        pathSeparator: Platform.pathSeparator,
-      )).writeAsStringSync(result.flatMap!);
+      FileUtils.writeFile(
+        path: BuildResultPaths.flatMapPath(
+          outputPath: outputFilePath,
+          pathSeparator: Platform.pathSeparator,
+        ),
+        content: result.flatMap!,
+      );
     }
   }
 

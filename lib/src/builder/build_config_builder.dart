@@ -36,6 +36,7 @@ class BuildConfigBuilder {
         }
       }
     }
+    return null;
   }
 
   /// Parses the config entry
