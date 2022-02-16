@@ -523,7 +523,25 @@ targets:
             ChangeData: onboarding.whatsNew.*
 ```
 
+This would create the following mixin:
+
 ```dart
+mixin ChangeData {
+  String get title;
+  List<String> get rows;
+}
+```
+
+Now you can access these fields by using polymorphism:
+
+```dart
+// before: without interfaces
+void myOldFunction(dynamic changes) {
+  String title = changes.title; // not type safe!
+  List<String> rows = changes.rows; // prone to typos
+}
+
+// after: using interfaces
 void myFunction(ChangeData changes) {
   String title = changes.title;
   List<String> rows = changes.rows;
