@@ -43,24 +43,27 @@ String h = page1.title; // type-safe call
 
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
-- [Features](#features)
+- [Main Features](#main-features)
     - [File Types](#-file-types)
-    - [Namespaces](#-namespaces)
     - [String Interpolation](#-string-interpolation)
     - [Lists](#-lists)
-    - [Linked Translations](#-linked-translations)
-    - [Interfaces](#-interfaces)
-    - [Locale Enum](#-locale-enum)
-    - [Dependency Injection](#-dependency-injection)
-    - [Pluralization](#-pluralization)
-    - [Custom Contexts](#-custom-contexts)
     - [Maps](#-maps)
     - [Dynamic Keys](#-dynamic-keys--flat-map)
-    - [Fallback](#-fallback)
-    - [Recasing](#-recasing)
-    - [Output Format](#-output-format)
-    - [Compact CSV](#-compact-csv)
-    - [Auto Rebuild](#-auto-rebuild)
+- [Complex Features](#complex-features)
+  - [Linked Translations](#-linked-translations)
+  - [Pluralization](#-pluralization)
+  - [Custom Contexts](#-custom-contexts)
+  - [Interfaces](#-interfaces)
+  - [Locale Enum](#-locale-enum)
+  - [Dependency Injection](#-dependency-injection)
+- [Structuring Features](#structuring-features)
+  - [Namespaces](#-namespaces)
+  - [Output Format](#-output-format)
+  - [Compact CSV](#-compact-csv)
+- [Other Features](#other-features)
+  - [Fallback](#-fallback)
+  - [Recasing](#-recasing)
+  - [Auto Rebuild](#-auto-rebuild)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 
@@ -308,7 +311,7 @@ Key|Type|Usage|Default
 `<context>`/`paths`|`List<String>`|entries using this context|`[]`
 `children of interfaces`|`Pairs of Alias:Path`|alias interfaces [(i)](#-interfaces)|`null`
 
-## Features
+## Main Features
 
 ### ➤ File Types
 
@@ -360,68 +363,6 @@ welcome.pages.0.title,First Page
 welcome.pages.1.title,Second Page
 ```
 
-### ➤ Namespaces
-
-You can split the translations into multiple files. Each file represents a namespace.
-
-This feature is disabled by default for single-file usage. You must enable it.
-
-```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      fast_i18n:
-        options:
-          namespaces: true # enable this feature
-          output_directory: lib/i18n # optional
-          output_file_name: translations.g.dart # set file name (mandatory)
-```
-
-Let's create two namespaces called `widgets` and `dialogs`.
-
-```text
-<namespace>_<locale?>.<extension>
-```
-
-```text
-i18n/
- └── widgets.i18n.json
- └── widgets_fr.i18n.json
- └── dialogs.i18n.json
- └── dialogs_fr.i18n.json
-```
-
-You can also use different folders. Only file name matters!
-
-```text
-i18n/
- └── widgets/
-      └── widgets.i18n.json
-      └── widgets_fr.i18n.json
- └── dialogs/
-      └── dialogs.i18n.json
-      └── dialogs_fr.i18n.json
-```
-
-```text
-i18n/
- └── en/
-      └── widgets.i18n.json
-      └── dialogs.i18n.json
- └── fr/
-      └── widgets_fr.i18n.json
-      └── dialogs_fr.i18n.json
-```
-
-Now access the translations:
-
-```dart
-// t.<namespace>.<path>
-String a = t.widgets.welcomeCard.title;
-String b = t.dialogs.logout.title;
-```
-
 ### ➤ String Interpolation
 
 There are three modes configurable via `string_interpolation` in `build.yaml`.
@@ -466,6 +407,65 @@ String c = t.niceList[3].ok; // "OK!"
 String d = t.niceList[4]['a map entry']; // "access via key"
 ```
 
+### ➤ Maps
+
+You can access each translation via string keys by defining maps.
+
+Define maps in your `build.yaml`.
+
+Keep in mind that all nice features like autocompletion are gone.
+
+```json5
+// File: strings.i18n.json
+{
+  "a": {
+    "hello world": "hello"
+  },
+  "b": {
+    "b0": "hey",
+    "b1": {
+      "hi there": "hi"
+    }
+  }
+}
+```
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          maps:
+            - a
+            - b.b1
+```
+
+Now you can access the translations via keys:
+
+```dart
+String a = t.a['hello world']; // "hello"
+String b = t.b.b0; // "hey"
+String c = t.b.b1['hi there']; // "hi"
+```
+
+### ➤ Dynamic Keys / Flat Map
+
+A more general solution to [Maps](#-maps). **ALL** translations are accessible via an one-dimensional map.
+
+It is supported out of the box. No configuration needed.
+
+This can be disabled globally by setting `flat_map: false`.
+
+```dart
+String a = t['myPath.anotherPath'];
+String b = t['myPath.anotherPath.3']; // with index for arrays
+String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
+```
+
+## Complex Features
+
 ### ➤ Linked Translations
 
 You can link one translation to another. Add the prefix `@:` followed by the translation key.
@@ -483,134 +483,6 @@ You can link one translation to another. Add the prefix `@:` followed by the tra
 ```dart
 String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
 ```
-
-### ➤ Interfaces
-
-Often, multiple objects have the same attributes. You can create a common super class for that.
-
-```json
-{
-  "onboarding": {
-    "whatsNew": {
-      "v2": {
-        "title": "New in 2.0",
-        "rows": [
-          "Add sync"
-        ]
-      },
-      "v3": {
-        "title": "New in 3.0",
-        "rows": [
-          "New game modes",
-          "And a lot more!"
-        ]
-      }
-    }
-  }
-}
-```
-
-Here we know that all objects inside `whatsNew` have the same attributes. Let's name these objects `ChangeData`.
-
-```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      fast_i18n:
-        options:
-          interfaces:
-            ChangeData: onboarding.whatsNew.*
-```
-
-This would create the following mixin:
-
-```dart
-mixin ChangeData {
-  String get title;
-  List<String> get rows;
-}
-```
-
-Now you can access these fields by using polymorphism:
-
-```dart
-// before: without interfaces
-void myOldFunction(dynamic changes) {
-  String title = changes.title; // not type safe!
-  List<String> rows = changes.rows; // prone to typos
-}
-
-// after: using interfaces
-void myFunction(ChangeData changes) {
-  String title = changes.title;
-  List<String> rows = changes.rows;
-}
-
-void main() {
-  myFunction(t.onboarding.whatsNew.v2);
-  myFunction(t.onboarding.whatsNew.v3);
-}
-```
-
-You can customize the attributes and use different node selectors. 
-
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md).
-
-### ➤ Locale Enum
-
-Typesafety is one of the main advantages of this library. No typos. Enjoy exhausted switch-cases!
-
-```dart
-// this enum is generated automatically for you
-enum AppLocale {
-  en,
-  fr,
-  zhCn,
-}
-```
-
-```dart
-// extension methods
-Locale locale = AppLocale.en.flutterLocale; // to native flutter locale
-String tag = AppLocale.en.languageTag; // to string tag (e.g. en-US)
-final t = AppLocale.en.translations; // get translations of one locale
-```
-
-### ➤ Dependency Injection
-
-You don't like the included `LocaleSettings` solution?
-
-Then you can use your own dependency injection solution!
-
-Just create custom translation instances that don't depend on `LocaleSettings` or any other side effects.
-
-First, set the following configuration:
-
-```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      fast_i18n:
-        options:
-          locale_handling: false # remove unused t variable, LocaleSettings, etc.
-          translation_class_visibility: public
-```
-
-Example using the `riverpod` library:
-
-```dart
-final english = AppLocale.en.build(cardinalResolver: myEnResolver);
-final german = AppLocale.de.build(cardinalResolver: myDeResolver);
-final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
-
-// access the current instance
-final t = ref.watch(translationProvider);
-String a = t.welcome.title;
-```
-
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md).
 
 ### ➤ Pluralization
 
@@ -802,28 +674,33 @@ Similarly to plurals, the parameter name is `context` by default. You can change
 String a = t.greet(gender: GenderContext.female); // notice 'gender' instead of 'context'
 ```
 
-### ➤ Maps
+### ➤ Interfaces
 
-You can access each translation via string keys by defining maps.
+Often, multiple objects have the same attributes. You can create a common super class for that.
 
-Define maps in your `build.yaml`.
-
-Keep in mind that all nice features like autocompletion are gone.
-
-```json5
-// File: strings.i18n.json
+```json
 {
-  "a": {
-    "hello world": "hello"
-  },
-  "b": {
-    "b0": "hey",
-    "b1": {
-      "hi there": "hi"
+  "onboarding": {
+    "whatsNew": {
+      "v2": {
+        "title": "New in 2.0",
+        "rows": [
+          "Add sync"
+        ]
+      },
+      "v3": {
+        "title": "New in 3.0",
+        "rows": [
+          "New game modes",
+          "And a lot more!"
+        ]
+      }
     }
   }
 }
 ```
+
+Here we know that all objects inside `whatsNew` have the same attributes. Let's name these objects `ChangeData`.
 
 ```yaml
 # File: build.yaml
@@ -832,32 +709,218 @@ targets:
     builders:
       fast_i18n:
         options:
-          maps:
-            - a
-            - b.b1
+          interfaces:
+            ChangeData: onboarding.whatsNew.*
 ```
 
-Now you can access the translations via keys:
+This would create the following mixin:
 
 ```dart
-String a = t.a['hello world']; // "hello"
-String b = t.b.b0; // "hey"
-String c = t.b.b1['hi there']; // "hi"
+mixin ChangeData {
+  String get title;
+  List<String> get rows;
+}
 ```
 
-### ➤ Dynamic Keys / Flat Map
-
-A more general solution to [Maps](#-maps). **ALL** translations are accessible via an one-dimensional map.
-
-It is supported out of the box. No configuration needed.
-
-This can be disabled globally by setting `flat_map: false`.
+Now you can access these fields by using polymorphism:
 
 ```dart
-String a = t['myPath.anotherPath'];
-String b = t['myPath.anotherPath.3']; // with index for arrays
-String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
+// before: without interfaces
+void myOldFunction(dynamic changes) {
+  String title = changes.title; // not type safe!
+  List<String> rows = changes.rows; // prone to typos
+}
+
+// after: using interfaces
+void myFunction(ChangeData changes) {
+  String title = changes.title;
+  List<String> rows = changes.rows;
+}
+
+void main() {
+  myFunction(t.onboarding.whatsNew.v2);
+  myFunction(t.onboarding.whatsNew.v3);
+}
 ```
+
+You can customize the attributes and use different node selectors.
+
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md).
+
+### ➤ Locale Enum
+
+Typesafety is one of the main advantages of this library. No typos. Enjoy exhausted switch-cases!
+
+```dart
+// this enum is generated automatically for you
+enum AppLocale {
+  en,
+  fr,
+  zhCn,
+}
+```
+
+```dart
+// extension methods
+Locale locale = AppLocale.en.flutterLocale; // to native flutter locale
+String tag = AppLocale.en.languageTag; // to string tag (e.g. en-US)
+final t = AppLocale.en.translations; // get translations of one locale
+```
+
+### ➤ Dependency Injection
+
+You don't like the included `LocaleSettings` solution?
+
+Then you can use your own dependency injection solution!
+
+Just create custom translation instances that don't depend on `LocaleSettings` or any other side effects.
+
+First, set the following configuration:
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          locale_handling: false # remove unused t variable, LocaleSettings, etc.
+          translation_class_visibility: public
+```
+
+Example using the `riverpod` library:
+
+```dart
+final english = AppLocale.en.build(cardinalResolver: myEnResolver);
+final german = AppLocale.de.build(cardinalResolver: myDeResolver);
+final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
+
+// access the current instance
+final t = ref.watch(translationProvider);
+String a = t.welcome.title;
+```
+
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md).
+
+## Structuring Features
+
+### ➤ Namespaces
+
+You can split the translations into multiple files. Each file represents a namespace.
+
+This feature is disabled by default for single-file usage. You must enable it.
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          namespaces: true # enable this feature
+          output_directory: lib/i18n # optional
+          output_file_name: translations.g.dart # set file name (mandatory)
+```
+
+Let's create two namespaces called `widgets` and `dialogs`.
+
+```text
+<namespace>_<locale?>.<extension>
+```
+
+```text
+i18n/
+ └── widgets.i18n.json
+ └── widgets_fr.i18n.json
+ └── dialogs.i18n.json
+ └── dialogs_fr.i18n.json
+```
+
+You can also use different folders. Only file name matters!
+
+```text
+i18n/
+ └── widgets/
+      └── widgets.i18n.json
+      └── widgets_fr.i18n.json
+ └── dialogs/
+      └── dialogs.i18n.json
+      └── dialogs_fr.i18n.json
+```
+
+```text
+i18n/
+ └── en/
+      └── widgets.i18n.json
+      └── dialogs.i18n.json
+ └── fr/
+      └── widgets_fr.i18n.json
+      └── dialogs_fr.i18n.json
+```
+
+Now access the translations:
+
+```dart
+// t.<namespace>.<path>
+String a = t.widgets.welcomeCard.title;
+String b = t.dialogs.logout.title;
+```
+
+### ➤ Output Format
+
+By default, a single `.g.dart` file will be generated.
+
+You can split this file into multiple ones to improve readability and IDE performance.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          output_file_name: translations.g.dart
+          output_format: multiple_files # set this
+```
+
+This will generate the following files:
+
+```text
+lib/
+ └── i18n/
+      └── translations.g.dart <-- main file
+      └── translations_en.g.dart <-- translation classes
+      └── translations_de.g.dart <-- translation classes
+      └── ...
+      └── translations_map.g.dart <-- translations stored in flat maps
+```
+
+You only need to import the main file!
+
+### ➤ Compact CSV
+
+Normally, you would create a new csv file for each locale:
+`strings.i18n.csv`, `strings_fr.i18n.csv`, etc.
+
+You can also merge multiple locales into one single csv file! To do this,
+you need at least 3 columns. The first row contains the locale names. This library should detect that, so no configuration is needed.
+
+```csv
+   ,locale_0,locale_1, ... ,locale_n
+key,string_0,string_1, ... ,string_n
+```
+
+```csv
+key,en,de-DE
+welcome.title,Welcome $name,Willkommen $name
+```
+
+```text
+assets/
+ └── i18n/
+      └── strings.i18n.csv <-- contains all locales
+```
+
+## Other Features
 
 ### ➤ Fallback
 
@@ -924,60 +987,6 @@ targets:
 ```dart
 String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
-```
-
-### ➤ Output Format
-
-By default, a single `.g.dart` file will be generated.
-
-You can split this file into multiple ones to improve readability and IDE performance.
-
-```yaml
-targets:
-  $default:
-    builders:
-      fast_i18n:
-        options:
-          output_file_name: translations.g.dart
-          output_format: multiple_files # set this
-```
-
-This will generate the following files:
-
-```text
-lib/
- └── i18n/
-      └── translations.g.dart <-- main file
-      └── translations_en.g.dart <-- translation classes
-      └── translations_de.g.dart <-- translation classes
-      └── ...
-      └── translations_map.g.dart <-- translations stored in flat maps
-```
-
-You only need to import the main file!
-
-### ➤ Compact CSV
-
-Normally, you would create a new csv file for each locale:
-`strings.i18n.csv`, `strings_fr.i18n.csv`, etc.
-
-You can also merge multiple locales into one single csv file! To do this,
-you need at least 3 columns. The first row contains the locale names. This library should detect that, so no configuration is needed.
-
-```csv
-   ,locale_0,locale_1, ... ,locale_n
-key,string_0,string_1, ... ,string_n
-```
-
-```csv
-key,en,de-DE
-welcome.title,Welcome $name,Willkommen $name
-```
-
-```text
-assets/
- └── i18n/
-      └── strings.i18n.csv <-- contains all locales
 ```
 
 ### ➤ Auto Rebuild
