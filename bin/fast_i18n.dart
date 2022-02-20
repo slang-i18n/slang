@@ -6,6 +6,7 @@ import 'package:fast_i18n/src/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
+import 'package:fast_i18n/src/stats_facade.dart';
 import 'package:fast_i18n/src/utils/file_utils.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/path_utils.dart';
@@ -16,9 +17,27 @@ import 'package:fast_i18n/src/utils/path_utils.dart';
 /// Scans translation files and builds the dart file.
 /// This is usually faster than the build_runner implementation.
 void main(List<String> arguments) async {
-  print('Generating translations...\n');
+  final bool watchMode;
+  final bool statsMode;
+  final bool verbose;
+  if (arguments.length == 1) {
+    watchMode = arguments[0] == 'watch';
+    statsMode = arguments[0] == 'stats';
+    verbose = !statsMode ||
+        (arguments.length == 2 &&
+            (arguments[1] == '-v' || arguments[1] == '--verbose'));
+  } else {
+    watchMode = false;
+    statsMode = false;
+    verbose = true;
+  }
 
-  final watchMode = arguments.length == 1 && arguments[0] == 'watch';
+  if (statsMode) {
+    print('Scanning translations...\n');
+  } else {
+    print('Generating translations...\n');
+  }
+
   final stopwatch = Stopwatch();
   if (!watchMode) {
     // only run stopwatch if generating once
@@ -30,7 +49,7 @@ void main(List<String> arguments) async {
       (await Directory.current.list(recursive: true).toList())
           .where((item) => FileSystemEntity.isFileSync(item.path));
 
-  final buildConfig = await getBuildConfig(files);
+  final buildConfig = await getBuildConfig(files, verbose);
 
   // filter files according to build config
   files = files.where((file) {
@@ -48,13 +67,17 @@ void main(List<String> arguments) async {
     await generateTranslations(
       buildConfig: buildConfig,
       files: files,
-      verbose: true,
+      verbose: verbose,
       stopwatch: stopwatch,
+      statsMode: statsMode,
     );
   }
 }
 
-Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
+Future<BuildConfig> getBuildConfig(
+  Iterable<FileSystemEntity> files,
+  bool verbose,
+) async {
   BuildConfig? buildConfig;
   for (final file in files) {
     final fileName = file.path.getFileName();
@@ -63,7 +86,9 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
       final content = await File(file.path).readAsString();
       buildConfig = BuildConfigBuilder.fromYaml(content);
       if (buildConfig != null) {
-        print('Found build.yaml in ${file.path}');
+        if (verbose) {
+          print('Found build.yaml in ${file.path}');
+        }
         break;
       }
     }
@@ -71,68 +96,20 @@ Future<BuildConfig> getBuildConfig(Iterable<FileSystemEntity> files) async {
 
   if (buildConfig == null) {
     buildConfig = BuildConfigBuilder.fromMap({});
-    print('No build.yaml, use default settings.');
+    if (verbose) {
+      print('No build.yaml, use default settings.');
+    }
   }
 
   // convert to absolute paths
   buildConfig = buildConfig.withAbsolutePaths();
 
   // show build config
-  print('');
-  print(' -> fileType: ${buildConfig.fileType.getEnumName()}');
-  print(' -> baseLocale: ${buildConfig.baseLocale.languageTag}');
-  print(' -> fallbackStrategy: ${buildConfig.fallbackStrategy.getEnumName()}');
-  print(
-      ' -> inputDirectory: ${buildConfig.inputDirectory != null ? buildConfig.inputDirectory : 'null (everywhere)'}');
-  print(' -> inputFilePattern: ${buildConfig.inputFilePattern}');
-  print(
-      ' -> outputDirectory: ${buildConfig.outputDirectory != null ? buildConfig.outputDirectory : 'null (directory of input)'}');
-  print(' -> outputFilePattern (deprecated): ${buildConfig.outputFilePattern}');
-  print(' -> outputFileName: ${buildConfig.outputFileName}');
-  print(' -> outputFileFormat: ${buildConfig.outputFormat.getEnumName()}');
-  print(' -> renderLocaleHandling: ${buildConfig.renderLocaleHandling}');
-  print(' -> namespaces: ${buildConfig.namespaces}');
-  print(' -> translateVar: ${buildConfig.translateVar}');
-  print(' -> enumName: ${buildConfig.enumName}');
-  print(
-      ' -> translationClassVisibility: ${buildConfig.translationClassVisibility.getEnumName()}');
-  print(
-      ' -> keyCase: ${buildConfig.keyCase != null ? buildConfig.keyCase?.getEnumName() : 'null (no change)'}');
-  print(
-      ' -> keyCase (for maps): ${buildConfig.keyMapCase != null ? buildConfig.keyMapCase?.getEnumName() : 'null (no change)'}');
-  print(
-      ' -> paramCase: ${buildConfig.paramCase != null ? buildConfig.paramCase?.getEnumName() : 'null (no change)'}');
-  print(
-      ' -> stringInterpolation: ${buildConfig.stringInterpolation.getEnumName()}');
-  print(' -> renderFlatMap: ${buildConfig.renderFlatMap}');
-  print(' -> renderTimestamp: ${buildConfig.renderTimestamp}');
-  print(' -> maps: ${buildConfig.maps}');
-  print(' -> pluralization/auto: ${buildConfig.pluralAuto.getEnumName()}');
-  print(' -> pluralization/cardinal: ${buildConfig.pluralCardinal}');
-  print(' -> pluralization/ordinal: ${buildConfig.pluralOrdinal}');
-  print(
-      ' -> contexts: ${buildConfig.contexts.isEmpty ? 'no custom contexts' : ''}');
-  for (final contextType in buildConfig.contexts) {
-    print(
-        '    - ${contextType.enumName} { ${contextType.enumValues.join(', ')} }');
+  if (verbose) {
+    print('');
+    buildConfig.printConfig();
+    print('');
   }
-  print(
-      ' -> interfaces: ${buildConfig.interfaces.isEmpty ? 'no interfaces' : ''}');
-  for (final interface in buildConfig.interfaces) {
-    print('    - ${interface.name}');
-    print(
-        '        Attributes: ${interface.attributes.isEmpty ? 'no attributes' : ''}');
-    for (final a in interface.attributes) {
-      print(
-          '          - ${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})${a.optional ? ' (optional)' : ''}');
-    }
-    print('        Paths: ${interface.paths.isEmpty ? 'no paths' : ''}');
-    for (final path in interface.paths) {
-      print(
-          '          - ${path.isContainer ? 'children of: ' : ''}${path.path}');
-    }
-  }
-  print('');
 
   return buildConfig;
 }
@@ -184,6 +161,7 @@ Future<void> generateTranslations({
   required Iterable<FileSystemEntity> files,
   required bool verbose,
   Stopwatch? stopwatch,
+  bool statsMode = false,
 }) async {
   // STEP 1: determine base name and output file name / path
   String? baseName;
@@ -324,6 +302,19 @@ Future<void> generateTranslations({
     }
   }
 
+  // STATS MODE
+  if (statsMode) {
+    StatsFacade.parse(
+      buildConfig: buildConfig,
+      translationMap: translationMap,
+    ).printResult();
+    if (stopwatch != null) {
+      print('');
+      print('Scan done. (${stopwatch.elapsed})');
+    }
+    return; // skip generation
+  }
+
   // STEP 3: generate .g.dart content
   final result = GeneratorFacade.generate(
     buildConfig: buildConfig,
@@ -398,8 +389,9 @@ Future<void> generateTranslations({
       print('');
     }
 
-    if (stopwatch != null)
+    if (stopwatch != null) {
       print('Translations generated successfully. (${stopwatch.elapsed})');
+    }
   }
 }
 
@@ -418,12 +410,5 @@ extension on String {
   /// converts /some/path/file.json to file
   String getFileNameNoExtension() {
     return PathUtils.getFileNameNoExtension(this);
-  }
-}
-
-extension on Object {
-  /// expects an enum and get its string representation without enum class name
-  String getEnumName() {
-    return this.toString().split('.').last;
   }
 }

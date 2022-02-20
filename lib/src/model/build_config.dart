@@ -130,6 +130,59 @@ class BuildConfig {
       interfaces: interfaces,
     );
   }
+
+  void printConfig() {
+    print(' -> fileType: ${fileType.name}');
+    print(' -> baseLocale: ${baseLocale.languageTag}');
+    print(' -> fallbackStrategy: ${fallbackStrategy.getEnumName()}');
+    print(
+        ' -> inputDirectory: ${inputDirectory != null ? inputDirectory : 'null (everywhere)'}');
+    print(' -> inputFilePattern: $inputFilePattern');
+    print(
+        ' -> outputDirectory: ${outputDirectory != null ? outputDirectory : 'null (directory of input)'}');
+    print(' -> outputFilePattern (deprecated): $outputFilePattern');
+    print(' -> outputFileName: $outputFileName');
+    print(' -> outputFileFormat: ${outputFormat.getEnumName()}');
+    print(' -> renderLocaleHandling: $renderLocaleHandling');
+    print(' -> namespaces: $namespaces');
+    print(' -> translateVar: $translateVar');
+    print(' -> enumName: $enumName');
+    print(
+        ' -> translationClassVisibility: ${translationClassVisibility.getEnumName()}');
+    print(
+        ' -> keyCase: ${keyCase != null ? keyCase?.getEnumName() : 'null (no change)'}');
+    print(
+        ' -> keyCase (for maps): ${keyMapCase != null ? keyMapCase?.getEnumName() : 'null (no change)'}');
+    print(
+        ' -> paramCase: ${paramCase != null ? paramCase?.getEnumName() : 'null (no change)'}');
+    print(' -> stringInterpolation: ${stringInterpolation.getEnumName()}');
+    print(' -> renderFlatMap: $renderFlatMap');
+    print(' -> renderTimestamp: $renderTimestamp');
+    print(' -> maps: $maps');
+    print(' -> pluralization/auto: ${pluralAuto.getEnumName()}');
+    print(' -> pluralization/cardinal: $pluralCardinal');
+    print(' -> pluralization/ordinal: $pluralOrdinal');
+    print(' -> contexts: ${contexts.isEmpty ? 'no custom contexts' : ''}');
+    for (final contextType in contexts) {
+      print(
+          '    - ${contextType.enumName} { ${contextType.enumValues.join(', ')} }');
+    }
+    print(' -> interfaces: ${interfaces.isEmpty ? 'no interfaces' : ''}');
+    for (final interface in interfaces) {
+      print('    - ${interface.name}');
+      print(
+          '        Attributes: ${interface.attributes.isEmpty ? 'no attributes' : ''}');
+      for (final a in interface.attributes) {
+        print(
+            '          - ${a.returnType} ${a.attributeName} (${a.parameters.isEmpty ? 'no parameters' : a.parameters.map((p) => p.parameterName).join(',')})${a.optional ? ' (optional)' : ''}');
+      }
+      print('        Paths: ${interface.paths.isEmpty ? 'no paths' : ''}');
+      for (final path in interface.paths) {
+        print(
+            '          - ${path.isContainer ? 'children of: ' : ''}${path.path}');
+      }
+    }
+  }
 }
 
 enum FileType { json, yaml, csv }
@@ -227,5 +280,12 @@ extension Parser on String {
           result.substring(0, result.length - Platform.pathSeparator.length);
 
     return Directory.current.path + Platform.pathSeparator + result;
+  }
+}
+
+extension on Object {
+  /// expects an enum and get its string representation without enum class name
+  String getEnumName() {
+    return this.toString().split('.').last;
   }
 }

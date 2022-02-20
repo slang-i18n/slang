@@ -1,3 +1,8 @@
+## 5.11.0
+
+- feat: new command `flutter pub run fast_i18n stats` to get number of words, characters, etc.
+- fix: create missing directories instead of throwing an error
+
 ## 5.10.0
 
 - feat: add option `locale_handling: false` to not generate `t` and `LocaleSettings` (suitable for dependency injection)

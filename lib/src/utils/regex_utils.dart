@@ -56,4 +56,6 @@ class RegexUtils {
   /// greet(gender)
   /// 1 - gender
   static RegExp paramHintRegex = RegExp(r'^\w+\((\w+)\)$');
+
+  static RegExp spaceRegex = RegExp(r'\s+');
 }

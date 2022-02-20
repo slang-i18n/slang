@@ -64,6 +64,7 @@ String h = page1.title; // type-safe call
   - [Fallback](#-fallback)
   - [Recasing](#-recasing)
   - [Auto Rebuild](#-auto-rebuild)
+  - [Statistics](#-statistics)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 
@@ -998,6 +999,24 @@ Just run this command:
 
 ```sh
 flutter pub run fast_i18n watch
+```
+
+### ➤ Statistics
+
+There is a command to quickly get the number of words, characters, etc.
+
+```sh
+flutter pub run fast_i18n stats
+```
+
+Example console output:
+
+```text
+[en]
+ - 9 keys (including intermediate keys)
+ - 6 translations (leaves only)
+ - 15 words
+ - 82 characters (ex. [.?!'¿¡])
 ```
 
 ## FAQ
