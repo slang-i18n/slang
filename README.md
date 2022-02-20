@@ -70,6 +70,8 @@ String h = page1.title; // type-safe call
 
 ## Getting Started
 
+It may be easier if you checkout [tutorials](#tutorials) in your language.
+
 **Step 1: Add dependencies**
 
 It is recommended to add `fast_i18n` to `dev_dependencies`.
@@ -1112,11 +1114,21 @@ The second one always returns a new instance.
 
 ## Further Reading
 
-In depth tutorials about several topics:
+### In Depth
 
 [Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md)
 
 [Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md)
+
+### Tutorials
+
+[Medium (English)](https://medium.com/swlh/flutter-i18n-made-easy-1fd9ccd82cb3)
+
+[Qiita (Japanese)](https://qiita.com/popy1017/items/3495be9fdc028161bef9)
+
+[Youtube (Korean)](https://www.youtube.com/watch?v=4OqPlOm7UVo)
+
+Feel free to extend this list :)
 
 ## License
 
