@@ -132,7 +132,7 @@ class BuildConfig {
   }
 
   void printConfig() {
-    print(' -> fileType: ${fileType.name}');
+    print(' -> fileType: ${fileType.getEnumName()}');
     print(' -> baseLocale: ${baseLocale.languageTag}');
     print(' -> fallbackStrategy: ${fallbackStrategy.getEnumName()}');
     print(

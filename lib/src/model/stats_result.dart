@@ -10,7 +10,7 @@ class StatsResult {
   });
 
   void printResult() {
-    final specialCharacters = '.?!\'¿¡';
+    final specialCharacters = ',.?!\'¿¡';
     localeStats.forEach((locale, stats) {
       print('[${locale.languageTag}]');
       print(' - ${stats.keyCount} keys (including intermediate keys)');

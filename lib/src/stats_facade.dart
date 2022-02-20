@@ -124,6 +124,7 @@ int _countCharacters(Node root) {
     node: root,
     valueCallback: (textNode) {
       return textNode.raw
+          .replaceAll(',', '')
           .replaceAll('.', '')
           .replaceAll('?', '')
           .replaceAll('!', '')
