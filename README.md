@@ -1030,6 +1030,8 @@ Yes. Specify `input_directory` and `output_directory` in `build.yaml`.
 ```yaml
 targets:
   $default:
+    sources:
+      - "custom-directory/**" # optional; only assets/* and lib/* are scanned by build_runner
     builders:
       fast_i18n:
         options:
