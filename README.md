@@ -64,8 +64,10 @@ String h = page1.title; // type-safe call
   - [Fallback](#-fallback)
   - [Comments](#-comments)
   - [Recasing](#-recasing)
-  - [Auto Rebuild](#-auto-rebuild)
+- [Tools](#tools)
+  - [Main Command](#-main-command)
   - [Statistics](#-statistics)
+  - [Auto Rebuild](#-auto-rebuild)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 
@@ -319,11 +321,7 @@ Key|Type|Usage|Default
 
 ### ➤ File Types
 
-Type|Supported|Note
----|---|---
-JSON|✔|by default
-YAML|✔|update `input_file_pattern`
-CSV|✔|update `input_file_pattern`
+Supported file types: `JSON (default)`, `YAML` and `CSV`.
 
 To change to YAML or CSV, please modify `input_file_pattern`.
 
@@ -361,6 +359,7 @@ You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-
 key,translation
 ```
 
+Example:
 ```csv
 welcome.title,Welcome $name
 welcome.pages.0.title,First Page
@@ -369,15 +368,34 @@ welcome.pages.1.title,Second Page
 
 ### ➤ String Interpolation
 
-There are three modes configurable via `string_interpolation` in `build.yaml`.
+Translations often have a dynamic parameter. There are multiple ways to define them.
+
+```yaml
+# File: build.yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          string_interpolation: dart # change to braces or double_braces
+```
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
-Mode|Example
----|---
-`dart (default)`|`Hello $name. I am ${height}m.`
-`braces`|`Hello {name}`
-`double_braces`|`Hello {{name}}`
+**dart (default)**
+```text
+Hello $name. I am ${height}m.
+```
+
+**braces**
+```text
+Hello {name}
+```
+
+**double_braces**
+```text
+Hello {{name}}
+```
 
 ### ➤ Lists
 
@@ -908,6 +926,8 @@ Normally, you would create a new csv file for each locale:
 You can also merge multiple locales into one single csv file! To do this,
 you need at least 3 columns. The first row contains the locale names. This library should detect that, so no configuration is needed.
 
+Comments are supported. (see [Comments](#-comments))
+
 ```csv
      ,locale_0 ,locale_1 , ... ,locale_n
 key_0,string_00,string_01, ... ,string_0n
@@ -1040,15 +1060,14 @@ String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
 ```
 
-### ➤ Auto Rebuild
+## Tools
 
-You can let the library rebuild automatically for you.
-The watch function from `build_runner` is **NOT** maintained.
+### ➤ Main Command
 
-Just run this command:
+The main command to generate dart files from translation resources.
 
 ```sh
-flutter pub run fast_i18n watch
+flutter pub run fast_i18n
 ```
 
 ### ➤ Statistics
@@ -1067,6 +1086,15 @@ Example console output:
  - 6 translations (leaves only)
  - 15 words
  - 82 characters (ex. [,.?!'¿¡])
+```
+
+### ➤ Auto Rebuild
+
+You can let the library rebuild automatically for you.
+The watch function from `build_runner` is **NOT** maintained.
+
+```sh
+flutter pub run fast_i18n watch
 ```
 
 ## FAQ
