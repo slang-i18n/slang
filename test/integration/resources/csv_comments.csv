@@ -1,0 +1,6 @@
+key,(comment),en,de,(no comment)
+mainScreen.title,This is a title,Title,Titel,No Comment
+mainScreen.content,,Content,Inhalt,
+mainScreen.anotherContent,,Another Content,Anderer Inhalt,
+mainScreen.button,This is a button,Button,Knopf,
+mainScreen.dialog,This is a dialog,Dialog,Dialog,

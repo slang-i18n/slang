@@ -210,6 +210,11 @@ class TranslationModelBuilder {
     final Map<String, Node> resultNodeTree = {};
 
     curr.forEach((key, value) {
+      if (key.startsWith('@')) {
+        // ignore comments
+        return;
+      }
+
       final originalKey = key;
 
       // transform key if necessary
@@ -223,6 +228,7 @@ class TranslationModelBuilder {
         final textNode = TextNode(
           path: currPath,
           raw: value.toString(),
+          comment: curr['@$originalKey']?.toString(),
           interpolation: config.stringInterpolation,
           paramCase: config.paramCase,
         );

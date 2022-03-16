@@ -15,7 +15,7 @@ class GeneratorFacade {
     required NamespaceTranslationMap translationMap,
     bool showPluralHint = false,
   }) {
-    // combine namespaces
+    // combine namespaces and build the internal model
     final List<I18nData> translationList =
         translationMap.getEntries().map((localeEntry) {
       final locale = localeEntry.key;
@@ -35,7 +35,7 @@ class GeneratorFacade {
     // combine all interfaces of all locales
     // if one interface appears on more than one locale, then the interface of
     // the base locale will have precedence
-    Map<String, Interface> interfaceMap = {};
+    final interfaceMap = <String, Interface>{};
     translationList.forEach((locale) {
       locale.interfaces.forEach((interface) {
         if (!interfaceMap.containsKey(interface)) {

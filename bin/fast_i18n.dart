@@ -223,7 +223,7 @@ Future<void> generateTranslations({
     final baseFileMatch =
         RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
     if (baseFileMatch != null) {
-      // base file
+      // base file (file without locale, may be multiples due to namespaces!)
       final namespace = baseFileMatch.group(1)!;
 
       if (buildConfig.fileType == FileType.csv &&

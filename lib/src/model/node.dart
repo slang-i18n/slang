@@ -144,6 +144,9 @@ class TextNode extends Node implements LeafNode {
   /// The original string
   final String raw;
 
+  /// The corresponding comment
+  final String? comment;
+
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
   late String _content;
@@ -168,13 +171,14 @@ class TextNode extends Node implements LeafNode {
   Map<String, String> get paramTypeMap => _paramTypeMap;
 
   /// Several configs, persisted into node to make it easier to copy
-  /// See [withLinkParamMap]
+  /// See [updateWithLinkParams]
   final StringInterpolation interpolation;
   final CaseStyle? paramCase;
 
   TextNode({
     required String path,
     required this.raw,
+    required this.comment,
     required this.interpolation,
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
@@ -289,17 +293,6 @@ class TextNode extends Node implements LeafNode {
     });
   }
 
-  /// A special constructor for tests
-  factory TextNode.test(String raw, StringInterpolation interpolation,
-      [CaseStyle? paramCase]) {
-    return TextNode(
-      path: '',
-      raw: raw,
-      interpolation: interpolation,
-      paramCase: paramCase,
-    );
-  }
-
   /// Updates [content], [params] and [paramTypeMap]
   /// according to the new linked parameters
   void updateWithLinkParams({
@@ -312,6 +305,7 @@ class TextNode extends Node implements LeafNode {
     final temp = TextNode(
       path: path,
       raw: raw,
+      comment: comment,
       interpolation: interpolation,
       paramCase: paramCase,
       linkParamMap: linkParamMap,

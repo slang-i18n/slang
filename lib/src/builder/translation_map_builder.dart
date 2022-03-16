@@ -5,6 +5,11 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/utils/yaml_utils.dart';
 import 'package:yaml/yaml.dart';
 
+/// Transforms the raw string (json, yaml, csv) to a standardized map structure
+/// of Map<String, dynamic>
+///
+/// ... containing leaves (String, Function), maps (Map<String, dynamic>)
+/// or lists (List<dynamic>)
 class TranslationMapBuilder {
   /// Parses the raw string and builds the map based on the tree
   /// in the translation file.
@@ -31,18 +36,29 @@ class TranslationMapBuilder {
   static Map<String, dynamic> _fromCSV(String raw) {
     final compactCSV = isCompactCSV(raw);
     final parsed = const CsvToListConverter().convert(raw);
-    final result = <String, dynamic>{};
+    final result = <String, Map<String, dynamic>>{};
 
     if (compactCSV) {
-      final locales = <String>[];
+      // list of locales or "comment"-locales
+      final locales = <String?>[];
+
       for (final locale in parsed.first) {
-        locales.add(locale);
+        if (locale is! String) {
+          throw 'The first row of the csv file should not contain numbers';
+        }
+        if (locale.startsWith('(')) {
+          locales.add(null);
+        } else {
+          locales.add(locale);
+        }
       }
       locales.removeAt(0); // remove the first locale because it is the key
 
       for (final locale in locales) {
-        // add the defined locales as root entries
-        result[locale] = <String, dynamic>{};
+        if (locale != null) {
+          // add the defined locales as root entries
+          result[locale] = <String, dynamic>{};
+        }
       }
 
       for (int rowIndex = 1; rowIndex < parsed.length; rowIndex++) {
@@ -52,13 +68,32 @@ class TranslationMapBuilder {
           throw 'CSV row at index $rowIndex must have ${locales.length + 1} columns but only has ${row.length}.';
         }
 
+        bool commentAdded = false;
         for (int localeIndex = 0; localeIndex < locales.length; localeIndex++) {
           final locale = locales[localeIndex];
-          addStringToMap(
-            map: result[locale],
-            destinationPath: parsed[rowIndex][0],
-            leafContent: parsed[rowIndex][localeIndex + 1],
-          );
+          final path = parsed[rowIndex][0];
+          final content = parsed[rowIndex][localeIndex + 1].toString();
+          if (locale != null) {
+            // normal column
+            addStringToMap(
+              map: result[locale]!,
+              destinationPath: path,
+              leafContent: content,
+            );
+          } else if (!commentAdded && content.isNotEmpty) {
+            // comment column (only parse the first comment column)
+            // add @<path> for all other locales
+            for (final localeMap in result.values) {
+              final split = path.toString().split('.');
+              split[split.length - 1] = '@${split[split.length - 1]}';
+              addStringToMap(
+                map: localeMap,
+                destinationPath: split.join('.'),
+                leafContent: content,
+              );
+            }
+            commentAdded = true;
+          }
         }
       }
       return result;
@@ -68,7 +103,7 @@ class TranslationMapBuilder {
         addStringToMap(
           map: result,
           destinationPath: row[0],
-          leafContent: row[1],
+          leafContent: row[1].toString(),
         );
       }
       return result;
@@ -82,7 +117,11 @@ class TranslationMapBuilder {
     required String leafContent,
   }) {
     final pathList = destinationPath.split('.');
-    dynamic curr = map; // may be a Map<String, dynamic> or List<dynamic>
+
+    // starts with type Map<String, dynamic> but
+    // may be a Map<String, dynamic> or List<dynamic> after the 1st iteration
+    dynamic curr = map;
+
     for (int i = 0; i < pathList.length; i++) {
       final subPath = pathList[i];
       final subPathInt = int.tryParse(subPath);
@@ -140,6 +179,9 @@ class TranslationMapBuilder {
           }
 
           if (!curr.containsKey(subPath)) {
+            // path touches first time the tree, make sure the path exists
+            // but do not overwrite,
+            // so previous [addStringToMap] calls get not lost
             curr[subPath] = nextIsList ? <dynamic>[] : <String, dynamic>{};
           }
 

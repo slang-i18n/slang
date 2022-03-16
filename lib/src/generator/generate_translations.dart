@@ -192,7 +192,25 @@ void _generateClass(
 
   buffer.writeln();
   buffer.writeln('\t// Translations');
+
+  bool prevHasComment = false;
   node.entries.forEach((key, value) {
+    // comment handling
+    if (value is TextNode) {
+      if (value.comment != null) {
+        // add comment add on the line above
+        buffer.writeln();
+        buffer.writeln('\t/// ${value.comment}');
+        prevHasComment = true;
+      } else if (prevHasComment) {
+        // add a new line to separate from previous leaf with comment
+        buffer.writeln();
+        prevHasComment = false;
+      }
+    } else {
+      prevHasComment = false;
+    }
+
     buffer.write('\t');
     if (!localeData.base ||
         node.interface?.attributes
