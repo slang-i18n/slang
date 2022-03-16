@@ -1,6 +1,6 @@
 ## 5.12.0
 
-- feat: allow comments in json or csv files and also render them as comments in the generated file (see updated README)
+- feat: add comments feature for json and csv files
 
 ## 5.11.0
 

@@ -985,7 +985,7 @@ targets:
 
 ### ➤ Comments
 
-You can add comments to each translation.
+You can add comments in your translation files.
 
 **JSON**
 
@@ -1003,6 +1003,9 @@ If a `@key` key matches an existing key, then its value will be rendered as a co
 ```
 
 **YAML**
+
+Currently, not parsed and no comments will be generated.
+
 ```yaml
 mainScreen:
   button: Submit # The submit button shown at the bottom
@@ -1010,10 +1013,12 @@ mainScreen:
 
 **CSV**
 
-Use parenthesis. The first column with parenthesis will be rendered to the generated file.
+Columns with parentheses like `(my_column)` are ignored.
+
+Values in the first column with parentheses will be rendered as a comment.
 
 ```csv
-key,(comment),en,de,(no comment)
+key,(comment),en,de,(ignored comment)
 mainScreen.button,The submit button shown at the bottom,Submit,Bestätigen,ignored
 mainScreen.content,,Content,Inhalt,
 ```
