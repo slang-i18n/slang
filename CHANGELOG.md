@@ -1,3 +1,7 @@
+## 5.12.0
+
+- feat: allow comments in json or csv files and also render them as comments in the generated file (see updated README)
+
 ## 5.11.0
 
 - feat: new command `flutter pub run fast_i18n stats` to get number of words, characters, etc.

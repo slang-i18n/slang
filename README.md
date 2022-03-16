@@ -62,6 +62,7 @@ String h = page1.title; // type-safe call
   - [Compact CSV](#-compact-csv)
 - [Other Features](#other-features)
   - [Fallback](#-fallback)
+  - [Comments](#-comments)
   - [Recasing](#-recasing)
   - [Auto Rebuild](#-auto-rebuild)
   - [Statistics](#-statistics)
@@ -79,7 +80,7 @@ It is recommended to add `fast_i18n` to `dev_dependencies`.
 ```yaml
 dev_dependencies:
   build_runner: any
-  fast_i18n: 5.11.0
+  fast_i18n: 5.12.0
 ```
 
 **Step 2: Create JSON files**
@@ -908,13 +909,18 @@ You can also merge multiple locales into one single csv file! To do this,
 you need at least 3 columns. The first row contains the locale names. This library should detect that, so no configuration is needed.
 
 ```csv
-   ,locale_0,locale_1, ... ,locale_n
-key,string_0,string_1, ... ,string_n
+     ,locale_0 ,locale_1 , ... ,locale_n
+key_0,string_00,string_01, ... ,string_0n
+key_1,string_10,string_11, ... ,string_1n
+...
+key_m,string_m0,string_m1, ... ,string_mn
 ```
 
+Example:
 ```csv
 key,en,de-DE
 welcome.title,Welcome $name,Willkommen $name
+welcome.button,Start,Start
 ```
 
 ```text
@@ -938,7 +944,7 @@ targets:
       fast_i18n:
         options:
           base_locale: en
-          fallback_strategy: base_locale  # add this
+          fallback_strategy: base_locale # add this
 ```
 
 ```json5
@@ -955,6 +961,48 @@ targets:
   "hello": "Salut",
   // "bye" is missing, fallback to English version
 }
+```
+
+### ➤ Comments
+
+You can add comments to each translation.
+
+**JSON**
+
+All keys starting with `@` will be ignored.
+
+If a `@key` key matches an existing key, then its value will be rendered as a comment.
+
+```json
+{
+  "mainScreen": {
+    "button": "Submit",
+    "@button": "The submit button shown at the bottom"
+  }
+}
+```
+
+**YAML**
+```yaml
+mainScreen:
+  button: Submit # The submit button shown at the bottom
+```
+
+**CSV**
+
+Use parenthesis. The first column with parenthesis will be rendered to the generated file.
+
+```csv
+key,(comment),en,de,(no comment)
+mainScreen.button,The submit button shown at the bottom,Submit,Bestätigen,ignored
+mainScreen.content,,Content,Inhalt,
+```
+
+**Generated File**
+
+```dart
+/// The submit button shown at the bottom
+String get button => 'Submit';
 ```
 
 ### ➤ Recasing
