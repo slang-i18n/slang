@@ -228,7 +228,7 @@ class TranslationModelBuilder {
         final textNode = TextNode(
           path: currPath,
           raw: value.toString(),
-          comment: curr['@$originalKey']?.toString(),
+          comment: curr['@$key']?.toString(),
           interpolation: config.stringInterpolation,
           paramCase: config.paramCase,
         );
