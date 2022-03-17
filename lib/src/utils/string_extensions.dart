@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 
 extension StringExtensions on String {
@@ -15,14 +16,14 @@ extension StringExtensions on String {
   String toCase(CaseStyle? style) {
     switch (style) {
       case CaseStyle.camel:
-        return _getWords(this)
+        return getWords()
             .mapIndexed((index, word) =>
                 index == 0 ? word.toLowerCase() : word.capitalize())
             .join('');
       case CaseStyle.pascal:
-        return _getWords(this).map((word) => word.capitalize()).join('');
+        return getWords().map((word) => word.capitalize()).join('');
       case CaseStyle.snake:
-        return _getWords(this).map((word) => word.toLowerCase()).join('_');
+        return getWords().map((word) => word.toLowerCase()).join('_');
       case null:
         return this;
       default:
@@ -36,44 +37,38 @@ extension StringExtensions on String {
   String toCaseOfLocale(CaseStyle style) {
     return this.toLowerCase().toCase(style);
   }
-}
 
-extension<E> on Iterable<E> {
-  Iterable<T> mapIndexed<T>(T Function(int i, E e) f) {
-    var i = 0;
-    return map((e) => f(i++, e));
+  /// get word list from string input
+  /// assume that words are separated by special characters or by camel case
+  List<String> getWords() {
+    final input = this;
+    final StringBuffer buffer = StringBuffer();
+    final List<String> words = [];
+    final bool isAllCaps = input.toUpperCase() == input;
+
+    for (int i = 0; i < input.length; i++) {
+      final String currChar = input[i];
+      final String? nextChar = i + 1 == input.length ? null : input[i + 1];
+
+      if (_symbolSet.contains(currChar)) {
+        continue;
+      }
+
+      buffer.write(currChar);
+
+      final bool isEndOfWord = nextChar == null ||
+          (!isAllCaps && _upperAlphaRegex.hasMatch(nextChar)) ||
+          _symbolSet.contains(nextChar);
+
+      if (isEndOfWord) {
+        words.add(buffer.toString());
+        buffer.clear();
+      }
+    }
+
+    return words;
   }
 }
 
 final RegExp _upperAlphaRegex = RegExp(r'[A-Z]');
 final Set<String> _symbolSet = {' ', '.', '_', '-', '/', '\\'};
-
-/// get word list from string input
-/// assume that words are separated by special characters or by camel case
-List<String> _getWords(String input) {
-  final StringBuffer buffer = StringBuffer();
-  final List<String> words = [];
-  final bool isAllCaps = input.toUpperCase() == input;
-
-  for (int i = 0; i < input.length; i++) {
-    final String currChar = input[i];
-    final String? nextChar = i + 1 == input.length ? null : input[i + 1];
-
-    if (_symbolSet.contains(currChar)) {
-      continue;
-    }
-
-    buffer.write(currChar);
-
-    final bool isEndOfWord = nextChar == null ||
-        (!isAllCaps && _upperAlphaRegex.hasMatch(nextChar)) ||
-        _symbolSet.contains(nextChar);
-
-    if (isEndOfWord) {
-      words.add(buffer.toString());
-      buffer.clear();
-    }
-  }
-
-  return words;
-}

@@ -58,4 +58,21 @@ class RegexUtils {
   static RegExp paramHintRegex = RegExp(r'^\w+\((\w+)\)$');
 
   static RegExp spaceRegex = RegExp(r'\s+');
+
+  /// Matches plurals or selects of format (variable,type,content)
+  /// {sex, select, male{His birthday} female{Her birthday} other{Their birthday}}
+  /// 1 - sex
+  /// 3 -  select
+  /// 5 -  male{His birthday} female{Her birthday} other{Their birthday}
+  static RegExp arbComplexNode = RegExp(r'^{(( |\w)+),(( |\w)+),([^,]+)}$');
+
+  /// Matches the parts of the content
+  /// male{His birthday} female{Her birthday} other{Their birthday}
+  /// 1st match - male{His birthday}
+  /// 2nd match - female{Her birthday}
+  /// 3rd match - other{Their birthday}
+  ///
+  /// 1 - male
+  /// 2 - His birthday
+  static RegExp arbComplexNodeContent = RegExp(r'(\w+){(([^\{}]+|{[^}]+})+)}');
 }
