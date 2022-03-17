@@ -9,7 +9,7 @@ void main() {
     final interpolation = StringInterpolation.braces;
 
     test('Plain strings', () {
-      final node = ListNode(path: '', entries: [
+      final node = ListNode(path: '', comment: null, entries: [
         textNode('Hello', interpolation),
         textNode('Hi', interpolation),
       ]);
@@ -18,7 +18,7 @@ void main() {
     });
 
     test('Parameterized strings', () {
-      final node = ListNode(path: '', entries: [
+      final node = ListNode(path: '', comment: null, entries: [
         textNode('Hello', interpolation),
         textNode('Hi {name}', interpolation),
       ]);
@@ -27,12 +27,12 @@ void main() {
     });
 
     test('Nested list', () {
-      final node = ListNode(path: '', entries: [
-        ListNode(path: '', entries: [
+      final node = ListNode(path: '', comment: null, entries: [
+        ListNode(path: '', comment: null, entries: [
           textNode('Hello', interpolation),
           textNode('Hi {name}', interpolation),
         ]),
-        ListNode(path: '', entries: [
+        ListNode(path: '', comment: null, entries: [
           textNode('Hello', interpolation),
           textNode('Hi {name}', interpolation),
         ]),
@@ -42,19 +42,19 @@ void main() {
     });
 
     test('Deeper Nested list', () {
-      final node = ListNode(path: '', entries: [
-        ListNode(path: '', entries: [
-          ListNode(path: '', entries: [
+      final node = ListNode(path: '', comment: null, entries: [
+        ListNode(path: '', comment: null, entries: [
+          ListNode(path: '', comment: null, entries: [
             textNode('Hello', interpolation),
             textNode('Hi', interpolation),
           ]),
         ]),
-        ListNode(path: '', entries: [
-          ListNode(path: '', entries: [
+        ListNode(path: '', comment: null, entries: [
+          ListNode(path: '', comment: null, entries: [
             textNode('Hello', interpolation),
             textNode('Hi', interpolation),
           ]),
-          ListNode(path: '', entries: [
+          ListNode(path: '', comment: null, entries: [
             textNode('Hello', interpolation),
             textNode('Hi', interpolation),
           ]),
@@ -65,9 +65,10 @@ void main() {
     });
 
     test('Class', () {
-      final node = ListNode(path: '', entries: [
+      final node = ListNode(path: '', comment: null, entries: [
         ObjectNode(
           path: '',
+          comment: null,
           entries: {
             'key0': textNode('Hi', interpolation),
           },
@@ -75,6 +76,7 @@ void main() {
         ),
         ObjectNode(
           path: '',
+          comment: null,
           entries: {
             'key0': textNode('Hi', interpolation),
           },
@@ -86,9 +88,10 @@ void main() {
     });
 
     test('Map', () {
-      final node = ListNode(path: '', entries: [
+      final node = ListNode(path: '', comment: null, entries: [
         ObjectNode(
           path: '',
+          comment: null,
           entries: {
             'key0': textNode('Hi', interpolation),
           },
@@ -96,6 +99,7 @@ void main() {
         ),
         ObjectNode(
           path: '',
+          comment: null,
           entries: {
             'key0': textNode('Hi', interpolation),
           },

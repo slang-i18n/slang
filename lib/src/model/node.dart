@@ -10,10 +10,14 @@ abstract class Node {
   static const KEY_DELIMITER = ','; // used by plural or context
 
   final String path;
+  final String? comment;
   Node? _parent;
   Node? get parent => _parent;
 
-  Node(this.path);
+  Node({
+    required this.path,
+    required this.comment,
+  });
 
   void setParent(Node parent) {
     assert(_parent == null);
@@ -32,7 +36,12 @@ abstract class IterableNode extends Node {
   String _genericType;
   String get genericType => _genericType;
 
-  IterableNode(String path, this._genericType) : super(path);
+  IterableNode({
+    required String path,
+    required String? comment,
+    required String genericType,
+  })  : _genericType = genericType,
+        super(path: path, comment: comment);
 
   void setGenericType(String genericType) {
     _genericType = genericType;
@@ -49,14 +58,17 @@ class ObjectNode extends IterableNode {
 
   ObjectNode({
     required String path,
+    required String? comment,
     required this.entries,
     required this.isMap,
   }) : super(
-            path,
-            entries.values
-                    .every((child) => child is TextNode && child.params.isEmpty)
-                ? 'String'
-                : 'dynamic');
+          path: path,
+          comment: comment,
+          genericType: entries.values
+                  .every((child) => child is TextNode && child.params.isEmpty)
+              ? 'String'
+              : 'dynamic',
+        );
 
   void setInterface(Interface interface) {
     _interface = interface;
@@ -69,8 +81,15 @@ class ObjectNode extends IterableNode {
 class ListNode extends IterableNode {
   final List<Node> entries;
 
-  ListNode({required String path, required this.entries})
-      : super(path, _determineGenericType(entries));
+  ListNode({
+    required String path,
+    required String? comment,
+    required this.entries,
+  }) : super(
+          path: path,
+          comment: comment,
+          genericType: _determineGenericType(entries),
+        );
 
   static String _determineGenericType(List<Node> entries) {
     if (entries.every((child) => child is TextNode && child.params.isEmpty)) {
@@ -113,11 +132,12 @@ class PluralNode extends Node implements LeafNode {
 
   PluralNode({
     required String path,
+    required String? comment,
     required this.pluralType,
     required this.quantities,
     required String? parameterName,
   })  : this.paramName = parameterName ?? 'count',
-        super(path);
+        super(path: path, comment: comment);
 
   @override
   String toString() => quantities.toString();
@@ -130,11 +150,12 @@ class ContextNode extends Node implements LeafNode {
 
   ContextNode({
     required String path,
+    required String? comment,
     required this.context,
     required this.entries,
     required String? parameterName,
   })  : this.paramName = parameterName ?? 'context',
-        super(path);
+        super(path: path, comment: comment);
 
   @override
   String toString() => entries.toString();
@@ -143,9 +164,6 @@ class ContextNode extends Node implements LeafNode {
 class TextNode extends Node implements LeafNode {
   /// The original string
   final String raw;
-
-  /// The corresponding comment
-  final String? comment;
 
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
@@ -178,11 +196,11 @@ class TextNode extends Node implements LeafNode {
   TextNode({
     required String path,
     required this.raw,
-    required this.comment,
+    required String? comment,
     required this.interpolation,
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
-  }) : super(path) {
+  }) : super(path: path, comment: comment) {
     String contentNormalized = raw
         .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
         .replaceAll('\n', '\\n') // (linebreak 2) -> \n

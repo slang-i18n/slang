@@ -128,6 +128,7 @@ class TranslationModelBuilder {
     // imaginary root node
     final root = ObjectNode(
       path: '',
+      comment: null,
       entries: resultNodeTree,
       isMap: false,
     );
@@ -221,6 +222,7 @@ class TranslationModelBuilder {
       // the part after '(' is considered as the parameter hint for plurals or contexts
       key = key.split('(').first.toCase(keyCase);
       final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
+      final comment = curr['@$key']?.toString();
 
       if (value is String || value is num) {
         // leaf
@@ -228,7 +230,7 @@ class TranslationModelBuilder {
         final textNode = TextNode(
           path: currPath,
           raw: value.toString(),
-          comment: curr['@$key']?.toString(),
+          comment: comment,
           interpolation: config.stringInterpolation,
           paramCase: config.paramCase,
         );
@@ -256,6 +258,7 @@ class TranslationModelBuilder {
           // finally only take their values, ignoring keys
           final node = ListNode(
             path: currPath,
+            comment: comment,
             entries: children.values.toList(),
           );
           _setParent(node, children.values);
@@ -311,6 +314,7 @@ class TranslationModelBuilder {
             if (detectedType.nodeType == _DetectionType.context) {
               node = ContextNode(
                 path: currPath,
+                comment: comment,
                 context: detectedType.contextHint!,
                 entries: digestedMap,
                 parameterName: paramNameHint,
@@ -318,6 +322,7 @@ class TranslationModelBuilder {
             } else {
               node = PluralNode(
                 path: currPath,
+                comment: comment,
                 pluralType:
                     detectedType.nodeType == _DetectionType.pluralCardinal
                         ? PluralType.cardinal
@@ -333,6 +338,7 @@ class TranslationModelBuilder {
           } else {
             node = ObjectNode(
               path: currPath,
+              comment: comment,
               entries: children,
               isMap: detectedType.nodeType == _DetectionType.map,
             );

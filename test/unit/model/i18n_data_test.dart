@@ -7,6 +7,7 @@ void main() {
   group('generationComparator', () {
     final root = ObjectNode(
       path: '',
+      comment: null,
       entries: {},
       isMap: false,
     );
