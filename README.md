@@ -66,6 +66,7 @@ String h = page1.title; // type-safe call
   - [Recasing](#-recasing)
 - [Tools](#tools)
   - [Main Command](#-main-command)
+  - [ARB Migration](#-arb-migration)
   - [Statistics](#-statistics)
   - [Auto Rebuild](#-auto-rebuild)
 - [FAQ](#faq)
@@ -1073,6 +1074,14 @@ The main command to generate dart files from translation resources.
 
 ```sh
 flutter pub run fast_i18n
+```
+
+### ➤ ARB Migration
+
+Transforms ARB files to compatible JSON format. All descriptions are retained.
+
+```sh
+flutter pub run fast_i18n migrate-arb source.arb destination.json
 ```
 
 ### ➤ Statistics

@@ -1,6 +1,7 @@
 ## 5.12.0
 
 - feat: add comments feature for json and csv files
+- feat: new command `flutter pub run fast_i18n migrate-arb en.arb en.json` to migrate ARB files
 
 ## 5.11.0
 
