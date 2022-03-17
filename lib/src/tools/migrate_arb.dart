@@ -53,7 +53,8 @@ Map<String, dynamic> _migrateArb(String raw) {
 
     final keyParts = key.getWords();
     if (isMeta) {
-      _digestMeta(keyParts, value, resultMap);
+      _digestMeta(
+          keyParts, value is Map<String, dynamic> ? value : {}, resultMap);
     } else {
       final detectedContext = _digestEntry(keyParts, value, resultMap);
       if (detectedContext != null &&
