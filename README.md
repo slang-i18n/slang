@@ -994,11 +994,21 @@ All keys starting with `@` will be ignored.
 
 If a `@key` key matches an existing key, then its value will be rendered as a comment.
 
-```json
+```json5
 {
+  "@@locale": "en", // fully ignored
+  "@@author": "Elon Musk", // fully ignored
   "mainScreen": {
     "button": "Submit",
-    "@button": "The submit button shown at the bottom"
+
+    // ignored as translation but rendered as a comment
+    "@button": "The submit button shown at the bottom",
+    
+    // ARB style is also possible, the description will be rendered as a comment
+    "@button2": {
+      "context": "HomePage",
+      "description": "A button"
+    },
   }
 }
 ```
@@ -1020,7 +1030,7 @@ Values in the first column with parentheses will be rendered as a comment.
 
 ```csv
 key,(comment),en,de,(ignored comment)
-mainScreen.button,The submit button shown at the bottom,Submit,Bestätigen,ignored
+mainScreen.button,The submit button shown at the bottom,Submit,Bestätigen,fully ignored
 mainScreen.content,,Content,Inhalt,
 ```
 
@@ -1082,6 +1092,53 @@ Transforms ARB files to compatible JSON format. All descriptions are retained.
 
 ```sh
 flutter pub run fast_i18n migrate-arb source.arb destination.json
+```
+
+ARB Input
+```json
+{
+  "@@locale": "en_US",
+  "@@context": "HomePage",
+  "title_bar": "My Cool Home",
+  "@title_bar": {
+    "type": "text",
+    "context": "HomePage",
+    "description": "Page title."
+  },
+  "FOO_123": "Your pending cost is {COST}",
+  "foo456": "Hello {0}",
+  "pageHomeInboxCount" : "{count, plural, zero{You have no new messages} one{You have 1 new message} other{You have {count} new messages}}",
+  "@pageHomeInboxCount" : {
+    "placeholders": {
+      "count": {}
+    }
+  }
+}
+```
+
+JSON Result
+```json
+{
+  "@@locale": "en_US",
+  "@@context": "HomePage",
+  "title": {
+    "bar": "My Cool Home",
+    "@bar": "Page title."
+  },
+  "foo123": "Your pending cost is {cost}",
+  "foo456": "Hello {arg0}",
+  "page": {
+    "home": {
+      "inbox": {
+        "count(count)": {
+          "zero": "You have no new messages",
+          "one": "You have 1 new message",
+          "other": "You have {count} new messages"
+        }
+      }
+    }
+  }
+}
 ```
 
 ### ➤ Statistics
