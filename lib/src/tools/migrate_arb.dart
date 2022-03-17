@@ -51,7 +51,23 @@ Map<String, dynamic> _migrateArb(String raw) {
       key = key.substring(1);
     }
 
-    final keyParts = key.getWords();
+    final keyParts = <String>[];
+    key.getWords().forEach((part) {
+      final subPathInt = int.tryParse(part);
+      if (subPathInt == null) {
+        // add normal key part
+        keyParts.add(part);
+      } else {
+        // this key part is a number
+        if (keyParts.isEmpty) {
+          throw 'Keys cannot start with a number: $key';
+        }
+
+        // add number to last part as suffix
+        keyParts[keyParts.length - 1] = '${keyParts.last}$subPathInt';
+      }
+    });
+
     if (isMeta) {
       _digestMeta(
           keyParts, value is Map<String, dynamic> ? value : {}, resultMap);
@@ -147,9 +163,16 @@ void _digestMeta(
   if (description == null) {
     return;
   }
-  final path =
-      '${keyParts.sublist(0, keyParts.length - 1).join('.')}.@${keyParts.last}'
-          .toLowerCase();
+
+  final String path;
+  if (keyParts.length == 1) {
+    path = '@${keyParts.last}'.toLowerCase();
+  } else {
+    path =
+        '${keyParts.sublist(0, keyParts.length - 1).join('.')}.@${keyParts.last}'
+            .toLowerCase();
+  }
+
   TranslationMapBuilder.addStringToMap(
     map: resultMap,
     destinationPath: path,
