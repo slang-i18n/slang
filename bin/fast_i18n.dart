@@ -7,7 +7,6 @@ import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:fast_i18n/src/stats_facade.dart';
-import 'package:fast_i18n/src/tools/migrate_arb.dart';
 import 'package:fast_i18n/src/utils/file_utils.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/path_utils.dart';
@@ -22,16 +21,6 @@ void main(List<String> arguments) async {
   final bool statsMode;
   final bool verbose;
   if (arguments.length >= 1) {
-    // check for special commands
-    switch (arguments[0]) {
-      case 'migrate-arb':
-        if (arguments.length < 3) {
-          throw 'migrate-arb must have 2 additional arguments: migrate-arb <source> <destination>';
-        }
-        migrateArb(arguments[1], arguments[2]);
-        return;
-    }
-
     watchMode = arguments[0] == 'watch';
     statsMode = arguments[0] == 'stats';
     verbose = !statsMode ||

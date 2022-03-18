@@ -66,7 +66,8 @@ String h = page1.title; // type-safe call
   - [Recasing](#-recasing)
 - [Tools](#tools)
   - [Main Command](#-main-command)
-  - [ARB Migration](#-arb-migration)
+  - [Migration](#-migration)
+    - [ARB](#arb)
   - [Statistics](#-statistics)
   - [Auto Rebuild](#-auto-rebuild)
 - [FAQ](#faq)
@@ -1086,12 +1087,22 @@ The main command to generate dart files from translation resources.
 flutter pub run fast_i18n
 ```
 
-### ➤ ARB Migration
+### ➤ Migration
+
+There are some tools to make migration from other i18n solutions easier.
+
+General migration syntax:
+
+```sh
+flutter pub run fast_i18n:migrate <type> <source> <destination>
+```
+
+#### ARB
 
 Transforms ARB files to compatible JSON format. All descriptions are retained.
 
 ```sh
-flutter pub run fast_i18n migrate-arb source.arb destination.json
+flutter pub run fast_i18n:migrate arb source.arb destination.json
 ```
 
 ARB Input
@@ -1146,7 +1157,7 @@ JSON Result
 There is a command to quickly get the number of words, characters, etc.
 
 ```sh
-flutter pub run fast_i18n stats
+flutter pub run fast_i18n:stats
 ```
 
 Example console output:
@@ -1165,7 +1176,7 @@ You can let the library rebuild automatically for you.
 The watch function from `build_runner` is **NOT** maintained.
 
 ```sh
-flutter pub run fast_i18n watch
+flutter pub run fast_i18n:watch
 ```
 
 ## FAQ
