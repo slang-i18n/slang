@@ -77,6 +77,8 @@ String h = page1.title; // type-safe call
 
 It may be easier if you checkout [tutorials](#tutorials) in your language.
 
+Coming from ARB? There is a [tool](#arb) for that.
+
 **Step 1: Add dependencies**
 
 It is recommended to add `fast_i18n` to `dev_dependencies`.
@@ -1007,7 +1009,7 @@ If a `@key` key matches an existing key, then its value will be rendered as a co
     // ARB style is also possible, the description will be rendered as a comment
     "@button2": {
       "context": "HomePage",
-      "description": "A button"
+      "description": "The submit button shown at the bottom"
     },
   }
 }
