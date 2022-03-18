@@ -38,7 +38,10 @@ class _TranslationsOnboardingEn {
 
 	// Translations
 	String welcome({required Object fullName}) => 'Welcome $fullName';
+
+	/// Bye text
 	String bye({required Object firstName}) => 'Bye $firstName';
+
 	List<PageData> get pages => [
 		_TranslationsOnboarding0i0En._(_root),
 		_TranslationsOnboarding0i1En._(_root),

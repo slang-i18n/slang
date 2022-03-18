@@ -38,7 +38,10 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 
 	// Translations
 	@override String welcome({required Object fullName}) => 'Willkommen $fullName';
+
+	/// Bye text
 	@override String bye({required Object firstName}) => 'Tschüss $firstName';
+
 	@override List<PageData> get pages => [
 		_TranslationsOnboarding0i0De._(_root),
 		_TranslationsOnboarding0i1De._(_root),

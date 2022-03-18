@@ -2,6 +2,7 @@
   "onboarding": {
     "welcome": "Willkommen {fullName}",
     "bye": "Tschüss {firstName}",
+    "@bye": "Bye text",
     "pages": [
       {
         "title": "Erste Seite",

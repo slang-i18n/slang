@@ -2,6 +2,10 @@
   "onboarding": {
     "welcome": "Welcome {fullName}",
     "bye": "Bye {firstName}",
+    "@bye": {
+      "this should be ignored": "ignored",
+      "description": "Bye text"
+    },
     "pages": [
       {
         "title": "First Page",

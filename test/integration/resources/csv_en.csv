@@ -1,5 +1,6 @@
 onboarding.welcome,Welcome {fullName}
 onboarding.bye,Bye {firstName}
+onboarding.@bye,Bye text
 onboarding.pages.0.title,First Page
 onboarding.pages.0.content,First Page Content
 onboarding.pages.1.title,Second Page

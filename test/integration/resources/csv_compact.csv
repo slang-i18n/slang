@@ -1,6 +1,7 @@
 key,en,de
 onboarding.welcome,Welcome {fullName},Willkommen {fullName}
 onboarding.bye,Bye {firstName},Tschüss {firstName}
+onboarding.@bye,Bye text,Bye text
 onboarding.pages.0.title,First Page,Erste Seite
 onboarding.pages.0.content,First Page Content,Erster Seiteninhalt
 onboarding.pages.1.title,Second Page,Zweite Seite

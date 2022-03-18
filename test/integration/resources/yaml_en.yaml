@@ -1,6 +1,7 @@
 onboarding:
   welcome: Welcome {fullName}
   bye: Bye {firstName}
+  "@bye": Bye text
   pages:
     - title: First Page
       content: First Page Content
