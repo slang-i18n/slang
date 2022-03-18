@@ -222,7 +222,24 @@ class TranslationModelBuilder {
       // the part after '(' is considered as the parameter hint for plurals or contexts
       key = key.split('(').first.toCase(keyCase);
       final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
-      final comment = curr['@$key']?.toString();
+
+      // parse comment
+      final String? comment;
+      final dynamic commentObj = curr['@$key'];
+      if (commentObj != null) {
+        // comment node exists
+        if (commentObj is String) {
+          // parse string directly
+          comment = commentObj;
+        } else if (commentObj is Map<String, dynamic>) {
+          // ARB style
+          comment = commentObj['description']?.toString();
+        } else {
+          comment = null;
+        }
+      } else {
+        comment = null;
+      }
 
       if (value is String || value is num) {
         // leaf
