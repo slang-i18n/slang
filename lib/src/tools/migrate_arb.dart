@@ -115,7 +115,10 @@ Map<String, dynamic> _migrateArb(String raw) {
 }
 
 _DetectedContext? _digestEntry(
-    List<String> keyParts, String value, Map<String, dynamic> resultMap) {
+  List<String> keyParts,
+  String value,
+  Map<String, dynamic> resultMap,
+) {
   final basePath = keyParts.join('.').toLowerCase();
   final pluralOrContext = RegexUtils.arbComplexNode.firstMatch(value);
   if (pluralOrContext != null) {
@@ -132,7 +135,7 @@ _DetectedContext? _digestEntry(
       TranslationMapBuilder.addStringToMap(
         map: resultMap,
         destinationPath: '$basePath($variable).$partName',
-        leafContent: partContent,
+        leafContent: _digestLeafText(partContent),
       );
       if (enumValues != null) {
         enumValues.add(partName);
@@ -148,10 +151,26 @@ _DetectedContext? _digestEntry(
     TranslationMapBuilder.addStringToMap(
       map: resultMap,
       destinationPath: basePath,
-      leafContent: value,
+      leafContent: _digestLeafText(value),
     );
     return null;
   }
+}
+
+/// Transforms arguments to camel case
+/// Adds 'arg' to every positional argument
+String _digestLeafText(String text) {
+  return text.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
+    final rawParam = match.group(2)!;
+    final preCharacter = match.group(1) != null ? match.group(1)! : '';
+    final postCharacter = match.group(3) != null ? match.group(3)! : '';
+    final number = int.tryParse(rawParam);
+    if (number != null) {
+      return '$preCharacter{arg$number}$postCharacter';
+    }
+    final param = rawParam.toCase(CaseStyle.camel);
+    return '$preCharacter{$param}$postCharacter';
+  });
 }
 
 void _digestMeta(
