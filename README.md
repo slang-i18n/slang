@@ -998,7 +998,6 @@ If a `@key` key matches an existing key, then its value will be rendered as a co
 ```json5
 {
   "@@locale": "en", // fully ignored
-  "@@author": "Elon Musk", // fully ignored
   "mainScreen": {
     "button": "Submit",
 
