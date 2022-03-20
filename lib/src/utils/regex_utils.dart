@@ -62,9 +62,10 @@ class RegexUtils {
   /// Matches plurals or selects of format (variable,type,content)
   /// {sex, select, male{His birthday} female{Her birthday} other{Their birthday}}
   /// 1 - sex
-  /// 3 -  select
-  /// 5 -  male{His birthday} female{Her birthday} other{Their birthday}
-  static RegExp arbComplexNode = RegExp(r'^{(( |\w)+),(( |\w)+),([^,]+)}$');
+  /// 2 -  select
+  /// 3 -  male{His birthday} female{Her birthday} other{Their birthday}
+  static RegExp arbComplexNode =
+      RegExp(r'^{((?: |\w)+),((?: |\w)+),((?:[^,]|{(?:[^\{}]+|{[^}]+})+})+)}$');
 
   /// Matches the parts of the content
   /// male{His birthday} female{Her birthday} other{Their birthday}
@@ -74,5 +75,6 @@ class RegexUtils {
   ///
   /// 1 - male
   /// 2 - His birthday
-  static RegExp arbComplexNodeContent = RegExp(r'(\w+){(([^\{}]+|{[^}]+})+)}');
+  static RegExp arbComplexNodeContent =
+      RegExp(r'((?:=|\w)+){((?:[^\{}]+|{[^}]+})+)}');
 }

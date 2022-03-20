@@ -1,3 +1,7 @@
+## 5.12.1
+
+- fix: migrate ARB files with plurals correctly
+
 ## 5.12.0
 
 - feat: add comments feature for json and csv files

@@ -152,4 +152,52 @@ void main() {
       expect(match, null);
     });
   });
+
+  group('arbComplexNode', () {
+    RegExp regex = RegexUtils.arbComplexNode;
+
+    test('single plural', () {
+      RegExpMatch? match = regex.firstMatch('{count,plural,abc{aa}}');
+      expect(match?.group(1), 'count');
+      expect(match?.group(2), 'plural');
+      expect(match?.group(3), 'abc{aa}');
+    });
+
+    test('with spaces', () {
+      RegExpMatch? match = regex.firstMatch('{count, plural,  abc{aa}}');
+      expect(match?.group(1), 'count');
+      expect(match?.group(2), ' plural');
+      expect(match?.group(3), '  abc{aa}');
+    });
+
+    test('content has commas', () {
+      RegExpMatch? match =
+          regex.firstMatch('{count, plural, abc{a,a,} =efg{bb}}');
+      expect(match?.group(1), 'count');
+      expect(match?.group(2), ' plural');
+      expect(match?.group(3), ' abc{a,a,} =efg{bb}');
+    });
+  });
+
+  group('arbComplexNodeContent', () {
+    RegExp regex = RegexUtils.arbComplexNodeContent;
+
+    test('plain', () {
+      RegExpMatch? match = regex.firstMatch('aa{bb}');
+      expect(match?.group(1), 'aa');
+      expect(match?.group(2), 'bb');
+    });
+
+    test('with equals', () {
+      RegExpMatch? match = regex.firstMatch('=aa{bb}');
+      expect(match?.group(1), '=aa');
+      expect(match?.group(2), 'bb');
+    });
+
+    test('with parameters', () {
+      RegExpMatch? match = regex.firstMatch('=aa{bb {hello} yeah {hi}}');
+      expect(match?.group(1), '=aa');
+      expect(match?.group(2), 'bb {hello} yeah {hi}');
+    });
+  });
 }

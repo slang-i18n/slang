@@ -126,11 +126,13 @@ _DetectedContext? _digestEntry(
     // add additional nodes to this base path
 
     final variable = pluralOrContext.group(1)!.trim();
-    final type = pluralOrContext.group(3)!.trim();
-    final content = pluralOrContext.group(5)!;
+    final type = pluralOrContext.group(2)!.trim();
+    final content = pluralOrContext.group(3)!;
     final enumValues = type == 'select' ? <String>{} : null;
+    final isPlural = type == 'plural';
     for (final part in RegexUtils.arbComplexNodeContent.allMatches(content)) {
-      final partName = part.group(1)!;
+      final partName =
+          isPlural ? _digestPluralKey(part.group(1)!) : part.group(1)!;
       final partContent = part.group(2)!;
       TranslationMapBuilder.addStringToMap(
         map: resultMap,
@@ -171,6 +173,21 @@ String _digestLeafText(String text) {
     final param = rawParam.toCase(CaseStyle.camel);
     return '$preCharacter{$param}$postCharacter';
   });
+}
+
+/// ARB files use '=0', '=1', and '=2' for 'zero', 'one', and 'two'
+/// We need to normalize that.
+String _digestPluralKey(String key) {
+  switch (key) {
+    case '=0':
+      return 'zero';
+    case '=1':
+      return 'one';
+    case '=2':
+      return 'two';
+    default:
+      return key;
+  }
 }
 
 void _digestMeta(
