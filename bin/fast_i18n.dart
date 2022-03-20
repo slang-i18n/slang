@@ -219,6 +219,17 @@ Future<void> generateTranslations({
   final padLeft = buildConfig.namespaces ? _namespacePadLeft : _defaultPadLeft;
   for (final file in files) {
     final content = await File(file.path).readAsString();
+    final Map<String, dynamic> translations;
+    try {
+      translations = TranslationMapBuilder.fromString(
+        buildConfig.fileType,
+        content,
+      );
+    } on FormatException catch (e) {
+      print('');
+      throw 'File: ${file.path}\n$e';
+    }
+
     final fileNameNoExtension = file.path.getFileNameNoExtension();
     final baseFileMatch =
         RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
@@ -229,11 +240,6 @@ Future<void> generateTranslations({
       if (buildConfig.fileType == FileType.csv &&
           TranslationMapBuilder.isCompactCSV(content)) {
         // compact csv
-
-        final translations = TranslationMapBuilder.fromString(
-          FileType.csv,
-          content,
-        );
 
         translations.forEach((key, value) {
           final locale = I18nLocale.fromString(key);
@@ -257,10 +263,7 @@ Future<void> generateTranslations({
         translationMap.addTranslations(
           locale: buildConfig.baseLocale,
           namespace: namespace,
-          translations: TranslationMapBuilder.fromString(
-            buildConfig.fileType,
-            content,
-          ),
+          translations: translations,
         );
 
         if (verbose) {
@@ -287,10 +290,7 @@ Future<void> generateTranslations({
         translationMap.addTranslations(
           locale: locale,
           namespace: namespace,
-          translations: TranslationMapBuilder.fromString(
-            buildConfig.fileType,
-            content,
-          ),
+          translations: translations,
         );
 
         if (verbose) {

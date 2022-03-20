@@ -100,6 +100,16 @@ class I18nBuilder implements Builder {
     final translationMap = NamespaceTranslationMap();
     for (final asset in assets) {
       final content = await buildStep.readAsString(asset);
+      final Map<String, dynamic> translations;
+      try {
+        translations = TranslationMapBuilder.fromString(
+          buildConfig.fileType,
+          content,
+        );
+      } on FormatException catch (e) {
+        throw 'File: ${asset.path}\n$e';
+      }
+
       final fileNameNoExtension =
           asset.pathSegments.last.getFileNameNoExtension();
       final baseFileMatch =
@@ -111,11 +121,6 @@ class I18nBuilder implements Builder {
         if (buildConfig.fileType == FileType.csv &&
             TranslationMapBuilder.isCompactCSV(content)) {
           // compact csv
-
-          final translations = TranslationMapBuilder.fromString(
-            FileType.csv,
-            content,
-          );
 
           translations.forEach((key, value) {
             final locale = I18nLocale.fromString(key);
@@ -132,10 +137,7 @@ class I18nBuilder implements Builder {
           translationMap.addTranslations(
             locale: buildConfig.baseLocale,
             namespace: namespace,
-            translations: TranslationMapBuilder.fromString(
-              buildConfig.fileType,
-              content,
-            ),
+            translations: translations,
           );
         }
       } else {
@@ -156,10 +158,7 @@ class I18nBuilder implements Builder {
           translationMap.addTranslations(
             locale: locale,
             namespace: namespace,
-            translations: TranslationMapBuilder.fromString(
-              buildConfig.fileType,
-              content,
-            ),
+            translations: translations,
           );
         }
       }
