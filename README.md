@@ -360,14 +360,11 @@ welcome:
 You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
 
 ```csv
-key,translation
-```
+# Format: <key>, <translation>
 
-Example:
-```csv
 welcome.title,Welcome $name
-welcome.pages.0.title,First Page
-welcome.pages.1.title,Second Page
+pages.0.title,First Page
+pages.1.title,Second Page
 ```
 
 ### ➤ String Interpolation
