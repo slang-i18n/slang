@@ -6,8 +6,8 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/build_config_utils.dart';
-import '../util/resources_utils.dart';
+import '../../util/build_config_utils.dart';
+import '../../util/resources_utils.dart';
 
 void main() {
   late String compactInput;
@@ -15,9 +15,9 @@ void main() {
   late String expectedOutput;
 
   setUp(() {
-    compactInput = loadResource('csv_comments.csv');
-    buildYaml = loadResource('build_config.yaml');
-    expectedOutput = loadResource('expected_comments.output');
+    compactInput = loadResource('main/csv_comments.csv');
+    buildYaml = loadResource('main/build_config.yaml');
+    expectedOutput = loadResource('main/expected_comments.output');
   });
 
   test('comments csv', () {

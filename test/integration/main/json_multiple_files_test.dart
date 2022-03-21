@@ -6,8 +6,8 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/build_config_utils.dart';
-import '../util/resources_utils.dart';
+import '../../util/build_config_utils.dart';
+import '../../util/resources_utils.dart';
 
 void main() {
   late String enInput;
@@ -19,13 +19,13 @@ void main() {
   late String expectedFlatMapOutput;
 
   setUp(() {
-    enInput = loadResource('json_en.json');
-    deInput = loadResource('json_de.json');
-    buildYaml = loadResource('build_config.yaml');
-    expectedMainOutput = loadResource('expected_main.output');
-    expectedEnOutput = loadResource('expected_en.output');
-    expectedDeOutput = loadResource('expected_de.output');
-    expectedFlatMapOutput = loadResource('expected_map.output');
+    enInput = loadResource('main/json_en.json');
+    deInput = loadResource('main/json_de.json');
+    buildYaml = loadResource('main/build_config.yaml');
+    expectedMainOutput = loadResource('main/expected_main.output');
+    expectedEnOutput = loadResource('main/expected_en.output');
+    expectedDeOutput = loadResource('main/expected_de.output');
+    expectedFlatMapOutput = loadResource('main/expected_map.output');
   });
 
   test('json', () {

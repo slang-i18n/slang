@@ -7,7 +7,7 @@ void main(List<String> arguments) async {
 
   switch (arguments[0]) {
     case 'arb':
-      migrateArb(arguments[1], arguments[2]);
+      migrateArbRunner(arguments[1], arguments[2]);
       break;
     default:
       throw 'Unknown migration type: ${arguments[0]}';

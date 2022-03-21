@@ -6,7 +6,7 @@ import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/namespace_translation_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../util/resources_utils.dart';
+import '../../util/resources_utils.dart';
 
 void main() {
   late String enInput;
@@ -15,10 +15,10 @@ void main() {
   late String expectedOutput;
 
   setUp(() {
-    enInput = loadResource('csv_en.csv');
-    deInput = loadResource('csv_de.csv');
-    buildYaml = loadResource('build_config.yaml');
-    expectedOutput = loadResource('expected_single.output');
+    enInput = loadResource('main/csv_en.csv');
+    deInput = loadResource('main/csv_de.csv');
+    buildYaml = loadResource('main/build_config.yaml');
+    expectedOutput = loadResource('main/expected_single.output');
   });
 
   test('separated csv', () {

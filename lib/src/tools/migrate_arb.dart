@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:fast_i18n/src/builder/translation_map_builder.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/utils/brackets_utils.dart';
 import 'package:fast_i18n/src/utils/file_utils.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 
-Future<void> migrateArb(String sourcePath, String destinationPath) async {
+final _setEquality = SetEquality();
+
+Future<void> migrateArbRunner(String sourcePath, String destinationPath) async {
   print('Migrating ARB to JSON...');
 
   final source = await File(sourcePath).readAsString();
-  final resultMap = _migrateArb(source);
+  final resultMap = migrateArb(source);
 
   FileUtils.createMissingFolders(filePath: destinationPath);
   FileUtils.writeFile(
@@ -26,7 +30,7 @@ Future<void> migrateArb(String sourcePath, String destinationPath) async {
   print('File generated: ${destinationPath.toAbsolutePath()}');
 }
 
-Map<String, dynamic> _migrateArb(String raw) {
+Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
   final sourceMap = json.decode(raw);
   final resultMap = <String, dynamic>{};
 
@@ -39,10 +43,11 @@ Map<String, dynamic> _migrateArb(String raw) {
 
   sourceMap.forEach((key, value) {
     if (key.startsWith('@@')) {
+      // add without modifications
       TranslationMapBuilder.addStringToMap(
         map: resultMap,
         destinationPath: key,
-        leafContent: value,
+        leafContent: value.toString(),
       );
       return;
     }
@@ -56,7 +61,7 @@ Map<String, dynamic> _migrateArb(String raw) {
       final subPathInt = int.tryParse(part);
       if (subPathInt == null) {
         // add normal key part
-        keyParts.add(part);
+        keyParts.add(part.toLowerCase());
       } else {
         // this key part is a number
         if (keyParts.isEmpty) {
@@ -70,19 +75,24 @@ Map<String, dynamic> _migrateArb(String raw) {
 
     if (isMeta) {
       _digestMeta(
-          keyParts, value is Map<String, dynamic> ? value : {}, resultMap);
+        keyParts,
+        value is Map<String, dynamic> ? value : {},
+        resultMap,
+      );
     } else {
-      final detectedContext = _digestEntry(keyParts, value, resultMap);
-      if (detectedContext != null &&
-          detectedContexts.every((c) => c != detectedContext.contextEnum)) {
-        // detected new context
-        detectedContexts.add(detectedContext.contextEnum);
-        detectedContextNames.add(detectedContext.contextName);
-      }
+      final contextResult = _digestEntry(keyParts, value, resultMap);
+      contextResult.forEach((c) {
+        if (detectedContexts
+            .every((c2) => !_setEquality.equals(c2, c.contextEnum))) {
+          // detected new context
+          detectedContexts.add(c.contextEnum);
+          detectedContextNames.add(c.contextName);
+        }
+      });
     }
   });
 
-  if (detectedContexts.isNotEmpty) {
+  if (verbose && detectedContexts.isNotEmpty) {
     print('');
     print('Detected contexts (please define them in build.yaml):');
     const suffixes = ['Context', 'Type'];
@@ -114,49 +124,103 @@ Map<String, dynamic> _migrateArb(String raw) {
   return resultMap;
 }
 
-_DetectedContext? _digestEntry(
+List<_DetectedContext> _digestEntry(
   List<String> keyParts,
   String value,
   Map<String, dynamic> resultMap,
 ) {
-  final basePath = keyParts.join('.').toLowerCase();
-  final pluralOrContext = RegexUtils.arbComplexNode.firstMatch(value);
-  if (pluralOrContext != null) {
-    // this is a plural or a context node
-    // add additional nodes to this base path
+  final basePath = keyParts.join('.');
+  List<BracketRange> brackets = BracketsUtils.findTopLevelBrackets(value);
+  if (brackets.length == 1 &&
+      brackets.first.start == 0 &&
+      brackets.first.end == value.length - 1) {
+    // potential single complex node
+    // we check [BracketsUtils] beforehand for better performance
+    final singleComplexMatch = RegexUtils.arbComplexNode.firstMatch(value);
+    if (singleComplexMatch != null) {
+      // this is a plural or a context node
+      // add additional nodes to this base path
 
-    final variable = pluralOrContext.group(1)!.trim();
-    final type = pluralOrContext.group(2)!.trim();
-    final content = pluralOrContext.group(3)!;
-    final enumValues = type == 'select' ? <String>{} : null;
-    final isPlural = type == 'plural';
-    for (final part in RegexUtils.arbComplexNodeContent.allMatches(content)) {
-      final partName =
-          isPlural ? _digestPluralKey(part.group(1)!) : part.group(1)!;
-      final partContent = part.group(2)!;
-      TranslationMapBuilder.addStringToMap(
-        map: resultMap,
-        destinationPath: '$basePath($variable).$partName',
-        leafContent: _digestLeafText(partContent),
-      );
+      final variable = singleComplexMatch.group(1)!.trim();
+      final type = singleComplexMatch.group(2)!.trim();
+      final content = singleComplexMatch.group(3)!;
+      final enumValues = type == 'select' ? <String>{} : null;
+      final isPlural = type == 'plural';
+      for (final part in RegexUtils.arbComplexNodeContent.allMatches(content)) {
+        final partName =
+            isPlural ? _digestPluralKey(part.group(1)!) : part.group(1)!;
+        final partContent = part.group(2)!;
+        TranslationMapBuilder.addStringToMap(
+          map: resultMap,
+          destinationPath: '$basePath($variable).$partName',
+          leafContent: _digestLeafText(partContent),
+        );
+        if (enumValues != null) {
+          enumValues.add(partName);
+        }
+      }
       if (enumValues != null) {
-        enumValues.add(partName);
+        return [_DetectedContext(variable, enumValues)];
+      } else {
+        return [];
       }
     }
-    if (enumValues != null) {
-      return _DetectedContext(variable, enumValues);
-    } else {
-      return null;
+  }
+
+  final nameFactory = _DistinctNameFactory();
+  final detectedContexts = <_DetectedContext>[];
+  String result = value;
+  bool modified = false;
+  while (brackets.isNotEmpty) {
+    final currentBracket = brackets.first;
+
+    final match =
+        RegexUtils.arbComplexNode.firstMatch(currentBracket.substring());
+
+    if (match == null) {
+      // invalid bracket, continue to next bracket without any changes
+      brackets.removeAt(0);
+      continue;
     }
-  } else {
+
+    // add linked complex expression
+    final originalParameter = match.group(1)!.trim();
+    final parameter = nameFactory.getNewName(originalParameter);
+    final content = match.group(0)!;
+    final currPath = keyParts
+        .replaceLast('${keyParts.last}${parameter.toCase(CaseStyle.pascal)}');
+
+    final contextResult = _digestEntry(currPath, content, resultMap);
+    detectedContexts.addAll(contextResult);
+
+    // update string
+    result = currentBracket
+        .replaceWith('@:$basePath${parameter.toCase(CaseStyle.pascal)}');
+
+    // re-run because indices changed (old bracket list is invalid now)
+    brackets = BracketsUtils.findTopLevelBrackets(result);
+
+    modified = true;
+  }
+
+  if (!modified) {
     // simple node
     TranslationMapBuilder.addStringToMap(
       map: resultMap,
       destinationPath: basePath,
       leafContent: _digestLeafText(value),
     );
-    return null;
+    return [];
   }
+
+  // contains complex nodes
+  TranslationMapBuilder.addStringToMap(
+    map: resultMap,
+    destinationPath: basePath,
+    leafContent: _digestLeafText(result),
+  );
+
+  return detectedContexts;
 }
 
 /// Transforms arguments to camel case
@@ -205,8 +269,7 @@ void _digestMeta(
     path = '@${keyParts.last}'.toLowerCase();
   } else {
     path =
-        '${keyParts.sublist(0, keyParts.length - 1).join('.')}.@${keyParts.last}'
-            .toLowerCase();
+        '${keyParts.sublist(0, keyParts.length - 1).join('.')}.@${keyParts.last}';
   }
 
   TranslationMapBuilder.addStringToMap(
@@ -225,4 +288,33 @@ class _DetectedContext {
 
 String _contextNameWithSuffix(String contextName, String suffix) {
   return '$contextName$suffix'.toCase(CaseStyle.pascal);
+}
+
+extension on List<String> {
+  /// Replace last element with another, returns the new list
+  List<String> replaceLast(String replace) {
+    final copy = [...this];
+    copy[this.length - 1] = replace;
+    return copy;
+  }
+}
+
+class _DistinctNameFactory {
+  final existingNames = <String>{};
+
+  /// Gets a name which is distinct from the previous ones
+  /// If [raw] already exists, then a number will be appended
+  ///
+  /// E.g.
+  /// apple, banana, apple2, apple3, banana2, ...
+  String getNewName(String raw) {
+    int number = 1;
+    String result = raw;
+    while (existingNames.contains(result)) {
+      number++;
+      result = raw + number.toString();
+    }
+    existingNames.add(result);
+    return result;
+  }
 }

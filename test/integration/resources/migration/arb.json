@@ -1,0 +1,45 @@
+{
+  "@@locale": "en",
+  "page": {
+    "home": {
+      "title": "Welcome {firstName}",
+      "@title": "Welcome message on the Home screen",
+      "inbox": {
+        "countCount(count)": {
+          "zero": "You have no new messages",
+          "one": "You have 1 new message",
+          "other": "You have {count} new messages"
+        },
+        "countSex(sex)": {
+          "male": "Mr",
+          "female": "Ms"
+        },
+        "countSex2(sex)": {
+          "male": "Mr",
+          "female": "Ms"
+        },
+        "count": "@:page.home.inbox.countCount Hello {hi} {arg2} @:page.home.inbox.countSex @:page.home.inbox.countSex2",
+        "@count": "New messages count on the Home screen"
+      },
+      "outbox": {
+        "count(count)": {
+          "zero": "You have no new messages",
+          "one": "You have 1 new message",
+          "other": "You have {count} new messages"
+        },
+        "@count": "New messages count on the Home screen"
+      }
+    }
+  },
+  "common": {
+    "vehicle": {
+      "type(vehicleType)": {
+        "sedan": "Sedan",
+        "cabriolet": "Solid roof cabriolet",
+        "truck": "16 wheel truck",
+        "other": "Other"
+      },
+      "@type": "Vehicle type"
+    }
+  }
+}
