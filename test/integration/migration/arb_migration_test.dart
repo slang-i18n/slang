@@ -14,7 +14,7 @@ void main() {
     expectedOutput = loadResource('migration/arb.json');
   });
 
-  test('compact csv', () {
+  test('migrate arb', () {
     final result = migrateArb(arbInput, false);
     expect(JsonEncoder.withIndent('  ').convert(result), expectedOutput);
   });
