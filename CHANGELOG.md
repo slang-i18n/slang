@@ -1,6 +1,6 @@
 ## 5.12.1
 
-- fix: migrate ARB files with plurals correctly
+- fix: migrate ARB files with plurals/selects correctly
 
 ## 5.12.0
 
