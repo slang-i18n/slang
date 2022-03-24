@@ -25,7 +25,7 @@
         "count(count)": {
           "zero": "You have no new messages",
           "one": "You have 1 new message",
-          "other": "You have {count} new messages"
+          "other": "You have {count} new messages, yeah"
         },
         "@count": "New messages count on the Home screen"
       }
