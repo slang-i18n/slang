@@ -136,3 +136,33 @@ extension InterfaceConfigExt on InterfaceConfig {
     return Interface(name: name, attributes: attributes);
   }
 }
+
+/// Interface collection defined in build.yaml + detected in a locale
+class InterfaceCollection {
+  // FINAL!
+  // Interfaces with no specified path
+  // will be applied globally
+  final Set<Interface> globalInterfaces;
+
+  // MODIFIABLE!
+  // Interface Name -> Interface
+  // This may be smaller than [pathInterfaceNameMap] because the user may
+  // specify an interface without attributes - in this case the interface
+  // will be determined (i.e. created afterwards).
+  final Map<String, Interface> nameInterfaceMap;
+
+  // FINAL!
+  // Path -> Interface Name (all children of this path)
+  final Map<String, String> pathInterfaceContainerMap;
+
+  // FINAL!
+  // Path -> Interface Name (the node at this path itself)
+  final Map<String, String> pathInterfaceNameMap;
+
+  InterfaceCollection({
+    required this.globalInterfaces,
+    required this.nameInterfaceMap,
+    required this.pathInterfaceContainerMap,
+    required this.pathInterfaceNameMap,
+  });
+}

@@ -117,11 +117,10 @@ extension on Map<String, dynamic> {
   List<InterfaceConfig> toInterfaces() {
     return this.entries.map((e) {
       final interfaceName = e.key.toCase(CaseStyle.pascal);
-      final Set<InterfaceAttribute> attributes;
+      final Set<InterfaceAttribute> attributes = {};
       final List<InterfacePath> paths;
       if (e.value is String) {
         // PageData: welcome.pages
-        attributes = {};
         paths = [InterfacePath(e.value)];
       } else {
         // PageData:
@@ -133,57 +132,48 @@ extension on Map<String, dynamic> {
         final interfaceConfig = e.value as Map<String, dynamic>;
 
         // parse attributes
-        final attributesConfig = interfaceConfig['attributes'] as List?;
-        if (attributesConfig != null) {
-          attributes = {};
-          attributesConfig.forEach((attribute) {
-            final match = RegexUtils.attributeRegex.firstMatch(attribute);
-            if (match == null) {
-              throw 'Interface "$interfaceName" has invalid attributes. "$attribute" could not be parsed.';
-            }
+        final attributesConfig = interfaceConfig['attributes'] as List? ?? {};
+        attributesConfig.forEach((attribute) {
+          final match = RegexUtils.attributeRegex.firstMatch(attribute);
+          if (match == null) {
+            throw 'Interface "$interfaceName" has invalid attributes. "$attribute" could not be parsed.';
+          }
 
-            final returnType = match.group(1)!;
-            final optional = match.group(3) != null;
-            final attributeName = match.group(4)!;
-            final parametersRaw = match.group(5);
-            final Set<AttributeParameter> parameters;
-            if (parametersRaw != null) {
-              // remove brackets, split by comma, use Object as type
-              parameters = parametersRaw
-                  .substring(1, parametersRaw.length - 1)
-                  .split(',')
-                  .map(
-                    (p) => AttributeParameter(
-                        parameterName: p.trim(), type: 'Object'),
-                  )
-                  .toSet();
-            } else {
-              parameters = {};
-            }
+          final returnType = match.group(1)!;
+          final optional = match.group(3) != null;
+          final attributeName = match.group(4)!;
+          final parametersRaw = match.group(5);
+          final Set<AttributeParameter> parameters;
+          if (parametersRaw != null) {
+            // remove brackets, split by comma, use Object as type
+            parameters = parametersRaw
+                .substring(1, parametersRaw.length - 1)
+                .split(',')
+                .map(
+                  (p) => AttributeParameter(
+                      parameterName: p.trim(), type: 'Object'),
+                )
+                .toSet();
+          } else {
+            parameters = {};
+          }
 
-            final parsedAttribute = InterfaceAttribute(
-              attributeName: attributeName,
-              returnType: returnType,
-              parameters: parameters,
-              optional: optional,
-            );
+          final parsedAttribute = InterfaceAttribute(
+            attributeName: attributeName,
+            returnType: returnType,
+            parameters: parameters,
+            optional: optional,
+          );
 
-            attributes.add(parsedAttribute);
-          });
-        } else {
-          attributes = {};
-        }
+          attributes.add(parsedAttribute);
+        });
 
         // parse paths
-        final pathsConfig = interfaceConfig['paths'] as List?;
-        if (pathsConfig != null) {
-          paths = pathsConfig
-              .cast<String>()
-              .map((path) => InterfacePath(path))
-              .toList();
-        } else {
-          paths = [];
-        }
+        final pathsConfig = interfaceConfig['paths'] as List? ?? [];
+        paths = pathsConfig
+            .cast<String>()
+            .map((path) => InterfacePath(path))
+            .toList();
 
         if (attributes.isEmpty && paths.isEmpty) {
           throw 'Interface "$interfaceName" has no paths nor attributes.';
