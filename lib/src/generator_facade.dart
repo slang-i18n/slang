@@ -38,7 +38,7 @@ class GeneratorFacade {
     final interfaceMap = <String, Interface>{};
     translationList.forEach((locale) {
       locale.interfaces.forEach((interface) {
-        if (!interfaceMap.containsKey(interface)) {
+        if (!interfaceMap.containsKey(interface.name)) {
           interfaceMap[interface.name] = interface;
         }
       });
