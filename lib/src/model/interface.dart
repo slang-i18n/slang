@@ -45,6 +45,12 @@ class Interface {
     return other is Interface && equalAttributes(attributes, other.attributes);
   }
 
+
+  @override
+  String toString() {
+    return '$name [${attributes.join(', ')}]';
+  }
+
   static bool equalAttributes(
     Set<InterfaceAttribute> a,
     Set<InterfaceAttribute> b,
@@ -110,6 +116,11 @@ class InterfaceAttribute {
         _setEquality.equals(parameters, other.parameters) &&
         optional == other.optional;
   }
+
+  @override
+  String toString() {
+    return '$returnType${optional ? '?' : ''} $attributeName${parameters.isNotEmpty ? '(' + parameters.join(', ') + ')' : ''}';
+  }
 }
 
 class AttributeParameter {
@@ -128,6 +139,11 @@ class AttributeParameter {
     return other is AttributeParameter &&
         parameterName == other.parameterName &&
         type == other.type;
+  }
+
+  @override
+  String toString() {
+    return '$type $parameterName';
   }
 }
 
