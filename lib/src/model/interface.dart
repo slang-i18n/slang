@@ -33,7 +33,11 @@ class Interface {
   final String name;
   final Set<InterfaceAttribute> attributes;
 
-  Interface({required this.name, required this.attributes});
+  /// True, if at least one attribute is a list
+  final bool hasLists;
+
+  Interface({required this.name, required this.attributes})
+      : hasLists = attributes.any((a) => a.returnType.startsWith('List<'));
 
   @override
   int get hashCode {

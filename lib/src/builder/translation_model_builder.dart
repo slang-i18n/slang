@@ -478,9 +478,11 @@ class TranslationModelBuilder {
           interfaceCollection.nameInterfaceMap[specifiedInterface];
       if (existingInterface != null) {
         // user has specified path and attributes for this interface
-        children.forEach((child) {
-          _fixEmptyLists(node: child, interface: existingInterface);
-        });
+        if (existingInterface.hasLists) {
+          children.forEach((child) {
+            _fixEmptyLists(node: child, interface: existingInterface);
+          });
+        }
         return existingInterface;
       }
     }
@@ -540,7 +542,9 @@ class TranslationModelBuilder {
           interfaceCollection.nameInterfaceMap[specifiedInterface];
       if (existingInterface != null) {
         // user has specified path and attributes for this interface
-        _fixEmptyLists(node: node, interface: existingInterface);
+        if (existingInterface.hasLists) {
+          _fixEmptyLists(node: node, interface: existingInterface);
+        }
         return existingInterface;
       }
     }
