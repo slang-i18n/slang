@@ -1,5 +1,6 @@
 ## 5.12.1
 
+- fix: handle empty lists in combination with interfaces
 - fix: migrate ARB files with plurals/selects correctly
 
 ## 5.12.0
