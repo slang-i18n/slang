@@ -129,6 +129,25 @@ void main() {
     });
   });
 
+  group('genericRegex', () {
+    RegExp regex = RegexUtils.genericRegex;
+
+    test('List<String>', () {
+      RegExpMatch? match = regex.firstMatch('List<String>');
+      expect(match?.group(1), 'String');
+    });
+
+    test('List<List<String>>', () {
+      RegExpMatch? match = regex.firstMatch('List<List<String>>');
+      expect(match?.group(1), 'List<String>');
+    });
+
+    test('List<List<String>', () {
+      RegExpMatch? match = regex.firstMatch('List<List<String>');
+      expect(match?.group(1), 'List<String');
+    });
+  });
+
   group('paramHintRegex', () {
     RegExp regex = RegexUtils.paramHintRegex;
 

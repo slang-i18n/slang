@@ -478,6 +478,9 @@ class TranslationModelBuilder {
           interfaceCollection.nameInterfaceMap[specifiedInterface];
       if (existingInterface != null) {
         // user has specified path and attributes for this interface
+        children.forEach((child) {
+          _fixEmptyLists(node: child, interface: existingInterface);
+        });
         return existingInterface;
       }
     }
@@ -537,6 +540,7 @@ class TranslationModelBuilder {
           interfaceCollection.nameInterfaceMap[specifiedInterface];
       if (existingInterface != null) {
         // user has specified path and attributes for this interface
+        _fixEmptyLists(node: node, interface: existingInterface);
         return existingInterface;
       }
     }
@@ -620,6 +624,26 @@ class TranslationModelBuilder {
         optional: false,
       );
     }).toSet();
+  }
+
+  /// Applies the generic type defined in the interface for all empty lists.
+  ///
+  /// By default, empty lists are considered to be List<String>
+  /// But when interfaces are used, it can differ: e.g. List<MyType>
+  static void _fixEmptyLists({
+    required ObjectNode node,
+    required Interface interface,
+  }) {
+    interface.attributes.forEach((attribute) {
+      final child = node.entries[attribute.attributeName];
+      if (child != null && child is ListNode && child.entries.isEmpty) {
+        final match = RegexUtils.genericRegex.firstMatch(attribute.returnType);
+        final generic = match?.group(1);
+        if (generic != null) {
+          child.setGenericType(generic);
+        }
+      }
+    });
   }
 }
 

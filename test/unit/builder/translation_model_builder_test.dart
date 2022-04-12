@@ -1,13 +1,14 @@
 import 'package:fast_i18n/src/builder/translation_model_builder.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/context_type.dart';
+import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/node.dart';
 import 'package:test/test.dart';
 
 import '../../util/build_config_utils.dart';
 
 void main() {
-  group(TranslationModelBuilder.build, () {
+  group('TranslationModelBuilder.build', () {
     test('1 TextNode', () {
       final result = TranslationModelBuilder.build(
         buildConfig: baseConfig,
@@ -136,6 +137,56 @@ void main() {
       expect(textNode.params, {'p1', 'context'});
       expect(textNode.paramTypeMap, {'context': 'GenderCon'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, context: context)}');
+    });
+
+    test('empty lists should take generic type of interface', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: baseConfig.copyWith(interfaces: [
+          InterfaceConfig(
+            name: 'MyInterface',
+            paths: [InterfacePath('myEntry')],
+            attributes: {
+              InterfaceAttribute(
+                attributeName: 'myList',
+                returnType: 'List<MyType>',
+                parameters: {},
+                optional: false,
+              )
+            },
+          ),
+          InterfaceConfig(
+            name: 'MyInterface2',
+            paths: [InterfacePath('myEntry2.*')],
+            attributes: {
+              InterfaceAttribute(
+                attributeName: 'myList',
+                returnType: 'List<MyType2>',
+                parameters: {},
+                optional: false,
+              )
+            },
+          ),
+        ]),
+        locale: defaultLocale,
+        map: {
+          'myEntry': {
+            'myList': [],
+          },
+          'myEntry2': {
+            'child': {
+              'myList': [],
+            },
+          },
+        },
+      );
+
+      final objectNode = result.root.entries['myEntry'] as ObjectNode;
+      expect((objectNode.entries['myList'] as ListNode).genericType, 'MyType');
+
+      final objectNode2 = (result.root.entries['myEntry2'] as ObjectNode)
+          .entries['child'] as ObjectNode;
+      expect(
+          (objectNode2.entries['myList'] as ListNode).genericType, 'MyType2');
     });
   });
 }

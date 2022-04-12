@@ -52,6 +52,11 @@ class RegexUtils {
   static RegExp attributeRegex =
       RegExp(r'^((\w|\<|\>|,)+)(\?)? (\w+)(\(.+\))?$');
 
+  /// Matches the generic of the list
+  /// List<MyGeneric>
+  /// 1 - MyGeneric
+  static RegExp genericRegex = RegExp(r'^List<((?:\w| |<|>)+)>$');
+
   /// Matches a parameter hint in a key if it exists
   /// greet(gender)
   /// 1 - gender

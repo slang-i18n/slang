@@ -45,7 +45,6 @@ class Interface {
     return other is Interface && equalAttributes(attributes, other.attributes);
   }
 
-
   @override
   String toString() {
     return '$name [${attributes.join(', ')}]';
