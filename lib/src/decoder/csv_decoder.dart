@@ -8,11 +8,10 @@ class CsvDecoder extends BaseDecoder {
   Map<String, dynamic> decode(String raw) {
     final compactCSV = isCompactCSV(raw);
     final parsed = const CsvToListConverter().convert(raw);
-    final result = <String, Map<String, dynamic>>{};
 
     if (compactCSV) {
-      // list of locales or "comment"-locales
-      final locales = <String?>[];
+      final result = <String, Map<String, dynamic>>{};
+      final locales = <String?>[]; // list of locales or "comment"-locales
 
       for (final locale in parsed.first) {
         if (locale is! String) {
@@ -70,6 +69,7 @@ class CsvDecoder extends BaseDecoder {
       }
       return result;
     } else {
+      final result = <String, dynamic>{};
       // normal csv
       for (final row in parsed) {
         MapUtils.addStringToMap(

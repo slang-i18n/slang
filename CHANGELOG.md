@@ -1,3 +1,7 @@
+## 5.12.2
+
+- fix: handle csv files with 1st level lists
+
 ## 5.12.1
 
 - fix: handle empty lists in combination with interfaces

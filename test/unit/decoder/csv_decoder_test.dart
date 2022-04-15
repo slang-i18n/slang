@@ -17,5 +17,14 @@ void main() {
             'The leaf "onboarding.pages.1.title" cannot be added because there are missing indices.'),
       );
     });
+
+    test('a root entry may be a list', () {
+      expect(
+        CsvDecoder().decode('hello.0,hi'),
+        {
+          'hello': ['hi']
+        },
+      );
+    });
   });
 }
