@@ -1,5 +1,5 @@
 import 'package:fast_i18n/src/builder/build_config_builder.dart';
-import 'package:fast_i18n/src/builder/translation_map_builder.dart';
+import 'package:fast_i18n/src/decoder/json_decoder.dart';
 import 'package:fast_i18n/src/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
@@ -37,17 +37,11 @@ void main() {
       translationMap: NamespaceTranslationMap()
         ..addTranslations(
           locale: I18nLocale.fromString('en'),
-          translations: TranslationMapBuilder.fromString(
-            FileType.json,
-            enInput,
-          ),
+          translations: JsonDecoder().decode(enInput),
         )
         ..addTranslations(
           locale: I18nLocale.fromString('de'),
-          translations: TranslationMapBuilder.fromString(
-            FileType.json,
-            deInput,
-          ),
+          translations: JsonDecoder().decode(deInput),
         ),
       showPluralHint: false,
     );

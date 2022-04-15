@@ -1,32 +1,11 @@
-import 'package:fast_i18n/src/builder/translation_map_builder.dart';
-import 'package:fast_i18n/src/model/build_config.dart';
+import 'package:fast_i18n/src/utils/map_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('TranslationMapBuilder.fromString', () {
-    group(FileType.csv, () {
-      test('wrong order', () {
-        expect(
-          () => TranslationMapBuilder.fromString(
-            FileType.csv,
-            [
-              'key,en,de',
-              'onboarding.pages.1.title,Second Page,Zweite Seite',
-              'onboarding.pages.0.title,First Page,Erste Seite',
-              'onboarding.pages.0.content,First Page Content,Erster Seiteninhalt',
-            ].join('\r\n'),
-          ),
-          throwsA(
-              'The leaf "onboarding.pages.1.title" cannot be added because there are missing indices.'),
-        );
-      });
-    });
-  });
-
-  group('TranslationMapBuilder.addToList', () {
+  group('addToList', () {
     test('add first item', () {
       final list = [];
-      final added = TranslationMapBuilder.addToList(
+      final added = MapUtils.addToList(
         list: list,
         index: 0,
         element: 'a',
@@ -38,7 +17,7 @@ void main() {
 
     test('no overwrite', () {
       final list = ['a', 'b'];
-      final added = TranslationMapBuilder.addToList(
+      final added = MapUtils.addToList(
         list: list,
         index: 1,
         element: 'b modified',
@@ -50,7 +29,7 @@ void main() {
 
     test('with overwrite', () {
       final list = ['a', 'b'];
-      final added = TranslationMapBuilder.addToList(
+      final added = MapUtils.addToList(
         list: list,
         index: 1,
         element: 'b modified',
@@ -62,13 +41,13 @@ void main() {
 
     test('add two items', () {
       final list = [];
-      final firstAdded = TranslationMapBuilder.addToList(
+      final firstAdded = MapUtils.addToList(
         list: list,
         index: 0,
         element: 'a',
         overwrite: false,
       );
-      final secondAdded = TranslationMapBuilder.addToList(
+      final secondAdded = MapUtils.addToList(
         list: list,
         index: 1,
         element: 'b',
@@ -81,7 +60,7 @@ void main() {
 
     test('add item with missing indices should fail', () {
       final list = ['a'];
-      final added = TranslationMapBuilder.addToList(
+      final added = MapUtils.addToList(
         list: list,
         index: 3,
         element: 'b',

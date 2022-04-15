@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:fast_i18n/src/builder/translation_map_builder.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/utils/brackets_utils.dart';
 import 'package:fast_i18n/src/utils/file_utils.dart';
+import 'package:fast_i18n/src/utils/map_utils.dart';
 import 'package:fast_i18n/src/utils/regex_utils.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
 
@@ -44,7 +44,7 @@ Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
   sourceMap.forEach((key, value) {
     if (key.startsWith('@@')) {
       // add without modifications
-      TranslationMapBuilder.addStringToMap(
+      MapUtils.addStringToMap(
         map: resultMap,
         destinationPath: key,
         leafContent: value.toString(),
@@ -150,7 +150,7 @@ List<_DetectedContext> _digestEntry(
         final partName =
             isPlural ? _digestPluralKey(part.group(1)!) : part.group(1)!;
         final partContent = part.group(2)!;
-        TranslationMapBuilder.addStringToMap(
+        MapUtils.addStringToMap(
           map: resultMap,
           destinationPath: '$basePath($variable).$partName',
           leafContent: _digestLeafText(partContent),
@@ -205,7 +205,7 @@ List<_DetectedContext> _digestEntry(
 
   if (!modified) {
     // simple node
-    TranslationMapBuilder.addStringToMap(
+    MapUtils.addStringToMap(
       map: resultMap,
       destinationPath: basePath,
       leafContent: _digestLeafText(value),
@@ -214,7 +214,7 @@ List<_DetectedContext> _digestEntry(
   }
 
   // contains complex nodes
-  TranslationMapBuilder.addStringToMap(
+  MapUtils.addStringToMap(
     map: resultMap,
     destinationPath: basePath,
     leafContent: _digestLeafText(result),
@@ -272,7 +272,7 @@ void _digestMeta(
         '${keyParts.sublist(0, keyParts.length - 1).join('.')}.@${keyParts.last}';
   }
 
-  TranslationMapBuilder.addStringToMap(
+  MapUtils.addStringToMap(
     map: resultMap,
     destinationPath: path,
     leafContent: description,

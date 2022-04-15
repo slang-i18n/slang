@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:fast_i18n/src/builder/build_config_builder.dart';
-import 'package:fast_i18n/src/builder/translation_map_builder.dart';
+import 'package:fast_i18n/src/decoder/base_decoder.dart';
+import 'package:fast_i18n/src/decoder/csv_decoder.dart';
 import 'package:fast_i18n/src/generator_facade.dart';
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_locale.dart';
@@ -221,10 +222,8 @@ Future<void> generateTranslations({
     final content = await File(file.path).readAsString();
     final Map<String, dynamic> translations;
     try {
-      translations = TranslationMapBuilder.fromString(
-        buildConfig.fileType,
-        content,
-      );
+      translations = BaseDecoder.getDecoderOfFileType(buildConfig.fileType)
+          .decode(content);
     } on FormatException catch (e) {
       print('');
       throw 'File: ${file.path}\n$e';
@@ -238,7 +237,7 @@ Future<void> generateTranslations({
       final namespace = baseFileMatch.group(1)!;
 
       if (buildConfig.fileType == FileType.csv &&
-          TranslationMapBuilder.isCompactCSV(content)) {
+          CsvDecoder.isCompactCSV(content)) {
         // compact csv
 
         translations.forEach((key, value) {
