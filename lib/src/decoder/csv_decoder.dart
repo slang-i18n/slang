@@ -69,8 +69,9 @@ class CsvDecoder extends BaseDecoder {
       }
       return result;
     } else {
-      final result = <String, dynamic>{};
       // normal csv
+
+      final result = <String, dynamic>{};
       for (final row in parsed) {
         MapUtils.addStringToMap(
           map: result,
