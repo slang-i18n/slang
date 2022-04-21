@@ -96,6 +96,23 @@ final Map<String, PluralizationResolver> PLURALIZATION_RESOLVERS = {
       defaultQuantity: Quantity.other,
     ),
   ),
+  // Swedish
+  'sv': PluralizationResolver(
+    cardinal: RuleSet(
+      rules: [
+        const Rule('n == 0', Quantity.zero),
+        const Rule('n == 1', Quantity.one),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+    ordinal: RuleSet(
+      rules: [
+        const Rule("n % 10 == 1 && n % 100 != 11", Quantity.one),
+        const Rule("n % 10 == 2 && n % 100 != 12", Quantity.one),
+      ],
+      defaultQuantity: Quantity.other,
+    ),
+  ),
   // Vietnamese
   'vi': PluralizationResolver(
     cardinal: RuleSet(
