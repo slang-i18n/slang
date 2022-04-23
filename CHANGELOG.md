@@ -2,6 +2,8 @@
 
 - fix: handle csv files with 1st level lists
 
+Add plural support: Swedish (thanks to [Johannes Löhnn](https://github.com/lohnn))
+
 ## 5.12.1
 
 - fix: handle empty lists in combination with interfaces
