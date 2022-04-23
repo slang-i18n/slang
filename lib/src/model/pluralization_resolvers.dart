@@ -1,12 +1,13 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:fast_i18n/src/model/pluralization.dart';
 
 /// Predefined pluralization resolvers
 /// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 /// - sorted by language alphabetically
-/// - the parameter name is "n"
+/// - the parameter names are 'n', 'i' and 'v'
 ///
-/// Contribution would be nice!
-// ignore: non_constant_identifier_names
+/// Contribution would be nice! (Only this file needs to be changed)
 final Map<String, PluralizationResolver> PLURALIZATION_RESOLVERS = {
   // Czech
   'cs:': PluralizationResolver(
@@ -107,8 +108,8 @@ final Map<String, PluralizationResolver> PLURALIZATION_RESOLVERS = {
     ),
     ordinal: RuleSet(
       rules: [
-        const Rule("n % 10 == 1 && n % 100 != 11", Quantity.one),
-        const Rule("n % 10 == 2 && n % 100 != 12", Quantity.one),
+        const Rule('n % 10 == 1 && n % 100 != 11', Quantity.one),
+        const Rule('n % 10 == 2 && n % 100 != 12', Quantity.one),
       ],
       defaultQuantity: Quantity.other,
     ),
