@@ -160,7 +160,7 @@ void _generateHeaderComment({
 void _generateImports(StringBuffer buffer) {
   buffer.writeln();
   buffer.writeln('import \'package:fast_i18n_dart/fast_i18n_dart.dart\';');
-  buffer.writeln('import \'package:flutter/widgets.dart\';');
+  // buffer.writeln('import \'package:flutter/widgets.dart\';');
 }
 
 void _generateParts({
