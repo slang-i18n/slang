@@ -252,6 +252,7 @@ targets:
           output_file_name: translations.g.dart
           output_format: single_file
           locale_handling: true
+          dart_only: false
           namespaces: false
           translate_var: t
           enum_name: AppLocale
@@ -302,6 +303,7 @@ Key|Type|Usage|Default
 `output_file_name`|`String`|output file name|`null`
 `output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
 `locale_handling`|`Boolean`|generate locale handling logic [(i)](#-dependency-injection)|`true`
+`dart_only`|`Boolean`|only generate dart code|`false`
 `namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`

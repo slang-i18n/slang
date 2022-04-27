@@ -42,6 +42,7 @@ class I18nConfigBuilder {
       fallbackStrategy: buildConfig.fallbackStrategy,
       outputFormat: buildConfig.outputFormat,
       renderLocaleHandling: buildConfig.renderLocaleHandling,
+      dartOnly: buildConfig.dartOnly,
       renderedCardinalResolvers: renderedCardinalResolvers,
       renderedOrdinalResolvers: renderedOrdinalResolvers,
       unsupportedPluralLanguages: unsupportedPluralLanguages,

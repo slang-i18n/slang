@@ -61,6 +61,7 @@ class BuildConfigBuilder {
           BuildConfig.defaultOutputFormat,
       renderLocaleHandling:
           map['locale_handling'] ?? BuildConfig.defaultRenderLocaleHandling,
+      dartOnly: map['dart_only'] ?? BuildConfig.defaultDartOnly,
       namespaces: map['namespaces'] ?? BuildConfig.defaultNamespaces,
       translateVar: map['translate_var'] ?? BuildConfig.defaultTranslateVar,
       enumName: map['enum_name'] ?? BuildConfig.defaultEnumName,
