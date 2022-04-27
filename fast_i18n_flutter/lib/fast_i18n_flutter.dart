@@ -11,6 +11,13 @@ extension ExtBaseAppLocale on BaseAppLocale {
   }
 }
 
+extension ExtBaseLocaleSettings<T extends BaseAppLocale> on BaseLocaleSettings<T> {
+  /// Gets supported locales (as Locale objects) with base locale sorted first.
+  List<Locale> get supportedLocales {
+    return localeValues.map((locale) => locale.flutterLocale).toList();
+  }
+}
+
 /// Method B: Advanced
 ///
 /// All widgets using this method will trigger a rebuild when locale changes.

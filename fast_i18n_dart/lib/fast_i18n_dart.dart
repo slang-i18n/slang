@@ -67,11 +67,6 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
   List<String> get supportedLocalesRaw {
     return localeValues.map((locale) => locale.languageTag).toList();
   }
-
-  /// Gets supported locales (as Locale objects) with base locale sorted first.
-  List<Locale> get supportedLocales {
-    return localeValues.map((locale) => locale.flutterLocale).toList();
-  }
 }
 
 class FastI18nDartInternalUtil {
