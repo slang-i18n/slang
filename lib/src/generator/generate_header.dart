@@ -223,16 +223,13 @@ void _generateEnum({
   for (I18nData locale in allLocales) {
     buffer.writeln('\t// \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
     buffer.write('\tstatic const ${locale.locale.enumConstant} = $enumName._(');
-    if (locale.locale.language != null) {
-      buffer.write('languageCode: \'${locale.locale.language}\'');
-    }
+    buffer.write('languageCode: \'${locale.locale.language}\'');
     if (locale.locale.script != null) {
-      if (locale.locale.language != null) buffer.write(', ');
+      buffer.write(', ');
       buffer.write('scriptCode: \'${locale.locale.script}\', ');
     }
     if (locale.locale.country != null) {
-      if (locale.locale.language != null || locale.locale.script != null)
-        buffer.write(', ');
+      buffer.write(', ');
       buffer.write('countryCode: \'${locale.locale.country}\'');
     }
     buffer.writeln(');');
@@ -638,27 +635,27 @@ void _generateExtensions({
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
-  buffer.writeln();
-  buffer.writeln('\tLocale get flutterLocale {');
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    buffer.write(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return const Locale.fromSubtags(');
-    if (locale.locale.language != null)
-      buffer.write('languageCode: \'${locale.locale.language}\'');
-    if (locale.locale.script != null) {
-      if (locale.locale.language != null) buffer.write(', ');
-      buffer.write('scriptCode: \'${locale.locale.script}\', ');
-    }
-    if (locale.locale.country != null) {
-      if (locale.locale.language != null || locale.locale.script != null)
-        buffer.write(', ');
-      buffer.write('countryCode: \'${locale.locale.country}\'');
-    }
-    buffer.writeln(');');
-  }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
+  // buffer.writeln();
+  // buffer.writeln('\tLocale get flutterLocale {');
+  // buffer.writeln('\t\tswitch (this) {');
+  // for (I18nData locale in allLocales) {
+  //   buffer.write(
+  //       '\t\t\tcase $enumName.${locale.locale.enumConstant}: return const Locale.fromSubtags(');
+  //   if (locale.locale.language != null)
+  //     buffer.write('languageCode: \'${locale.locale.language}\'');
+  //   if (locale.locale.script != null) {
+  //     if (locale.locale.language != null) buffer.write(', ');
+  //     buffer.write('scriptCode: \'${locale.locale.script}\', ');
+  //   }
+  //   if (locale.locale.country != null) {
+  //     if (locale.locale.language != null || locale.locale.script != null)
+  //       buffer.write(', ');
+  //     buffer.write('countryCode: \'${locale.locale.country}\'');
+  //   }
+  //   buffer.writeln(');');
+  // }
+  // buffer.writeln('\t\t}');
+  // buffer.writeln('\t}');
   buffer.writeln('}');
 
   // string extension

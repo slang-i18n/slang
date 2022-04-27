@@ -6,13 +6,13 @@ import 'package:fast_i18n/src/utils/regex_utils.dart';
 class I18nLocale {
   static const String UNDEFINED_LANGUAGE = 'und';
 
-  final String? language;
+  final String language;
   final String? script;
   final String? country;
   late String languageTag = _toLanguageTag();
   late String enumConstant = _toEnumConstant();
 
-  I18nLocale({this.language, this.script, this.country});
+  I18nLocale({required this.language, this.script, this.country});
 
   String _toLanguageTag() {
     return [language, script, country]
