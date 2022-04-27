@@ -28,7 +28,7 @@ class BaseAppLocale {
 }
 
 // This locale is *shared* among all packages of an app.
-BaseAppLocale? _currLocale;
+late BaseAppLocale _currLocale;
 
 class BaseLocaleSettings<T extends BaseAppLocale> {
   final T baseLocale;
@@ -44,7 +44,7 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
   }
 
   /// Gets current locale.
-  BaseAppLocale get currentLocale => _currLocale ?? baseLocale;
+  BaseAppLocale get currentLocale => _currLocale;
 
   /// Gets supported locales in string format.
   List<String> get supportedLocalesRaw {

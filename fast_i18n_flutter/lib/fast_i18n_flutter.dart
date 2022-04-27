@@ -91,7 +91,7 @@ class TranslationProvider extends StatefulWidget {
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
-  BaseAppLocale locale = _currLocale;
+  late BaseAppLocale locale;
 
   void setLocale(BaseAppLocale newLocale) {
     setState(() {
