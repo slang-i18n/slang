@@ -163,8 +163,10 @@ void _generateClass(
     if (config.hasPlurals()) {
       buffer.writeln();
       buffer.writeln('\t// ignore: unused_field');
+      if (!localeData.base) buffer.write('\t@override');
       buffer.writeln('\tfinal PluralResolver? _cardinalResolver;');
       buffer.writeln('\t// ignore: unused_field');
+      if (!localeData.base) buffer.write('\t@override');
       buffer.writeln('\tfinal PluralResolver? _ordinalResolver;');
     }
   } else {
