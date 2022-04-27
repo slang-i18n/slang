@@ -247,9 +247,7 @@ void _generateTranslationGetter({
     buffer.writeln(
         '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   }
-  buffer.writeln(
-      '$baseClassName $translateVarInternal = $currLocaleVar.translations;');
-  buffer.writeln('$baseClassName get $translateVar => $translateVarInternal;');
+  buffer.writeln('$baseClassName get $translateVar => $currLocaleVar.translations;');
 
   // t getter (advanced)
   buffer.writeln();
@@ -323,7 +321,6 @@ void _generateLocaleSettings({
   buffer.writeln('\t/// Returns the locale which has been set.');
   buffer.writeln('\tstatic $enumName setLocale($enumName locale) {');
   buffer.writeln('\t\t$currLocaleVar = locale;');
-  buffer.writeln('\t\t$translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln();
   buffer.writeln('\t\tif (WidgetsBinding.instance != null) {');
   buffer.writeln('\t\t\t// force rebuild if TranslationProvider is used');
