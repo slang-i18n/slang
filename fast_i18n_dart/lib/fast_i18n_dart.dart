@@ -12,6 +12,9 @@ class BaseAppLocale {
   String get languageTag => [languageCode, scriptCode, countryCode].where((element) => element != null).join('-');
 
   @override
+  String toString() => '$runtimeType{languageCode: $languageCode, scriptCode: $scriptCode, countryCode: $countryCode}';
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is BaseAppLocale &&
