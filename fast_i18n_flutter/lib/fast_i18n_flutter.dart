@@ -74,13 +74,7 @@ extension ExtAppLocaleUtils<T extends BaseAppLocale> on AppLocaleUtils<T> {
 class Translations {
   Translations._(); // no constructor
 
-  static _StringsZh of(BuildContext context) {
-    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
-    if (inheritedWidget == null) {
-      throw 'Please wrap your app with "TranslationProvider".';
-    }
-    return inheritedWidget.translations;
-  }
+  static _StringsZh of(BuildContext context) => _InheritedLocaleData.of(context).translations;
 }
 
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
@@ -93,13 +87,7 @@ class TranslationProvider extends StatefulWidget {
   @override
   _TranslationProviderState createState() => _TranslationProviderState();
 
-  static _InheritedLocaleData of(BuildContext context) {
-    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
-    if (inheritedWidget == null) {
-      throw 'Please wrap your app with "TranslationProvider".';
-    }
-    return inheritedWidget;
-  }
+  static _InheritedLocaleData of(BuildContext context) => _InheritedLocaleData.of(context);
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
@@ -129,6 +117,14 @@ class _InheritedLocaleData extends InheritedWidget {
   _InheritedLocaleData({required this.locale, required Widget child})
       : translations = locale.translations,
         super(child: child);
+
+  static _InheritedLocaleData of(BuildContext context) {
+    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
+    if (inheritedWidget == null) {
+      throw 'Please wrap your app with "TranslationProvider".';
+    }
+    return inheritedWidget;
+  }
 
   @override
   bool updateShouldNotify(_InheritedLocaleData oldWidget) {
