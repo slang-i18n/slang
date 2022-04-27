@@ -56,27 +56,6 @@ extension ExtAppLocaleUtils<T extends BaseAppLocale> on AppLocaleUtils<T> {
   }
 }
 
-/// Method B: Advanced
-///
-/// All widgets using this method will trigger a rebuild when locale changes.
-/// Use this if you have e.g. a settings page where the user can select the locale during runtime.
-///
-/// Step 1:
-/// wrap your App with
-/// TranslationProvider(
-/// 	child: MyApp()
-/// );
-///
-/// Step 2:
-/// final t = Translations.of(context); // Get t variable.
-/// String a = t.someKey.anotherKey; // Use t variable.
-/// String b = t['someKey.anotherKey']; // Only for edge cases!
-class Translations {
-  Translations._(); // no constructor
-
-  static _StringsZh of(BuildContext context) => InheritedLocaleData.of(context).translations;
-}
-
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
 class TranslationProvider extends StatefulWidget {
