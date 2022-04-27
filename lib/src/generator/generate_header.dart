@@ -267,43 +267,43 @@ void _generateTranslationGetter({
   }
   buffer.writeln('$baseClassName get $translateVar => $currLocaleVar.translations;');
 
-  // t getter (advanced)
-  buffer.writeln();
-  buffer.writeln('/// Method B: Advanced');
-  buffer.writeln('///');
-  buffer.writeln(
-      '/// All widgets using this method will trigger a rebuild when locale changes.');
-  buffer.writeln(
-      '/// Use this if you have e.g. a settings page where the user can select the locale during runtime.');
-  buffer.writeln('///');
-  buffer.writeln('/// Step 1:');
-  buffer.writeln('/// wrap your App with');
-  buffer.writeln('/// TranslationProvider(');
-  buffer.writeln('/// \tchild: MyApp()');
-  buffer.writeln('/// );');
-  buffer.writeln('///');
-  buffer.writeln('/// Step 2:');
-  buffer.writeln(
-      '/// final $translateVar = $translationsClass.of(context); // Get $translateVar variable.');
-  buffer.writeln(
-      '/// String a = $translateVar.someKey.anotherKey; // Use $translateVar variable.');
-  if (config.renderFlatMap) {
-    buffer.writeln(
-        '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
-  }
-  buffer.writeln('class $translationsClass {');
-  buffer.writeln('\t$translationsClass._(); // no constructor');
-  buffer.writeln();
-  buffer.writeln('\tstatic $baseClassName of(BuildContext context) {');
-  buffer.writeln(
-      '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
-  buffer.writeln('\t\tif (inheritedWidget == null) {');
-  buffer.writeln(
-      '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t\treturn inheritedWidget.translations;');
-  buffer.writeln('\t}');
-  buffer.writeln('}');
+  // // t getter (advanced)
+  // buffer.writeln();
+  // buffer.writeln('/// Method B: Advanced');
+  // buffer.writeln('///');
+  // buffer.writeln(
+  //     '/// All widgets using this method will trigger a rebuild when locale changes.');
+  // buffer.writeln(
+  //     '/// Use this if you have e.g. a settings page where the user can select the locale during runtime.');
+  // buffer.writeln('///');
+  // buffer.writeln('/// Step 1:');
+  // buffer.writeln('/// wrap your App with');
+  // buffer.writeln('/// TranslationProvider(');
+  // buffer.writeln('/// \tchild: MyApp()');
+  // buffer.writeln('/// );');
+  // buffer.writeln('///');
+  // buffer.writeln('/// Step 2:');
+  // buffer.writeln(
+  //     '/// final $translateVar = $translationsClass.of(context); // Get $translateVar variable.');
+  // buffer.writeln(
+  //     '/// String a = $translateVar.someKey.anotherKey; // Use $translateVar variable.');
+  // if (config.renderFlatMap) {
+  //   buffer.writeln(
+  //       '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
+  // }
+  // buffer.writeln('class $translationsClass {');
+  // buffer.writeln('\t$translationsClass._(); // no constructor');
+  // buffer.writeln();
+  // buffer.writeln('\tstatic $baseClassName of(BuildContext context) {');
+  // buffer.writeln(
+  //     '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
+  // buffer.writeln('\t\tif (inheritedWidget == null) {');
+  // buffer.writeln(
+  //     '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
+  // buffer.writeln('\t\t}');
+  // buffer.writeln('\t\treturn inheritedWidget.translations;');
+  // buffer.writeln('\t}');
+  // buffer.writeln('}');
 }
 
 void _generateLocaleSettings({

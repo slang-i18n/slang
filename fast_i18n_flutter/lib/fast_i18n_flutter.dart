@@ -11,6 +11,33 @@ extension ExtBaseAppLocale on BaseAppLocale {
   }
 }
 
+/// Method B: Advanced
+///
+/// All widgets using this method will trigger a rebuild when locale changes.
+/// Use this if you have e.g. a settings page where the user can select the locale during runtime.
+///
+/// Step 1:
+/// wrap your App with
+/// TranslationProvider(
+/// 	child: MyApp()
+/// );
+///
+/// Step 2:
+/// final t = Translations.of(context); // Get t variable.
+/// String a = t.someKey.anotherKey; // Use t variable.
+/// String b = t['someKey.anotherKey']; // Only for edge cases!
+class Translations {
+  Translations._(); // no constructor
+
+  static _StringsZh of(BuildContext context) {
+    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
+    if (inheritedWidget == null) {
+      throw 'Please wrap your app with "TranslationProvider".';
+    }
+    return inheritedWidget.translations;
+  }
+}
+
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
 class TranslationProvider extends StatefulWidget {
@@ -50,11 +77,13 @@ class _TranslationProviderState extends State<TranslationProvider> {
 
 class _InheritedLocaleData extends InheritedWidget {
   final BaseAppLocale locale;
+
   Locale get flutterLocale => locale.flutterLocale; // shortcut
   final _StringsZh translations; // store translations to avoid switch call
 
   _InheritedLocaleData({required this.locale, required Widget child})
-      : translations = locale.translations, super(child: child);
+      : translations = locale.translations,
+        super(child: child);
 
   @override
   bool updateShouldNotify(_InheritedLocaleData oldWidget) {
