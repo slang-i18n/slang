@@ -95,6 +95,7 @@ String generateHeader(
       buffer: buffer,
       config: config,
       allLocales: allLocales,
+      baseClassName: baseClassName,
     );
   }
 
@@ -547,20 +548,24 @@ void _generateInstances({
   required StringBuffer buffer,
   required I18nConfig config,
   required List<I18nData> allLocales,
+  required String baseClassName,
 }) {
   buffer.writeln();
   buffer.writeln('// translation instances');
   buffer.writeln();
 
+  buffer.writeln('late final _translationsMap = <AppLocale, $baseClassName>{');
   for (I18nData locale in allLocales) {
     final className = getClassNameRoot(
       baseName: config.baseName,
       locale: locale.locale,
       visibility: config.translationClassVisibility,
     );
-    buffer.writeln(
-        'late $className _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build();');
+    buffer.writeln('\tAppLocale.${locale.locale.languageTag}: $className.build(),');
+    // buffer.writeln(
+    //     'late $className _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build();');
   }
+  buffer.writeln('};');
 }
 
 void _generateExtensions({
@@ -583,12 +588,13 @@ void _generateExtensions({
     buffer.writeln('\t/// [TranslationProvider] is using this instance.');
     buffer.writeln('\t/// The plural resolvers are set via [LocaleSettings].');
     buffer.writeln('\t$baseClassName get translations {');
-    buffer.writeln('\t\tswitch (this) {');
-    for (I18nData locale in allLocales) {
-      buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)};');
-    }
-    buffer.writeln('\t\t}');
+    // buffer.writeln('\t\tswitch (this) {');
+    // for (I18nData locale in allLocales) {
+    //   buffer.writeln(
+    //       '\t\t\tcase $enumName.${locale.locale.enumConstant}: return _translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)};');
+    // }
+    // buffer.writeln('\t\t}');
+    buffer.writeln('\t\treturn _translationsMap[this]!;');
     buffer.writeln('\t}');
   }
 
