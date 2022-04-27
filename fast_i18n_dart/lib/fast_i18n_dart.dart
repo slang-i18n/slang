@@ -35,7 +35,7 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
   /// Uses locale of the device, fallbacks to base locale.
   /// Returns the locale which has been set.
   T useDeviceLocale() {
-    final locale = AppLocaleUtils.findDeviceLocale();
+    final locale = AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
     return setLocale(locale);
   }
 
@@ -56,7 +56,7 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
   /// Fallbacks to base locale.
   /// Returns the locale which has been set.
   T setLocaleRaw(String rawLocale) {
-    final locale = AppLocaleUtils.parse(rawLocale);
+    final locale = AppLocaleUtils(localeValues).parse(rawLocale) ?? baseLocale;
     return setLocale(locale);
   }
 
@@ -69,10 +69,34 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
   }
 }
 
-class FastI18nDartInternalUtil {
+/// Provides utility functions without any side effects.
+class AppLocaleUtils<T extends BaseAppLocale> {
+  final List<T> localeValues;
+
+  AppLocaleUtils(this.localeValues);
+
+  /// Returns the locale of the device as the enum type.
+  /// Fallbacks to base locale.
+  T? findDeviceLocale() {
+    final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+    if (deviceLocale != null) {
+      final typedLocale = _selectLocale(deviceLocale);
+      if (typedLocale != null) {
+        return typedLocale;
+      }
+    }
+    return null;
+  }
+
+  /// Returns the enum type of the raw locale.
+  /// Fallbacks to base locale.
+  T? parse(String rawLocale) {
+    return _selectLocale(rawLocale);
+  }
+
   static final _localeRegex = RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
 
-  static T? selectLocale<T extends BaseAppLocale>(List<T> values, String localeRaw) {
+  T? _selectLocale(String localeRaw) {
     final match = _localeRegex.firstMatch(localeRaw);
     T? selected;
     if (match != null) {
@@ -80,20 +104,20 @@ class FastI18nDartInternalUtil {
       final country = match.group(5);
 
       // match exactly
-      selected = values
+      selected = localeValues
           .cast<T?>()
           .firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll('_', '-'), orElse: () => null);
 
       if (selected == null && language != null) {
         // match language
-        selected = values
+        selected = localeValues
             .cast<T?>()
             .firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);
       }
 
       if (selected == null && country != null) {
         // match country
-        selected = values
+        selected = localeValues
             .cast<T?>()
             .firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);
       }
@@ -101,28 +125,3 @@ class FastI18nDartInternalUtil {
     return selected;
   }
 }
-
-/// Provides utility functions without any side effects.
-class AppLocaleUtils {
-  AppLocaleUtils._(); // no constructor
-
-  /// Returns the locale of the device as the enum type.
-  /// Fallbacks to base locale.
-  static AppLocale findDeviceLocale() {
-    final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
-    if (deviceLocale != null) {
-      final typedLocale = FastI18nDartInternalUtil.selectLocale(deviceLocale);
-      if (typedLocale != null) {
-        return typedLocale;
-      }
-    }
-    return _baseLocale;
-  }
-
-  /// Returns the enum type of the raw locale.
-  /// Fallbacks to base locale.
-  static AppLocale parse(String rawLocale) {
-    return FastI18nDartInternalUtil.selectLocale(rawLocale) ?? _baseLocale;
-  }
-}
-
