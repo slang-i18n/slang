@@ -598,42 +598,43 @@ void _generateExtensions({
     buffer.writeln('\t}');
   }
 
-  buffer.writeln();
-  buffer.writeln('\t/// Gets a new translation instance.');
-  if (config.renderLocaleHandling) {
-    buffer.writeln('\t/// [LocaleSettings] has no effect here.');
-  }
-  buffer.writeln('\t/// Suitable for dependency injection and unit tests.');
-  buffer.writeln('\t///');
-  buffer.writeln('\t/// Usage:');
-  buffer.writeln(
-      '\t/// final t = AppLocale.${config.baseLocale.enumConstant}.build(); // build');
-  buffer.writeln('\t/// String a = t.my.path; // access');
-  if (config.hasPlurals()) {
-    buffer.writeln(
-        '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
-  } else {
-    buffer.writeln('\t$baseClassName build() {');
-  }
-
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    final className = getClassNameRoot(
-      baseName: config.baseName,
-      locale: locale.locale,
-      visibility: config.translationClassVisibility,
-    );
-
-    if (config.hasPlurals()) {
-      buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
-    } else {
-      buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build();');
-    }
-  }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
+  // Seems not to be quite useful - the instances should be immutable, so no need to construct new objects
+  // buffer.writeln();
+  // buffer.writeln('\t/// Gets a new translation instance.');
+  // if (config.renderLocaleHandling) {
+  //   buffer.writeln('\t/// [LocaleSettings] has no effect here.');
+  // }
+  // buffer.writeln('\t/// Suitable for dependency injection and unit tests.');
+  // buffer.writeln('\t///');
+  // buffer.writeln('\t/// Usage:');
+  // buffer.writeln(
+  //     '\t/// final t = AppLocale.${config.baseLocale.enumConstant}.build(); // build');
+  // buffer.writeln('\t/// String a = t.my.path; // access');
+  // if (config.hasPlurals()) {
+  //   buffer.writeln(
+  //       '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
+  // } else {
+  //   buffer.writeln('\t$baseClassName build() {');
+  // }
+  //
+  // buffer.writeln('\t\tswitch (this) {');
+  // for (I18nData locale in allLocales) {
+  //   final className = getClassNameRoot(
+  //     baseName: config.baseName,
+  //     locale: locale.locale,
+  //     visibility: config.translationClassVisibility,
+  //   );
+  //
+  //   if (config.hasPlurals()) {
+  //     buffer.writeln(
+  //         '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+  //   } else {
+  //     buffer.writeln(
+  //         '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build();');
+  //   }
+  // }
+  // buffer.writeln('\t\t}');
+  // buffer.writeln('\t}');
 
   // buffer.writeln();
   // buffer.writeln('\tString get languageTag {');
