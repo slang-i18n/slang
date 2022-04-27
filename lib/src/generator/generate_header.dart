@@ -266,7 +266,7 @@ void _generateTranslationGetter({
     buffer.writeln(
         '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   }
-  buffer.writeln('$baseClassName get $translateVar => $currLocaleVar.translations;');
+  buffer.writeln('$baseClassName get $translateVar => LocaleSettings.instance.currentLocale.translations;');
 
   // // t getter (advanced)
   // buffer.writeln();
@@ -321,11 +321,13 @@ void _generateLocaleSettings({
 }) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
-  final String utilsClass = '${enumName}Utils';
+  // final String utilsClass = '${enumName}Utils';
 
   buffer.writeln();
   buffer.writeln('class $settingsClass extends BaseLocaleSettings<AppLocale> {');
   buffer.writeln('\t$settingsClass._() : super(baseLocale: _baseLocale, localeValues: AppLocale.values);');
+  buffer.writeln();
+  buffer.writeln('\tstatic final instance = $settingsClass._();');
 
   // buffer.writeln();
   // buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
@@ -579,7 +581,7 @@ void _generateExtensions({
   buffer.writeln();
   buffer.writeln('// extensions for $enumName');
   buffer.writeln();
-  buffer.writeln('extension ${enumName}Extensions on $enumName {');
+  buffer.writeln('extension ${enumName}Extensions on BaseAppLocale {');
 
   if (config.renderLocaleHandling) {
     buffer.writeln();

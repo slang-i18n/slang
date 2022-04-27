@@ -27,23 +27,24 @@ class BaseAppLocale {
   int get hashCode => languageCode.hashCode ^ scriptCode.hashCode ^ countryCode.hashCode;
 }
 
+// This locale is *shared* among all packages of an app.
+BaseAppLocale? _currLocale;
+
 class BaseLocaleSettings<T extends BaseAppLocale> {
   final T baseLocale;
   final List<T> localeValues;
 
-  T _currLocale;
-
-  BaseLocaleSettings({required this.baseLocale, required this.localeValues}) : _currLocale = baseLocale;
+  BaseLocaleSettings({required this.baseLocale, required this.localeValues});
 
   /// Sets locale, *but* do not change potential TranslationProvider's state
   /// Useful when you are in a pure Dart environment (without Flutter)
-  T setLocaleExceptProvider(T locale) {
+  BaseAppLocale setLocaleExceptProvider(T locale) {
     _currLocale = locale;
-    return _currLocale;
+    return currentLocale;
   }
 
   /// Gets current locale.
-  T get currentLocale => _currLocale;
+  BaseAppLocale get currentLocale => _currLocale ?? baseLocale;
 
   /// Gets supported locales in string format.
   List<String> get supportedLocalesRaw {
