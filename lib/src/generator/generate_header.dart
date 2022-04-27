@@ -192,9 +192,9 @@ void _generateLocaleVariables({
   buffer.writeln(
       'const $enumName $baseLocaleVar = $enumName.${config.baseLocale.enumConstant};');
 
-  if (config.renderLocaleHandling) {
-    buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
-  }
+  // if (config.renderLocaleHandling) {
+  //   buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
+  // }
 }
 
 void _generateEnum({
