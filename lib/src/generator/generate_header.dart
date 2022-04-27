@@ -629,15 +629,15 @@ void _generateExtensions({
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
-  buffer.writeln();
-  buffer.writeln('\tString get languageTag {');
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return \'${locale.locale.languageTag}\';');
-  }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
+  // buffer.writeln();
+  // buffer.writeln('\tString get languageTag {');
+  // buffer.writeln('\t\tswitch (this) {');
+  // for (I18nData locale in allLocales) {
+  //   buffer.writeln(
+  //       '\t\t\tcase $enumName.${locale.locale.enumConstant}: return \'${locale.locale.languageTag}\';');
+  // }
+  // buffer.writeln('\t\t}');
+  // buffer.writeln('\t}');
 
   // buffer.writeln();
   // buffer.writeln('\tLocale get flutterLocale {');

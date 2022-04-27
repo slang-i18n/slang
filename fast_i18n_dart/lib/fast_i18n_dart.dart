@@ -8,6 +8,8 @@ class BaseAppLocale {
     this.scriptCode,
     this.countryCode,
   });
+
+  String get languageTag => [languageCode, scriptCode, countryCode].where((element) => element != null).join('-');
 }
 
 class FastI18nDartInternalUtil {
