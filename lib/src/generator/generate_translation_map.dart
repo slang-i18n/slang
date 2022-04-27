@@ -26,7 +26,7 @@ String generateTranslationMap(
         'extension on ${getClassNameRoot(baseName: config.baseName, locale: localeData.locale, visibility: config.translationClassVisibility)} {');
     buffer.writeln('\tMap<String, dynamic> _buildFlatMap() {');
 
-    buffer.writeln('\t\treturn {');
+    buffer.writeln('\t\treturn <String, dynamic>{');
     _generateTranslationMapRecursive(
       buffer: buffer,
       curr: localeData.root,

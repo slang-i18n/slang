@@ -155,16 +155,22 @@ void _generateClass(
 
       buffer.writeln();
       buffer.writeln('\t// Internal flat map initialized lazily');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
       buffer.writeln(
-          '\tlate final Map<String, dynamic> _flatMap = _buildFlatMap();');
+          'late final Map<String, dynamic> _flatMap = _buildFlatMap();');
     }
 
     if (config.hasPlurals()) {
       buffer.writeln();
-      buffer.writeln('\t// ignore: unused_field');
-      buffer.writeln('\tfinal PluralResolver? _cardinalResolver;');
-      buffer.writeln('\t// ignore: unused_field');
-      buffer.writeln('\tfinal PluralResolver? _ordinalResolver;');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
+      buffer.writeln(
+          'final PluralResolver? _cardinalResolver; // ignore: unused_field');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
+      buffer.writeln(
+          'final PluralResolver? _ordinalResolver; // ignore: unused_field');
     }
   } else {
     if (callSuperConstructor) {
@@ -177,7 +183,6 @@ void _generateClass(
 
   // root
   buffer.writeln();
-  buffer.writeln('\t// ignore: unused_field');
   if (!localeData.base) {
     buffer.write('\t@override ');
   } else {
@@ -185,10 +190,11 @@ void _generateClass(
   }
 
   if (root) {
-    buffer.writeln('late final $rootClassName _root = this;');
+    buffer.write('late final $rootClassName _root = this;');
   } else {
-    buffer.writeln('final $rootClassName _root;');
+    buffer.write('final $rootClassName _root;');
   }
+  buffer.writeln(' // ignore: unused_field');
 
   buffer.writeln();
   buffer.writeln('\t// Translations');
