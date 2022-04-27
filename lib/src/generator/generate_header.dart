@@ -438,19 +438,7 @@ void _generateLocaleSettings({
     buffer.writeln('\t\t}');
 
     buffer.writeln('\t\tfor (final curr in locales) {');
-    buffer.writeln('\t\t\tswitch(curr) {');
-    for (final locale in allLocales) {
-      final className = getClassNameRoot(
-        baseName: config.baseName,
-        locale: locale.locale,
-        visibility: config.translationClassVisibility,
-      );
-      buffer.writeln('\t\t\t\tcase $enumName.${locale.locale.enumConstant}:');
-      buffer.writeln(
-          '\t\t\t\t\t_translations${locale.locale.languageTag.toCaseOfLocale(CaseStyle.pascal)} = $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
-      buffer.writeln('\t\t\t\t\tbreak;');
-    }
-    buffer.writeln('\t\t\t}');
+    buffer.writeln('\t\t\t_translationsMap[curr] = curr.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln('\t\t}');
 
     buffer.writeln('\t}');
