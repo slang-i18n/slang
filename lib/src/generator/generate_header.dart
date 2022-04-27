@@ -106,15 +106,15 @@ String generateHeader(
     baseClassName: baseClassName,
   );
 
-  // if (config.renderLocaleHandling) {
-  //   _generateTranslationWrapper(
-  //     buffer: buffer,
-  //     config: config,
-  //     baseClassName: baseClassName,
-  //     translationProviderKey: translationProviderKey,
-  //     currLocaleVar: currLocaleVar,
-  //   );
-  // }
+  if (config.renderLocaleHandling) {
+    _generateTranslationWrapper(
+      buffer: buffer,
+      config: config,
+      baseClassName: baseClassName,
+      translationProviderKey: translationProviderKey,
+      currLocaleVar: currLocaleVar,
+    );
+  }
 
   _generatePluralResolvers(
     buffer: buffer,
@@ -686,16 +686,16 @@ void _generateExtensions({
   buffer.writeln('}');
 }
 
-// void _generateTranslationWrapper({
-//   required StringBuffer buffer,
-//   required I18nConfig config,
-//   required String baseClassName,
-//   required String translationProviderKey,
-//   required String currLocaleVar,
-// }) {
+void _generateTranslationWrapper({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String baseClassName,
+  required String translationProviderKey,
+  required String currLocaleVar,
+}) {
 //   const String translationProviderClass = 'TranslationProvider';
 //   const String translationProviderStateClass = '_TranslationProviderState';
-//   const String inheritedClass = '_InheritedLocaleData';
+  const String inheritedClass = 'InheritedLocaleData';
 //   final String enumName = config.enumName;
 //
 //   // TranslationProvider
@@ -748,7 +748,12 @@ void _generateExtensions({
 //   buffer.writeln('\t}');
 //   buffer.writeln('}');
 //
-//   // InheritedLocaleData
+
+  // InheritedLocaleData
+  buffer.writeln();
+  buffer.writeln('extension Ext$inheritedClass on $inheritedClass {');
+  buffer.writeln('\t$baseClassName get translations => locale.translations;');
+  buffer.writeln('}');
 //   buffer.writeln();
 //   buffer.writeln('class $inheritedClass extends InheritedWidget {');
 //   buffer.writeln('\tfinal $enumName locale;');
@@ -767,7 +772,7 @@ void _generateExtensions({
 //   buffer.writeln('\t\treturn oldWidget.locale != locale;');
 //   buffer.writeln('\t}');
 //   buffer.writeln('}');
-// }
+}
 
 void _generatePluralResolvers({
   required StringBuffer buffer,

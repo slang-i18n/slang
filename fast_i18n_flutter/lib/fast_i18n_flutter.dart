@@ -74,7 +74,7 @@ extension ExtAppLocaleUtils<T extends BaseAppLocale> on AppLocaleUtils<T> {
 class Translations {
   Translations._(); // no constructor
 
-  static _StringsZh of(BuildContext context) => _InheritedLocaleData.of(context).translations;
+  static _StringsZh of(BuildContext context) => InheritedLocaleData.of(context).translations;
 }
 
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
@@ -87,7 +87,7 @@ class TranslationProvider extends StatefulWidget {
   @override
   _TranslationProviderState createState() => _TranslationProviderState();
 
-  static _InheritedLocaleData of(BuildContext context) => _InheritedLocaleData.of(context);
+  static InheritedLocaleData of(BuildContext context) => InheritedLocaleData.of(context);
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
@@ -101,25 +101,22 @@ class _TranslationProviderState extends State<TranslationProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return _InheritedLocaleData(
+    return InheritedLocaleData(
       locale: locale,
       child: widget.child,
     );
   }
 }
 
-class _InheritedLocaleData extends InheritedWidget {
+class InheritedLocaleData extends InheritedWidget {
   final BaseAppLocale locale;
 
   Locale get flutterLocale => locale.flutterLocale; // shortcut
-  final _StringsZh translations; // store translations to avoid switch call
 
-  _InheritedLocaleData({required this.locale, required Widget child})
-      : translations = locale.translations,
-        super(child: child);
+  InheritedLocaleData({required this.locale, required Widget child}) : super(child: child);
 
-  static _InheritedLocaleData of(BuildContext context) {
-    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();
+  static InheritedLocaleData of(BuildContext context) {
+    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<InheritedLocaleData>();
     if (inheritedWidget == null) {
       throw 'Please wrap your app with "TranslationProvider".';
     }
@@ -127,7 +124,7 @@ class _InheritedLocaleData extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(_InheritedLocaleData oldWidget) {
+  bool updateShouldNotify(InheritedLocaleData oldWidget) {
     return oldWidget.locale != locale;
   }
 }
