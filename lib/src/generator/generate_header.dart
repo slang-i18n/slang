@@ -323,69 +323,69 @@ void _generateLocaleSettings({
   final String utilsClass = '${enumName}Utils';
 
   buffer.writeln();
-  buffer.writeln('class $settingsClass {');
-  buffer.writeln('\t$settingsClass._(); // no constructor');
+  buffer.writeln('class $settingsClass extends BaseLocaleSettings<AppLocale> {');
+  buffer.writeln('\t$settingsClass._() : super(baseLocale: TODO, localeValues: AppLocale.values);');
 
-  buffer.writeln();
-  buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
-  buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\tstatic $enumName useDeviceLocale() {');
-  buffer.writeln('\t\tfinal locale = $utilsClass.findDeviceLocale();');
-  buffer.writeln('\t\treturn setLocale(locale);');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Sets locale');
-  buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\tstatic $enumName setLocale($enumName locale) {');
-  buffer.writeln('\t\t$currLocaleVar = locale;');
-  buffer.writeln();
-  buffer.writeln('\t\tif (WidgetsBinding.instance != null) {');
-  buffer.writeln('\t\t\t// force rebuild if TranslationProvider is used');
-  buffer.writeln(
-      '\t\t\t$translationProviderKey.currentState?.setLocale($currLocaleVar);');
-  buffer.writeln('\t\t}');
-  buffer.writeln();
-  buffer.writeln('\t\treturn $currLocaleVar;');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Sets locale using string tag (e.g. en_US, de-DE, fr)');
-  buffer.writeln('\t/// Fallbacks to base locale.');
-  buffer.writeln('\t/// Returns the locale which has been set.');
-  buffer.writeln('\tstatic $enumName setLocaleRaw(String rawLocale) {');
-  buffer.writeln('\t\tfinal locale = $utilsClass.parse(rawLocale);');
-  buffer.writeln('\t\treturn setLocale(locale);');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Gets current locale.');
-  buffer.writeln('\tstatic $enumName get currentLocale {');
-  buffer.writeln('\t\treturn $currLocaleVar;');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Gets base locale.');
-  buffer.writeln('\tstatic $enumName get baseLocale {');
-  buffer.writeln('\t\treturn $baseLocaleVar;');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Gets supported locales in string format.');
-  buffer.writeln('\tstatic List<String> get supportedLocalesRaw {');
-  buffer.writeln('\t\treturn $enumName.values');
-  buffer.writeln('\t\t\t.map((locale) => locale.languageTag)');
-  buffer.writeln('\t\t\t.toList();');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln(
-      '\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
-  buffer.writeln('\tstatic List<Locale> get supportedLocales {');
-  buffer.writeln('\t\treturn $enumName.values');
-  buffer.writeln('\t\t\t.map((locale) => locale.flutterLocale)');
-  buffer.writeln('\t\t\t.toList();');
-  buffer.writeln('\t}');
+  // buffer.writeln();
+  // buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
+  // buffer.writeln('\t/// Returns the locale which has been set.');
+  // buffer.writeln('\tstatic $enumName useDeviceLocale() {');
+  // buffer.writeln('\t\tfinal locale = $utilsClass.findDeviceLocale();');
+  // buffer.writeln('\t\treturn setLocale(locale);');
+  // buffer.writeln('\t}');
+  //
+  // buffer.writeln();
+  // buffer.writeln('\t/// Sets locale');
+  // buffer.writeln('\t/// Returns the locale which has been set.');
+  // buffer.writeln('\tstatic $enumName setLocale($enumName locale) {');
+  // buffer.writeln('\t\t$currLocaleVar = locale;');
+  // buffer.writeln();
+  // buffer.writeln('\t\tif (WidgetsBinding.instance != null) {');
+  // buffer.writeln('\t\t\t// force rebuild if TranslationProvider is used');
+  // buffer.writeln(
+  //     '\t\t\t$translationProviderKey.currentState?.setLocale($currLocaleVar);');
+  // buffer.writeln('\t\t}');
+  // buffer.writeln();
+  // buffer.writeln('\t\treturn $currLocaleVar;');
+  // buffer.writeln('\t}');
+  //
+  // buffer.writeln();
+  // buffer.writeln('\t/// Sets locale using string tag (e.g. en_US, de-DE, fr)');
+  // buffer.writeln('\t/// Fallbacks to base locale.');
+  // buffer.writeln('\t/// Returns the locale which has been set.');
+  // buffer.writeln('\tstatic $enumName setLocaleRaw(String rawLocale) {');
+  // buffer.writeln('\t\tfinal locale = $utilsClass.parse(rawLocale);');
+  // buffer.writeln('\t\treturn setLocale(locale);');
+  // buffer.writeln('\t}');
+  //
+  // buffer.writeln();
+  // buffer.writeln('\t/// Gets current locale.');
+  // buffer.writeln('\tstatic $enumName get currentLocale {');
+  // buffer.writeln('\t\treturn $currLocaleVar;');
+  // buffer.writeln('\t}');
+  //
+  // buffer.writeln();
+  // buffer.writeln('\t/// Gets base locale.');
+  // buffer.writeln('\tstatic $enumName get baseLocale {');
+  // buffer.writeln('\t\treturn $baseLocaleVar;');
+  // buffer.writeln('\t}');
+  //
+  // buffer.writeln();
+  // buffer.writeln('\t/// Gets supported locales in string format.');
+  // buffer.writeln('\tstatic List<String> get supportedLocalesRaw {');
+  // buffer.writeln('\t\treturn $enumName.values');
+  // buffer.writeln('\t\t\t.map((locale) => locale.languageTag)');
+  // buffer.writeln('\t\t\t.toList();');
+  // buffer.writeln('\t}');
+  //
+  // buffer.writeln();
+  // buffer.writeln(
+  //     '\t/// Gets supported locales (as Locale objects) with base locale sorted first.');
+  // buffer.writeln('\tstatic List<Locale> get supportedLocales {');
+  // buffer.writeln('\t\treturn $enumName.values');
+  // buffer.writeln('\t\t\t.map((locale) => locale.flutterLocale)');
+  // buffer.writeln('\t\t\t.toList();');
+  // buffer.writeln('\t}');
 
   if (config.hasPlurals()) {
     buffer.writeln();
