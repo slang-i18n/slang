@@ -159,6 +159,7 @@ void _generateHeaderComment({
 
 void _generateImports(StringBuffer buffer) {
   buffer.writeln();
+  buffer.writeln('import \'package:fast_i18n_dart/fast_i18n_dart.dart\';');
   buffer.writeln('import \'package:flutter/widgets.dart\';');
 }
 
@@ -215,10 +216,26 @@ void _generateEnum({
   buffer.writeln(
       '/// - if (LocaleSettings.currentLocale == $baseLocaleEnumConstant) // locale check');
 
-  buffer.writeln('enum $enumName {');
+  buffer.writeln('class $enumName extends BaseAppLocale {');
+  buffer.writeln('\tconst $enumName._({String? languageCode, String? scriptCode, String? countryCode})');
+  buffer.writeln('\t\t\t: super(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);');
+  buffer.writeln('');
   for (I18nData locale in allLocales) {
-    buffer.writeln(
-        '\t${locale.locale.enumConstant}, // \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
+    buffer.writeln('\t// \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
+    buffer.write('\tstatic const ${locale.locale.enumConstant} = $enumName._(');
+    if (locale.locale.language != null) {
+      buffer.write('languageCode: \'${locale.locale.language}\'');
+    }
+    if (locale.locale.script != null) {
+      if (locale.locale.language != null) buffer.write(', ');
+      buffer.write('scriptCode: \'${locale.locale.script}\', ');
+    }
+    if (locale.locale.country != null) {
+      if (locale.locale.language != null || locale.locale.script != null)
+        buffer.write(', ');
+      buffer.write('countryCode: \'${locale.locale.country}\'');
+    }
+    buffer.writeln(');');
   }
   buffer.writeln('}');
 }
