@@ -35,25 +35,11 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
 
   BaseLocaleSettings({required this.baseLocale, required this.localeValues}) : _currLocale = baseLocale;
 
-  /// Sets locale
-  /// Returns the locale which has been set.
-  T setLocale(T locale) {
+  /// Sets locale, *but* do not change potential TranslationProvider's state
+  /// Useful when you are in a pure Dart environment (without Flutter)
+  T setLocaleExceptProvider(T locale) {
     _currLocale = locale;
-
-    if (WidgetsBinding.instance != null) {
-      // force rebuild if TranslationProvider is used
-      _translationProviderKey.currentState?.setLocale(_currLocale);
-    }
-
     return _currLocale;
-  }
-
-  /// Sets locale using string tag (e.g. en_US, de-DE, fr)
-  /// Fallbacks to base locale.
-  /// Returns the locale which has been set.
-  T setLocaleRaw(String rawLocale) {
-    final locale = AppLocaleUtils(localeValues).parse(rawLocale) ?? baseLocale;
-    return setLocale(locale);
   }
 
   /// Gets current locale.

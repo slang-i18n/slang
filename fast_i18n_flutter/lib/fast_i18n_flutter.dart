@@ -19,6 +19,27 @@ extension ExtBaseLocaleSettings<T extends BaseAppLocale> on BaseLocaleSettings<T
     return setLocale(locale);
   }
 
+  /// Sets locale
+  /// Returns the locale which has been set.
+  T setLocale(T locale) {
+    setLocaleExceptProvider(locale);
+
+    if (WidgetsBinding.instance != null) {
+      // force rebuild if TranslationProvider is used
+      _translationProviderKey.currentState?.setLocale(locale);
+    }
+
+    return locale;
+  }
+
+  /// Sets locale using string tag (e.g. en_US, de-DE, fr)
+  /// Fallbacks to base locale.
+  /// Returns the locale which has been set.
+  T setLocaleRaw(String rawLocale) {
+    final locale = AppLocaleUtils(localeValues).parse(rawLocale) ?? baseLocale;
+    return setLocale(locale);
+  }
+
   /// Gets supported locales (as Locale objects) with base locale sorted first.
   List<Locale> get supportedLocales {
     return localeValues.map((locale) => locale.flutterLocale).toList();
