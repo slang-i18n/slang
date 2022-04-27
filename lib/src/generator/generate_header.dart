@@ -437,7 +437,7 @@ void _generateLocaleSettings({
     buffer.writeln('\t\t\t}');
     buffer.writeln('\t\t}');
 
-    buffer.writeln('\t\tlocales.forEach((curr) {');
+    buffer.writeln('\t\tfor (final curr in locales) {');
     buffer.writeln('\t\t\tswitch(curr) {');
     for (final locale in allLocales) {
       final className = getClassNameRoot(
@@ -451,7 +451,7 @@ void _generateLocaleSettings({
       buffer.writeln('\t\t\t\t\tbreak;');
     }
     buffer.writeln('\t\t\t}');
-    buffer.writeln('\t\t});');
+    buffer.writeln('\t\t}');
 
     buffer.writeln('\t}');
   }
