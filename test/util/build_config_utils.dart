@@ -15,7 +15,7 @@ final baseConfig = BuildConfig(
   outputFileName: BuildConfig.defaultOutputFileName,
   outputFormat: BuildConfig.defaultOutputFormat,
   renderLocaleHandling: BuildConfig.defaultRenderLocaleHandling,
-  dartOnly: BuildConfig.dartOnly,
+  dartOnly: BuildConfig.defaultDartOnly,
   namespaces: BuildConfig.defaultNamespaces,
   translateVar: BuildConfig.defaultTranslateVar,
   enumName: BuildConfig.defaultEnumName,
