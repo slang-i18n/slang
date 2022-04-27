@@ -105,15 +105,15 @@ String generateHeader(
     baseClassName: baseClassName,
   );
 
-  if (config.renderLocaleHandling) {
-    _generateTranslationWrapper(
-      buffer: buffer,
-      config: config,
-      baseClassName: baseClassName,
-      translationProviderKey: translationProviderKey,
-      currLocaleVar: currLocaleVar,
-    );
-  }
+  // if (config.renderLocaleHandling) {
+  //   _generateTranslationWrapper(
+  //     buffer: buffer,
+  //     config: config,
+  //     baseClassName: baseClassName,
+  //     translationProviderKey: translationProviderKey,
+  //     currLocaleVar: currLocaleVar,
+  //   );
+  // }
 
   _generatePluralResolvers(
     buffer: buffer,
@@ -673,88 +673,88 @@ void _generateExtensions({
   buffer.writeln('}');
 }
 
-void _generateTranslationWrapper({
-  required StringBuffer buffer,
-  required I18nConfig config,
-  required String baseClassName,
-  required String translationProviderKey,
-  required String currLocaleVar,
-}) {
-  const String translationProviderClass = 'TranslationProvider';
-  const String translationProviderStateClass = '_TranslationProviderState';
-  const String inheritedClass = '_InheritedLocaleData';
-  final String enumName = config.enumName;
-
-  // TranslationProvider
-  buffer.writeln();
-  buffer.writeln('// wrappers');
-  buffer.writeln();
-  buffer.writeln(
-      'GlobalKey<$translationProviderStateClass> $translationProviderKey = GlobalKey<$translationProviderStateClass>();');
-  buffer.writeln();
-  buffer.writeln('class $translationProviderClass extends StatefulWidget {');
-  buffer.writeln(
-      '\t$translationProviderClass({required this.child}) : super(key: $translationProviderKey);');
-  buffer.writeln();
-  buffer.writeln('\tfinal Widget child;');
-  buffer.writeln();
-  buffer.writeln('\t@override');
-  buffer.writeln(
-      '\t$translationProviderStateClass createState() => $translationProviderStateClass();');
-
-  buffer.writeln();
-  buffer.writeln('\tstatic $inheritedClass of(BuildContext context) {');
-  buffer.writeln(
-      '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
-  buffer.writeln('\t\tif (inheritedWidget == null) {');
-  buffer.writeln(
-      '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t\treturn inheritedWidget;');
-  buffer.writeln('\t}');
-
-  buffer.writeln('}');
-
-  buffer.writeln();
-  buffer.writeln(
-      'class $translationProviderStateClass extends State<$translationProviderClass> {');
-  buffer.writeln('\t$enumName locale = $currLocaleVar;');
-  buffer.writeln();
-  buffer.writeln('\tvoid setLocale($enumName newLocale) {');
-  buffer.writeln('\t\tsetState(() {');
-  buffer.writeln('\t\t\tlocale = newLocale;');
-  buffer.writeln('\t\t});');
-  buffer.writeln('\t}');
-  buffer.writeln();
-  buffer.writeln('\t@override');
-  buffer.writeln('\tWidget build(BuildContext context) {');
-  buffer.writeln('\t\treturn $inheritedClass(');
-  buffer.writeln('\t\t\tlocale: locale,');
-  buffer.writeln('\t\t\tchild: widget.child,');
-  buffer.writeln('\t\t);');
-  buffer.writeln('\t}');
-  buffer.writeln('}');
-
-  // InheritedLocaleData
-  buffer.writeln();
-  buffer.writeln('class $inheritedClass extends InheritedWidget {');
-  buffer.writeln('\tfinal $enumName locale;');
-  buffer.writeln(
-      '\tLocale get flutterLocale => locale.flutterLocale; // shortcut');
-  buffer.writeln(
-      '\tfinal $baseClassName translations; // store translations to avoid switch call');
-  buffer.writeln();
-  buffer.writeln(
-      '\t$inheritedClass({required this.locale, required Widget child})');
-  buffer.writeln(
-      '\t\t: translations = locale.translations, super(child: child);');
-  buffer.writeln();
-  buffer.writeln('\t@override');
-  buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
-  buffer.writeln('\t\treturn oldWidget.locale != locale;');
-  buffer.writeln('\t}');
-  buffer.writeln('}');
-}
+// void _generateTranslationWrapper({
+//   required StringBuffer buffer,
+//   required I18nConfig config,
+//   required String baseClassName,
+//   required String translationProviderKey,
+//   required String currLocaleVar,
+// }) {
+//   const String translationProviderClass = 'TranslationProvider';
+//   const String translationProviderStateClass = '_TranslationProviderState';
+//   const String inheritedClass = '_InheritedLocaleData';
+//   final String enumName = config.enumName;
+//
+//   // TranslationProvider
+//   buffer.writeln();
+//   buffer.writeln('// wrappers');
+//   buffer.writeln();
+//   buffer.writeln(
+//       'GlobalKey<$translationProviderStateClass> $translationProviderKey = GlobalKey<$translationProviderStateClass>();');
+//   buffer.writeln();
+//   buffer.writeln('class $translationProviderClass extends StatefulWidget {');
+//   buffer.writeln(
+//       '\t$translationProviderClass({required this.child}) : super(key: $translationProviderKey);');
+//   buffer.writeln();
+//   buffer.writeln('\tfinal Widget child;');
+//   buffer.writeln();
+//   buffer.writeln('\t@override');
+//   buffer.writeln(
+//       '\t$translationProviderStateClass createState() => $translationProviderStateClass();');
+//
+//   buffer.writeln();
+//   buffer.writeln('\tstatic $inheritedClass of(BuildContext context) {');
+//   buffer.writeln(
+//       '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
+//   buffer.writeln('\t\tif (inheritedWidget == null) {');
+//   buffer.writeln(
+//       '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
+//   buffer.writeln('\t\t}');
+//   buffer.writeln('\t\treturn inheritedWidget;');
+//   buffer.writeln('\t}');
+//
+//   buffer.writeln('}');
+//
+//   buffer.writeln();
+//   buffer.writeln(
+//       'class $translationProviderStateClass extends State<$translationProviderClass> {');
+//   buffer.writeln('\t$enumName locale = $currLocaleVar;');
+//   buffer.writeln();
+//   buffer.writeln('\tvoid setLocale($enumName newLocale) {');
+//   buffer.writeln('\t\tsetState(() {');
+//   buffer.writeln('\t\t\tlocale = newLocale;');
+//   buffer.writeln('\t\t});');
+//   buffer.writeln('\t}');
+//   buffer.writeln();
+//   buffer.writeln('\t@override');
+//   buffer.writeln('\tWidget build(BuildContext context) {');
+//   buffer.writeln('\t\treturn $inheritedClass(');
+//   buffer.writeln('\t\t\tlocale: locale,');
+//   buffer.writeln('\t\t\tchild: widget.child,');
+//   buffer.writeln('\t\t);');
+//   buffer.writeln('\t}');
+//   buffer.writeln('}');
+//
+//   // InheritedLocaleData
+//   buffer.writeln();
+//   buffer.writeln('class $inheritedClass extends InheritedWidget {');
+//   buffer.writeln('\tfinal $enumName locale;');
+//   buffer.writeln(
+//       '\tLocale get flutterLocale => locale.flutterLocale; // shortcut');
+//   buffer.writeln(
+//       '\tfinal $baseClassName translations; // store translations to avoid switch call');
+//   buffer.writeln();
+//   buffer.writeln(
+//       '\t$inheritedClass({required this.locale, required Widget child})');
+//   buffer.writeln(
+//       '\t\t: translations = locale.translations, super(child: child);');
+//   buffer.writeln();
+//   buffer.writeln('\t@override');
+//   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
+//   buffer.writeln('\t\treturn oldWidget.locale != locale;');
+//   buffer.writeln('\t}');
+//   buffer.writeln('}');
+// }
 
 void _generatePluralResolvers({
   required StringBuffer buffer,
