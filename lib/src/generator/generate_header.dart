@@ -217,7 +217,7 @@ void _generateEnum({
       '/// - if (LocaleSettings.currentLocale == $baseLocaleEnumConstant) // locale check');
 
   buffer.writeln('class $enumName extends BaseAppLocale {');
-  buffer.writeln('\tconst $enumName._({String? languageCode, String? scriptCode, String? countryCode})');
+  buffer.writeln('\tconst $enumName._({required String languageCode, String? scriptCode, String? countryCode})');
   buffer.writeln('\t\t\t: super(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);');
   buffer.writeln('');
   for (I18nData locale in allLocales) {
@@ -234,6 +234,10 @@ void _generateEnum({
     }
     buffer.writeln(');');
   }
+  buffer.writeln('');
+  buffer.write('\tstatic const values = [');
+  buffer.write(allLocales.map((locale) => locale.locale.enumConstant).join(', '));
+  buffer.writeln('];');
   buffer.writeln('}');
 }
 
