@@ -155,6 +155,7 @@ void _generateClass(
 
       buffer.writeln();
       buffer.writeln('\t// Internal flat map initialized lazily');
+      if (!localeData.base) buffer.write('\t@override');
       buffer.writeln(
           '\tlate final Map<String, dynamic> _flatMap = _buildFlatMap();');
     }
@@ -177,7 +178,6 @@ void _generateClass(
 
   // root
   buffer.writeln();
-  buffer.writeln('\t// ignore: unused_field');
   if (!localeData.base) {
     buffer.write('\t@override ');
   } else {
@@ -185,10 +185,11 @@ void _generateClass(
   }
 
   if (root) {
-    buffer.writeln('late final $rootClassName _root = this;');
+    buffer.write('late final $rootClassName _root = this;');
   } else {
-    buffer.writeln('final $rootClassName _root;');
+    buffer.write('final $rootClassName _root;');
   }
+  buffer.writeln(' // ignore: unused_field');
 
   buffer.writeln();
   buffer.writeln('\t// Translations');
