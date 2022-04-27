@@ -12,9 +12,26 @@ extension ExtBaseAppLocale on BaseAppLocale {
 }
 
 extension ExtBaseLocaleSettings<T extends BaseAppLocale> on BaseLocaleSettings<T> {
+  /// Uses locale of the device, fallbacks to base locale.
+  /// Returns the locale which has been set.
+  T useDeviceLocale() {
+    final locale = AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
+    return setLocale(locale);
+  }
+
   /// Gets supported locales (as Locale objects) with base locale sorted first.
   List<Locale> get supportedLocales {
     return localeValues.map((locale) => locale.flutterLocale).toList();
+  }
+}
+
+extension ExtAppLocaleUtils<T extends BaseAppLocale> on AppLocaleUtils<T> {
+  /// Returns the locale of the device as the enum type.
+  /// Fallbacks to base locale.
+  T? findDeviceLocale() {
+    final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+    if (deviceLocale == null) return null;
+    return selectLocale(deviceLocale);
   }
 }
 

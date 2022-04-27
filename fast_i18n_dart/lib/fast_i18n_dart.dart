@@ -32,13 +32,6 @@ class BaseLocaleSettings<T extends BaseAppLocale> {
 
   BaseLocaleSettings({required this.baseLocale, required this.localeValues}) : _currLocale = baseLocale;
 
-  /// Uses locale of the device, fallbacks to base locale.
-  /// Returns the locale which has been set.
-  T useDeviceLocale() {
-    final locale = AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
-    return setLocale(locale);
-  }
-
   /// Sets locale
   /// Returns the locale which has been set.
   T setLocale(T locale) {
@@ -75,28 +68,15 @@ class AppLocaleUtils<T extends BaseAppLocale> {
 
   AppLocaleUtils(this.localeValues);
 
-  /// Returns the locale of the device as the enum type.
-  /// Fallbacks to base locale.
-  T? findDeviceLocale() {
-    final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
-    if (deviceLocale != null) {
-      final typedLocale = _selectLocale(deviceLocale);
-      if (typedLocale != null) {
-        return typedLocale;
-      }
-    }
-    return null;
-  }
-
   /// Returns the enum type of the raw locale.
   /// Fallbacks to base locale.
   T? parse(String rawLocale) {
-    return _selectLocale(rawLocale);
+    return selectLocale(rawLocale);
   }
 
   static final _localeRegex = RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
 
-  T? _selectLocale(String localeRaw) {
+  T? selectLocale(String localeRaw) {
     final match = _localeRegex.firstMatch(localeRaw);
     T? selected;
     if (match != null) {
