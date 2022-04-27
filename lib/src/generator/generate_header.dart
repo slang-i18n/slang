@@ -123,10 +123,10 @@ String generateHeader(
     pluralResolverOrdinal: pluralResolverMapOrdinal,
   );
 
-  _generateHelpers(
-    buffer: buffer,
-    config: config,
-  );
+  // _generateHelpers(
+  //   buffer: buffer,
+  //   config: config,
+  // );
 
   return buffer.toString();
 }
@@ -474,7 +474,7 @@ void _generateUtilClass({
   buffer.writeln(
       '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
   buffer.writeln('\t\tif (deviceLocale != null) {');
-  buffer.writeln('\t\t\tfinal typedLocale = _selectLocale(deviceLocale);');
+  buffer.writeln('\t\t\tfinal typedLocale = FastI18nDartInternalUtil.selectLocale(deviceLocale);');
   buffer.writeln('\t\t\tif (typedLocale != null) {');
   buffer.writeln('\t\t\t\treturn typedLocale;');
   buffer.writeln('\t\t\t}');
@@ -486,7 +486,7 @@ void _generateUtilClass({
   buffer.writeln('\t/// Returns the enum type of the raw locale.');
   buffer.writeln('\t/// Fallbacks to base locale.');
   buffer.writeln('\tstatic $enumName parse(String rawLocale) {');
-  buffer.writeln('\t\treturn _selectLocale(rawLocale) ?? $baseLocaleVar;');
+  buffer.writeln('\t\treturn FastI18nDartInternalUtil.selectLocale(rawLocale) ?? $baseLocaleVar;');
   buffer.writeln('\t}');
 
   buffer.writeln('}');
@@ -856,53 +856,53 @@ void _generatePluralFunction({
   buffer.writeln('}');
 }
 
-void _generateHelpers(
-    {required StringBuffer buffer, required I18nConfig config}) {
-  final enumName = config.enumName;
-  buffer.writeln();
-  buffer.writeln('// helpers');
-  buffer.writeln();
-  buffer.writeln(
-      'final _localeRegex = RegExp(r\'^${RegexUtils.LOCALE_REGEX_RAW}\$\');');
-  buffer.writeln('$enumName? _selectLocale(String localeRaw) {');
-  buffer.writeln('\tfinal match = _localeRegex.firstMatch(localeRaw);');
-  buffer.writeln('\t$enumName? selected;');
-  buffer.writeln('\tif (match != null) {');
-  buffer.writeln('\t\tfinal language = match.group(1);');
-  buffer.writeln('\t\tfinal country = match.group(5);');
-  buffer.writeln();
-
-  // match exactly
-  buffer.writeln('\t\t// match exactly');
-  buffer.writeln('\t\tselected = $enumName.values');
-  buffer.writeln('\t\t\t.cast<$enumName?>()');
-  buffer.writeln(
-      '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll(\'_\', \'-\'), orElse: () => null);');
-  buffer.writeln();
-
-  // match language
-  buffer.writeln('\t\tif (selected == null && language != null) {');
-  buffer.writeln('\t\t\t// match language');
-  buffer.writeln('\t\t\tselected = $enumName.values');
-  buffer.writeln('\t\t\t\t.cast<$enumName?>()');
-  buffer.writeln(
-      '\t\t\t\t.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);');
-  buffer.writeln('\t\t}');
-  buffer.writeln();
-
-  // match country
-  buffer.writeln('\t\tif (selected == null && country != null) {');
-  buffer.writeln('\t\t\t// match country');
-  buffer.writeln('\t\t\tselected = $enumName.values');
-  buffer.writeln('\t\t\t\t.cast<$enumName?>()');
-  buffer.writeln(
-      '\t\t\t\t.firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);');
-  buffer.writeln('\t\t}');
-
-  buffer.writeln('\t}');
-  buffer.writeln('\treturn selected;');
-  buffer.writeln('}');
-}
+// void _generateHelpers(
+//     {required StringBuffer buffer, required I18nConfig config}) {
+//   final enumName = config.enumName;
+//   buffer.writeln();
+//   buffer.writeln('// helpers');
+//   buffer.writeln();
+//   buffer.writeln(
+//       'final _localeRegex = RegExp(r\'^${RegexUtils.LOCALE_REGEX_RAW}\$\');');
+//   buffer.writeln('$enumName? _selectLocale(String localeRaw) {');
+//   buffer.writeln('\tfinal match = _localeRegex.firstMatch(localeRaw);');
+//   buffer.writeln('\t$enumName? selected;');
+//   buffer.writeln('\tif (match != null) {');
+//   buffer.writeln('\t\tfinal language = match.group(1);');
+//   buffer.writeln('\t\tfinal country = match.group(5);');
+//   buffer.writeln();
+//
+//   // match exactly
+//   buffer.writeln('\t\t// match exactly');
+//   buffer.writeln('\t\tselected = $enumName.values');
+//   buffer.writeln('\t\t\t.cast<$enumName?>()');
+//   buffer.writeln(
+//       '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll(\'_\', \'-\'), orElse: () => null);');
+//   buffer.writeln();
+//
+//   // match language
+//   buffer.writeln('\t\tif (selected == null && language != null) {');
+//   buffer.writeln('\t\t\t// match language');
+//   buffer.writeln('\t\t\tselected = $enumName.values');
+//   buffer.writeln('\t\t\t\t.cast<$enumName?>()');
+//   buffer.writeln(
+//       '\t\t\t\t.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);');
+//   buffer.writeln('\t\t}');
+//   buffer.writeln();
+//
+//   // match country
+//   buffer.writeln('\t\tif (selected == null && country != null) {');
+//   buffer.writeln('\t\t\t// match country');
+//   buffer.writeln('\t\t\tselected = $enumName.values');
+//   buffer.writeln('\t\t\t\t.cast<$enumName?>()');
+//   buffer.writeln(
+//       '\t\t\t\t.firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);');
+//   buffer.writeln('\t\t}');
+//
+//   buffer.writeln('\t}');
+//   buffer.writeln('\treturn selected;');
+//   buffer.writeln('}');
+// }
 
 int _countTranslations(Node node) {
   if (node is TextNode) {
