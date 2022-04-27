@@ -616,7 +616,7 @@ void _generateExtensions({
     buffer.writeln('\t$baseClassName build() {');
   }
 
-  buffer.writeln('\t\tswitch (this) {');
+  // buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     final className = getClassNameRoot(
       baseName: config.baseName,
@@ -626,13 +626,14 @@ void _generateExtensions({
 
     if (config.hasPlurals()) {
       buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+          '\t\tif (this == $enumName.${locale.locale.enumConstant}) return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     } else {
       buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build();');
+          '\t\tif (this == $enumName.${locale.locale.enumConstant}) return $className.build();');
     }
   }
-  buffer.writeln('\t\t}');
+  buffer.writeln("\t\tthrow Exception('Unexpected locale: \$this');");
+  // buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
   // buffer.writeln();
