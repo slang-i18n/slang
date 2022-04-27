@@ -106,3 +106,28 @@ class FastI18nDartInternalUtil {
     return selected;
   }
 }
+
+/// Provides utility functions without any side effects.
+class AppLocaleUtils {
+  AppLocaleUtils._(); // no constructor
+
+  /// Returns the locale of the device as the enum type.
+  /// Fallbacks to base locale.
+  static AppLocale findDeviceLocale() {
+    final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+    if (deviceLocale != null) {
+      final typedLocale = FastI18nDartInternalUtil.selectLocale(deviceLocale);
+      if (typedLocale != null) {
+        return typedLocale;
+      }
+    }
+    return _baseLocale;
+  }
+
+  /// Returns the enum type of the raw locale.
+  /// Fallbacks to base locale.
+  static AppLocale parse(String rawLocale) {
+    return FastI18nDartInternalUtil.selectLocale(rawLocale) ?? _baseLocale;
+  }
+}
+

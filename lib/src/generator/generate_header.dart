@@ -80,11 +80,11 @@ String generateHeader(
     );
   }
 
-  _generateUtilClass(
-    buffer: buffer,
-    config: config,
-    baseLocaleVar: baseLocaleVar,
-  );
+  // _generateUtilClass(
+  //   buffer: buffer,
+  //   config: config,
+  //   baseLocaleVar: baseLocaleVar,
+  // );
 
   _generateContextEnums(buffer: buffer, config: config);
 
@@ -324,7 +324,7 @@ void _generateLocaleSettings({
 
   buffer.writeln();
   buffer.writeln('class $settingsClass extends BaseLocaleSettings<AppLocale> {');
-  buffer.writeln('\t$settingsClass._() : super(baseLocale: TODO, localeValues: AppLocale.values);');
+  buffer.writeln('\t$settingsClass._() : super(baseLocale: _baseLocale, localeValues: AppLocale.values);');
 
   // buffer.writeln();
   // buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
@@ -454,43 +454,43 @@ void _generateLocaleSettings({
   buffer.writeln('}');
 }
 
-void _generateUtilClass({
-  required StringBuffer buffer,
-  required I18nConfig config,
-  required String baseLocaleVar,
-}) {
-  final String enumName = config.enumName;
-  final String utilsClass = '${enumName}Utils';
-
-  buffer.writeln();
-  buffer.writeln('/// Provides utility functions without any side effects.');
-  buffer.writeln('class $utilsClass {');
-  buffer.writeln('\t$utilsClass._(); // no constructor');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Returns the locale of the device as the enum type.');
-  buffer.writeln('\t/// Fallbacks to base locale.');
-  buffer.writeln('\tstatic $enumName findDeviceLocale() {');
-  buffer.writeln(
-      '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
-  buffer.writeln('\t\tif (deviceLocale != null) {');
-  buffer.writeln('\t\t\tfinal typedLocale = FastI18nDartInternalUtil.selectLocale(deviceLocale);');
-  buffer.writeln('\t\t\tif (typedLocale != null) {');
-  buffer.writeln('\t\t\t\treturn typedLocale;');
-  buffer.writeln('\t\t\t}');
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t\treturn $baseLocaleVar;');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\t/// Returns the enum type of the raw locale.');
-  buffer.writeln('\t/// Fallbacks to base locale.');
-  buffer.writeln('\tstatic $enumName parse(String rawLocale) {');
-  buffer.writeln('\t\treturn FastI18nDartInternalUtil.selectLocale(rawLocale) ?? $baseLocaleVar;');
-  buffer.writeln('\t}');
-
-  buffer.writeln('}');
-}
+// void _generateUtilClass({
+//   required StringBuffer buffer,
+//   required I18nConfig config,
+//   required String baseLocaleVar,
+// }) {
+//   final String enumName = config.enumName;
+//   final String utilsClass = '${enumName}Utils';
+//
+//   buffer.writeln();
+//   buffer.writeln('/// Provides utility functions without any side effects.');
+//   buffer.writeln('class $utilsClass {');
+//   buffer.writeln('\t$utilsClass._(); // no constructor');
+//
+//   buffer.writeln();
+//   buffer.writeln('\t/// Returns the locale of the device as the enum type.');
+//   buffer.writeln('\t/// Fallbacks to base locale.');
+//   buffer.writeln('\tstatic $enumName findDeviceLocale() {');
+//   buffer.writeln(
+//       '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
+//   buffer.writeln('\t\tif (deviceLocale != null) {');
+//   buffer.writeln('\t\t\tfinal typedLocale = FastI18nDartInternalUtil.selectLocale(deviceLocale);');
+//   buffer.writeln('\t\t\tif (typedLocale != null) {');
+//   buffer.writeln('\t\t\t\treturn typedLocale;');
+//   buffer.writeln('\t\t\t}');
+//   buffer.writeln('\t\t}');
+//   buffer.writeln('\t\treturn $baseLocaleVar;');
+//   buffer.writeln('\t}');
+//
+//   buffer.writeln();
+//   buffer.writeln('\t/// Returns the enum type of the raw locale.');
+//   buffer.writeln('\t/// Fallbacks to base locale.');
+//   buffer.writeln('\tstatic $enumName parse(String rawLocale) {');
+//   buffer.writeln('\t\treturn FastI18nDartInternalUtil.selectLocale(rawLocale) ?? $baseLocaleVar;');
+//   buffer.writeln('\t}');
+//
+//   buffer.writeln('}');
+// }
 
 void _generateContextEnums({
   required StringBuffer buffer,
