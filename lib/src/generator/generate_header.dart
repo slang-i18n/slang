@@ -160,10 +160,12 @@ void _generateHeaderComment({
 
 void _generateImports(I18nConfig config, StringBuffer buffer) {
   buffer.writeln();
-  buffer.writeln('import \'package:fast_i18n_dart/fast_i18n_dart.dart\';');
-  if (!config.dartOnly)
+  if (config.dartOnly) {
+    buffer.writeln('import \'package:fast_i18n_dart/fast_i18n_dart.dart\';');
+  } else {
     buffer.writeln(
         'import \'package:fast_i18n_flutter/fast_i18n_flutter.dart\';');
+  }
   // buffer.writeln('import \'package:flutter/widgets.dart\';');
 }
 
