@@ -17,7 +17,8 @@ extension ExtBaseLocaleSettings on BaseLocaleSettings {
   /// Uses locale of the device, fallbacks to base locale.
   /// Returns the locale which has been set.
   AppLocaleId useDeviceLocale() {
-    final locale = AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
+    final locale =
+        AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
     return setLocale(locale);
   }
 
@@ -52,7 +53,8 @@ extension ExtAppLocaleUtils on AppLocaleUtils {
   /// Returns the locale of the device as the enum type.
   /// Fallbacks to base locale.
   AppLocaleId? findDeviceLocale() {
-    final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+    final String? deviceLocale =
+        WidgetsBinding.instance?.window.locale.toLanguageTag();
     if (deviceLocale == null) return null;
     return selectLocale(deviceLocale);
   }
@@ -61,14 +63,16 @@ extension ExtAppLocaleUtils on AppLocaleUtils {
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
 class TranslationProvider extends StatefulWidget {
-  TranslationProvider({required this.child}) : super(key: _translationProviderKey);
+  TranslationProvider({required this.child})
+      : super(key: _translationProviderKey);
 
   final Widget child;
 
   @override
   _TranslationProviderState createState() => _TranslationProviderState();
 
-  static InheritedLocaleData of(BuildContext context) => InheritedLocaleData.of(context);
+  static InheritedLocaleData of(BuildContext context) =>
+      InheritedLocaleData.of(context);
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
@@ -94,10 +98,12 @@ class InheritedLocaleData extends InheritedWidget {
 
   Locale get flutterLocale => localeId.flutterLocale; // shortcut
 
-  InheritedLocaleData({required this.localeId, required Widget child}) : super(child: child);
+  InheritedLocaleData({required this.localeId, required Widget child})
+      : super(child: child);
 
   static InheritedLocaleData of(BuildContext context) {
-    final inheritedWidget = context.dependOnInheritedWidgetOfExactType<InheritedLocaleData>();
+    final inheritedWidget =
+        context.dependOnInheritedWidgetOfExactType<InheritedLocaleData>();
     if (inheritedWidget == null) {
       throw 'Please wrap your app with "TranslationProvider".';
     }

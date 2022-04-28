@@ -9,10 +9,13 @@ class AppLocaleId {
     this.countryCode,
   });
 
-  String get languageTag => [languageCode, scriptCode, countryCode].where((element) => element != null).join('-');
+  String get languageTag => [languageCode, scriptCode, countryCode]
+      .where((element) => element != null)
+      .join('-');
 
   @override
-  String toString() => 'AppLocaleId{languageCode: $languageCode, scriptCode: $scriptCode, countryCode: $countryCode}';
+  String toString() =>
+      'AppLocaleId{languageCode: $languageCode, scriptCode: $scriptCode, countryCode: $countryCode}';
 
   @override
   bool operator ==(Object other) =>
@@ -24,7 +27,8 @@ class AppLocaleId {
           countryCode == other.countryCode;
 
   @override
-  int get hashCode => languageCode.hashCode ^ scriptCode.hashCode ^ countryCode.hashCode;
+  int get hashCode =>
+      languageCode.hashCode ^ scriptCode.hashCode ^ countryCode.hashCode;
 }
 
 // This locale is *shared* among all packages of an app.
@@ -64,7 +68,8 @@ class AppLocaleUtils {
     return selectLocale(rawLocale);
   }
 
-  static final _localeRegex = RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
+  static final _localeRegex =
+      RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
 
   AppLocaleId? selectLocale(String localeRaw) {
     final match = _localeRegex.firstMatch(localeRaw);
@@ -74,22 +79,23 @@ class AppLocaleUtils {
       final country = match.group(5);
 
       // match exactly
-      selected = localeValues
-          .cast<AppLocaleId?>()
-          .firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll('_', '-'), orElse: () => null);
+      selected = localeValues.cast<AppLocaleId?>().firstWhere(
+          (supported) =>
+              supported?.languageTag == localeRaw.replaceAll('_', '-'),
+          orElse: () => null);
 
       if (selected == null && language != null) {
         // match language
-        selected = localeValues
-            .cast<AppLocaleId?>()
-            .firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);
+        selected = localeValues.cast<AppLocaleId?>().firstWhere(
+            (supported) => supported?.languageTag.startsWith(language) == true,
+            orElse: () => null);
       }
 
       if (selected == null && country != null) {
         // match country
-        selected = localeValues
-            .cast<AppLocaleId?>()
-            .firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);
+        selected = localeValues.cast<AppLocaleId?>().firstWhere(
+            (supported) => supported?.languageTag.contains(country) == true,
+            orElse: () => null);
       }
     }
     return selected;

@@ -48,8 +48,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
     _generateClass(
         config,
         localeData,
-        config.hasPluralResolver(
-            localeData.locale.language),
+        config.hasPluralResolver(localeData.locale.language),
         buffer,
         queue,
         task.className,

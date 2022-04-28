@@ -17,8 +17,7 @@ String generateTranslationMap(
       '/// Only for edge cases! For simple maps, use the map function of this library.');
 
   for (I18nData localeData in translations) {
-    final language =
-        localeData.locale.language;
+    final language = localeData.locale.language;
     final hasPluralResolver = config.hasPluralResolver(language);
 
     buffer.writeln();

@@ -17,8 +17,7 @@ class I18nConfigBuilder {
     Map<String, RuleSet> renderedOrdinalResolvers = {};
     Set<String> unsupportedPluralLanguages = {};
     for (final translationData in translationList) {
-      final language =
-          translationData.locale.language;
+      final language = translationData.locale.language;
       final pluralizationResolver = PLURALIZATION_RESOLVERS[language];
       if (pluralizationResolver == null) {
         if (translationData.hasCardinal || translationData.hasOrdinal) {
