@@ -34,7 +34,7 @@ String generateHeader(
     now: DateTime.now().toUtc(),
   );
 
-  _generateImports(buffer);
+  _generateImports(config, buffer);
 
   if (config.outputFormat == OutputFormat.multipleFiles) {
     _generateParts(
@@ -158,9 +158,10 @@ void _generateHeaderComment({
   buffer.writeln(' */');
 }
 
-void _generateImports(StringBuffer buffer) {
+void _generateImports(I18nConfig config,StringBuffer buffer) {
   buffer.writeln();
   buffer.writeln('import \'package:fast_i18n_dart/fast_i18n_dart.dart\';');
+  if (!config.dartOnly) buffer.writeln('import \'package:fast_i18n_flutter/fast_i18n_flutter.dart\';');
   // buffer.writeln('import \'package:flutter/widgets.dart\';');
 }
 
