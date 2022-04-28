@@ -1,3 +1,7 @@
+## 5.12.3
+
+- fix: resolve some linting errors in generated file
+
 ## 5.12.2
 
 - fix: handle csv files with 1st level lists
