@@ -18,7 +18,7 @@ String generateTranslationMap(
 
   for (I18nData localeData in translations) {
     final language =
-        localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE;
+        localeData.locale.language;
     final hasPluralResolver = config.hasPluralResolver(language);
 
     buffer.writeln();

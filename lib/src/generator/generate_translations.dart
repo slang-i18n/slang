@@ -49,7 +49,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
         config,
         localeData,
         config.hasPluralResolver(
-            localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE),
+            localeData.locale.language),
         buffer,
         queue,
         task.className,
@@ -273,7 +273,7 @@ void _generateClass(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: localeData.locale.language,
         node: value,
         depth: 0,
       );
@@ -341,7 +341,7 @@ void _generateMap(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: locale.language,
         node: value,
         depth: depth + 1,
       );
@@ -416,7 +416,7 @@ void _generateList(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: locale.language,
         node: value,
         depth: depth + 1,
       );
