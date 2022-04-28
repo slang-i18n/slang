@@ -83,18 +83,18 @@ class _TranslationProviderState extends State<TranslationProvider> {
   @override
   Widget build(BuildContext context) {
     return InheritedLocaleData(
-      locale: locale,
+      localeId: locale,
       child: widget.child,
     );
   }
 }
 
 class InheritedLocaleData extends InheritedWidget {
-  final AppLocaleId locale;
+  final AppLocaleId localeId;
 
-  Locale get flutterLocale => locale.flutterLocale; // shortcut
+  Locale get flutterLocale => localeId.flutterLocale; // shortcut
 
-  InheritedLocaleData({required this.locale, required Widget child}) : super(child: child);
+  InheritedLocaleData({required this.localeId, required Widget child}) : super(child: child);
 
   static InheritedLocaleData of(BuildContext context) {
     final inheritedWidget = context.dependOnInheritedWidgetOfExactType<InheritedLocaleData>();
@@ -106,6 +106,6 @@ class InheritedLocaleData extends InheritedWidget {
 
   @override
   bool updateShouldNotify(InheritedLocaleData oldWidget) {
-    return oldWidget.locale != locale;
+    return oldWidget.localeId != localeId;
   }
 }

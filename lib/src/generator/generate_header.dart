@@ -773,7 +773,7 @@ void _generateTranslationWrapper({
   if (!config.dartOnly) {
     buffer.writeln();
     buffer.writeln('extension Ext$inheritedClass on $inheritedClass {');
-    buffer.writeln('\t$baseClassName get translations => locale.translations;');
+    buffer.writeln('\t$baseClassName get translations => localeId.locale.translations;');
     buffer.writeln('}');
   }
 //   buffer.writeln();
