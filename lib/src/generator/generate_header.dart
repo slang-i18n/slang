@@ -218,13 +218,17 @@ void _generateEnum({
   buffer.writeln(
       '/// - if (LocaleSettings.currentLocale == $baseLocaleEnumConstant) // locale check');
 
-  buffer.writeln('class $enumName extends BaseAppLocale {');
-  buffer.writeln('\tconst $enumName._({required String languageCode, String? scriptCode, String? countryCode})');
-  buffer.writeln('\t\t\t: super(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);');
-  buffer.writeln('');
+  buffer.writeln('enum $enumName {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln('\t${locale.locale.enumConstant},');
+  }
+  buffer.writeln('}');
+
+  buffer.writeln();
+  buffer.writeln('class AppLocaleIdConst {');
   for (I18nData locale in allLocales) {
     buffer.writeln('\t// \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
-    buffer.write('\tstatic const ${locale.locale.enumConstant} = $enumName._(');
+    buffer.write('\tstatic const ${locale.locale.enumConstant} = AppLocaleId(');
     buffer.write('languageCode: \'${locale.locale.language}\'');
     if (locale.locale.script != null) {
       buffer.write(', ');
@@ -240,6 +244,27 @@ void _generateEnum({
   buffer.write('\tstatic const values = [');
   buffer.write(allLocales.map((locale) => locale.locale.enumConstant).join(', '));
   buffer.writeln('];');
+  buffer.writeln('}');
+
+  buffer.writeln();
+  buffer.writeln('extension ExtAppLocale on AppLocale {');
+  buffer.writeln('\tAppLocaleId get localeId {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln('\t\t\tcase AppLocale.${locale.locale.enumConstant}: return AppLocaleIdConst.${locale.locale.enumConstant};');
+  }
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+  buffer.writeln('}');
+
+  buffer.writeln();
+  buffer.writeln('extension ExtAppLocaleId on AppLocaleId {');
+  buffer.writeln('\tAppLocale get locale {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln('\t\tif (this == AppLocaleIdConst.${locale.locale.enumConstant}) return AppLocale.${locale.locale.enumConstant};');
+  }
+  buffer.writeln("\t\tthrow Exception('Unsupported locale id: \$this');");
+  buffer.writeln('\t}');
   buffer.writeln('}');
 }
 
@@ -327,10 +352,15 @@ void _generateLocaleSettings({
   // final String utilsClass = '${enumName}Utils';
 
   buffer.writeln();
-  buffer.writeln('class $settingsClass extends BaseLocaleSettings<AppLocale> {');
-  buffer.writeln('\t$settingsClass._() : super(baseLocale: _baseLocale, localeValues: AppLocale.values);');
+  buffer.writeln('class $settingsClass extends BaseLocaleSettings {');
+  buffer.writeln('\t$settingsClass._() : super(');
+  buffer.writeln('\t\tbaseLocale: _baseLocale.localeId,');
+  buffer.writeln('\t\tlocaleValues: AppLocale.values.map((e) => e.localeId).toList(),');
+  buffer.writeln('\t);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $settingsClass._();');
+  buffer.writeln();
+  buffer.writeln('\tAppLocale get currentLocale => currentLocaleId.locale;');
 
   // buffer.writeln();
   // buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
@@ -572,7 +602,7 @@ void _generateExtensions({
   buffer.writeln();
   buffer.writeln('// extensions for $enumName');
   buffer.writeln();
-  buffer.writeln('extension ${enumName}Extensions on BaseAppLocale {');
+  buffer.writeln('extension ${enumName}Extensions on AppLocale {');
 
   if (config.renderLocaleHandling) {
     buffer.writeln();
@@ -609,7 +639,7 @@ void _generateExtensions({
     buffer.writeln('\t$baseClassName build() {');
   }
 
-  // buffer.writeln('\t\tswitch (this) {');
+  buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
     final className = getClassNameRoot(
       baseName: config.baseName,
@@ -619,14 +649,13 @@ void _generateExtensions({
 
     if (config.hasPlurals()) {
       buffer.writeln(
-          '\t\tif (this == $enumName.${locale.locale.enumConstant}) return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     } else {
       buffer.writeln(
-          '\t\tif (this == $enumName.${locale.locale.enumConstant}) return $className.build();');
+          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build();');
     }
   }
-  buffer.writeln("\t\tthrow Exception('Unexpected locale: \$this');");
-  // buffer.writeln('\t\t}');
+  buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
   // buffer.writeln();

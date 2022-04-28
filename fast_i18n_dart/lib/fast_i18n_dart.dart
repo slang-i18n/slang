@@ -28,7 +28,7 @@ class AppLocaleId {
 }
 
 // This locale is *shared* among all packages of an app.
-late AppLocaleId _currLocale;
+late AppLocaleId _currLocaleId;
 
 class BaseLocaleSettings {
   final AppLocaleId baseLocale;
@@ -39,12 +39,12 @@ class BaseLocaleSettings {
   /// Sets locale, *but* do not change potential TranslationProvider's state
   /// Useful when you are in a pure Dart environment (without Flutter)
   AppLocaleId setLocaleExceptProvider(AppLocaleId locale) {
-    _currLocale = locale;
-    return currentLocale;
+    _currLocaleId = locale;
+    return currentLocaleId;
   }
 
   /// Gets current locale.
-  AppLocaleId get currentLocale => _currLocale;
+  AppLocaleId get currentLocaleId => _currLocaleId;
 
   /// Gets supported locales in string format.
   List<String> get supportedLocalesRaw {
