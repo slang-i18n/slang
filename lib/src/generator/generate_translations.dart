@@ -155,19 +155,22 @@ void _generateClass(
 
       buffer.writeln();
       buffer.writeln('\t// Internal flat map initialized lazily');
-      if (!localeData.base) buffer.write('\t@override');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
       buffer.writeln(
-          '\tlate final Map<String, dynamic> _flatMap = _buildFlatMap();');
+          'late final Map<String, dynamic> _flatMap = _buildFlatMap();');
     }
 
     if (config.hasPlurals()) {
       buffer.writeln();
-      buffer.writeln('\t// ignore: unused_field');
-      if (!localeData.base) buffer.write('\t@override');
-      buffer.writeln('\tfinal PluralResolver? _cardinalResolver;');
-      buffer.writeln('\t// ignore: unused_field');
-      if (!localeData.base) buffer.write('\t@override');
-      buffer.writeln('\tfinal PluralResolver? _ordinalResolver;');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
+      buffer.writeln(
+          'final PluralResolver? _cardinalResolver; // ignore: unused_field');
+      buffer.write('\t');
+      if (!localeData.base) buffer.write('@override ');
+      buffer.writeln(
+          'final PluralResolver? _ordinalResolver; // ignore: unused_field');
     }
   } else {
     if (callSuperConstructor) {

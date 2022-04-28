@@ -145,8 +145,7 @@ class _TranslationsEn {
 	// Internal flat map initialized lazily
 	late final Map<String, dynamic> _flatMap = _buildFlatMap();
 
-	// ignore: unused_field
-	late final _TranslationsEn _root = this;
+	late final _TranslationsEn _root = this; // ignore: unused_field
 
 	// Translations
 	late final _TranslationsMainScreenEn mainScreen = _TranslationsMainScreenEn._(_root);
@@ -156,8 +155,7 @@ class _TranslationsEn {
 class _TranslationsMainScreenEn {
 	_TranslationsMainScreenEn._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 
@@ -185,10 +183,9 @@ class _TranslationsDe implements _TranslationsEn {
 	@override dynamic operator[](String key) => _flatMap[key];
 
 	// Internal flat map initialized lazily
-	late final Map<String, dynamic> _flatMap = _buildFlatMap();
+	@override late final Map<String, dynamic> _flatMap = _buildFlatMap();
 
-	// ignore: unused_field
-	@override late final _TranslationsDe _root = this;
+	@override late final _TranslationsDe _root = this; // ignore: unused_field
 
 	// Translations
 	@override late final _TranslationsMainScreenDe mainScreen = _TranslationsMainScreenDe._(_root);
@@ -198,8 +195,7 @@ class _TranslationsDe implements _TranslationsEn {
 class _TranslationsMainScreenDe implements _TranslationsMainScreenEn {
 	_TranslationsMainScreenDe._(this._root);
 
-	// ignore: unused_field
-	@override final _TranslationsDe _root;
+	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 
@@ -221,7 +217,7 @@ class _TranslationsMainScreenDe implements _TranslationsMainScreenEn {
 
 extension on _TranslationsEn {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'mainScreen.title': 'Title',
 			'mainScreen.content': 'Content',
 			'mainScreen.anotherContent': 'Another Content',
@@ -233,7 +229,7 @@ extension on _TranslationsEn {
 
 extension on _TranslationsDe {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'mainScreen.title': 'Titel',
 			'mainScreen.content': 'Inhalt',
 			'mainScreen.anotherContent': 'Anderer Inhalt',

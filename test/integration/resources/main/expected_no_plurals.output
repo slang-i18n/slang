@@ -303,8 +303,7 @@ class _TranslationsEn {
 	// Internal flat map initialized lazily
 	late final Map<String, dynamic> _flatMap = _buildFlatMap();
 
-	// ignore: unused_field
-	late final _TranslationsEn _root = this;
+	late final _TranslationsEn _root = this; // ignore: unused_field
 
 	// Translations
 	String get a => 'a';
@@ -315,8 +314,7 @@ class _TranslationsEn {
 class _TranslationsBEn {
 	_TranslationsBEn._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 	String get bb => 'bb';
@@ -327,7 +325,7 @@ class _TranslationsBEn {
 
 extension on _TranslationsEn {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'a': 'a',
 			'b.bb': 'bb',
 		};
