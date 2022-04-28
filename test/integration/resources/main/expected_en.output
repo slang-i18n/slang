@@ -15,13 +15,10 @@ class _TranslationsEn {
 	// Internal flat map initialized lazily
 	late final Map<String, dynamic> _flatMap = _buildFlatMap();
 
-	// ignore: unused_field
-	final PluralResolver? _cardinalResolver;
-	// ignore: unused_field
-	final PluralResolver? _ordinalResolver;
+	final PluralResolver? _cardinalResolver; // ignore: unused_field
+	final PluralResolver? _ordinalResolver; // ignore: unused_field
 
-	// ignore: unused_field
-	late final _TranslationsEn _root = this;
+	late final _TranslationsEn _root = this; // ignore: unused_field
 
 	// Translations
 	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
@@ -33,8 +30,7 @@ class _TranslationsEn {
 class _TranslationsOnboardingEn {
 	_TranslationsOnboardingEn._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 	String welcome({required Object fullName}) => 'Welcome $fullName';
@@ -68,8 +64,7 @@ class _TranslationsOnboardingEn {
 class _TranslationsGroupEn {
 	_TranslationsGroupEn._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 	String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
@@ -83,8 +78,7 @@ class _TranslationsGroupEn {
 class _TranslationsEndEn with EndData {
 	_TranslationsEndEn._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 	@override List<String> get stringPages => [
@@ -106,8 +100,7 @@ class _TranslationsEndEn with EndData {
 class _TranslationsOnboarding0i0En with PageData {
 	_TranslationsOnboarding0i0En._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'First Page';
@@ -118,8 +111,7 @@ class _TranslationsOnboarding0i0En with PageData {
 class _TranslationsOnboarding0i1En with PageData {
 	_TranslationsOnboarding0i1En._(this._root);
 
-	// ignore: unused_field
-	final _TranslationsEn _root;
+	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Second Page';

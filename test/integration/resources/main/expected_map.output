@@ -5,7 +5,7 @@ part of 'translations.g.dart';
 
 extension on _TranslationsEn {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'onboarding.welcome': ({required Object fullName}) => 'Welcome $fullName',
 			'onboarding.bye': ({required Object firstName}) => 'Bye $firstName',
 			'onboarding.pages.0.title': 'First Page',
@@ -43,7 +43,7 @@ extension on _TranslationsEn {
 
 extension on _TranslationsDe {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'onboarding.welcome': ({required Object fullName}) => 'Willkommen $fullName',
 			'onboarding.bye': ({required Object firstName}) => 'Tschüss $firstName',
 			'onboarding.pages.0.title': 'Erste Seite',
