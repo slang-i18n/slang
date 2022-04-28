@@ -1,6 +1,7 @@
 import 'package:fast_i18n_dart/fast_i18n_dart.dart';
 import 'package:flutter/widgets.dart';
 
+export 'package:fast_i18n_dart/fast_i18n_dart.dart';
 export 'package:flutter/widgets.dart';
 
 extension ExtAppLocaleId on AppLocaleId {
