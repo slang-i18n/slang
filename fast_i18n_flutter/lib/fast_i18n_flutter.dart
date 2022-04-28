@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 export 'package:flutter/widgets.dart';
 
-extension ExtBaseAppLocale on BaseAppLocale {
+extension ExtAppLocaleId on AppLocaleId {
   Locale get flutterLocale {
     return Locale.fromSubtags(
       languageCode: languageCode,
@@ -13,17 +13,17 @@ extension ExtBaseAppLocale on BaseAppLocale {
   }
 }
 
-extension ExtBaseLocaleSettings<T extends BaseAppLocale> on BaseLocaleSettings<T> {
+extension ExtBaseLocaleSettings on BaseLocaleSettings {
   /// Uses locale of the device, fallbacks to base locale.
   /// Returns the locale which has been set.
-  T useDeviceLocale() {
+  AppLocaleId useDeviceLocale() {
     final locale = AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
     return setLocale(locale);
   }
 
   /// Sets locale
   /// Returns the locale which has been set.
-  T setLocale(T locale) {
+  AppLocaleId setLocale(AppLocaleId locale) {
     setLocaleExceptProvider(locale);
 
     if (WidgetsBinding.instance != null) {
@@ -37,7 +37,7 @@ extension ExtBaseLocaleSettings<T extends BaseAppLocale> on BaseLocaleSettings<T
   /// Sets locale using string tag (e.g. en_US, de-DE, fr)
   /// Fallbacks to base locale.
   /// Returns the locale which has been set.
-  T setLocaleRaw(String rawLocale) {
+  AppLocaleId setLocaleRaw(String rawLocale) {
     final locale = AppLocaleUtils(localeValues).parse(rawLocale) ?? baseLocale;
     return setLocale(locale);
   }
@@ -48,10 +48,10 @@ extension ExtBaseLocaleSettings<T extends BaseAppLocale> on BaseLocaleSettings<T
   }
 }
 
-extension ExtAppLocaleUtils<T extends BaseAppLocale> on AppLocaleUtils<T> {
+extension ExtAppLocaleUtils on AppLocaleUtils {
   /// Returns the locale of the device as the enum type.
   /// Fallbacks to base locale.
-  T? findDeviceLocale() {
+  AppLocaleId? findDeviceLocale() {
     final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
     if (deviceLocale == null) return null;
     return selectLocale(deviceLocale);
@@ -72,9 +72,9 @@ class TranslationProvider extends StatefulWidget {
 }
 
 class _TranslationProviderState extends State<TranslationProvider> {
-  late BaseAppLocale locale;
+  late AppLocaleId locale;
 
-  void setLocale(BaseAppLocale newLocale) {
+  void setLocale(AppLocaleId newLocale) {
     setState(() {
       locale = newLocale;
     });
@@ -90,7 +90,7 @@ class _TranslationProviderState extends State<TranslationProvider> {
 }
 
 class InheritedLocaleData extends InheritedWidget {
-  final BaseAppLocale locale;
+  final AppLocaleId locale;
 
   Locale get flutterLocale => locale.flutterLocale; // shortcut
 
