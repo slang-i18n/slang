@@ -9,10 +9,10 @@
 ![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The official documentation is [here](https://github.com/Tienisto/flutter-fast-i18n/tree/master/fast_i18n).
+The official documentation is [here](fast_i18n/README.md).
 
 ## Projects
 
-- [fast_i18n](https://github.com/Tienisto/flutter-fast-i18n/tree/master/fast_i18n) (core)
-- [fast_i18n_dart](https://github.com/Tienisto/flutter-fast-i18n/tree/master/fast_i18n_dart) (dart support)
-- [fast_i18n_flutter](https://github.com/Tienisto/flutter-fast-i18n/tree/master/fast_i18n_flutter) (flutter support)
+- [fast_i18n](fast_i18n) (core)
+- [fast_i18n_dart](fast_i18n_dart) (dart support)
+- [fast_i18n_flutter](fast_i18n_flutter) (flutter support)
