@@ -314,7 +314,7 @@ _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation in
   switch (interpolation) {
     case StringInterpolation.dart:
       parsedContent = raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
-        final paramOriginal = match.group(2)!;
+        final paramOriginal = (match.group(3) ?? match.group(4))!;
         if (paramCase == null) {
           // no transformations
           params.add(paramOriginal);
@@ -398,7 +398,7 @@ class RichTextNode extends TextNode {
       RegexUtils.argumentsDartRegex,
       onNonMatch: (text) => "TextSpan(text: '$text')",
       onMatch: (match) {
-        final parsed = _parseParamWithArg(match.group(0)!);
+        final parsed = _parseParamWithArg((match.group(3) ?? match.group(4))!);
         final parsedArg = parsed.arg;
         return '${parsed.paramName}' + (parsedArg == null ? '' : "('$parsedArg')");
       },
@@ -426,9 +426,9 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
 }
 
 _ParamWithArg _parseParamWithArg(String src) {
-  final match = RegexUtils.paramWithArg.firstMatch(src);
-  if (match == null) return _ParamWithArg(src, null);
-  return _ParamWithArg(match.group(1)!, match.group(2)!);
+  print('hi _parseParamWithArg=$src');
+  final match = RegexUtils.paramWithArg.firstMatch(src)!;
+  return _ParamWithArg(match.group(1)!, match.group(2));
 }
 
 class _ParamWithArg {
