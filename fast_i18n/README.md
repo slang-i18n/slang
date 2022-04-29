@@ -770,7 +770,7 @@ void main() {
 
 You can customize the attributes and use different node selectors.
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md).
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/interfaces.md).
 
 ### ➤ Locale Enum
 
@@ -825,7 +825,7 @@ final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md).
+Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/dependency_injection.md).
 
 ## Structuring Features
 
@@ -1276,9 +1276,9 @@ The second one always returns a new instance.
 
 ### In Depth
 
-[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/interfaces.md)
+[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/interfaces.md)
 
-[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/documentation/dependency_injection.md)
+[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/dependency_injection.md)
 
 ### Tutorials
 
