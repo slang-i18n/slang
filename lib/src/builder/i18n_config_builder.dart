@@ -1,7 +1,6 @@
 import 'package:fast_i18n/src/model/build_config.dart';
 import 'package:fast_i18n/src/model/i18n_config.dart';
 import 'package:fast_i18n/src/model/i18n_data.dart';
-import 'package:fast_i18n/src/model/i18n_locale.dart';
 import 'package:fast_i18n/src/model/interface.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/model/pluralization_resolvers.dart';

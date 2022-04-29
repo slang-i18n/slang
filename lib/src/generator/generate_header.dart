@@ -7,7 +7,6 @@ import 'package:fast_i18n/src/model/node.dart';
 import 'package:fast_i18n/src/model/pluralization.dart';
 import 'package:fast_i18n/src/utils/path_utils.dart';
 import 'package:fast_i18n/src/utils/string_extensions.dart';
-import 'package:fast_i18n/src/utils/regex_utils.dart';
 
 String generateHeader(
   I18nConfig config,
