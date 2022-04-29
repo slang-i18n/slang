@@ -347,12 +347,48 @@ class StringTextNode extends TextNode {
 }
 
 class RichTextNode extends TextNode {
-  RichTextNode({
+  final List<BaseSpan> spans;
+  late Set<String> params;
+
+  Map<String, String> get paramTypeMap => Map.fromEntries(params.map((e) => MapEntry(e, 'InlineSpanBuilder')));
+
+  RichTextNode._({
     required String path,
     required String? comment,
     required String raw,
+    required this.spans,
+    required this.params,
   }) : super(path: path, comment: comment, raw: raw);
 
-  // TODO
+  factory RichTextNode({
+    required String path,
+    required String? comment,
+    required String raw,
+  }) {
+    final params = TODO;
+    final spans = TODO;
+
+    return RichTextNode._(path: path, comment: comment, raw: raw, spans: spans, params: params);
+  }
 }
 
+abstract class BaseSpan {
+  String get code;
+}
+
+class LiteralSpan extends BaseSpan {
+  final String literal;
+
+  LiteralSpan(this.literal);
+
+  String get code => "TextSpan(text: '$literal')";
+}
+
+class FunctionSpan extends BaseSpan {
+  final String functionName;
+  final String functionArgument;
+
+  FunctionSpan(this.functionName, this.functionArgument);
+
+  String get code => "$functionName('$functionArgument')";
+}

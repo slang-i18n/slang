@@ -116,3 +116,5 @@ class InheritedLocaleData extends InheritedWidget {
     return oldWidget.localeId != localeId;
   }
 }
+
+typedef InlineSpanBuilder = InlineSpan Function(String);

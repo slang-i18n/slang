@@ -238,7 +238,12 @@ void _generateClass(
             'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
     } else if (value is RichTextNode) {
-      buffer.writeln(TODO);
+      buffer.writeln(
+          'InlineSpan$optional $key${_toParameterList(value.params, value.paramTypeMap)} => TextSpan(children: [');
+      for (final span in value.spans) {
+        buffer.writeln('\t${span.code}');
+      }
+      buffer.writeln(']);');
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
       _generateList(config, localeData.base, localeData.locale,
