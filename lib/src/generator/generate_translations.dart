@@ -241,7 +241,7 @@ void _generateClass(
       buffer.writeln(
           'InlineSpan$optional $key${_toParameterList(value.params, value.paramTypeMap)} => TextSpan(children: [');
       for (final span in value.spans) {
-        buffer.writeln('\t${span.code}');
+        buffer.writeln('\t$span,');
       }
       buffer.writeln(']);');
     } else if (value is ListNode) {

@@ -206,6 +206,8 @@ class TranslationModelBuilder {
                 path: currPath,
                 raw: value.toString(),
                 comment: comment,
+                interpolation: config.stringInterpolation,
+                paramCase: config.paramCase,
               )
             : StringTextNode(
                 path: currPath,

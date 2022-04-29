@@ -215,13 +215,12 @@ class StringTextNode extends TextNode {
     Map<String, Set<String>>? linkParamMap,
   }) : super(path: path, comment: comment, raw: raw) {
     final escapedContent = _escapeContent(raw, interpolation);
-
-    final result = _parseInterpolation(escapedContent, interpolation, paramCase);
-    _params = result.params;
+    final parsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
+    _params = parsedResult.params;
 
     // detect linked translations
     this._links = Set<String>();
-    this._content = result.parsedContent.replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    this._content = parsedResult.parsedContent.replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = match.group(1)!;
       links.add(linkedPath);
 
@@ -366,7 +365,7 @@ _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation in
 }
 
 class RichTextNode extends TextNode {
-  final List<BaseSpan> spans;
+  final List<String> spans;
   late Set<String> params;
 
   Map<String, String> get paramTypeMap => Map.fromEntries(params.map((e) => MapEntry(e, 'InlineSpanBuilder')));
@@ -383,31 +382,53 @@ class RichTextNode extends TextNode {
     required String path,
     required String? comment,
     required String raw,
+    required StringInterpolation interpolation,
+    required CaseStyle? paramCase,
   }) {
-    final params = TODO;
-    final spans = TODO;
+    final escapedContent = _escapeContent(raw, interpolation);
+    final rawParsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
+
+    final params = rawParsedResult.params.map(_parseParamWithArg).map((e) => e.paramName).toSet();
+    final spans = _splitWithMatchAndNonMatch(
+      rawParsedResult.parsedContent,
+      RegexUtils.paramWithArg,
+      onNonMatch: (text) => "TextSpan(text: '$text')",
+      onMatch: (match) {
+        final parsed = _parseParamWithArg(match.group(0)!);
+        final parsedArg = parsed.arg;
+        return '${parsed.paramName}' + (parsedArg == null ? '' : "('$parsedArg')");
+      },
+    ).toList();
 
     return RichTextNode._(path: path, comment: comment, raw: raw, spans: spans, params: params);
   }
 }
 
-abstract class BaseSpan {
-  String get code;
+Iterable<T> _splitWithMatchAndNonMatch<T>(
+  String s,
+  Pattern pattern, {
+  required T Function(String) onNonMatch,
+  required T Function(Match) onMatch,
+}) sync* {
+  final matches = pattern.allMatches(s).toList();
+  final nonMatches = s.split(pattern);
+  assert(matches.length == nonMatches.length - 1);
+  for (var i = 0; i < matches.length; ++i) {
+    yield onNonMatch(nonMatches[i]);
+    yield onMatch(matches[i]);
+  }
+  yield onNonMatch(nonMatches.last);
 }
 
-class LiteralSpan extends BaseSpan {
-  final String literal;
-
-  LiteralSpan(this.literal);
-
-  String get code => "TextSpan(text: '$literal')";
+_ParamWithArg _parseParamWithArg(String src) {
+  final match = RegexUtils.paramWithArg.firstMatch(src);
+  if (match == null) return _ParamWithArg(src, null);
+  return _ParamWithArg(match.group(1)!, match.group(2)!);
 }
 
-class FunctionSpan extends BaseSpan {
-  final String functionName;
-  final String functionArgument;
+class _ParamWithArg {
+  final String paramName;
+  final String? arg;
 
-  FunctionSpan(this.functionName, this.functionArgument);
-
-  String get code => "$functionName('$functionArgument')";
+  _ParamWithArg(this.paramName, this.arg);
 }
