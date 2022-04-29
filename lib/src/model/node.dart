@@ -369,9 +369,8 @@ _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation in
 
 class RichTextNode extends TextNode {
   final List<BaseSpan> spans;
-  late Set<String> params;
-
-  Map<String, String> get paramTypeMap => Map.fromEntries(params.map((e) => MapEntry(e, 'InlineSpanBuilder')));
+  final Set<String> params;
+  final Map<String, String> paramTypeMap;
 
   RichTextNode._({
     required String path,
@@ -379,6 +378,7 @@ class RichTextNode extends TextNode {
     required String raw,
     required this.spans,
     required this.params,
+    required this.paramTypeMap,
   }) : super(path: path, comment: comment, raw: raw);
 
   factory RichTextNode({
@@ -392,7 +392,11 @@ class RichTextNode extends TextNode {
     final rawParsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
     // print('hi escapedContent=$escapedContent rawParsedResult=$rawParsedResult');
 
-    final params = rawParsedResult.params.map(_parseParamWithArg).map((e) => e.paramName).toSet();
+    final parsedParams = rawParsedResult.params.map(_parseParamWithArg).toList();
+    final params = parsedParams.map((e) => e.paramName).toSet();
+    final paramTypeMap =
+        Map.fromEntries(parsedParams.map((e) => MapEntry(e.paramName, e.arg != null ? 'InlineSpanBuilder' : 'Object')));
+
     final spans = _splitWithMatchAndNonMatch(
       rawParsedResult.parsedContent,
       RegexUtils.argumentsDartRegex,
@@ -405,7 +409,8 @@ class RichTextNode extends TextNode {
       },
     ).toList();
 
-    return RichTextNode._(path: path, comment: comment, raw: raw, spans: spans, params: params);
+    return RichTextNode._(
+        path: path, comment: comment, raw: raw, spans: spans, params: params, paramTypeMap: paramTypeMap);
   }
 }
 
