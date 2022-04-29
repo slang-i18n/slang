@@ -14,7 +14,6 @@ Lightweight i18n solution. Use JSON, YAML or CSV files to create typesafe transl
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
-- 📦 Self-contained, you can remove this library after generation.
 - 🐞 Bug-resistant, no typos or missing arguments possible due to compiler errors.
 - ⚡ Fast, you get translations using native dart method calls, zero parsing!
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!

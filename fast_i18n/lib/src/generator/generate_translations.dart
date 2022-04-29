@@ -239,7 +239,9 @@ void _generateClass(
       }
     } else if (value is RichTextNode) {
       buffer.write('InlineSpan$optional ');
-      buffer.write(value.params.isEmpty ? 'get $key' : '$key${_toParameterList(value.params, value.paramTypeMap)}');
+      buffer.write(value.params.isEmpty
+          ? 'get $key'
+          : '$key${_toParameterList(value.params, value.paramTypeMap)}');
       buffer.writeln(' => TextSpan(children: [');
       for (final span in value.spans) {
         buffer.writeln('\t\t${span.code},');

@@ -67,8 +67,10 @@ class ObjectNode extends IterableNode {
   }) : super(
           path: path,
           comment: comment,
-          genericType:
-              entries.values.every((child) => child is StringTextNode && child.params.isEmpty) ? 'String' : 'dynamic',
+          genericType: entries.values.every(
+                  (child) => child is StringTextNode && child.params.isEmpty)
+              ? 'String'
+              : 'dynamic',
         );
 
   void setInterface(Interface interface) {
@@ -93,7 +95,8 @@ class ListNode extends IterableNode {
         );
 
   static String _determineGenericType(List<Node> entries) {
-    if (entries.every((child) => child is StringTextNode && child.params.isEmpty)) {
+    if (entries
+        .every((child) => child is StringTextNode && child.params.isEmpty)) {
       return 'String';
     }
     if (entries.every((child) => child is ListNode)) {
@@ -215,12 +218,14 @@ class StringTextNode extends TextNode {
     Map<String, Set<String>>? linkParamMap,
   }) : super(path: path, comment: comment, raw: raw) {
     final escapedContent = _escapeContent(raw, interpolation);
-    final parsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
+    final parsedResult =
+        _parseInterpolation(escapedContent, interpolation, paramCase);
     _params = parsedResult.params;
 
     // detect linked translations
     this._links = Set<String>();
-    this._content = parsedResult.parsedContent.replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    this._content = parsedResult.parsedContent
+        .replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = match.group(1)!;
       links.add(linkedPath);
 
@@ -231,7 +236,8 @@ class StringTextNode extends TextNode {
 
       final linkedParams = linkParamMap[linkedPath]!;
       params.addAll(linkedParams);
-      final parameterString = linkedParams.map((param) => '$param: $param').join(', ');
+      final parameterString =
+          linkedParams.map((param) => '$param: $param').join(', ');
       return '\${_root.$linkedPath($parameterString)}';
     });
   }
@@ -304,16 +310,19 @@ class _ParseInterpolationResult {
   _ParseInterpolationResult(this.parsedContent, this.params);
 
   @override
-  String toString() => '_ParseInterpolationResult{parsedContent: $parsedContent, params: $params}';
+  String toString() =>
+      '_ParseInterpolationResult{parsedContent: $parsedContent, params: $params}';
 }
 
-_ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
+_ParseInterpolationResult _parseInterpolation(
+    String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
   final String parsedContent;
   final params = Set<String>();
 
   switch (interpolation) {
     case StringInterpolation.dart:
-      parsedContent = raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
+      parsedContent =
+          raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
         final paramOriginal = (match.group(3) ?? match.group(4))!;
         if (paramCase == null) {
           // no transformations
@@ -328,7 +337,8 @@ _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation in
       });
       break;
     case StringInterpolation.braces:
-      parsedContent = raw.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
+      parsedContent =
+          raw.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
         if (match.group(1) == '\\') {
           return '{${match.group(2)}}'; // escape
         }
@@ -346,7 +356,8 @@ _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation in
       });
       break;
     case StringInterpolation.doubleBraces:
-      parsedContent = raw.replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
+      parsedContent =
+          raw.replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
         if (match.group(1) == '\\') {
           return '{{${match.group(2)}}}'; // escape
         }
@@ -389,13 +400,15 @@ class RichTextNode extends TextNode {
     required CaseStyle? paramCase,
   }) {
     final escapedContent = _escapeContent(raw, interpolation);
-    final rawParsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
+    final rawParsedResult =
+        _parseInterpolation(escapedContent, interpolation, paramCase);
     // print('hi escapedContent=$escapedContent rawParsedResult=$rawParsedResult');
 
-    final parsedParams = rawParsedResult.params.map(_parseParamWithArg).toList();
+    final parsedParams =
+        rawParsedResult.params.map(_parseParamWithArg).toList();
     final params = parsedParams.map((e) => e.paramName).toSet();
-    final paramTypeMap =
-        Map.fromEntries(parsedParams.map((e) => MapEntry(e.paramName, e.arg != null ? 'InlineSpanBuilder' : 'InlineSpan')));
+    final paramTypeMap = Map.fromEntries(parsedParams.map((e) => MapEntry(
+        e.paramName, e.arg != null ? 'InlineSpanBuilder' : 'InlineSpan')));
 
     final spans = _splitWithMatchAndNonMatch(
       rawParsedResult.parsedContent,
@@ -410,7 +423,12 @@ class RichTextNode extends TextNode {
     ).toList();
 
     return RichTextNode._(
-        path: path, comment: comment, raw: raw, spans: spans, params: params, paramTypeMap: paramTypeMap);
+        path: path,
+        comment: comment,
+        raw: raw,
+        spans: spans,
+        params: params,
+        paramTypeMap: paramTypeMap);
   }
 }
 

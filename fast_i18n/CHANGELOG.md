@@ -1,3 +1,13 @@
+## 6.0.0
+
+**Transition to a federated package structure**
+
+- **Breaking:** add dependency `fast_i18n_flutter`
+- feat: add dart-only support (`dart_only: true`)
+- feat: add RichText support
+
+Thanks to [@fzyzcjy](https://github.com/fzyzcjy)
+
 ## 5.12.3
 
 - fix: resolve some linting errors in generated file
