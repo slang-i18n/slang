@@ -216,12 +216,12 @@ class StringTextNode extends TextNode {
   }) : super(path: path, comment: comment, raw: raw) {
     final escapedContent = _escapeContent(raw, interpolation);
 
-    _params = Set();
-    final parsedContent = _parseInterpolation(_params, escapedContent, interpolation, paramCase);
+    final result = _parseInterpolation(escapedContent, interpolation, paramCase);
+    _params = result.params;
 
     // detect linked translations
     this._links = Set<String>();
-    this._content = parsedContent.replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    this._content = result.parsedContent.replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = match.group(1)!;
       links.add(linkedPath);
 
@@ -298,10 +298,20 @@ String _escapeContent(String raw, StringInterpolation interpolation) {
   }
 }
 
-String _parseInterpolation(Set<String> params, String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
+class _ParseInterpolationResult {
+  final String parsedContent;
+  final Set<String> params;
+
+  _ParseInterpolationResult(this.parsedContent, this.params);
+}
+
+_ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
+  final String parsedContent;
+  final params = Set<String>();
+
   switch (interpolation) {
     case StringInterpolation.dart:
-      return raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
+      parsedContent = raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
         final paramOriginal = match.group(2)!;
         if (paramCase == null) {
           // no transformations
@@ -316,7 +326,7 @@ String _parseInterpolation(Set<String> params, String raw, StringInterpolation i
       });
       break;
     case StringInterpolation.braces:
-      return raw.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
+      parsedContent = raw.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
         if (match.group(1) == '\\') {
           return '{${match.group(2)}}'; // escape
         }
@@ -334,7 +344,7 @@ String _parseInterpolation(Set<String> params, String raw, StringInterpolation i
       });
       break;
     case StringInterpolation.doubleBraces:
-      return raw.replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
+      parsedContent = raw.replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
         if (match.group(1) == '\\') {
           return '{{${match.group(2)}}}'; // escape
         }
@@ -351,6 +361,8 @@ String _parseInterpolation(Set<String> params, String raw, StringInterpolation i
         }
       });
   }
+
+  return _ParseInterpolationResult(parsedContent, params);
 }
 
 class RichTextNode extends TextNode {
