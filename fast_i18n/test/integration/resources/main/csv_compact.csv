@@ -1,0 +1,23 @@
+key,en,de
+onboarding.welcome,Welcome {fullName},Willkommen {fullName}
+onboarding.bye,Bye {firstName},Tschüss {firstName}
+onboarding.@bye,Bye text,Bye text
+onboarding.pages.0.title,First Page,Erste Seite
+onboarding.pages.0.content,First Page Content,Erster Seiteninhalt
+onboarding.pages.1.title,Second Page,Zweite Seite
+group.users.zero,No Users and @:onboarding.welcome,Keine Nutzer und @:onboarding.welcome
+group.users.one,One User,Ein Nutzer
+group.users.other,{count} Users and @:onboarding.bye,{count} Nutzer und @:onboarding.bye
+onboarding.greet.male,Hello Mr {lastName} and @:onboarding.welcome,Hallo Herr {lastName} und @:onboarding.welcome
+onboarding.greet.female,Hello Ms {lastName} and @:onboarding.bye,Hallo Frau {lastName} und @:onboarding.bye
+onboarding.greet2(gender).male,Hello Mr,Hallo Herr
+onboarding.greet2(gender).female,Hello Ms,Hallo Frau
+onboarding.greetCombination,"@:onboarding.greet, @:onboarding.greet2","@:onboarding.greet, @:onboarding.greet2"
+onboarding.welcomeLinkedPlural,Hello @:group.users,Hallo @:group.users
+onboarding.welcomeLinkedContext,Hello @:onboarding.greet,Hallo @:onboarding.greet
+onboarding.welcomeFullLink,Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext,Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
+end.stringPages.0,1st Page,1. Seite
+end.stringPages.1,2nd Page,2. Seite
+end.pages.0.unknown,Unknown Error,Unbekannter Fehler
+end.pages.1.with space,An Error,Ein Fehler
+end.pages.1.with second space,An 2nd Error,Ein 2. Fehler

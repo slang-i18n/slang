@@ -1,0 +1,31 @@
+onboarding:
+  welcome: Welcome {fullName}
+  bye: Bye {firstName}
+  "@bye": Bye text
+  pages:
+    - title: First Page
+      content: First Page Content
+    - title: Second Page
+  greet:
+    male: Hello Mr {lastName} and @:onboarding.welcome
+    female: Hello Ms {lastName} and @:onboarding.bye
+  greet2(gender):
+    male: Hello Mr
+    female: Hello Ms
+  greetCombination: "@:onboarding.greet, @:onboarding.greet2"
+  welcomeLinkedPlural: Hello @:group.users
+  welcomeLinkedContext: Hello @:onboarding.greet
+  welcomeFullLink: Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
+group:
+  users:
+    zero: No Users and @:onboarding.welcome
+    one: One User
+    other: "{count} Users and @:onboarding.bye"
+end:
+  stringPages:
+    - 1st Page
+    - 2nd Page
+  pages:
+    - unknown: Unknown Error
+    - with space: An Error
+      with second space: An 2nd Error
