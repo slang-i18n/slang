@@ -237,6 +237,8 @@ void _generateClass(
         buffer.writeln(
             'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
+    } else if (value is RichTextNode) {
+      buffer.writeln(TODO);
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
       _generateList(config, localeData.base, localeData.locale,
