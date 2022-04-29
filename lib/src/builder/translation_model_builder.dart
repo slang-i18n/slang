@@ -201,7 +201,7 @@ class TranslationModelBuilder {
       if (value is String || value is num) {
         // leaf
         // key: 'value'
-        final textNode = key.endsWith('(rich)')
+        final textNode = originalKey.endsWith('(rich)')
             ? RichTextNode(
                 path: currPath,
                 raw: value.toString(),

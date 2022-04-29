@@ -55,6 +55,8 @@ _generateTranslationMapRecursive({
       buffer.writeln(
           '\t\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
     }
+  } else if (curr is RichTextNode) {
+    // not implemented yet
   } else if (curr is ListNode) {
     // recursive
     curr.entries.forEach((child) {
