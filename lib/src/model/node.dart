@@ -395,7 +395,7 @@ class RichTextNode extends TextNode {
     final parsedParams = rawParsedResult.params.map(_parseParamWithArg).toList();
     final params = parsedParams.map((e) => e.paramName).toSet();
     final paramTypeMap =
-        Map.fromEntries(parsedParams.map((e) => MapEntry(e.paramName, e.arg != null ? 'InlineSpanBuilder' : 'Object')));
+        Map.fromEntries(parsedParams.map((e) => MapEntry(e.paramName, e.arg != null ? 'InlineSpanBuilder' : 'InlineSpan')));
 
     final spans = _splitWithMatchAndNonMatch(
       rawParsedResult.parsedContent,
