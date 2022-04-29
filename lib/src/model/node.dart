@@ -65,7 +65,7 @@ class ObjectNode extends IterableNode {
           path: path,
           comment: comment,
           genericType: entries.values
-                  .every((child) => child is TextNode && child.params.isEmpty)
+                  .every((child) => child is StringTextNode && child.params.isEmpty)
               ? 'String'
               : 'dynamic',
         );
@@ -92,7 +92,7 @@ class ListNode extends IterableNode {
         );
 
   static String _determineGenericType(List<Node> entries) {
-    if (entries.every((child) => child is TextNode && child.params.isEmpty)) {
+    if (entries.every((child) => child is StringTextNode && child.params.isEmpty)) {
       return 'String';
     }
     if (entries.every((child) => child is ListNode)) {
@@ -127,7 +127,7 @@ enum PluralType {
 
 class PluralNode extends Node implements LeafNode {
   final PluralType pluralType;
-  final Map<Quantity, TextNode> quantities;
+  final Map<Quantity, StringTextNode> quantities;
   final String paramName; // name of the plural parameter
 
   PluralNode({
@@ -145,7 +145,7 @@ class PluralNode extends Node implements LeafNode {
 
 class ContextNode extends Node implements LeafNode {
   final ContextType context;
-  final Map<String, TextNode> entries;
+  final Map<String, StringTextNode> entries;
   final String paramName; // name of the context parameter
 
   ContextNode({
@@ -161,7 +161,13 @@ class ContextNode extends Node implements LeafNode {
   String toString() => entries.toString();
 }
 
-class TextNode extends Node implements LeafNode {
+abstract class TextNode extends Node implements LeafNode {
+  TextNode({required String path, required String? comment}) : super(path: path, comment: comment);
+
+  String get raw;
+}
+
+class StringTextNode extends TextNode {
   /// The original string
   final String raw;
 
@@ -193,7 +199,7 @@ class TextNode extends Node implements LeafNode {
   final StringInterpolation interpolation;
   final CaseStyle? paramCase;
 
-  TextNode({
+  StringTextNode({
     required String path,
     required this.raw,
     required String? comment,
@@ -320,7 +326,7 @@ class TextNode extends Node implements LeafNode {
     this._paramTypeMap = paramTypeMap;
 
     // build a temporary TextNode to get the updated content and params
-    final temp = TextNode(
+    final temp = StringTextNode(
       path: path,
       raw: raw,
       comment: comment,

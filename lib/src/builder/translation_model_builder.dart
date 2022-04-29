@@ -50,10 +50,10 @@ class TranslationModelBuilder {
     //
     // TextNodes with parameterized linked translations are rebuilt with correct parameters.
     leavesMap.entries
-        .where((entry) => entry.value is TextNode)
+        .where((entry) => entry.value is StringTextNode)
         .forEach((entry) {
       final key = entry.key;
-      final value = entry.value as TextNode;
+      final value = entry.value as StringTextNode;
 
       final linkParamMap = <String, Set<String>>{};
       final paramTypeMap = <String, String>{};
@@ -72,7 +72,7 @@ class TranslationModelBuilder {
 
           visitedLinks.add(currLink);
 
-          if (linkedNode is TextNode) {
+          if (linkedNode is StringTextNode) {
             paramSet.addAll(linkedNode.params);
 
             // lookup links
@@ -82,7 +82,7 @@ class TranslationModelBuilder {
               }
             });
           } else if (linkedNode is PluralNode || linkedNode is ContextNode) {
-            final Iterable<TextNode> textNodes = linkedNode is PluralNode
+            final Iterable<StringTextNode> textNodes = linkedNode is PluralNode
                 ? linkedNode.quantities.values
                 : (linkedNode as ContextNode).entries.values;
             final linkedParamSet = textNodes
@@ -201,7 +201,7 @@ class TranslationModelBuilder {
       if (value is String || value is num) {
         // leaf
         // key: 'value'
-        final textNode = TextNode(
+        final textNode = StringTextNode(
           path: currPath,
           raw: value.toString(),
           comment: comment,
@@ -267,18 +267,18 @@ class TranslationModelBuilder {
             }
 
             // split children by comma for plurals and contexts
-            final digestedMap = <String, TextNode>{};
+            final digestedMap = <String, StringTextNode>{};
             final entries = children.entries.toList();
             for (final entry in entries) {
               final split = entry.key.split(Node.KEY_DELIMITER);
               if (split.length == 1) {
                 // keep as is
-                digestedMap[entry.key] = entry.value as TextNode;
+                digestedMap[entry.key] = entry.value as StringTextNode;
               } else {
                 // split!
                 // {one,two: hi} -> {one: hi, two: hi}
                 for (final newChild in split) {
-                  digestedMap[newChild] = entry.value as TextNode;
+                  digestedMap[newChild] = entry.value as StringTextNode;
                 }
               }
             }
@@ -579,7 +579,7 @@ class TranslationModelBuilder {
       final child = entry.value;
       String returnType;
       Set<AttributeParameter> parameters;
-      if (child is TextNode) {
+      if (child is StringTextNode) {
         returnType = 'String';
         parameters = child.params.map((p) {
           return AttributeParameter(
@@ -597,7 +597,7 @@ class TranslationModelBuilder {
         parameters = {
           AttributeParameter(parameterName: child.paramName, type: 'num'),
           ...child.quantities.values
-              .cast<TextNode>()
+              .cast<StringTextNode>()
               .map((text) => text.params)
               .expand((param) => param)
               .where((param) => param != child.paramName)
@@ -610,7 +610,7 @@ class TranslationModelBuilder {
           AttributeParameter(
               parameterName: child.paramName, type: child.context.enumName),
           ...child.entries.values
-              .cast<TextNode>()
+              .cast<StringTextNode>()
               .map((text) => text.params)
               .expand((param) => param)
               .where((param) => param != child.paramName)

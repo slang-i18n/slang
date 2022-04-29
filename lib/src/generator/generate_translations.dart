@@ -230,7 +230,7 @@ void _generateClass(
         ? '?'
         : '';
 
-    if (value is TextNode) {
+    if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('String$optional get $key => \'${value.content}\';');
       } else {
@@ -307,7 +307,7 @@ void _generateMap(
 
   currMembers.forEach((key, value) {
     _addTabs(buffer, depth + 2);
-    if (value is TextNode) {
+    if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('\'$key\': \'${value.content}\',');
       } else {
@@ -384,7 +384,7 @@ void _generateList(
     final Node value = currList[i];
 
     _addTabs(buffer, depth + 2);
-    if (value is TextNode) {
+    if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('\'${value.content}\',');
       } else {

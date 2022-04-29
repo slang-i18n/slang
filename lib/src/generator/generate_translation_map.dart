@@ -48,7 +48,7 @@ _generateTranslationMapRecursive({
   required bool hasPluralResolver,
   required String language,
 }) {
-  if (curr is TextNode) {
+  if (curr is StringTextNode) {
     if (curr.params.isEmpty) {
       buffer.writeln('\t\t\t\'${curr.path}\': \'${curr.content}\',');
     } else {
