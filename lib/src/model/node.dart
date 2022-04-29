@@ -162,15 +162,13 @@ class ContextNode extends Node implements LeafNode {
 }
 
 abstract class TextNode extends Node implements LeafNode {
-  TextNode({required String path, required String? comment}) : super(path: path, comment: comment);
-
-  String get raw;
-}
-
-class StringTextNode extends TextNode {
   /// The original string
   final String raw;
 
+  TextNode({required String path, required String? comment, required this.raw,}) : super(path: path, comment: comment);
+}
+
+class StringTextNode extends TextNode {
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
   late String _content;
@@ -201,12 +199,12 @@ class StringTextNode extends TextNode {
 
   StringTextNode({
     required String path,
-    required this.raw,
+    required String raw,
     required String? comment,
     required this.interpolation,
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
-  }) : super(path: path, comment: comment) {
+  }) : super(path: path, comment: comment, raw: raw) {
     String contentNormalized = raw
         .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
         .replaceAll('\n', '\\n') // (linebreak 2) -> \n
@@ -347,3 +345,14 @@ class StringTextNode extends TextNode {
       return '$params => $content';
   }
 }
+
+class RichTextNode extends TextNode {
+  RichTextNode({
+    required String path,
+    required String? comment,
+    required String raw,
+  }) : super(path: path, comment: comment, raw: raw);
+
+  // TODO
+}
+

@@ -201,13 +201,19 @@ class TranslationModelBuilder {
       if (value is String || value is num) {
         // leaf
         // key: 'value'
-        final textNode = StringTextNode(
-          path: currPath,
-          raw: value.toString(),
-          comment: comment,
-          interpolation: config.stringInterpolation,
-          paramCase: config.paramCase,
-        );
+        final textNode = key.endsWith('(rich)')
+            ? RichTextNode(
+                path: currPath,
+                raw: value.toString(),
+                comment: comment,
+              )
+            : StringTextNode(
+                path: currPath,
+                raw: value.toString(),
+                comment: comment,
+                interpolation: config.stringInterpolation,
+                paramCase: config.paramCase,
+              );
         resultNodeTree[key] = textNode;
         leavesMap[currPath] = textNode;
       } else {
