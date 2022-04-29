@@ -368,7 +368,7 @@ _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation in
 }
 
 class RichTextNode extends TextNode {
-  final List<String> spans;
+  final List<BaseSpan> spans;
   late Set<String> params;
 
   Map<String, String> get paramTypeMap => Map.fromEntries(params.map((e) => MapEntry(e, 'InlineSpanBuilder')));
@@ -396,11 +396,12 @@ class RichTextNode extends TextNode {
     final spans = _splitWithMatchAndNonMatch(
       rawParsedResult.parsedContent,
       RegexUtils.argumentsDartRegex,
-      onNonMatch: (text) => "TextSpan(text: '$text')",
+      onNonMatch: (text) => LiteralSpan(text),
       onMatch: (match) {
         final parsed = _parseParamWithArg((match.group(3) ?? match.group(4))!);
         final parsedArg = parsed.arg;
-        return '${parsed.paramName}' + (parsedArg == null ? '' : "('$parsedArg')");
+        if (parsedArg != null) return FunctionSpan(parsed.paramName, parsedArg);
+        return VariableSpan(parsed.paramName);
       },
     ).toList();
 
@@ -439,4 +440,34 @@ class _ParamWithArg {
 
   @override
   String toString() => '_ParamWithArg{paramName: $paramName, arg: $arg}';
+}
+
+abstract class BaseSpan {
+  String get code;
+}
+
+class LiteralSpan extends BaseSpan {
+  final String literal;
+
+  LiteralSpan(this.literal);
+
+  String get code => "TextSpan(text: '$literal')";
+}
+
+class FunctionSpan extends BaseSpan {
+  final String functionName;
+  final String arg;
+
+  FunctionSpan(this.functionName, this.arg);
+
+  String get code => "$functionName('$arg')";
+}
+
+class VariableSpan extends BaseSpan {
+  final String variableName;
+
+  VariableSpan(this.variableName);
+
+  @override
+  String get code => '$variableName';
 }

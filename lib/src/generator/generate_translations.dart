@@ -242,7 +242,7 @@ void _generateClass(
       buffer.write(value.params.isEmpty ? 'get $key' : '$key${_toParameterList(value.params, value.paramTypeMap)}');
       buffer.writeln(' => TextSpan(children: [');
       for (final span in value.spans) {
-        buffer.writeln('\t\t$span,');
+        buffer.writeln('\t\t${span.code},');
       }
       buffer.writeln('\t]);');
     } else if (value is ListNode) {
