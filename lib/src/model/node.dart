@@ -390,7 +390,7 @@ class RichTextNode extends TextNode {
   }) {
     final escapedContent = _escapeContent(raw, interpolation);
     final rawParsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
-    print('hi escapedContent=$escapedContent rawParsedResult=$rawParsedResult');
+    // print('hi escapedContent=$escapedContent rawParsedResult=$rawParsedResult');
 
     final params = rawParsedResult.params.map(_parseParamWithArg).map((e) => e.paramName).toSet();
     final spans = _splitWithMatchAndNonMatch(
@@ -416,7 +416,7 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
 }) sync* {
   final matches = pattern.allMatches(s).toList();
   final nonMatches = s.split(pattern);
-  print('hi matches=$matches');
+  // print('hi matches=$matches');
   assert(matches.length == nonMatches.length - 1);
   for (var i = 0; i < matches.length; ++i) {
     yield onNonMatch(nonMatches[i]);
@@ -426,7 +426,7 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
 }
 
 _ParamWithArg _parseParamWithArg(String src) {
-  print('hi _parseParamWithArg=$src');
+  // print('hi _parseParamWithArg=$src');
   final match = RegexUtils.paramWithArg.firstMatch(src)!;
   return _ParamWithArg(match.group(1)!, match.group(2));
 }
