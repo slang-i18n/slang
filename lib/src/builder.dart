@@ -145,7 +145,7 @@ class I18nBuilder implements Builder {
             RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
         if (match != null) {
           final namespace = match.group(2)!;
-          final language = match.group(3);
+          final language = match.group(3)!;
           final script = match.group(5);
           final country = match.group(7);
           final locale = I18nLocale(

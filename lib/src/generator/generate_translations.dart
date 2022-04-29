@@ -48,8 +48,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
     _generateClass(
         config,
         localeData,
-        config.hasPluralResolver(
-            localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE),
+        config.hasPluralResolver(localeData.locale.language),
         buffer,
         queue,
         task.className,
@@ -231,13 +230,21 @@ void _generateClass(
         ? '?'
         : '';
 
-    if (value is TextNode) {
+    if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('String$optional get $key => \'${value.content}\';');
       } else {
         buffer.writeln(
             'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
+    } else if (value is RichTextNode) {
+      buffer.write('InlineSpan$optional ');
+      buffer.write(value.params.isEmpty ? 'get $key' : '$key${_toParameterList(value.params, value.paramTypeMap)}');
+      buffer.writeln(' => TextSpan(children: [');
+      for (final span in value.spans) {
+        buffer.writeln('\t\t${span.code},');
+      }
+      buffer.writeln('\t]);');
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
       _generateList(config, localeData.base, localeData.locale,
@@ -273,7 +280,7 @@ void _generateClass(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: localeData.locale.language,
         node: value,
         depth: 0,
       );
@@ -308,7 +315,7 @@ void _generateMap(
 
   currMembers.forEach((key, value) {
     _addTabs(buffer, depth + 2);
-    if (value is TextNode) {
+    if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('\'$key\': \'${value.content}\',');
       } else {
@@ -341,7 +348,7 @@ void _generateMap(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: locale.language,
         node: value,
         depth: depth + 1,
       );
@@ -385,7 +392,7 @@ void _generateList(
     final Node value = currList[i];
 
     _addTabs(buffer, depth + 2);
-    if (value is TextNode) {
+    if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln('\'${value.content}\',');
       } else {
@@ -416,7 +423,7 @@ void _generateList(
         buffer: buffer,
         config: config,
         hasPluralResolver: hasPluralResolver,
-        language: locale.language ?? I18nLocale.UNDEFINED_LANGUAGE,
+        language: locale.language,
         node: value,
         depth: depth + 1,
       );

@@ -5,7 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   LocaleSettings.useDeviceLocale(); // initialize with the right locale
-  runApp(TranslationProvider( // wrap with TranslationProvider
+  runApp(TranslationProvider(
+    // wrap with TranslationProvider
     child: MyApp(),
   ));
 }
@@ -57,14 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
               // lets loop over all supported locales
               children: AppLocale.values.map((locale) {
-
-                AppLocale activeLocale = LocaleSettings.currentLocale; // active locale
-                bool active = activeLocale == locale; // typed version is preferred to avoid typos
+                AppLocale activeLocale =
+                    LocaleSettings.currentLocale; // active locale
+                bool active = activeLocale ==
+                    locale; // typed version is preferred to avoid typos
 
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(backgroundColor: active ? Colors.blue.shade100 : null),
+                    style: OutlinedButton.styleFrom(
+                        backgroundColor: active ? Colors.blue.shade100 : null),
                     onPressed: () {
                       // locale change, will trigger a rebuild (no setState needed)
                       LocaleSettings.setLocale(locale);

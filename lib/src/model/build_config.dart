@@ -15,6 +15,7 @@ class BuildConfig {
   static const String? defaultOutputFileName = null;
   static const OutputFormat defaultOutputFormat = OutputFormat.singleFile;
   static const bool defaultRenderLocaleHandling = true;
+  static const bool defaultDartOnly = false;
   static const bool defaultNamespaces = false;
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
@@ -44,6 +45,7 @@ class BuildConfig {
   final String? outputFileName;
   final OutputFormat outputFormat;
   final bool renderLocaleHandling;
+  final bool dartOnly;
   final bool namespaces;
   final String translateVar;
   final String enumName;
@@ -71,6 +73,7 @@ class BuildConfig {
     required this.outputFileName,
     required this.outputFormat,
     required this.renderLocaleHandling,
+    required this.dartOnly,
     required this.namespaces,
     required this.translateVar,
     required this.enumName,
@@ -112,6 +115,7 @@ class BuildConfig {
       outputFileName: outputFileName,
       outputFormat: outputFormat,
       renderLocaleHandling: renderLocaleHandling,
+      dartOnly: dartOnly,
       namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,
@@ -144,6 +148,7 @@ class BuildConfig {
     print(' -> outputFileName: $outputFileName');
     print(' -> outputFileFormat: ${outputFormat.getEnumName()}');
     print(' -> renderLocaleHandling: $renderLocaleHandling');
+    print(' -> dartOnly: $dartOnly');
     print(' -> namespaces: $namespaces');
     print(' -> translateVar: $translateVar');
     print(' -> enumName: $enumName');

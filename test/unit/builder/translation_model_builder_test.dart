@@ -9,7 +9,7 @@ import '../../util/build_config_utils.dart';
 
 void main() {
   group('TranslationModelBuilder.build', () {
-    test('1 TextNode', () {
+    test('1 StringTextNode', () {
       final result = TranslationModelBuilder.build(
         buildConfig: baseConfig,
         locale: defaultLocale,
@@ -18,7 +18,7 @@ void main() {
         },
       );
       final map = result.root.entries;
-      expect((map['test'] as TextNode).content, 'a');
+      expect((map['test'] as StringTextNode).content, 'a');
     });
 
     test('keyCase=snake and keyMapCase=camel', () {
@@ -34,7 +34,7 @@ void main() {
         },
       );
       final mapNode = result.root.entries['my_map'] as ObjectNode;
-      expect((mapNode.entries['myValue'] as TextNode).content, 'cool');
+      expect((mapNode.entries['myValue'] as StringTextNode).content, 'cool');
     });
 
     test('keyCase=snake and keyMapCase=null', () {
@@ -49,7 +49,7 @@ void main() {
         },
       );
       final mapNode = result.root.entries['my_map'] as ObjectNode;
-      expect((mapNode.entries['my_value 3'] as TextNode).content, 'cool');
+      expect((mapNode.entries['my_value 3'] as StringTextNode).content, 'cool');
     });
 
     test('one link no parameters', () {
@@ -61,7 +61,7 @@ void main() {
           'b': 'Hello @:a',
         },
       );
-      final textNode = result.root.entries['b'] as TextNode;
+      final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, <String>{});
       expect(textNode.content, r'Hello ${_root.a}');
     });
@@ -75,7 +75,7 @@ void main() {
           'b': 'Hello @:a',
         },
       );
-      final textNode = result.root.entries['b'] as TextNode;
+      final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'p2'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, p2: p2)}');
     });
@@ -90,7 +90,7 @@ void main() {
           'c': r'C $p4 @:a',
         },
       );
-      final textNode = result.root.entries['b'] as TextNode;
+      final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'p2', 'p3', 'p4'});
       expect(textNode.content,
           r'Hello $p3 ${_root.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
@@ -108,7 +108,7 @@ void main() {
           'b': r'Hello @:a',
         },
       );
-      final textNode = result.root.entries['b'] as TextNode;
+      final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'count'});
       expect(textNode.paramTypeMap, {'count': 'num'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, count: count)}');
@@ -133,7 +133,7 @@ void main() {
           'b': r'Hello @:a',
         },
       );
-      final textNode = result.root.entries['b'] as TextNode;
+      final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'context'});
       expect(textNode.paramTypeMap, {'context': 'GenderCon'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, context: context)}');

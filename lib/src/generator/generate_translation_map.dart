@@ -17,8 +17,7 @@ String generateTranslationMap(
       '/// Only for edge cases! For simple maps, use the map function of this library.');
 
   for (I18nData localeData in translations) {
-    final language =
-        localeData.locale.language ?? I18nLocale.UNDEFINED_LANGUAGE;
+    final language = localeData.locale.language;
     final hasPluralResolver = config.hasPluralResolver(language);
 
     buffer.writeln();
@@ -49,13 +48,15 @@ _generateTranslationMapRecursive({
   required bool hasPluralResolver,
   required String language,
 }) {
-  if (curr is TextNode) {
+  if (curr is StringTextNode) {
     if (curr.params.isEmpty) {
       buffer.writeln('\t\t\t\'${curr.path}\': \'${curr.content}\',');
     } else {
       buffer.writeln(
           '\t\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
     }
+  } else if (curr is RichTextNode) {
+    // not implemented yet
   } else if (curr is ListNode) {
     // recursive
     curr.entries.forEach((child) {

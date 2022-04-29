@@ -1,6 +1,6 @@
 class RegexUtils {
   /// matches $argument or ${argument}
-  static RegExp argumentsDartRegex = RegExp(r'([^\\]|^)\$\{?(\w+)\}?');
+  static RegExp argumentsDartRegex = RegExp(r'(?<=([^\\]|^))\$(([\w]+)|\{(.+?)\})');
 
   /// matches {argument}
   /// 1 = pre character (to check \)
@@ -20,6 +20,9 @@ class RegexUtils {
 
   /// matches only $ but not \$
   static RegExp dollarOnlyRegex = RegExp(r'([^\\]|^)\$( |$)');
+
+  /// matches `param(arg)`
+  static RegExp paramWithArg = RegExp(r'^(\w+)(\((.+)\))?$');
 
   /// locale regex
   static const LOCALE_REGEX_RAW =

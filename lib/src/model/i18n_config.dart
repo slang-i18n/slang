@@ -11,6 +11,7 @@ class I18nConfig {
   final FallbackStrategy fallbackStrategy;
   final OutputFormat outputFormat;
   final bool renderLocaleHandling;
+  final bool dartOnly;
   final Map<String, RuleSet> renderedCardinalResolvers;
   final Map<String, RuleSet> renderedOrdinalResolvers;
   final Set<String> unsupportedPluralLanguages; // resolvers needed
@@ -28,6 +29,7 @@ class I18nConfig {
     required this.fallbackStrategy,
     required this.outputFormat,
     required this.renderLocaleHandling,
+    required this.dartOnly,
     required this.renderedCardinalResolvers,
     required this.renderedOrdinalResolvers,
     required this.unsupportedPluralLanguages,
