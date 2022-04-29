@@ -1,6 +1,6 @@
 class RegexUtils {
   /// matches $argument or ${argument}
-  static RegExp argumentsDartRegex = RegExp(r'([^\\]|^)\$\{?([\w\(\)]+)\}?');
+  static RegExp argumentsDartRegex = RegExp(r'([^\\]|^)\$\{?([\w\(\) ]+)\}?');
 
   /// matches {argument}
   /// 1 = pre character (to check \)

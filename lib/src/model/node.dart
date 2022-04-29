@@ -302,6 +302,9 @@ class _ParseInterpolationResult {
   final Set<String> params;
 
   _ParseInterpolationResult(this.parsedContent, this.params);
+
+  @override
+  String toString() => '_ParseInterpolationResult{parsedContent: $parsedContent, params: $params}';
 }
 
 _ParseInterpolationResult _parseInterpolation(String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
@@ -387,11 +390,12 @@ class RichTextNode extends TextNode {
   }) {
     final escapedContent = _escapeContent(raw, interpolation);
     final rawParsedResult = _parseInterpolation(escapedContent, interpolation, paramCase);
+    print('hi escapedContent=$escapedContent rawParsedResult=$rawParsedResult');
 
     final params = rawParsedResult.params.map(_parseParamWithArg).map((e) => e.paramName).toSet();
     final spans = _splitWithMatchAndNonMatch(
       rawParsedResult.parsedContent,
-      RegexUtils.paramWithArg,
+      RegexUtils.argumentsDartRegex,
       onNonMatch: (text) => "TextSpan(text: '$text')",
       onMatch: (match) {
         final parsed = _parseParamWithArg(match.group(0)!);
@@ -412,6 +416,7 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
 }) sync* {
   final matches = pattern.allMatches(s).toList();
   final nonMatches = s.split(pattern);
+  print('hi matches=$matches');
   assert(matches.length == nonMatches.length - 1);
   for (var i = 0; i < matches.length; ++i) {
     yield onNonMatch(nonMatches[i]);
@@ -431,4 +436,7 @@ class _ParamWithArg {
   final String? arg;
 
   _ParamWithArg(this.paramName, this.arg);
+
+  @override
+  String toString() => '_ParamWithArg{paramName: $paramName, arg: $arg}';
 }
