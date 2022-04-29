@@ -12,6 +12,7 @@ abstract class Node {
   final String path;
   final String? comment;
   Node? _parent;
+
   Node? get parent => _parent;
 
   Node({
@@ -34,6 +35,7 @@ abstract class IterableNode extends Node {
   /// If not null, then all its children have a specific interface.
   /// This overwrites the [plainStrings] attribute.
   String _genericType;
+
   String get genericType => _genericType;
 
   IterableNode({
@@ -54,6 +56,7 @@ class ObjectNode extends IterableNode {
 
   /// If not null, then this node has an interface (mixin)
   Interface? _interface;
+
   Interface? get interface => _interface;
 
   ObjectNode({
@@ -64,10 +67,8 @@ class ObjectNode extends IterableNode {
   }) : super(
           path: path,
           comment: comment,
-          genericType: entries.values
-                  .every((child) => child is StringTextNode && child.params.isEmpty)
-              ? 'String'
-              : 'dynamic',
+          genericType:
+              entries.values.every((child) => child is StringTextNode && child.params.isEmpty) ? 'String' : 'dynamic',
         );
 
   void setInterface(Interface interface) {
@@ -165,23 +166,30 @@ abstract class TextNode extends Node implements LeafNode {
   /// The original string
   final String raw;
 
-  TextNode({required String path, required String? comment, required this.raw,}) : super(path: path, comment: comment);
+  TextNode({
+    required String path,
+    required String? comment,
+    required this.raw,
+  }) : super(path: path, comment: comment);
 }
 
 class StringTextNode extends TextNode {
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
   late String _content;
+
   String get content => _content;
 
   /// Set of parameters.
   /// Hello {name}, I am {age} years old -> {'name', 'age'}
   late Set<String> _params;
+
   Set<String> get params => _params;
 
   /// Set of [TextNode] represented as path
   /// Will be used for 2nd round, determining the final set of parameters
   late Set<String> _links;
+
   Set<String> get links => _links;
 
   /// Plural and context parameters need to have a special parameter type (e.g. num)
@@ -190,6 +198,7 @@ class StringTextNode extends TextNode {
   /// For special cases, i.e. a translation is linked to a plural translation,
   /// the type must be specified and cannot be [Object].
   Map<String, String> _paramTypeMap = <String, String>{};
+
   Map<String, String> get paramTypeMap => _paramTypeMap;
 
   /// Several configs, persisted into node to make it easier to copy
@@ -205,100 +214,14 @@ class StringTextNode extends TextNode {
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
   }) : super(path: path, comment: comment, raw: raw) {
-    String contentNormalized = raw
-        .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
-        .replaceAll('\n', '\\n') // (linebreak 2) -> \n
-        .replaceAll('\'', '\\\''); // ' -> \'
+    final escapedContent = _escapeContent(raw, interpolation);
 
-    if (interpolation == StringInterpolation.dart) {
-      // escape single $
-      contentNormalized = contentNormalized
-          .replaceAllMapped(RegexUtils.dollarOnlyRegex, (match) {
-        String result = '';
-        if (match.group(1) != null) {
-          result += match.group(1)!; // pre character
-        }
-        result += '\\\$';
-        if (match.group(2) != null) {
-          result += match.group(2)!; // post character
-        }
-        return result;
-      });
-    } else {
-      contentNormalized =
-          contentNormalized.replaceAllMapped(RegexUtils.dollarRegex, (match) {
-        if (match.group(1) != null) {
-          return '${match.group(1)}\\\$'; // with pre character
-        } else {
-          return '\\\$';
-        }
-      });
-    }
-
-    // parse arguments, modify [contentNormalized] according to interpolation
-    switch (interpolation) {
-      case StringInterpolation.dart:
-        _params = Set<String>();
-        contentNormalized = contentNormalized
-            .replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
-          final paramOriginal = match.group(2)!;
-          if (paramCase == null) {
-            // no transformations
-            params.add(paramOriginal);
-            return match.group(0)!;
-          } else {
-            // apply param case
-            final paramWithCase = paramOriginal.toCase(paramCase);
-            params.add(paramWithCase);
-            return match.group(0)!.replaceAll(paramOriginal, paramWithCase);
-          }
-        });
-        break;
-      case StringInterpolation.braces:
-        _params = Set<String>();
-        contentNormalized = contentNormalized
-            .replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
-          if (match.group(1) == '\\') {
-            return '{${match.group(2)}}'; // escape
-          }
-
-          final param = match.group(2)!.toCase(paramCase);
-          params.add(param);
-
-          if (match.group(3) != null) {
-            // ${...} because a word follows
-            return '${match.group(1)}\${$param}${match.group(3)}';
-          } else {
-            // $...
-            return '${match.group(1)}\$$param';
-          }
-        });
-        break;
-      case StringInterpolation.doubleBraces:
-        _params = Set<String>();
-        contentNormalized = contentNormalized
-            .replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
-          if (match.group(1) == '\\') {
-            return '{{${match.group(2)}}}'; // escape
-          }
-
-          final param = match.group(2)!.toCase(paramCase);
-          params.add(param);
-
-          if (match.group(3) != null) {
-            // ${...} because a word follows
-            return '${match.group(1)}\${$param}${match.group(3)}';
-          } else {
-            // $...
-            return '${match.group(1)}\$$param';
-          }
-        });
-    }
+    _params = Set();
+    final parsedContent = _parseInterpolation(_params, escapedContent, interpolation, paramCase);
 
     // detect linked translations
     this._links = Set<String>();
-    this._content =
-        contentNormalized.replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    this._content = parsedContent.replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = match.group(1)!;
       links.add(linkedPath);
 
@@ -309,8 +232,7 @@ class StringTextNode extends TextNode {
 
       final linkedParams = linkParamMap[linkedPath]!;
       params.addAll(linkedParams);
-      final parameterString =
-          linkedParams.map((param) => '$param: $param').join(', ');
+      final parameterString = linkedParams.map((param) => '$param: $param').join(', ');
       return '\${_root.$linkedPath($parameterString)}';
     });
   }
@@ -343,6 +265,91 @@ class StringTextNode extends TextNode {
       return content;
     else
       return '$params => $content';
+  }
+}
+
+String _escapeContent(String raw, StringInterpolation interpolation) {
+  final escapedRaw = raw
+      .replaceAll('\r\n', '\\n') // (linebreak 1) -> \n
+      .replaceAll('\n', '\\n') // (linebreak 2) -> \n
+      .replaceAll('\'', '\\\''); // ' -> \'
+
+  if (interpolation == StringInterpolation.dart) {
+    // escape single $
+    return escapedRaw.replaceAllMapped(RegexUtils.dollarOnlyRegex, (match) {
+      String result = '';
+      if (match.group(1) != null) {
+        result += match.group(1)!; // pre character
+      }
+      result += '\\\$';
+      if (match.group(2) != null) {
+        result += match.group(2)!; // post character
+      }
+      return result;
+    });
+  } else {
+    return escapedRaw.replaceAllMapped(RegexUtils.dollarRegex, (match) {
+      if (match.group(1) != null) {
+        return '${match.group(1)}\\\$'; // with pre character
+      } else {
+        return '\\\$';
+      }
+    });
+  }
+}
+
+String _parseInterpolation(Set<String> params, String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
+  switch (interpolation) {
+    case StringInterpolation.dart:
+      return raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
+        final paramOriginal = match.group(2)!;
+        if (paramCase == null) {
+          // no transformations
+          params.add(paramOriginal);
+          return match.group(0)!;
+        } else {
+          // apply param case
+          final paramWithCase = paramOriginal.toCase(paramCase);
+          params.add(paramWithCase);
+          return match.group(0)!.replaceAll(paramOriginal, paramWithCase);
+        }
+      });
+      break;
+    case StringInterpolation.braces:
+      return raw.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
+        if (match.group(1) == '\\') {
+          return '{${match.group(2)}}'; // escape
+        }
+
+        final param = match.group(2)!.toCase(paramCase);
+        params.add(param);
+
+        if (match.group(3) != null) {
+          // ${...} because a word follows
+          return '${match.group(1)}\${$param}${match.group(3)}';
+        } else {
+          // $...
+          return '${match.group(1)}\$$param';
+        }
+      });
+      break;
+    case StringInterpolation.doubleBraces:
+      return raw.replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
+        if (match.group(1) == '\\') {
+          return '{{${match.group(2)}}}'; // escape
+        }
+
+        final param = match.group(2)!.toCase(paramCase);
+        params.add(param);
+
+        if (match.group(3) != null) {
+          // ${...} because a word follows
+          return '${match.group(1)}\${$param}${match.group(3)}';
+        } else {
+          // $...
+          return '${match.group(1)}\$$param';
+        }
+      });
   }
 }
 
