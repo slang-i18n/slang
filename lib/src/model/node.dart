@@ -456,7 +456,7 @@ class LiteralSpan extends BaseSpan {
 
   LiteralSpan(this.literal);
 
-  String get code => "TextSpan(text: '$literal')";
+  String get code => "const TextSpan(text: '$literal')";
 }
 
 class FunctionSpan extends BaseSpan {
