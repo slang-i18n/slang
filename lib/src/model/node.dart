@@ -428,7 +428,7 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
 _ParamWithArg _parseParamWithArg(String src) {
   // print('hi _parseParamWithArg=$src');
   final match = RegexUtils.paramWithArg.firstMatch(src)!;
-  return _ParamWithArg(match.group(1)!, match.group(2));
+  return _ParamWithArg(match.group(1)!, match.group(3));
 }
 
 class _ParamWithArg {
