@@ -42,10 +42,10 @@ AppLocaleId get currLocaleId => _currLocaleId;
 AppLocaleId _currLocaleId = AppLocaleId.UNDEFINED_LANGUAGE;
 
 class BaseLocaleSettings {
-  final AppLocaleId baseLocale;
+  final AppLocaleId baseLocaleId;
   final List<AppLocaleId> localeValues;
 
-  BaseLocaleSettings({required this.baseLocale, required this.localeValues});
+  BaseLocaleSettings({required this.baseLocaleId, required this.localeValues});
 
   /// Sets locale, *but* do not change potential TranslationProvider's state
   /// Useful when you are in a pure Dart environment (without Flutter)
@@ -69,17 +69,9 @@ class AppLocaleUtils {
 
   AppLocaleUtils(this.localeValues);
 
-  /// Returns the enum type of the raw locale.
-  /// Fallbacks to base locale.
+  /// Parses the raw locale to get an [AppLocaleId]
   AppLocaleId? parse(String rawLocale) {
-    return selectLocale(rawLocale);
-  }
-
-  static final _localeRegex =
-      RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
-
-  AppLocaleId? selectLocale(String localeRaw) {
-    final match = _localeRegex.firstMatch(localeRaw);
+    final match = _localeRegex.firstMatch(rawLocale);
     AppLocaleId? selected;
     if (match != null) {
       final language = match.group(1);
@@ -87,24 +79,27 @@ class AppLocaleUtils {
 
       // match exactly
       selected = localeValues.cast<AppLocaleId?>().firstWhere(
-          (supported) =>
-              supported?.languageTag == localeRaw.replaceAll('_', '-'),
+              (supported) =>
+          supported?.languageTag == rawLocale.replaceAll('_', '-'),
           orElse: () => null);
 
       if (selected == null && language != null) {
         // match language
         selected = localeValues.cast<AppLocaleId?>().firstWhere(
-            (supported) => supported?.languageTag.startsWith(language) == true,
+                (supported) => supported?.languageTag.startsWith(language) == true,
             orElse: () => null);
       }
 
       if (selected == null && country != null) {
         // match country
         selected = localeValues.cast<AppLocaleId?>().firstWhere(
-            (supported) => supported?.languageTag.contains(country) == true,
+                (supported) => supported?.languageTag.contains(country) == true,
             orElse: () => null);
       }
     }
     return selected;
   }
+
+  static final _localeRegex =
+      RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
 }

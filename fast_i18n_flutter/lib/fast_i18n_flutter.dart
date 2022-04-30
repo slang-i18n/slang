@@ -19,7 +19,7 @@ extension ExtBaseLocaleSettings on BaseLocaleSettings {
   /// Returns the locale which has been set.
   AppLocaleId useDeviceLocale() {
     final locale =
-        AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocale;
+        AppLocaleUtils(localeValues).findDeviceLocale() ?? baseLocaleId;
     return setLocale(locale);
   }
 
@@ -40,7 +40,7 @@ extension ExtBaseLocaleSettings on BaseLocaleSettings {
   /// Fallbacks to base locale.
   /// Returns the locale which has been set.
   AppLocaleId setLocaleRaw(String rawLocale) {
-    final locale = AppLocaleUtils(localeValues).parse(rawLocale) ?? baseLocale;
+    final locale = AppLocaleUtils(localeValues).parse(rawLocale) ?? baseLocaleId;
     return setLocale(locale);
   }
 
@@ -57,7 +57,7 @@ extension ExtAppLocaleUtils on AppLocaleUtils {
     final String? deviceLocale =
         WidgetsBinding.instance?.window.locale.toLanguageTag();
     if (deviceLocale == null) return null;
-    return selectLocale(deviceLocale);
+    return parse(deviceLocale);
   }
 }
 
