@@ -1,6 +1,6 @@
 name: fast_i18n_dart
 description: Dart support for fast_i18n
-version: 1.0.0
+version: 2.0.0-dev.0
 repository: https://github.com/Tienisto/flutter-fast-i18n
 
 environment:
