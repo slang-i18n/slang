@@ -1,7 +1,13 @@
+/// Similar to the [Locale] class of Flutter
+/// But without any Flutter dependencies
 class AppLocaleId {
   final String languageCode;
   final String? scriptCode;
   final String? countryCode;
+
+  static const AppLocaleId UNDEFINED_LANGUAGE = AppLocaleId(
+    languageCode: 'und',
+  );
 
   const AppLocaleId({
     required this.languageCode,
@@ -33,7 +39,7 @@ class AppLocaleId {
 
 // This locale is *shared* among all packages of an app.
 AppLocaleId get currLocaleId => _currLocaleId;
-late AppLocaleId _currLocaleId;
+AppLocaleId _currLocaleId = AppLocaleId.UNDEFINED_LANGUAGE;
 
 class BaseLocaleSettings {
   final AppLocaleId baseLocale;
