@@ -1,0 +1,31 @@
+{
+  "@@locale" : "en",
+  "pageHomeTitle" : "Welcome {firstName}",
+  "@pageHomeTitle" : {
+    "description" : "Welcome message on the Home screen",
+    "placeholders": {
+      "firstName": {}
+    }
+  },
+  "pageHomeInboxCount" : "{count, plural, zero{You have no new messages} =1{You have 1 new message} other{You have {count} new messages}} Hello {hi} {2} {sex, select, male{Mr} female{Ms}} {sex, select, male{Mr} female{Ms}}",
+  "@pageHomeInboxCount" : {
+    "description" : "New messages count on the Home screen",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pageHomeOutboxCount" : "{count, plural, zero{You have no new messages} one{You have 1 new message} other{You have {count} new messages, yeah}}",
+  "@pageHomeOutboxCount" : {
+    "description" : "New messages count on the Home screen",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "commonVehicleType": "{vehicleType, select, sedan{Sedan} cabriolet{Solid roof cabriolet} truck{16 wheel truck} other{Other}}",
+  "@commonVehicleType": {
+    "description": "Vehicle type",
+    "placeholders": {
+      "vehicleType": {}
+    }
+  }
+}
