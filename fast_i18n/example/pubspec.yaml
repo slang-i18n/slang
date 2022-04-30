@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  fast_i18n_flutter: ^2.0.0-dev.0 # add this
   flutter_localizations: # add this
     sdk: flutter
   cupertino_icons: ^1.0.2

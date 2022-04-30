@@ -1,4 +1,5 @@
 import 'package:example/i18n/strings.g.dart';
+import 'package:fast_i18n_flutter/fast_i18n_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 

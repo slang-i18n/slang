@@ -13,8 +13,6 @@ String generateHeader(
   List<I18nData> allLocales,
 ) {
   const String baseLocaleVar = '_baseLocale';
-  const String currLocaleVar = '_currLocale';
-  const String translationProviderKey = '_translationProviderKey';
   final String translateVarInternal = '_${config.translateVariable}';
   final String baseClassName = getClassNameRoot(
       baseName: config.baseName,
@@ -47,7 +45,6 @@ String generateHeader(
     buffer: buffer,
     config: config,
     baseLocaleVar: baseLocaleVar,
-    currLocaleVar: currLocaleVar,
   );
 
   _generateEnum(
@@ -61,7 +58,6 @@ String generateHeader(
       buffer: buffer,
       config: config,
       baseClassName: baseClassName,
-      currLocaleVar: currLocaleVar,
       translateVarInternal: translateVarInternal,
     );
 
@@ -69,21 +65,11 @@ String generateHeader(
       buffer: buffer,
       config: config,
       allLocales: allLocales,
-      baseLocaleVar: baseLocaleVar,
-      currLocaleVar: currLocaleVar,
-      translateVarInternal: translateVarInternal,
-      translationProviderKey: translationProviderKey,
       pluralResolverType: pluralResolverType,
       pluralResolverCardinal: pluralResolverMapCardinal,
       pluralResolverOrdinal: pluralResolverMapOrdinal,
     );
   }
-
-  // _generateUtilClass(
-  //   buffer: buffer,
-  //   config: config,
-  //   baseLocaleVar: baseLocaleVar,
-  // );
 
   _generateContextEnums(buffer: buffer, config: config);
 
@@ -98,6 +84,12 @@ String generateHeader(
     );
   }
 
+  _generateLocaleId(
+    buffer: buffer,
+    config: config,
+    allLocales: allLocales,
+  );
+
   _generateExtensions(
     buffer: buffer,
     config: config,
@@ -105,13 +97,11 @@ String generateHeader(
     baseClassName: baseClassName,
   );
 
-  if (config.renderLocaleHandling) {
+  if (config.renderLocaleHandling && !config.dartOnly) {
     _generateTranslationWrapper(
       buffer: buffer,
       config: config,
       baseClassName: baseClassName,
-      translationProviderKey: translationProviderKey,
-      currLocaleVar: currLocaleVar,
     );
   }
 
@@ -122,11 +112,6 @@ String generateHeader(
     pluralResolverCardinal: pluralResolverMapCardinal,
     pluralResolverOrdinal: pluralResolverMapOrdinal,
   );
-
-  // _generateHelpers(
-  //   buffer: buffer,
-  //   config: config,
-  // );
 
   return buffer.toString();
 }
@@ -157,7 +142,8 @@ void _generateHeaderComment({
   buffer.writeln(' */');
 
   buffer.writeln();
-  buffer.writeln('// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables');
+  buffer.writeln(
+      '// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables');
 }
 
 void _generateImports(I18nConfig config, StringBuffer buffer) {
@@ -191,17 +177,12 @@ void _generateLocaleVariables({
   required StringBuffer buffer,
   required I18nConfig config,
   required String baseLocaleVar,
-  required String currLocaleVar,
 }) {
   final String enumName = config.enumName;
 
   buffer.writeln();
   buffer.writeln(
       'const $enumName $baseLocaleVar = $enumName.${config.baseLocale.enumConstant};');
-
-  // if (config.renderLocaleHandling) {
-  //   buffer.writeln('$enumName $currLocaleVar = $baseLocaleVar;');
-  // }
 }
 
 void _generateEnum({
@@ -226,55 +207,10 @@ void _generateEnum({
 
   buffer.writeln('enum $enumName {');
   for (I18nData locale in allLocales) {
-    buffer.writeln('\t${locale.locale.enumConstant},');
-  }
-  buffer.writeln('}');
-
-  buffer.writeln();
-  buffer.writeln('class AppLocaleIdConst {');
-  for (I18nData locale in allLocales) {
+    buffer.write('\t${locale.locale.enumConstant},');
     buffer.writeln(
         '\t// \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
-    buffer.write('\tstatic const ${locale.locale.enumConstant} = AppLocaleId(');
-    buffer.write('languageCode: \'${locale.locale.language}\'');
-    if (locale.locale.script != null) {
-      buffer.write(', ');
-      buffer.write('scriptCode: \'${locale.locale.script}\', ');
-    }
-    if (locale.locale.country != null) {
-      buffer.write(', ');
-      buffer.write('countryCode: \'${locale.locale.country}\'');
-    }
-    buffer.writeln(');');
   }
-  buffer.writeln('');
-  buffer.write('\tstatic const values = [');
-  buffer
-      .write(allLocales.map((locale) => locale.locale.enumConstant).join(', '));
-  buffer.writeln('];');
-  buffer.writeln('}');
-
-  buffer.writeln();
-  buffer.writeln('extension ExtAppLocale on AppLocale {');
-  buffer.writeln('\tAppLocaleId get localeId {');
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    buffer.writeln(
-        '\t\t\tcase AppLocale.${locale.locale.enumConstant}: return AppLocaleIdConst.${locale.locale.enumConstant};');
-  }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
-  buffer.writeln('}');
-
-  buffer.writeln();
-  buffer.writeln('extension ExtAppLocaleId on AppLocaleId {');
-  buffer.writeln('\tAppLocale get locale {');
-  for (I18nData locale in allLocales) {
-    buffer.writeln(
-        '\t\tif (this == AppLocaleIdConst.${locale.locale.enumConstant}) return AppLocale.${locale.locale.enumConstant};');
-  }
-  buffer.writeln("\t\tthrow Exception('Unsupported locale id: \$this');");
-  buffer.writeln('\t}');
   buffer.writeln('}');
 }
 
@@ -282,7 +218,6 @@ void _generateTranslationGetter({
   required StringBuffer buffer,
   required I18nConfig config,
   required String baseClassName,
-  required String currLocaleVar,
   required String translateVarInternal,
 }) {
   const String translationsClass = 'Translations';
@@ -351,10 +286,6 @@ void _generateLocaleSettings({
   required StringBuffer buffer,
   required I18nConfig config,
   required List<I18nData> allLocales,
-  required String baseLocaleVar,
-  required String currLocaleVar,
-  required String translateVarInternal,
-  required String translationProviderKey,
   required String pluralResolverType,
   required String pluralResolverCardinal,
   required String pluralResolverOrdinal,
@@ -366,14 +297,25 @@ void _generateLocaleSettings({
   buffer.writeln();
   buffer.writeln('class $settingsClass extends BaseLocaleSettings {');
   buffer.writeln('\t$settingsClass._() : super(');
-  buffer.writeln('\t\tbaseLocale: _baseLocale.localeId,');
+  buffer.writeln('\t\tbaseLocaleId: _baseLocale.localeId,');
   buffer.writeln(
       '\t\tlocaleValues: AppLocale.values.map((e) => e.localeId).toList(),');
   buffer.writeln('\t);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $settingsClass._();');
   buffer.writeln();
-  buffer.writeln('\tAppLocale get currentLocale => currentLocaleId.locale;');
+
+  buffer.writeln('\t// static aliases');
+  buffer.writeln(
+      '\tstatic AppLocale get currentLocale => $settingsClass.instance.currentLocale;');
+  buffer.writeln(
+      '\tstatic List<Locale> get supportedLocales => LocaleSettings.instance.supportedLocales;');
+  buffer.writeln(
+      '\tstatic AppLocale useDeviceLocale() => LocaleSettings.instance.useDeviceLocale().locale;');
+  buffer.writeln(
+      '\tstatic AppLocale setLocale(AppLocale locale) => LocaleSettings.instance.setLocale(locale.localeId).locale;');
+  buffer.writeln(
+      '\tstatic AppLocale setLocaleRaw(String rawLocale) => LocaleSettings.instance.setLocaleRaw(rawLocale).locale;');
 
   // buffer.writeln();
   // buffer.writeln('\t/// Uses locale of the device, fallbacks to base locale.');
@@ -490,45 +432,12 @@ void _generateLocaleSettings({
   }
 
   buffer.writeln('}');
-}
+  buffer.writeln();
 
-// void _generateUtilClass({
-//   required StringBuffer buffer,
-//   required I18nConfig config,
-//   required String baseLocaleVar,
-// }) {
-//   final String enumName = config.enumName;
-//   final String utilsClass = '${enumName}Utils';
-//
-//   buffer.writeln();
-//   buffer.writeln('/// Provides utility functions without any side effects.');
-//   buffer.writeln('class $utilsClass {');
-//   buffer.writeln('\t$utilsClass._(); // no constructor');
-//
-//   buffer.writeln();
-//   buffer.writeln('\t/// Returns the locale of the device as the enum type.');
-//   buffer.writeln('\t/// Fallbacks to base locale.');
-//   buffer.writeln('\tstatic $enumName findDeviceLocale() {');
-//   buffer.writeln(
-//       '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
-//   buffer.writeln('\t\tif (deviceLocale != null) {');
-//   buffer.writeln('\t\t\tfinal typedLocale = FastI18nDartInternalUtil.selectLocale(deviceLocale);');
-//   buffer.writeln('\t\t\tif (typedLocale != null) {');
-//   buffer.writeln('\t\t\t\treturn typedLocale;');
-//   buffer.writeln('\t\t\t}');
-//   buffer.writeln('\t\t}');
-//   buffer.writeln('\t\treturn $baseLocaleVar;');
-//   buffer.writeln('\t}');
-//
-//   buffer.writeln();
-//   buffer.writeln('\t/// Returns the enum type of the raw locale.');
-//   buffer.writeln('\t/// Fallbacks to base locale.');
-//   buffer.writeln('\tstatic $enumName parse(String rawLocale) {');
-//   buffer.writeln('\t\treturn FastI18nDartInternalUtil.selectLocale(rawLocale) ?? $baseLocaleVar;');
-//   buffer.writeln('\t}');
-//
-//   buffer.writeln('}');
-// }
+  buffer.writeln('extension Ext$settingsClass on $settingsClass {');
+  buffer.writeln('\tAppLocale get currentLocale => currentLocaleId.locale;');
+  buffer.writeln('}');
+}
 
 void _generateContextEnums({
   required StringBuffer buffer,
@@ -606,6 +515,45 @@ void _generateInstances({
   buffer.writeln('};');
 }
 
+void _generateLocaleId({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required List<I18nData> allLocales,
+}) {
+  buffer.writeln();
+  buffer.writeln('class AppLocaleIdConst {');
+  for (I18nData locale in allLocales) {
+    buffer.write('\tstatic const ${locale.locale.enumConstant} = AppLocaleId(');
+    buffer.write('languageCode: \'${locale.locale.language}\'');
+    if (locale.locale.script != null) {
+      buffer.write(', ');
+      buffer.write('scriptCode: \'${locale.locale.script}\', ');
+    }
+    if (locale.locale.country != null) {
+      buffer.write(', ');
+      buffer.write('countryCode: \'${locale.locale.country}\'');
+    }
+    buffer.writeln(');');
+  }
+  buffer.writeln('');
+  buffer.write('\tstatic const values = [');
+  buffer
+      .write(allLocales.map((locale) => locale.locale.enumConstant).join(', '));
+  buffer.writeln('];');
+  buffer.writeln('}');
+
+  buffer.writeln();
+  buffer.writeln('extension ExtAppLocaleId on AppLocaleId {');
+  buffer.writeln('\tAppLocale get locale {');
+  allLocales.where((locale) => !locale.base).forEach((locale) {
+    buffer.writeln(
+        '\t\tif (this == AppLocaleIdConst.${locale.locale.enumConstant}) return AppLocale.${locale.locale.enumConstant};');
+  });
+  buffer.writeln("\t\treturn _baseLocale;");
+  buffer.writeln('\t}');
+  buffer.writeln('}');
+}
+
 void _generateExtensions({
   required StringBuffer buffer,
   required I18nConfig config,
@@ -673,37 +621,21 @@ void _generateExtensions({
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
 
-  // buffer.writeln();
-  // buffer.writeln('\tString get languageTag {');
-  // buffer.writeln('\t\tswitch (this) {');
-  // for (I18nData locale in allLocales) {
-  //   buffer.writeln(
-  //       '\t\t\tcase $enumName.${locale.locale.enumConstant}: return \'${locale.locale.languageTag}\';');
-  // }
-  // buffer.writeln('\t\t}');
-  // buffer.writeln('\t}');
+  buffer.writeln();
+  buffer.writeln('\tAppLocaleId get localeId {');
+  buffer.writeln('\t\tswitch (this) {');
+  for (I18nData locale in allLocales) {
+    buffer.writeln(
+        '\t\t\tcase AppLocale.${locale.locale.enumConstant}: return AppLocaleIdConst.${locale.locale.enumConstant};');
+  }
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
 
-  // buffer.writeln();
-  // buffer.writeln('\tLocale get flutterLocale {');
-  // buffer.writeln('\t\tswitch (this) {');
-  // for (I18nData locale in allLocales) {
-  //   buffer.write(
-  //       '\t\t\tcase $enumName.${locale.locale.enumConstant}: return const Locale.fromSubtags(');
-  //   if (locale.locale.language != null)
-  //     buffer.write('languageCode: \'${locale.locale.language}\'');
-  //   if (locale.locale.script != null) {
-  //     if (locale.locale.language != null) buffer.write(', ');
-  //     buffer.write('scriptCode: \'${locale.locale.script}\', ');
-  //   }
-  //   if (locale.locale.country != null) {
-  //     if (locale.locale.language != null || locale.locale.script != null)
-  //       buffer.write(', ');
-  //     buffer.write('countryCode: \'${locale.locale.country}\'');
-  //   }
-  //   buffer.writeln(');');
-  // }
-  // buffer.writeln('\t\t}');
-  // buffer.writeln('\t}');
+  buffer.writeln();
+  buffer.writeln('\tString get languageTag => localeId.languageTag;');
+  if (!config.dartOnly) {
+    buffer.writeln('\tLocale get flutterLocale => localeId.flutterLocale;');
+  }
   buffer.writeln('}');
 
   // string extension
@@ -725,91 +657,13 @@ void _generateTranslationWrapper({
   required StringBuffer buffer,
   required I18nConfig config,
   required String baseClassName,
-  required String translationProviderKey,
-  required String currLocaleVar,
 }) {
-//   const String translationProviderClass = 'TranslationProvider';
-//   const String translationProviderStateClass = '_TranslationProviderState';
   const String inheritedClass = 'InheritedLocaleData';
-//   final String enumName = config.enumName;
-//
-//   // TranslationProvider
-//   buffer.writeln();
-//   buffer.writeln('// wrappers');
-//   buffer.writeln();
-//   buffer.writeln(
-//       'GlobalKey<$translationProviderStateClass> $translationProviderKey = GlobalKey<$translationProviderStateClass>();');
-//   buffer.writeln();
-//   buffer.writeln('class $translationProviderClass extends StatefulWidget {');
-//   buffer.writeln(
-//       '\t$translationProviderClass({required this.child}) : super(key: $translationProviderKey);');
-//   buffer.writeln();
-//   buffer.writeln('\tfinal Widget child;');
-//   buffer.writeln();
-//   buffer.writeln('\t@override');
-//   buffer.writeln(
-//       '\t$translationProviderStateClass createState() => $translationProviderStateClass();');
-//
-//   buffer.writeln();
-//   buffer.writeln('\tstatic $inheritedClass of(BuildContext context) {');
-//   buffer.writeln(
-//       '\t\tfinal inheritedWidget = context.dependOnInheritedWidgetOfExactType<_InheritedLocaleData>();');
-//   buffer.writeln('\t\tif (inheritedWidget == null) {');
-//   buffer.writeln(
-//       '\t\t\tthrow \'Please wrap your app with "TranslationProvider".\';');
-//   buffer.writeln('\t\t}');
-//   buffer.writeln('\t\treturn inheritedWidget;');
-//   buffer.writeln('\t}');
-//
-//   buffer.writeln('}');
-//
-//   buffer.writeln();
-//   buffer.writeln(
-//       'class $translationProviderStateClass extends State<$translationProviderClass> {');
-//   buffer.writeln('\t$enumName locale = $currLocaleVar;');
-//   buffer.writeln();
-//   buffer.writeln('\tvoid setLocale($enumName newLocale) {');
-//   buffer.writeln('\t\tsetState(() {');
-//   buffer.writeln('\t\t\tlocale = newLocale;');
-//   buffer.writeln('\t\t});');
-//   buffer.writeln('\t}');
-//   buffer.writeln();
-//   buffer.writeln('\t@override');
-//   buffer.writeln('\tWidget build(BuildContext context) {');
-//   buffer.writeln('\t\treturn $inheritedClass(');
-//   buffer.writeln('\t\t\tlocale: locale,');
-//   buffer.writeln('\t\t\tchild: widget.child,');
-//   buffer.writeln('\t\t);');
-//   buffer.writeln('\t}');
-//   buffer.writeln('}');
-//
-
-  // InheritedLocaleData
-  if (!config.dartOnly) {
-    buffer.writeln();
-    buffer.writeln('extension Ext$inheritedClass on $inheritedClass {');
-    buffer.writeln(
-        '\t$baseClassName get translations => localeId.locale.translations;');
-    buffer.writeln('}');
-  }
-//   buffer.writeln();
-//   buffer.writeln('class $inheritedClass extends InheritedWidget {');
-//   buffer.writeln('\tfinal $enumName locale;');
-//   buffer.writeln(
-//       '\tLocale get flutterLocale => locale.flutterLocale; // shortcut');
-//   buffer.writeln(
-//       '\tfinal $baseClassName translations; // store translations to avoid switch call');
-//   buffer.writeln();
-//   buffer.writeln(
-//       '\t$inheritedClass({required this.locale, required Widget child})');
-//   buffer.writeln(
-//       '\t\t: translations = locale.translations, super(child: child);');
-//   buffer.writeln();
-//   buffer.writeln('\t@override');
-//   buffer.writeln('\tbool updateShouldNotify($inheritedClass oldWidget) {');
-//   buffer.writeln('\t\treturn oldWidget.locale != locale;');
-//   buffer.writeln('\t}');
-//   buffer.writeln('}');
+  buffer.writeln();
+  buffer.writeln('extension Ext$inheritedClass on $inheritedClass {');
+  buffer.writeln(
+      '\t$baseClassName get translations => localeId.locale.translations;');
+  buffer.writeln('}');
 }
 
 void _generatePluralResolvers({
