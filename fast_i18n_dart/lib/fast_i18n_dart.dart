@@ -32,6 +32,7 @@ class AppLocaleId {
 }
 
 // This locale is *shared* among all packages of an app.
+AppLocaleId get currLocaleId => _currLocaleId;
 late AppLocaleId _currLocaleId;
 
 class BaseLocaleSettings {

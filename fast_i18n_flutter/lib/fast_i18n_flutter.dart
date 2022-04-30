@@ -79,6 +79,12 @@ class TranslationProvider extends StatefulWidget {
 class _TranslationProviderState extends State<TranslationProvider> {
   late AppLocaleId locale;
 
+  @override
+  void initState() {
+    super.initState();
+    locale = currLocaleId;
+  }
+
   void setLocale(AppLocaleId newLocale) {
     setState(() {
       locale = newLocale;
