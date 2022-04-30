@@ -79,21 +79,21 @@ class AppLocaleUtils {
 
       // match exactly
       selected = localeValues.cast<AppLocaleId?>().firstWhere(
-              (supported) =>
-          supported?.languageTag == rawLocale.replaceAll('_', '-'),
+          (supported) =>
+              supported?.languageTag == rawLocale.replaceAll('_', '-'),
           orElse: () => null);
 
       if (selected == null && language != null) {
         // match language
         selected = localeValues.cast<AppLocaleId?>().firstWhere(
-                (supported) => supported?.languageTag.startsWith(language) == true,
+            (supported) => supported?.languageTag.startsWith(language) == true,
             orElse: () => null);
       }
 
       if (selected == null && country != null) {
         // match country
         selected = localeValues.cast<AppLocaleId?>().firstWhere(
-                (supported) => supported?.languageTag.contains(country) == true,
+            (supported) => supported?.languageTag.contains(country) == true,
             orElse: () => null);
       }
     }
