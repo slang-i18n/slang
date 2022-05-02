@@ -86,9 +86,6 @@ abstract class BaseTranslationProvider<E, T extends BaseTranslations>
         locale: baseLocale,
         translations: baseTranslations,
       );
-
-  static InheritedLocaleData of(BuildContext context) =>
-      InheritedLocaleData.of(context);
 }
 
 class _TranslationProviderState<E, T extends BaseTranslations>
@@ -129,9 +126,10 @@ class InheritedLocaleData<E, T extends BaseTranslations>
     required Widget child,
   }) : super(child: child);
 
-  static InheritedLocaleData of(BuildContext context) {
+  static InheritedLocaleData of<E, T extends BaseTranslations>(
+      BuildContext context) {
     final inheritedWidget =
-        context.dependOnInheritedWidgetOfExactType<InheritedLocaleData>();
+        context.dependOnInheritedWidgetOfExactType<InheritedLocaleData<E, T>>();
     if (inheritedWidget == null) {
       throw 'Please wrap your app with "TranslationProvider".';
     }

@@ -1,6 +1,6 @@
 name: fast_i18n_flutter
 description: Flutter support for fast_i18n
-version: 6.0.0-dev.0
+version: 6.0.0-dev.1
 repository: https://github.com/Tienisto/flutter-fast-i18n
 
 environment:
