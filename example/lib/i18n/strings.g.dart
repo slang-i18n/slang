@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-02 at 19:41 UTC
+ * Built on 2022-05-02 at 23:18 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -33,7 +33,7 @@ enum AppLocale {
 /// Usage:
 /// String a = t.someKey.anotherKey;
 /// String b = t['someKey.anotherKey']; // Only for edge cases!
-_StringsEn get t => LocaleSettings.instance.currentLocale.translations;
+_StringsEn get t => LocaleSettings.instance.currentTranslations;
 
 /// Method B: Advanced
 ///

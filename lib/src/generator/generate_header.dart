@@ -238,7 +238,7 @@ void _generateTranslationGetter({
         '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   }
   buffer.writeln(
-      '$baseClassName get $translateVar => LocaleSettings.instance.currentLocale.translations;');
+      '$baseClassName get $translateVar => LocaleSettings.instance.currentTranslations;');
 
   // t getter (advanced)
   if (!config.dartOnly) {
