@@ -6,9 +6,9 @@ Import this package if you develop flutter apps.
 
 ```yaml
 dependencies:
+  fast_i18n: <version>
   fast_i18n_flutter: <version>
 
 dev_dependencies:
   build_runner: <version>
-  fast_i18n: <version>
 ```
