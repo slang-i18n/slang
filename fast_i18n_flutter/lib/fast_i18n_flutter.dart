@@ -13,7 +13,7 @@ extension ExtAppLocaleUtils<E> on BaseAppLocaleUtils<E> {
     if (deviceLocale == null) {
       return baseLocale;
     }
-    return parse(deviceLocale);
+    return parseRawLocale(deviceLocale);
   }
 }
 
@@ -32,7 +32,7 @@ extension ExtBaseLocaleSettings<E, T extends BaseTranslations>
   /// Uses locale of the device, fallbacks to base locale.
   /// Returns the locale which has been set.
   E useDeviceLocale() {
-    final locale = utils.findDeviceLocale();
+    final E locale = utils.findDeviceLocale();
     return setLocale(locale);
   }
 
@@ -56,7 +56,7 @@ extension ExtBaseLocaleSettings<E, T extends BaseTranslations>
   /// Fallbacks to base locale.
   /// Returns the locale which has been set.
   E setLocaleRaw(String rawLocale) {
-    final locale = utils.parse(rawLocale);
+    final E locale = utils.parseRawLocale(rawLocale);
     return setLocale(locale);
   }
 
