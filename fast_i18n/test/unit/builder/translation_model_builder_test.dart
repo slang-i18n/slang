@@ -1,8 +1,8 @@
-import 'package:fast_i18n/src/builder/translation_model_builder.dart';
-import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/context_type.dart';
-import 'package:fast_i18n/src/model/interface.dart';
-import 'package:fast_i18n/src/model/node.dart';
+import 'package:fast_i18n/builder/builder/translation_model_builder.dart';
+import 'package:fast_i18n/builder/model/build_config.dart';
+import 'package:fast_i18n/builder/model/context_type.dart';
+import 'package:fast_i18n/builder/model/interface.dart';
+import 'package:fast_i18n/builder/model/node.dart';
 import 'package:test/test.dart';
 
 import '../../util/build_config_utils.dart';

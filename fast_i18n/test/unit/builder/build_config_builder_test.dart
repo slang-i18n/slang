@@ -1,4 +1,4 @@
-import 'package:fast_i18n/src/builder/build_config_builder.dart';
+import 'package:fast_i18n/builder/builder/build_config_builder.dart';
 import 'package:test/test.dart';
 
 void main() {

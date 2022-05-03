@@ -1,4 +1,4 @@
-import 'package:fast_i18n/src/utils/map_utils.dart';
+import 'package:fast_i18n/builder/utils/map_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

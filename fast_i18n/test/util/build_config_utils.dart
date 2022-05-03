@@ -1,7 +1,7 @@
-import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/context_type.dart';
-import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/interface.dart';
+import 'package:fast_i18n/builder/model/build_config.dart';
+import 'package:fast_i18n/builder/model/context_type.dart';
+import 'package:fast_i18n/builder/model/i18n_locale.dart';
+import 'package:fast_i18n/builder/model/interface.dart';
 
 final defaultLocale = I18nLocale.fromString(BuildConfig.defaultBaseLocale);
 

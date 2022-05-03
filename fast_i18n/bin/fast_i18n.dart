@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:fast_i18n/src/builder/build_config_builder.dart';
-import 'package:fast_i18n/src/decoder/base_decoder.dart';
-import 'package:fast_i18n/src/decoder/csv_decoder.dart';
-import 'package:fast_i18n/src/generator_facade.dart';
-import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/namespace_translation_map.dart';
-import 'package:fast_i18n/src/stats_facade.dart';
-import 'package:fast_i18n/src/utils/file_utils.dart';
-import 'package:fast_i18n/src/utils/regex_utils.dart';
-import 'package:fast_i18n/src/utils/path_utils.dart';
+import 'package:fast_i18n/builder/builder/build_config_builder.dart';
+import 'package:fast_i18n/builder/decoder/base_decoder.dart';
+import 'package:fast_i18n/builder/decoder/csv_decoder.dart';
+import 'package:fast_i18n/builder/generator_facade.dart';
+import 'package:fast_i18n/builder/model/build_config.dart';
+import 'package:fast_i18n/builder/model/i18n_locale.dart';
+import 'package:fast_i18n/builder/model/namespace_translation_map.dart';
+import 'package:fast_i18n/builder/stats_facade.dart';
+import 'package:fast_i18n/builder/utils/file_utils.dart';
+import 'package:fast_i18n/builder/utils/regex_utils.dart';
+import 'package:fast_i18n/builder/utils/path_utils.dart';
 
 /// To run this:
 /// -> flutter pub run fast_i18n

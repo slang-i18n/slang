@@ -1,9 +1,9 @@
-import 'package:fast_i18n/src/builder/build_config_builder.dart';
-import 'package:fast_i18n/src/decoder/json_decoder.dart';
-import 'package:fast_i18n/src/generator_facade.dart';
-import 'package:fast_i18n/src/model/build_config.dart';
-import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/namespace_translation_map.dart';
+import 'package:fast_i18n/builder/builder/build_config_builder.dart';
+import 'package:fast_i18n/builder/decoder/json_decoder.dart';
+import 'package:fast_i18n/builder/generator_facade.dart';
+import 'package:fast_i18n/builder/model/build_config.dart';
+import 'package:fast_i18n/builder/model/i18n_locale.dart';
+import 'package:fast_i18n/builder/model/namespace_translation_map.dart';
 import 'package:test/test.dart';
 
 import '../../util/build_config_utils.dart';

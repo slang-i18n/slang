@@ -1,4 +1,4 @@
-import 'package:fast_i18n/src/decoder/csv_decoder.dart';
+import 'package:fast_i18n/builder/decoder/csv_decoder.dart';
 import 'package:test/test.dart';
 
 void main() {

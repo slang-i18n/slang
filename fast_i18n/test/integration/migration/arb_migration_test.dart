@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fast_i18n/src/tools/migrate_arb.dart';
+import 'package:fast_i18n/builder/tools/migrate_arb.dart';
 import 'package:test/test.dart';
 
 import '../../util/resources_utils.dart';

@@ -1,6 +1,6 @@
-import 'package:fast_i18n/src/model/i18n_data.dart';
-import 'package:fast_i18n/src/model/i18n_locale.dart';
-import 'package:fast_i18n/src/model/node.dart';
+import 'package:fast_i18n/builder/model/i18n_data.dart';
+import 'package:fast_i18n/builder/model/i18n_locale.dart';
+import 'package:fast_i18n/builder/model/node.dart';
 import 'package:test/test.dart';
 
 void main() {

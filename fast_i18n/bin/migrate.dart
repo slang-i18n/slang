@@ -1,4 +1,4 @@
-import 'package:fast_i18n/src/tools/migrate_arb.dart';
+import 'package:fast_i18n/builder/tools/migrate_arb.dart';
 
 void main(List<String> arguments) async {
   if (arguments.length != 3) {

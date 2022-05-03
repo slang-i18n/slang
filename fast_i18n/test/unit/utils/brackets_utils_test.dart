@@ -1,4 +1,4 @@
-import 'package:fast_i18n/src/utils/brackets_utils.dart';
+import 'package:fast_i18n/builder/utils/brackets_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
