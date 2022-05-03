@@ -1,6 +1,7 @@
 import 'package:fast_i18n/fast_i18n.dart';
 import 'package:flutter/widgets.dart';
 
+export 'package:fast_i18n/fast_i18n.dart';
 export 'package:flutter/widgets.dart';
 
 extension ExtAppLocaleUtils<E> on BaseAppLocaleUtils<E> {
@@ -126,7 +127,7 @@ class InheritedLocaleData<E, T extends BaseTranslations>
     required Widget child,
   }) : super(child: child);
 
-  static InheritedLocaleData of<E, T extends BaseTranslations>(
+  static InheritedLocaleData<E, T> of<E, T extends BaseTranslations>(
       BuildContext context) {
     final inheritedWidget =
         context.dependOnInheritedWidgetOfExactType<InheritedLocaleData<E, T>>();
