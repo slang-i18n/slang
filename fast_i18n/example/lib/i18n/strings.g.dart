@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-02 at 23:18 UTC
+ * Built on 2022-05-03 at 00:56 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -53,79 +53,33 @@ _StringsEn get t => LocaleSettings.instance.currentTranslations;
 class Translations {
 	Translations._(); // no constructor
 
-	static _StringsEn of(BuildContext context) => InheritedLocaleData.of(context).translations;
+	static _StringsEn of(BuildContext context) => InheritedLocaleData.of<AppLocale, _StringsEn>(context).translations;
 }
 
-class LocaleSettings extends BaseLocaleSettings {
+class LocaleSettings extends BaseLocaleSettings<AppLocale, _StringsEn> {
 	LocaleSettings._() : super(
-		baseLocaleId: _baseLocale.localeId,
-		localeValues: AppLocale.values.map((e) => e.localeId).toList(),
+		locales: AppLocale.values,
+		baseLocale: _baseLocale,
+		mapper: _mapper,
+		translationMap: <AppLocale, _StringsEn>{
+			AppLocale.en: _StringsEn.build(),
+			AppLocale.de: _StringsDe.build(),
+		},
+		utils: AppLocaleUtils.instance,
 	);
 
 	static final instance = LocaleSettings._();
-
-	// static aliases
-	static AppLocale get currentLocale => LocaleSettings.instance.currentLocale;
-	static List<Locale> get supportedLocales => LocaleSettings.instance.supportedLocales;
-	static AppLocale useDeviceLocale() => LocaleSettings.instance.useDeviceLocale().locale;
-	static AppLocale setLocale(AppLocale locale) => LocaleSettings.instance.setLocale(locale.localeId).locale;
-	static AppLocale setLocaleRaw(String rawLocale) => LocaleSettings.instance.setLocaleRaw(rawLocale).locale;
-
-	/// Sets plural resolvers.
-	/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
-	/// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart
-	/// Either specify [language], or [locale]. Locale has precedence.
-	/// Rendered Resolvers: ['en', 'de']
-	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
-		final List<AppLocale> locales;
-		if (locale != null) {
-			locales = [locale];
-		} else {
-			switch (language) {
-				case 'en':
-					locales = [AppLocale.en];
-					break;
-				case 'de':
-					locales = [AppLocale.de];
-					break;
-				default:
-					locales = [];
-			}
-		}
-		for (final curr in locales) {
-			_translationsMap[curr] = curr.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
-		}
-	}
 }
 
-extension ExtLocaleSettings on LocaleSettings {
-	AppLocale get currentLocale => currentLocaleId.locale;
+class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale> {
+	AppLocaleUtils._() : super(mapper: _mapper, baseLocale: _baseLocale);
+
+	static final instance = AppLocaleUtils._();
 }
 
 // context enums
 
 // interfaces generated as mixins
-
-// translation instances
-
-late final _translationsMap = <AppLocale, _StringsEn>{
-	AppLocale.en: _StringsEn.build(),
-	AppLocale.de: _StringsDe.build(),
-};
-
-class AppLocaleIdConst {
-	static const en = AppLocaleId(languageCode: 'en');
-	static const de = AppLocaleId(languageCode: 'de');
-
-	static const values = [en, de];
-}
-
-extension ExtAppLocaleId on AppLocaleId {
-	AppLocale get locale {
-		if (this == AppLocaleIdConst.de) return AppLocale.de;
-		return _baseLocale;
-	}
-}
 
 // extensions for AppLocale
 
@@ -135,7 +89,7 @@ extension AppLocaleExtensions on AppLocale {
 	/// [TranslationProvider] is using this instance.
 	/// The plural resolvers are set via [LocaleSettings].
 	_StringsEn get translations {
-		return _translationsMap[this]!;
+		return LocaleSettings.instance.translationMap[this]!;
 	}
 
 	/// Gets a new translation instance.
@@ -152,15 +106,19 @@ extension AppLocaleExtensions on AppLocale {
 		}
 	}
 
-	AppLocaleId get localeId {
+	String get languageTag {
 		switch (this) {
-			case AppLocale.en: return AppLocaleIdConst.en;
-			case AppLocale.de: return AppLocaleIdConst.de;
+			case AppLocale.en: return 'en';
+			case AppLocale.de: return 'de';
 		}
 	}
 
-	String get languageTag => localeId.languageTag;
-	Locale get flutterLocale => localeId.flutterLocale;
+	Locale get flutterLocale {
+		switch (this) {
+			case AppLocale.en: return const Locale.fromSubtags(languageCode: 'en');
+			case AppLocale.de: return const Locale.fromSubtags(languageCode: 'de');
+		}
+	}
 }
 
 extension StringAppLocaleExtensions on String {
@@ -171,10 +129,6 @@ extension StringAppLocaleExtensions on String {
 			default: return null;
 		}
 	}
-}
-
-extension ExtInheritedLocaleData on InheritedLocaleData {
-	_StringsEn get translations => localeId.locale.translations;
 }
 
 // pluralization resolvers
@@ -201,16 +155,28 @@ String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String?
 	return other!;
 }
 
+final _mapper = AppLocaleIdMapper<AppLocale>(
+	localeMap: {
+		const AppLocaleId(languageCode: 'en'): AppLocale.en,
+		const AppLocaleId(languageCode: 'de'): AppLocale.de,
+	}
+);
+
 // translations
 
 // Path: <root>
-class _StringsEn {
+class _StringsEn implements BaseTranslations {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
 	_StringsEn.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
 		: _cardinalResolver = cardinalResolver,
 		  _ordinalResolver = ordinalResolver;
+
+	/// The same as [build] but calling on an instance
+	@override _StringsEn copyWith({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		return _StringsEn.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+	}
 
 	/// Access flat map
 	dynamic operator[](String key) => _flatMap[key];
@@ -254,6 +220,11 @@ class _StringsDe implements _StringsEn {
 	_StringsDe.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
 		: _cardinalResolver = cardinalResolver,
 		  _ordinalResolver = ordinalResolver;
+
+	/// The same as [build] but calling on an instance
+	@override _StringsDe copyWith({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {
+		return _StringsDe.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+	}
 
 	/// Access flat map
 	@override dynamic operator[](String key) => _flatMap[key];

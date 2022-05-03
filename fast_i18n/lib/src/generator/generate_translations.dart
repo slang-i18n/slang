@@ -95,7 +95,12 @@ void _generateClass(
       node.interface != null ? ' with ${node.interface!.name}' : '';
 
   if (localeData.base) {
-    buffer.writeln('class $finalClassName$mixinStr {');
+    if (root) {
+      buffer.writeln(
+          'class $finalClassName$mixinStr implements BaseTranslations {');
+    } else {
+      buffer.writeln('class $finalClassName$mixinStr {');
+    }
   } else {
     final baseClassName =
         getClassName(parentName: className, locale: config.baseLocale);
@@ -118,31 +123,28 @@ void _generateClass(
     buffer.writeln(
         '\t/// Constructing via the enum [${config.enumName}.build] is preferred.');
 
-    if (!config.hasPlurals() && !callSuperConstructor) {
-      buffer.writeln('\t$finalClassName.build();');
-    } else {
-      if (config.hasPlurals()) {
-        buffer.writeln(
-            '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
-      } else {
-        buffer.writeln('\t$finalClassName.build()');
-      }
+    buffer.writeln(
+        '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
 
-      buffer.write('\t\t: ');
+    buffer.write('\t\t: ');
 
-      if (config.hasPlurals()) {
-        buffer.writeln('_cardinalResolver = cardinalResolver,');
-        buffer.write('\t\t  _ordinalResolver = ordinalResolver');
-      }
-      if (callSuperConstructor) {
-        if (config.hasPlurals()) {
-          buffer.writeln(',');
-          buffer.write('\t\t  ');
-        }
-        buffer.write('super.build()');
-      }
-      buffer.writeln(';');
+    if (config.hasPlurals()) {
+      buffer.writeln('_cardinalResolver = cardinalResolver,');
+      buffer.write('\t\t  _ordinalResolver = ordinalResolver');
     }
+    if (callSuperConstructor) {
+      buffer.writeln(',');
+      buffer.write('\t\tsuper.build()');
+    }
+    buffer.writeln(';');
+
+    buffer.writeln();
+    buffer.writeln('\t/// The same as [build] but calling on an instance');
+    buffer.writeln(
+        '\t@override $finalClassName copyWith({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
+    buffer.writeln(
+        '\t\treturn $finalClassName.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+    buffer.writeln('\t}');
 
     if (config.renderFlatMap) {
       // flat map
