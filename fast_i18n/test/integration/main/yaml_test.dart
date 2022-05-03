@@ -33,7 +33,6 @@ void main() {
           locale: I18nLocale.fromString('de'),
           translations: YamlDecoder().decode(deInput),
         ),
-      showPluralHint: false,
     );
 
     expect(result.joinAsSingleOutput(), expectedOutput);

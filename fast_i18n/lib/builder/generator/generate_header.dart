@@ -3,9 +3,7 @@ import 'package:fast_i18n/builder/model/build_config.dart';
 import 'package:fast_i18n/builder/model/i18n_config.dart';
 import 'package:fast_i18n/builder/model/i18n_data.dart';
 import 'package:fast_i18n/builder/model/node.dart';
-import 'package:fast_i18n/builder/model/pluralization.dart';
 import 'package:fast_i18n/builder/utils/path_utils.dart';
-import 'package:fast_i18n/builder/utils/string_extensions.dart';
 
 String generateHeader(
   I18nConfig config,
@@ -84,14 +82,6 @@ String generateHeader(
     config: config,
     allLocales: allLocales,
     baseClassName: baseClassName,
-  );
-
-  _generatePluralResolvers(
-    buffer: buffer,
-    config: config,
-    pluralResolverType: pluralResolverType,
-    pluralResolverCardinal: pluralResolverMapCardinal,
-    pluralResolverOrdinal: pluralResolverMapOrdinal,
   );
 
   _generateMapper(
@@ -460,12 +450,8 @@ void _generateExtensions({
   buffer.writeln(
       '\t/// final t = AppLocale.${config.baseLocale.enumConstant}.build(); // build');
   buffer.writeln('\t/// String a = t.my.path; // access');
-  if (config.hasPlurals()) {
-    buffer.writeln(
-        '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
-  } else {
-    buffer.writeln('\t$baseClassName build() {');
-  }
+  buffer.writeln(
+      '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
 
   buffer.writeln('\t\tswitch (this) {');
   for (I18nData locale in allLocales) {
@@ -474,14 +460,8 @@ void _generateExtensions({
       locale: locale.locale,
       visibility: config.translationClassVisibility,
     );
-
-    if (config.hasPlurals()) {
-      buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
-    } else {
-      buffer.writeln(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build();');
-    }
+    buffer.writeln(
+        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
   }
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
@@ -531,102 +511,6 @@ void _generateExtensions({
   buffer.writeln('\t\t\tdefault: return null;');
   buffer.writeln('\t\t}');
   buffer.writeln('\t}');
-  buffer.writeln('}');
-}
-
-void _generatePluralResolvers({
-  required StringBuffer buffer,
-  required I18nConfig config,
-  required String pluralResolverType,
-  required String pluralResolverCardinal,
-  required String pluralResolverOrdinal,
-}) {
-  buffer.writeln();
-
-  if (!config.hasPlurals()) {
-    buffer.writeln('// pluralization feature not used');
-    return;
-  }
-
-  buffer.writeln('// pluralization resolvers');
-
-  buffer.writeln();
-  buffer.writeln(
-      'typedef $pluralResolverType = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});');
-
-  if (config.unsupportedPluralLanguages.isNotEmpty) {
-    buffer.writeln();
-    buffer.writeln('PluralResolver _missingPluralResolver(String language) {');
-    buffer
-        .writeln('\tthrow \'Resolver for <lang = \$language> not specified\';');
-    buffer.writeln('}');
-  }
-
-  buffer.writeln();
-  buffer.writeln('// prepared by fast_i18n');
-
-  // cardinal resolvers
-  for (final entry in config.renderedCardinalResolvers.entries) {
-    buffer.writeln();
-    _generatePluralFunction(
-        buffer: buffer,
-        config: config,
-        ruleSet: entry.value,
-        functionName: '_pluralCardinal${entry.key.capitalize()}');
-  }
-
-  // ordinal resolvers
-  for (final entry in config.renderedOrdinalResolvers.entries) {
-    buffer.writeln();
-    _generatePluralFunction(
-        buffer: buffer,
-        config: config,
-        ruleSet: entry.value,
-        functionName: '_pluralOrdinal${entry.key.capitalize()}');
-  }
-}
-
-/// Generates the plural resolver for one language and type (cardial, ordinal).
-void _generatePluralFunction({
-  required StringBuffer buffer,
-  required I18nConfig config,
-  required RuleSet ruleSet,
-  required String functionName,
-}) {
-  buffer.write('String $functionName(num n, {');
-  for (int i = 0; i < Quantity.values.length; i++) {
-    if (i != 0) buffer.write(', ');
-    buffer.write('String? ${Quantity.values[i].paramName()}');
-  }
-  buffer.writeln('}) {');
-
-  if (ruleSet.i || ruleSet.v) {
-    buffer.writeln('\tfinal i = n.toInt();');
-  }
-
-  if (ruleSet.v) {
-    buffer.writeln(
-        '\tfinal v = i == n ? 0 : n.toString().split(\'.\')[1].length;');
-  }
-
-  bool first = true;
-  for (final rule in ruleSet.rules) {
-    if (first) {
-      buffer.write('\tif ');
-    } else {
-      buffer.write('\t} else if ');
-    }
-    buffer.writeln('(${rule.condition}) {');
-    buffer.writeln(
-        '\t\treturn ${rule.result.paramName()} ?? ${ruleSet.defaultQuantity.paramName()}!;');
-    first = false;
-  }
-
-  if (!first) {
-    buffer.writeln('\t}');
-  }
-
-  buffer.writeln('\treturn ${ruleSet.defaultQuantity.paramName()}!;');
   buffer.writeln('}');
 }
 

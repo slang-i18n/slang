@@ -43,7 +43,6 @@ void main() {
           locale: I18nLocale.fromString('de'),
           translations: JsonDecoder().decode(deInput),
         ),
-      showPluralHint: false,
     );
 
     expect(result.header, expectedMainOutput);

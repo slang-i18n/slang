@@ -319,7 +319,6 @@ Future<void> generateTranslations({
     buildConfig: buildConfig,
     baseName: baseName,
     translationMap: translationMap,
-    showPluralHint: verbose,
   );
 
   // STEP 4: write output to hard drive

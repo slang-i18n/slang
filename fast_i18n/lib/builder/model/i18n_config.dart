@@ -2,7 +2,6 @@ import 'package:fast_i18n/builder/model/build_config.dart';
 import 'package:fast_i18n/builder/model/context_type.dart';
 import 'package:fast_i18n/builder/model/i18n_locale.dart';
 import 'package:fast_i18n/builder/model/interface.dart';
-import 'package:fast_i18n/builder/model/pluralization.dart';
 
 /// general config, applies to all locales
 class I18nConfig {
@@ -12,9 +11,6 @@ class I18nConfig {
   final OutputFormat outputFormat;
   final bool renderLocaleHandling;
   final bool dartOnly;
-  final Map<String, RuleSet> renderedCardinalResolvers;
-  final Map<String, RuleSet> renderedOrdinalResolvers;
-  final Set<String> unsupportedPluralLanguages; // resolvers needed
   final String translateVariable;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
@@ -30,9 +26,6 @@ class I18nConfig {
     required this.outputFormat,
     required this.renderLocaleHandling,
     required this.dartOnly,
-    required this.renderedCardinalResolvers,
-    required this.renderedOrdinalResolvers,
-    required this.unsupportedPluralLanguages,
     required this.translateVariable,
     required this.enumName,
     required this.translationClassVisibility,
@@ -41,21 +34,4 @@ class I18nConfig {
     required this.contexts,
     required this.interface,
   });
-
-  Set<String> getRenderedPluralResolvers() {
-    return (renderedCardinalResolvers.keys.toList() +
-            renderedOrdinalResolvers.keys.toList())
-        .toSet();
-  }
-
-  bool hasPluralResolver(String language) {
-    return renderedCardinalResolvers[language] != null ||
-        renderedOrdinalResolvers[language] != null;
-  }
-
-  bool hasPlurals() {
-    return renderedCardinalResolvers.isNotEmpty ||
-        renderedOrdinalResolvers.isNotEmpty ||
-        unsupportedPluralLanguages.isNotEmpty;
-  }
 }

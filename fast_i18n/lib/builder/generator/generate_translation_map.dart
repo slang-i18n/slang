@@ -18,7 +18,6 @@ String generateTranslationMap(
 
   for (I18nData localeData in translations) {
     final language = localeData.locale.language;
-    final hasPluralResolver = config.hasPluralResolver(language);
 
     buffer.writeln();
     buffer.writeln(
@@ -30,7 +29,6 @@ String generateTranslationMap(
       buffer: buffer,
       curr: localeData.root,
       config: config,
-      hasPluralResolver: hasPluralResolver,
       language: language,
     );
     buffer.writeln('\t\t};');
@@ -45,7 +43,6 @@ _generateTranslationMapRecursive({
   required StringBuffer buffer,
   required Node curr,
   required I18nConfig config,
-  required bool hasPluralResolver,
   required String language,
 }) {
   if (curr is StringTextNode) {
@@ -64,7 +61,6 @@ _generateTranslationMapRecursive({
         buffer: buffer,
         curr: child,
         config: config,
-        hasPluralResolver: hasPluralResolver,
         language: language,
       );
     });
@@ -75,7 +71,6 @@ _generateTranslationMapRecursive({
         buffer: buffer,
         curr: child,
         config: config,
-        hasPluralResolver: hasPluralResolver,
         language: language,
       );
     });
@@ -84,7 +79,6 @@ _generateTranslationMapRecursive({
     _addPluralizationCall(
       buffer: buffer,
       config: config,
-      hasPluralResolver: hasPluralResolver,
       language: language,
       node: curr,
       depth: 2,

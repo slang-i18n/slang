@@ -13,7 +13,6 @@ class GeneratorFacade {
     required BuildConfig buildConfig,
     required String baseName,
     required NamespaceTranslationMap translationMap,
-    bool showPluralHint = false,
   }) {
     // combine namespaces and build the internal model
     final List<I18nData> translationList =
@@ -48,19 +47,8 @@ class GeneratorFacade {
     final config = I18nConfigBuilder.build(
       baseName: baseName,
       buildConfig: buildConfig,
-      translationList: translationList,
       interfaces: interfaceMap.values.toList(),
     );
-
-    if (showPluralHint && config.hasPlurals()) {
-      // show pluralization hints if pluralization is configured
-      print('');
-      print('Pluralization:');
-      print(
-          ' -> rendered resolvers: ${config.getRenderedPluralResolvers().toList()}');
-      print(
-          ' -> you must implement these resolvers: ${config.unsupportedPluralLanguages.toList()}');
-    }
 
     // generate .g.dart file
     return Generator.generate(

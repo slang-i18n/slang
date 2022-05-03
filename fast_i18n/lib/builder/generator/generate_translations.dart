@@ -7,7 +7,6 @@ import 'package:fast_i18n/builder/model/i18n_data.dart';
 import 'package:fast_i18n/builder/model/i18n_locale.dart';
 import 'package:fast_i18n/builder/model/node.dart';
 import 'package:fast_i18n/builder/model/pluralization.dart';
-import 'package:fast_i18n/builder/utils/string_extensions.dart';
 
 part 'generate_translation_map.dart';
 
@@ -46,14 +45,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
     ClassTask task = queue.removeFirst();
 
     _generateClass(
-        config,
-        localeData,
-        config.hasPluralResolver(localeData.locale.language),
-        buffer,
-        queue,
-        task.className,
-        task.node,
-        root);
+        config, localeData, buffer, queue, task.className, task.node, root);
 
     root = false;
   } while (queue.isNotEmpty);
@@ -66,7 +58,6 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
 void _generateClass(
   I18nConfig config,
   I18nData localeData,
-  bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
@@ -128,10 +119,9 @@ void _generateClass(
 
     buffer.write('\t\t: ');
 
-    if (config.hasPlurals()) {
-      buffer.writeln('_cardinalResolver = cardinalResolver,');
-      buffer.write('\t\t  _ordinalResolver = ordinalResolver');
-    }
+    buffer.writeln('_cardinalResolver = cardinalResolver,');
+    buffer.write('\t\t  _ordinalResolver = ordinalResolver');
+
     if (callSuperConstructor) {
       buffer.writeln(',');
       buffer.write('\t\tsuper.build()');
@@ -162,17 +152,15 @@ void _generateClass(
           'late final Map<String, dynamic> _flatMap = _buildFlatMap();');
     }
 
-    if (config.hasPlurals()) {
-      buffer.writeln();
-      buffer.write('\t');
-      if (!localeData.base) buffer.write('@override ');
-      buffer.writeln(
-          'final PluralResolver? _cardinalResolver; // ignore: unused_field');
-      buffer.write('\t');
-      if (!localeData.base) buffer.write('@override ');
-      buffer.writeln(
-          'final PluralResolver? _ordinalResolver; // ignore: unused_field');
-    }
+    buffer.writeln();
+    buffer.write('\t');
+    if (!localeData.base) buffer.write('@override ');
+    buffer.writeln(
+        'final PluralResolver? _cardinalResolver; // ignore: unused_field');
+    buffer.write('\t');
+    if (!localeData.base) buffer.write('@override ');
+    buffer.writeln(
+        'final PluralResolver? _ordinalResolver; // ignore: unused_field');
   } else {
     if (callSuperConstructor) {
       buffer.writeln(
@@ -251,8 +239,8 @@ void _generateClass(
       buffer.writeln('\t]);');
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
-      _generateList(config, localeData.base, localeData.locale,
-          hasPluralResolver, buffer, queue, className, value.entries, 0);
+      _generateList(config, localeData.base, localeData.locale, buffer, queue,
+          className, value.entries, 0);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -260,16 +248,8 @@ void _generateClass(
       if (value.isMap) {
         // inline map
         buffer.write('Map<String, ${value.genericType}>$optional get $key => ');
-        _generateMap(
-            config,
-            localeData.base,
-            localeData.locale,
-            hasPluralResolver,
-            buffer,
-            queue,
-            childClassNoLocale,
-            value.entries,
-            0);
+        _generateMap(config, localeData.base, localeData.locale, buffer, queue,
+            childClassNoLocale, value.entries, 0);
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
@@ -283,7 +263,6 @@ void _generateClass(
       _addPluralizationCall(
         buffer: buffer,
         config: config,
-        hasPluralResolver: hasPluralResolver,
         language: localeData.locale.language,
         node: value,
         depth: 0,
@@ -308,7 +287,6 @@ void _generateMap(
   I18nConfig config,
   bool base,
   I18nLocale locale,
-  bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className, // without locale
@@ -328,8 +306,8 @@ void _generateMap(
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
-      _generateList(config, base, locale, hasPluralResolver, buffer, queue,
-          className, value.entries, depth + 1);
+      _generateList(config, base, locale, buffer, queue, className,
+          value.entries, depth + 1);
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -337,8 +315,8 @@ void _generateMap(
       if (value.isMap) {
         // inline map
         buffer.write('\'$key\': ');
-        _generateMap(config, base, locale, hasPluralResolver, buffer, queue,
-            childClassNoLocale, value.entries, depth + 1);
+        _generateMap(config, base, locale, buffer, queue, childClassNoLocale,
+            value.entries, depth + 1);
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
@@ -351,7 +329,6 @@ void _generateMap(
       _addPluralizationCall(
         buffer: buffer,
         config: config,
-        hasPluralResolver: hasPluralResolver,
         language: locale.language,
         node: value,
         depth: depth + 1,
@@ -383,7 +360,6 @@ void _generateList(
   I18nConfig config,
   bool base,
   I18nLocale locale,
-  bool hasPluralResolver,
   StringBuffer buffer,
   Queue<ClassTask> queue,
   String className,
@@ -404,8 +380,8 @@ void _generateList(
             '${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
-      _generateList(config, base, locale, hasPluralResolver, buffer, queue,
-          className, value.entries, depth + 1);
+      _generateList(config, base, locale, buffer, queue, className,
+          value.entries, depth + 1);
     } else if (value is ObjectNode) {
       final String key = depth.toString() + 'i' + i.toString();
       final String childClassNoLocale =
@@ -413,8 +389,8 @@ void _generateList(
 
       if (value.isMap) {
         // inline map
-        _generateMap(config, base, locale, hasPluralResolver, buffer, queue,
-            childClassNoLocale, value.entries, depth + 1);
+        _generateMap(config, base, locale, buffer, queue, childClassNoLocale,
+            value.entries, depth + 1);
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
@@ -426,7 +402,6 @@ void _generateList(
       _addPluralizationCall(
         buffer: buffer,
         config: config,
-        hasPluralResolver: hasPluralResolver,
         language: locale.language,
         node: value,
         depth: depth + 1,
@@ -471,7 +446,6 @@ String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
 void _addPluralizationCall({
   required StringBuffer buffer,
   required I18nConfig config,
-  required bool hasPluralResolver,
   required String language,
   required PluralNode node,
   required int depth,
@@ -497,22 +471,8 @@ void _addPluralizationCall({
   }
 
   // custom resolver has precedence
-  buffer.write(
-      '}) => (${node.pluralType == PluralType.cardinal ? '_root._cardinalResolver' : '_root._ordinalResolver'} ?? ');
-
-  if (hasPluralResolver) {
-    // call predefined resolver
-    if (node.pluralType == PluralType.cardinal) {
-      buffer.writeln(
-          '_pluralCardinal${language.capitalize()})(${node.paramName},');
-    } else {
-      buffer.writeln(
-          '_pluralOrdinal${language.capitalize()})(${node.paramName},');
-    }
-  } else {
-    // throw error
-    buffer.writeln('_missingPluralResolver(\'$language\'))(${node.paramName},');
-  }
+  buffer.writeln(
+      '}) => (${node.pluralType == PluralType.cardinal ? '_root._cardinalResolver' : '_root._ordinalResolver'} ?? PluralResolvers.cardinal(\'$language\'))(${node.paramName},');
 
   for (final quantity in node.quantities.entries) {
     _addTabs(buffer, depth + 2);

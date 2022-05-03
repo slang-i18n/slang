@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-03 at 22:40 UTC
+ * Built on 2022-05-03 at 23:49 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -162,30 +162,6 @@ extension StringAppLocaleExtensions on String {
 	}
 }
 
-// pluralization resolvers
-
-typedef PluralResolver = String Function(num n, {String? zero, String? one, String? two, String? few, String? many, String? other});
-
-// prepared by fast_i18n
-
-String _pluralCardinalEn(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	if (n == 0) {
-		return zero ?? other!;
-	} else if (n == 1) {
-		return one ?? other!;
-	}
-	return other!;
-}
-
-String _pluralCardinalDe(num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
-	if (n == 0) {
-		return zero ?? other!;
-	} else if (n == 1) {
-		return one ?? other!;
-	}
-	return other!;
-}
-
 final _mapper = AppLocaleIdMapper<AppLocale>(
 	localeMap: {
 		const AppLocaleId(languageCode: 'en'): AppLocale.en,
@@ -236,7 +212,7 @@ class _StringsMainScreenEn {
 
 	// Translations
 	String get title => 'An English Title';
-	String counter({required num count}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
+	String counter({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 		one: 'You pressed $count time.',
 		other: 'You pressed $count times.',
 	);
@@ -284,7 +260,7 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 
 	// Translations
 	@override String get title => 'Ein deutscher Titel';
-	@override String counter({required num count}) => (_root._cardinalResolver ?? _pluralCardinalDe)(count,
+	@override String counter({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 		one: 'Du hast einmal gedrückt.',
 		other: 'Du hast $count mal gedrückt.',
 	);
@@ -298,7 +274,7 @@ extension on _StringsEn {
 	Map<String, dynamic> _buildFlatMap() {
 		return <String, dynamic>{
 			'mainScreen.title': 'An English Title',
-			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
+			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 				one: 'You pressed $count time.',
 				other: 'You pressed $count times.',
 			),
@@ -313,7 +289,7 @@ extension on _StringsDe {
 	Map<String, dynamic> _buildFlatMap() {
 		return <String, dynamic>{
 			'mainScreen.title': 'Ein deutscher Titel',
-			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? _pluralCardinalDe)(count,
+			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 				one: 'Du hast einmal gedrückt.',
 				other: 'Du hast $count mal gedrückt.',
 			),

@@ -30,7 +30,6 @@ void main() {
           locale: I18nLocale.fromString('en'),
           translations: JsonDecoder().decode(input),
         ),
-      showPluralHint: false,
     );
 
     expect(result.joinAsSingleOutput(), expectedOutput);
