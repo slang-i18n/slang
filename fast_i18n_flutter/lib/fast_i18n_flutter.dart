@@ -13,7 +13,7 @@ extension ExtAppLocaleUtils<E> on BaseAppLocaleUtils<E> {
     if (deviceLocale == null) {
       return baseLocale;
     }
-    return parseRawLocale(deviceLocale);
+    return parse(deviceLocale);
   }
 }
 
@@ -44,7 +44,7 @@ extension ExtBaseLocaleSettings<E, T extends BaseTranslations>
     if (WidgetsBinding.instance != null) {
       // force rebuild if TranslationProvider is used
       _translationProviderKey.currentState?.setLocale(
-        newLocale: locale,
+        newLocale: mapper.toId(locale),
         newTranslations: translationMap[locale]!,
       );
     }
@@ -56,7 +56,7 @@ extension ExtBaseLocaleSettings<E, T extends BaseTranslations>
   /// Fallbacks to base locale.
   /// Returns the locale which has been set.
   E setLocaleRaw(String rawLocale) {
-    final E locale = utils.parseRawLocale(rawLocale);
+    final E locale = utils.parse(rawLocale);
     return setLocale(locale);
   }
 
@@ -68,13 +68,13 @@ extension ExtBaseLocaleSettings<E, T extends BaseTranslations>
 
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
-abstract class BaseTranslationProvider<E, T extends BaseTranslations>
+abstract class BaseTranslationProvider<T extends BaseTranslations>
     extends StatefulWidget {
-  final E baseLocale;
+  final AppLocaleId baseLocaleId;
   final T baseTranslations;
 
   BaseTranslationProvider({
-    required this.baseLocale,
+    required this.baseLocaleId,
     required this.baseTranslations,
     required this.child,
   }) : super(key: _translationProviderKey);
@@ -82,26 +82,28 @@ abstract class BaseTranslationProvider<E, T extends BaseTranslations>
   final Widget child;
 
   @override
-  _TranslationProviderState<E, T> createState() =>
-      _TranslationProviderState<E, T>(
-        locale: baseLocale,
+  _TranslationProviderState<T> createState() => _TranslationProviderState<T>(
+        localeId: baseLocaleId,
         translations: baseTranslations,
       );
 }
 
-class _TranslationProviderState<E, T extends BaseTranslations>
-    extends State<BaseTranslationProvider<E, T>> {
-  E locale;
+class _TranslationProviderState<T extends BaseTranslations>
+    extends State<BaseTranslationProvider<T>> {
+  AppLocaleId localeId;
   T translations;
 
-  _TranslationProviderState({required this.locale, required this.translations});
+  _TranslationProviderState({
+    required this.localeId,
+    required this.translations,
+  });
 
   void setLocale({
-    required E newLocale,
+    required AppLocaleId newLocale,
     required T newTranslations,
   }) {
     setState(() {
-      locale = newLocale;
+      localeId = newLocale;
       translations = newTranslations;
     });
   }
@@ -109,28 +111,30 @@ class _TranslationProviderState<E, T extends BaseTranslations>
   @override
   Widget build(BuildContext context) {
     return InheritedLocaleData(
-      locale: locale,
+      localeId: localeId,
       translations: translations,
       child: widget.child,
     );
   }
 }
 
-class InheritedLocaleData<E, T extends BaseTranslations>
-    extends InheritedWidget {
-  final E locale;
+class InheritedLocaleData<T extends BaseTranslations> extends InheritedWidget {
+  final AppLocaleId localeId;
   final T translations;
 
+  // shortcut
+  Locale get flutterLocale => localeId.flutterLocale;
+
   InheritedLocaleData({
-    required this.locale,
+    required this.localeId,
     required this.translations,
     required Widget child,
   }) : super(child: child);
 
-  static InheritedLocaleData<E, T> of<E, T extends BaseTranslations>(
+  static InheritedLocaleData<T> of<T extends BaseTranslations>(
       BuildContext context) {
     final inheritedWidget =
-        context.dependOnInheritedWidgetOfExactType<InheritedLocaleData<E, T>>();
+        context.dependOnInheritedWidgetOfExactType<InheritedLocaleData<T>>();
     if (inheritedWidget == null) {
       throw 'Please wrap your app with "TranslationProvider".';
     }
@@ -139,7 +143,7 @@ class InheritedLocaleData<E, T extends BaseTranslations>
 
   @override
   bool updateShouldNotify(InheritedLocaleData oldWidget) {
-    return oldWidget.locale != locale;
+    return oldWidget.localeId != localeId;
   }
 }
 

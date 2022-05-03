@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-03 at 01:10 UTC
+ * Built on 2022-05-03 at 22:40 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -53,9 +53,21 @@ _StringsEn get t => LocaleSettings.instance.currentTranslations;
 class Translations {
 	Translations._(); // no constructor
 
-	static _StringsEn of(BuildContext context) => InheritedLocaleData.of<AppLocale, _StringsEn>(context).translations;
+	static _StringsEn of(BuildContext context) => InheritedLocaleData.of<_StringsEn>(context).translations;
 }
 
+/// The provider for method B
+class TranslationProvider extends BaseTranslationProvider<_StringsEn> {
+	TranslationProvider({required Widget child}) : super(
+		baseLocaleId: LocaleSettings.instance.mapper.toId(_baseLocale),
+		baseTranslations: LocaleSettings.instance.currentTranslations,
+		child: child,
+	);
+
+	static InheritedLocaleData<_StringsEn> of(BuildContext context) => InheritedLocaleData.of<_StringsEn>(context);
+}
+
+/// Manages all translation instances and the current locale
 class LocaleSettings extends BaseLocaleSettings<AppLocale, _StringsEn> {
 	LocaleSettings._() : super(
 		locales: AppLocale.values,
@@ -69,15 +81,30 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, _StringsEn> {
 	);
 
 	static final instance = LocaleSettings._();
+
+	// static aliases (checkout base methods for documentation)
+	static AppLocale get currentLocale => instance.currentLocale;
+	static List<Locale> get supportedLocales => instance.supportedLocales;
+	static AppLocale useDeviceLocale() => instance.useDeviceLocale();
+	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
+	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
+	static AppLocale setLocaleExceptProvider(AppLocale locale) => instance.setLocaleExceptProvider(locale);
+	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(
+		language: language,
+		locale: locale,
+		cardinalResolver: cardinalResolver,
+		ordinalResolver: ordinalResolver,
+	);
 }
 
+/// Provides utility functions without any side effects.
 class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale> {
 	AppLocaleUtils._() : super(mapper: _mapper, baseLocale: _baseLocale);
 
 	static final instance = AppLocaleUtils._();
 
-	// static aliases
-	static AppLocale parse(String rawLocale) => instance.parseRawLocale(rawLocale);
+	// static aliases (checkout base methods for documentation)
+	static AppLocale parse(String rawLocale) => instance.parse(rawLocale);
 	static AppLocale findDeviceLocale() => instance.findDeviceLocale();
 }
 

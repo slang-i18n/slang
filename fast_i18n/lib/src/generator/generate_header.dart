@@ -39,7 +39,7 @@ String generateHeader(
     );
   }
 
-  _generateLocaleVariables(
+  _generateBaseLocale(
     buffer: buffer,
     config: config,
     baseLocaleVar: baseLocaleVar,
@@ -159,7 +159,7 @@ void _generateParts({
   }
 }
 
-void _generateLocaleVariables({
+void _generateBaseLocale({
   required StringBuffer buffer,
   required I18nConfig config,
   required String baseLocaleVar,
@@ -207,7 +207,6 @@ void _generateTranslationGetter({
 }) {
   const String translationsClass = 'Translations';
   final String translateVar = config.translateVariable;
-  final String enumName = config.enumName;
 
   // t getter
   buffer.writeln();
@@ -255,7 +254,24 @@ void _generateTranslationGetter({
     buffer.writeln('\t$translationsClass._(); // no constructor');
     buffer.writeln();
     buffer.writeln(
-        '\tstatic $baseClassName of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context).translations;');
+        '\tstatic $baseClassName of(BuildContext context) => InheritedLocaleData.of<$baseClassName>(context).translations;');
+    buffer.writeln('}');
+
+    // provider
+    buffer.writeln();
+    buffer.writeln('/// The provider for method B');
+    buffer.writeln(
+        'class TranslationProvider extends BaseTranslationProvider<$baseClassName> {');
+    buffer.writeln('\tTranslationProvider({required Widget child}) : super(');
+    buffer.writeln(
+        '\t\tbaseLocaleId: LocaleSettings.instance.mapper.toId(_baseLocale),');
+    buffer.writeln(
+        '\t\tbaseTranslations: LocaleSettings.instance.currentTranslations,');
+    buffer.writeln('\t\tchild: child,');
+    buffer.writeln('\t);');
+    buffer.writeln();
+    buffer.writeln(
+        '\tstatic InheritedLocaleData<$baseClassName> of(BuildContext context) => InheritedLocaleData.of<$baseClassName>(context);');
     buffer.writeln('}');
   }
 }
@@ -273,6 +289,8 @@ void _generateLocaleSettings({
   final String enumName = config.enumName;
 
   buffer.writeln();
+  buffer
+      .writeln('/// Manages all translation instances and the current locale');
   buffer.writeln(
       'class $settingsClass extends BaseLocaleSettings<$enumName, $baseClassName> {');
   buffer.writeln('\t$settingsClass._() : super(');
@@ -299,17 +317,44 @@ void _generateLocaleSettings({
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $settingsClass._();');
 
+  buffer.writeln();
+  buffer
+      .writeln('\t// static aliases (checkout base methods for documentation)');
+  buffer.writeln(
+      '\tstatic $enumName get currentLocale => instance.currentLocale;');
+  if (!config.dartOnly) {
+    buffer.writeln(
+        '\tstatic List<Locale> get supportedLocales => instance.supportedLocales;');
+    buffer.writeln(
+        '\tstatic $enumName useDeviceLocale() => instance.useDeviceLocale();');
+    buffer.writeln(
+        '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
+    buffer.writeln(
+        '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
+  }
+  buffer.writeln(
+      '\tstatic $enumName setLocaleExceptProvider($enumName locale) => instance.setLocaleExceptProvider(locale);');
+  buffer.writeln(
+      '\tstatic void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
+  buffer.writeln('\t\tlanguage: language,');
+  buffer.writeln('\t\tlocale: locale,');
+  buffer.writeln('\t\tcardinalResolver: cardinalResolver,');
+  buffer.writeln('\t\tordinalResolver: ordinalResolver,');
+  buffer.writeln('\t);');
+
   buffer.writeln('}');
 }
 
-void _generateUtil(
-    {required StringBuffer buffer,
-    required I18nConfig config,
-    required String baseLocaleVar}) {
+void _generateUtil({
+  required StringBuffer buffer,
+  required I18nConfig config,
+  required String baseLocaleVar,
+}) {
   const String utilClass = 'AppLocaleUtils';
   final String enumName = config.enumName;
 
   buffer.writeln();
+  buffer.writeln('/// Provides utility functions without any side effects.');
   buffer.writeln('class $utilClass extends BaseAppLocaleUtils<$enumName> {');
   buffer.writeln(
       '\t$utilClass._() : super(mapper: _mapper, baseLocale: $baseLocaleVar);');
@@ -317,11 +362,14 @@ void _generateUtil(
   buffer.writeln('\tstatic final instance = $utilClass._();');
 
   buffer.writeln();
-  buffer.writeln('\t// static aliases');
+  buffer
+      .writeln('\t// static aliases (checkout base methods for documentation)');
   buffer.writeln(
-      '\tstatic $enumName parse(String rawLocale) => instance.parseRawLocale(rawLocale);');
-  buffer.writeln(
-      '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');
+      '\tstatic $enumName parse(String rawLocale) => instance.parse(rawLocale);');
+  if (!config.dartOnly) {
+    buffer.writeln(
+        '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');
+  }
 
   buffer.writeln('}');
 }

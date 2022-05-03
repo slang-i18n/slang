@@ -19,10 +19,13 @@ abstract class BaseAppLocaleUtils<E> {
     required this.mapper,
     required this.baseLocale,
   }) : localeIds = mapper.getLocaleIds();
+}
 
+// We use extension methods here to have a workaround for static members of the same name
+extension AppLocaleUtilsExt<E> on BaseAppLocaleUtils<E> {
   /// Parses the raw locale to get the enum.
   /// Fallbacks to base locale.
-  E parseRawLocale(String rawLocale) {
+  E parse(String rawLocale) {
     final match = _localeRegex.firstMatch(rawLocale);
     AppLocaleId? selected;
     if (match != null) {

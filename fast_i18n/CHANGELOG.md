@@ -3,7 +3,6 @@
 **Transition to a federated package structure**
 
 - **Breaking:** add dependency `fast_i18n_flutter` and move `fast_i18n` out of `dev_dependencies`
-- **Breaking:** `LocaleSettings` is now a singleton
 - feat: add dart-only support (`dart_only: true`)
 - feat: multiple package support
 - feat: add RichText support

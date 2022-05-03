@@ -1,4 +1,3 @@
-import 'package:fast_i18n/app_locale_id_mapper.dart';
 import 'package:fast_i18n/fast_i18n.dart';
 import 'package:fast_i18n/global_locale_state.dart';
 
@@ -26,7 +25,11 @@ class BaseLocaleSettings<E, T extends BaseTranslations> {
     required this.translationMap,
     required this.utils,
   });
+}
 
+// We use extension methods here to have a workaround for static members of the same name
+extension LocaleSettingsExt<E, T extends BaseTranslations>
+    on BaseLocaleSettings<E, T> {
   /// Sets locale, *but* do not change potential TranslationProvider's state
   /// Useful when you are in a pure Dart environment (without Flutter)
   E setLocaleExceptProvider(E locale) {
