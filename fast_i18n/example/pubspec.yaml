@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fast_i18n: ^6.0.0-dev.2 # add this
-  fast_i18n_flutter: ^6.0.0-dev.1 # add this
+  fast_i18n: ^6.0.0-dev.3 # add this
+  fast_i18n_flutter: ^6.0.0-dev.2 # add this
   flutter_localizations: # add this
     sdk: flutter
   cupertino_icons: ^1.0.2

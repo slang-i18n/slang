@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-03 at 00:56 UTC
+ * Built on 2022-05-03 at 01:10 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -75,6 +75,10 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale> {
 	AppLocaleUtils._() : super(mapper: _mapper, baseLocale: _baseLocale);
 
 	static final instance = AppLocaleUtils._();
+
+	// static aliases
+	static AppLocale parse(String rawLocale) => instance.parseRawLocale(rawLocale);
+	static AppLocale findDeviceLocale() => instance.findDeviceLocale();
 }
 
 // context enums

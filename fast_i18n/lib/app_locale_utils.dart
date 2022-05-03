@@ -22,7 +22,7 @@ abstract class BaseAppLocaleUtils<E> {
 
   /// Parses the raw locale to get the enum.
   /// Fallbacks to base locale.
-  E parse(String rawLocale) {
+  E parseRawLocale(String rawLocale) {
     final match = _localeRegex.firstMatch(rawLocale);
     AppLocaleId? selected;
     if (match != null) {

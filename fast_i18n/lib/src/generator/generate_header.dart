@@ -315,6 +315,14 @@ void _generateUtil(
       '\t$utilClass._() : super(mapper: _mapper, baseLocale: $baseLocaleVar);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $utilClass._();');
+
+  buffer.writeln();
+  buffer.writeln('\t// static aliases');
+  buffer.writeln(
+      '\tstatic $enumName parse(String rawLocale) => instance.parseRawLocale(rawLocale);');
+  buffer.writeln(
+      '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');
+
   buffer.writeln('}');
 }
 
