@@ -1,5 +1,8 @@
-import 'package:fast_i18n/fast_i18n.dart';
-import 'package:fast_i18n/global_locale_state.dart';
+import 'package:fast_i18n/api/app_locale_id_mapper.dart';
+import 'package:fast_i18n/api/app_locale_utils.dart';
+import 'package:fast_i18n/api/base_translations.dart';
+import 'package:fast_i18n/api/global_locale_state.dart';
+import 'package:fast_i18n/api/pluralization.dart';
 
 class BaseLocaleSettings<E, T extends BaseTranslations> {
   /// Locale enums sorted alphabetically and base locale first

@@ -1,5 +1,5 @@
-import 'package:fast_i18n/app_locale_id.dart';
-import 'package:fast_i18n/app_locale_id_mapper.dart';
+import 'package:fast_i18n/api/app_locale_id.dart';
+import 'package:fast_i18n/api/app_locale_id_mapper.dart';
 
 final _localeRegex =
     RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');

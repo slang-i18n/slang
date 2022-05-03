@@ -1,11 +1,12 @@
-import 'package:fast_i18n/app_locale_id.dart';
+import 'package:fast_i18n/api/app_locale_id.dart';
 
+/// Map handling the mapping between the global locale type
+/// and the project specific enum
 class AppLocaleIdMapper<E> {
-  /// Map handling the mapping between the global locale type
-  /// and the project specific enum
+  /// Maps locale ids to the enum type
   final Map<AppLocaleId, E> _idToEnumMap;
 
-  /// The same map but inversed
+  /// The same map as [_idToEnumMap] but inversed
   final Map<E, AppLocaleId> _enumToIdMap;
 
   AppLocaleIdMapper({required Map<AppLocaleId, E> localeMap})

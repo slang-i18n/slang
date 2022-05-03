@@ -1,4 +1,4 @@
-import 'package:fast_i18n/app_locale_id.dart';
+import 'package:fast_i18n/api/app_locale_id.dart';
 
 /// The [GlobalLocaleState] storing the global locale.
 /// It is *shared* among all packages of an app.

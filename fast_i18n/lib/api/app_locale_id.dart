@@ -24,15 +24,17 @@ class AppLocaleId {
       'AppLocaleId{languageCode: $languageCode, scriptCode: $scriptCode, countryCode: $countryCode}';
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AppLocaleId &&
-          runtimeType == other.runtimeType &&
-          languageCode == other.languageCode &&
-          scriptCode == other.scriptCode &&
-          countryCode == other.countryCode;
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is AppLocaleId &&
+            runtimeType == other.runtimeType &&
+            languageCode == other.languageCode &&
+            scriptCode == other.scriptCode &&
+            countryCode == other.countryCode;
+  }
 
   @override
-  int get hashCode =>
-      languageCode.hashCode ^ scriptCode.hashCode ^ countryCode.hashCode;
+  int get hashCode {
+    return languageCode.hashCode ^ scriptCode.hashCode ^ countryCode.hashCode;
+  }
 }
