@@ -35,7 +35,7 @@ extension LocaleSettingsExt<E, T extends BaseTranslations>
     on BaseLocaleSettings<E, T> {
   /// Sets locale, *but* do not change potential TranslationProvider's state
   /// Useful when you are in a pure Dart environment (without Flutter)
-  E setLocaleExceptProvider(E locale) {
+  E setLocale(E locale) {
     GlobalLocaleState.instance.setLocaleId(mapper.toId(locale));
     return locale;
   }

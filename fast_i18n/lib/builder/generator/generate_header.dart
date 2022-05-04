@@ -277,12 +277,14 @@ void _generateLocaleSettings({
 }) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
+  final String baseClass =
+      config.dartOnly ? 'BaseLocaleSettings' : 'BaseFlutterLocaleSettings';
 
   buffer.writeln();
   buffer
       .writeln('/// Manages all translation instances and the current locale');
   buffer.writeln(
-      'class $settingsClass extends BaseLocaleSettings<$enumName, $baseClassName> {');
+      'class $settingsClass extends $baseClass<$enumName, $baseClassName> {');
   buffer.writeln('\t$settingsClass._() : super(');
   buffer.writeln('\t\tlocales: $enumName.values,');
   buffer.writeln('\t\tbaseLocale: _baseLocale,');
@@ -312,18 +314,16 @@ void _generateLocaleSettings({
       .writeln('\t// static aliases (checkout base methods for documentation)');
   buffer.writeln(
       '\tstatic $enumName get currentLocale => instance.currentLocale;');
+  buffer.writeln(
+      '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
   if (!config.dartOnly) {
     buffer.writeln(
-        '\tstatic List<Locale> get supportedLocales => instance.supportedLocales;');
+        '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
     buffer.writeln(
         '\tstatic $enumName useDeviceLocale() => instance.useDeviceLocale();');
     buffer.writeln(
-        '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
-    buffer.writeln(
-        '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
+        '\tstatic List<Locale> get supportedLocales => instance.supportedLocales;');
   }
-  buffer.writeln(
-      '\tstatic $enumName setLocaleExceptProvider($enumName locale) => instance.setLocaleExceptProvider(locale);');
   buffer.writeln(
       '\tstatic void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
   buffer.writeln('\t\tlanguage: language,');

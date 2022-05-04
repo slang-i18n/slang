@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-03 at 23:49 UTC
+ * Built on 2022-05-04 at 19:50 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -68,7 +68,7 @@ class TranslationProvider extends BaseTranslationProvider<_StringsEn> {
 }
 
 /// Manages all translation instances and the current locale
-class LocaleSettings extends BaseLocaleSettings<AppLocale, _StringsEn> {
+class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _StringsEn> {
 	LocaleSettings._() : super(
 		locales: AppLocale.values,
 		baseLocale: _baseLocale,
@@ -84,11 +84,10 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, _StringsEn> {
 
 	// static aliases (checkout base methods for documentation)
 	static AppLocale get currentLocale => instance.currentLocale;
-	static List<Locale> get supportedLocales => instance.supportedLocales;
-	static AppLocale useDeviceLocale() => instance.useDeviceLocale();
 	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
 	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
-	static AppLocale setLocaleExceptProvider(AppLocale locale) => instance.setLocaleExceptProvider(locale);
+	static AppLocale useDeviceLocale() => instance.useDeviceLocale();
+	static List<Locale> get supportedLocales => instance.supportedLocales;
 	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(
 		language: language,
 		locale: locale,
