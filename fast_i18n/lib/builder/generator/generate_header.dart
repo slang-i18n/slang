@@ -2,6 +2,7 @@ import 'package:fast_i18n/builder/generator/helper.dart';
 import 'package:fast_i18n/builder/model/build_config.dart';
 import 'package:fast_i18n/builder/model/i18n_config.dart';
 import 'package:fast_i18n/builder/model/i18n_data.dart';
+import 'package:fast_i18n/builder/model/i18n_locale.dart';
 import 'package:fast_i18n/builder/model/node.dart';
 import 'package:fast_i18n/builder/utils/path_utils.dart';
 
@@ -11,9 +12,10 @@ String generateHeader(
 ) {
   const String baseLocaleVar = '_baseLocale';
   final String baseClassName = getClassNameRoot(
-      baseName: config.baseName,
-      visibility: config.translationClassVisibility,
-      locale: config.baseLocale);
+    baseName: config.baseName,
+    visibility: config.translationClassVisibility,
+    locale: config.baseLocale,
+  );
   const String pluralResolverType = 'PluralResolver';
   const String pluralResolverMapCardinal = '_pluralResolversCardinal';
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
@@ -47,6 +49,7 @@ String generateHeader(
     buffer: buffer,
     config: config,
     allLocales: allLocales,
+    baseClassName: baseClassName,
   );
 
   if (config.renderLocaleHandling) {
@@ -71,24 +74,12 @@ String generateHeader(
     buffer: buffer,
     config: config,
     baseLocaleVar: baseLocaleVar,
+    baseClassName: baseClassName,
   );
 
   _generateContextEnums(buffer: buffer, config: config);
 
   _generateInterfaces(buffer: buffer, config: config);
-
-  _generateExtensions(
-    buffer: buffer,
-    config: config,
-    allLocales: allLocales,
-    baseClassName: baseClassName,
-  );
-
-  _generateMapper(
-    buffer: buffer,
-    config: config,
-    allLocales: allLocales,
-  );
 
   return buffer.toString();
 }
@@ -165,6 +156,7 @@ void _generateEnum({
   required StringBuffer buffer,
   required I18nConfig config,
   required List<I18nData> allLocales,
+  required String baseClassName,
 }) {
   final String enumName = config.enumName;
   final String baseLocaleEnumConstant =
@@ -181,12 +173,45 @@ void _generateEnum({
   buffer.writeln(
       '/// - if (LocaleSettings.currentLocale == $baseLocaleEnumConstant) // locale check');
 
-  buffer.writeln('enum $enumName {');
-  for (I18nData locale in allLocales) {
-    buffer.write('\t${locale.locale.enumConstant},');
-    buffer.writeln(
-        '\t// \'${locale.locale.languageTag}\'${locale.base ? ' (base locale, fallback)' : ''}');
+  buffer.writeln('enum $enumName with BaseAppLocale<$baseClassName> {');
+  for (int i = 0; i < allLocales.length; i++) {
+    final I18nLocale locale = allLocales[i].locale;
+    final String className = getClassNameRoot(
+      baseName: config.baseName,
+      visibility: config.translationClassVisibility,
+      locale: locale,
+    );
+
+    buffer
+        .write('\t${locale.enumConstant}(languageCode: \'${locale.language}\'');
+    if (locale.script != null) {
+      buffer.write(', scriptCode: \'${locale.script}\'');
+    }
+    if (locale.country != null) {
+      buffer.write(', countryCode: \'${locale.country}\'');
+    }
+    buffer.write(', build: $className.build)');
+    if (i != allLocales.length - 1) {
+      buffer.writeln(',');
+    } else {
+      buffer.writeln(';');
+    }
   }
+
+  buffer.writeln();
+  buffer.writeln(
+      '\tconst $enumName({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element');
+
+  buffer.writeln();
+  buffer.writeln('\t@override final String languageCode;');
+  buffer.writeln('\t@override final String? scriptCode;');
+  buffer.writeln('\t@override final String? countryCode;');
+  buffer.writeln('\t@override final TranslationBuilder<$baseClassName> build;');
+  if (config.renderLocaleHandling) {
+    buffer.writeln(
+        '\t$baseClassName get translations => LocaleSettings.instance.translationMap[this]!;');
+  }
+
   buffer.writeln('}');
 }
 
@@ -197,6 +222,7 @@ void _generateTranslationGetter({
 }) {
   const String translationsClass = 'Translations';
   final String translateVar = config.translateVariable;
+  final String enumName = config.enumName;
 
   // t getter
   buffer.writeln();
@@ -244,24 +270,23 @@ void _generateTranslationGetter({
     buffer.writeln('\t$translationsClass._(); // no constructor');
     buffer.writeln();
     buffer.writeln(
-        '\tstatic $baseClassName of(BuildContext context) => InheritedLocaleData.of<$baseClassName>(context).translations;');
+        '\tstatic $baseClassName of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context).translations;');
     buffer.writeln('}');
 
     // provider
     buffer.writeln();
     buffer.writeln('/// The provider for method B');
     buffer.writeln(
-        'class TranslationProvider extends BaseTranslationProvider<$baseClassName> {');
+        'class TranslationProvider extends BaseTranslationProvider<$enumName, $baseClassName> {');
     buffer.writeln('\tTranslationProvider({required Widget child}) : super(');
-    buffer.writeln(
-        '\t\tbaseLocaleId: LocaleSettings.instance.mapper.toId(_baseLocale),');
+    buffer.writeln('\t\tbaseLocale: _baseLocale,');
     buffer.writeln(
         '\t\tbaseTranslations: LocaleSettings.instance.currentTranslations,');
     buffer.writeln('\t\tchild: child,');
     buffer.writeln('\t);');
     buffer.writeln();
     buffer.writeln(
-        '\tstatic InheritedLocaleData<$baseClassName> of(BuildContext context) => InheritedLocaleData.of<$baseClassName>(context);');
+        '\tstatic InheritedLocaleData<$enumName, $baseClassName> of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context);');
     buffer.writeln('}');
   }
 }
@@ -288,22 +313,6 @@ void _generateLocaleSettings({
   buffer.writeln('\t$settingsClass._() : super(');
   buffer.writeln('\t\tlocales: $enumName.values,');
   buffer.writeln('\t\tbaseLocale: _baseLocale,');
-  buffer.writeln('\t\tmapper: _mapper,');
-  buffer.writeln('\t\ttranslationMap: <$enumName, $baseClassName>{');
-  for (I18nData locale in allLocales) {
-    buffer.write('\t\t\t');
-    buffer.write(config.enumName);
-    buffer.write('.');
-    buffer.write(locale.locale.enumConstant);
-    buffer.write(': ');
-    buffer.write(getClassNameRoot(
-      baseName: config.baseName,
-      locale: locale.locale,
-      visibility: config.translationClassVisibility,
-    ));
-    buffer.writeln('.build(),');
-  }
-  buffer.writeln('\t\t},');
   buffer.writeln('\t\tutils: AppLocaleUtils.instance,');
   buffer.writeln('\t);');
   buffer.writeln();
@@ -339,15 +348,17 @@ void _generateUtil({
   required StringBuffer buffer,
   required I18nConfig config,
   required String baseLocaleVar,
+  required String baseClassName,
 }) {
   const String utilClass = 'AppLocaleUtils';
   final String enumName = config.enumName;
 
   buffer.writeln();
   buffer.writeln('/// Provides utility functions without any side effects.');
-  buffer.writeln('class $utilClass extends BaseAppLocaleUtils<$enumName> {');
   buffer.writeln(
-      '\t$utilClass._() : super(mapper: _mapper, baseLocale: $baseLocaleVar);');
+      'class $utilClass extends BaseAppLocaleUtils<$enumName, $baseClassName> {');
+  buffer.writeln(
+      '\t$utilClass._() : super(baseLocale: $baseLocaleVar, locales: $enumName.values);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $utilClass._();');
 
@@ -368,8 +379,10 @@ void _generateContextEnums({
   required StringBuffer buffer,
   required I18nConfig config,
 }) {
-  buffer.writeln();
-  buffer.writeln('// context enums');
+  if (config.contexts.isNotEmpty) {
+    buffer.writeln();
+    buffer.writeln('// context enums');
+  }
 
   for (final contextType in config.contexts) {
     buffer.writeln();
@@ -385,8 +398,10 @@ void _generateInterfaces({
   required StringBuffer buffer,
   required I18nConfig config,
 }) {
-  buffer.writeln();
-  buffer.writeln('// interfaces generated as mixins');
+  if (config.interface.isNotEmpty) {
+    buffer.writeln();
+    buffer.writeln('// interfaces generated as mixins');
+  }
 
   for (final interface in config.interface) {
     buffer.writeln();
@@ -414,182 +429,6 @@ void _generateInterfaces({
     buffer.writeln('}');
   }
 }
-
-void _generateExtensions({
-  required StringBuffer buffer,
-  required I18nConfig config,
-  required List<I18nData> allLocales,
-  required String baseClassName,
-}) {
-  final String enumName = config.enumName;
-
-  buffer.writeln();
-  buffer.writeln('// extensions for $enumName');
-  buffer.writeln();
-  buffer.writeln('extension ${enumName}Extensions on AppLocale {');
-
-  if (config.renderLocaleHandling) {
-    buffer.writeln();
-    buffer.writeln(
-        '\t/// Gets the translation instance managed by this library.');
-    buffer.writeln('\t/// [TranslationProvider] is using this instance.');
-    buffer.writeln('\t/// The plural resolvers are set via [LocaleSettings].');
-    buffer.writeln('\t$baseClassName get translations {');
-    buffer.writeln('\t\treturn LocaleSettings.instance.translationMap[this]!;');
-    buffer.writeln('\t}');
-  }
-
-  buffer.writeln();
-  buffer.writeln('\t/// Gets a new translation instance.');
-  if (config.renderLocaleHandling) {
-    buffer.writeln('\t/// [LocaleSettings] has no effect here.');
-  }
-  buffer.writeln('\t/// Suitable for dependency injection and unit tests.');
-  buffer.writeln('\t///');
-  buffer.writeln('\t/// Usage:');
-  buffer.writeln(
-      '\t/// final t = AppLocale.${config.baseLocale.enumConstant}.build(); // build');
-  buffer.writeln('\t/// String a = t.my.path; // access');
-  buffer.writeln(
-      '\t$baseClassName build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
-
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    final className = getClassNameRoot(
-      baseName: config.baseName,
-      locale: locale.locale,
-      visibility: config.translationClassVisibility,
-    );
-    buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return $className.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
-  }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
-
-  buffer.writeln();
-  buffer.writeln('\tString get languageTag {');
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    buffer.writeln(
-        '\t\t\tcase $enumName.${locale.locale.enumConstant}: return \'${locale.locale.languageTag}\';');
-  }
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
-
-  if (!config.dartOnly) {
-    buffer.writeln();
-    buffer.writeln('\tLocale get flutterLocale {');
-    buffer.writeln('\t\tswitch (this) {');
-    for (I18nData locale in allLocales) {
-      buffer.write(
-          '\t\t\tcase $enumName.${locale.locale.enumConstant}: return const Locale.fromSubtags(');
-      buffer.write('languageCode: \'${locale.locale.language}\'');
-      if (locale.locale.script != null) {
-        buffer.write(', ');
-        buffer.write('scriptCode: \'${locale.locale.script}\', ');
-      }
-      if (locale.locale.country != null) {
-        buffer.write(', ');
-        buffer.write('countryCode: \'${locale.locale.country}\'');
-      }
-      buffer.writeln(');');
-    }
-    buffer.writeln('\t\t}');
-    buffer.writeln('\t}');
-  }
-  buffer.writeln('}');
-
-  // string extension
-  buffer.writeln();
-  buffer.writeln('extension String${enumName}Extensions on String {');
-  buffer.writeln('\t$enumName? to$enumName() {');
-  buffer.writeln('\t\tswitch (this) {');
-  for (I18nData locale in allLocales) {
-    buffer.writeln(
-        '\t\t\tcase \'${locale.locale.languageTag}\': return $enumName.${locale.locale.enumConstant};');
-  }
-  buffer.writeln('\t\t\tdefault: return null;');
-  buffer.writeln('\t\t}');
-  buffer.writeln('\t}');
-  buffer.writeln('}');
-}
-
-void _generateMapper({
-  required StringBuffer buffer,
-  required I18nConfig config,
-  required List<I18nData> allLocales,
-}) {
-  buffer.writeln();
-  buffer.writeln('final _mapper = AppLocaleIdMapper<${config.enumName}>(');
-  buffer.writeln('\tlocaleMap: {');
-  for (I18nData locale in allLocales) {
-    buffer.write('\t\tconst AppLocaleId(');
-    buffer.write('languageCode: \'${locale.locale.language}\'');
-    if (locale.locale.script != null) {
-      buffer.write(', ');
-      buffer.write('scriptCode: \'${locale.locale.script}\', ');
-    }
-    if (locale.locale.country != null) {
-      buffer.write(', ');
-      buffer.write('countryCode: \'${locale.locale.country}\'');
-    }
-    buffer.write('): ');
-    buffer.write(config.enumName);
-    buffer.write('.');
-    buffer.write(locale.locale.enumConstant);
-    buffer.writeln(',');
-  }
-  buffer.writeln('\t}');
-  buffer.writeln(');');
-}
-
-// void _generateHelpers(
-//     {required StringBuffer buffer, required I18nConfig config}) {
-//   final enumName = config.enumName;
-//   buffer.writeln();
-//   buffer.writeln('// helpers');
-//   buffer.writeln();
-//   buffer.writeln(
-//       'final _localeRegex = RegExp(r\'^${RegexUtils.LOCALE_REGEX_RAW}\$\');');
-//   buffer.writeln('$enumName? _selectLocale(String localeRaw) {');
-//   buffer.writeln('\tfinal match = _localeRegex.firstMatch(localeRaw);');
-//   buffer.writeln('\t$enumName? selected;');
-//   buffer.writeln('\tif (match != null) {');
-//   buffer.writeln('\t\tfinal language = match.group(1);');
-//   buffer.writeln('\t\tfinal country = match.group(5);');
-//   buffer.writeln();
-//
-//   // match exactly
-//   buffer.writeln('\t\t// match exactly');
-//   buffer.writeln('\t\tselected = $enumName.values');
-//   buffer.writeln('\t\t\t.cast<$enumName?>()');
-//   buffer.writeln(
-//       '\t\t\t.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll(\'_\', \'-\'), orElse: () => null);');
-//   buffer.writeln();
-//
-//   // match language
-//   buffer.writeln('\t\tif (selected == null && language != null) {');
-//   buffer.writeln('\t\t\t// match language');
-//   buffer.writeln('\t\t\tselected = $enumName.values');
-//   buffer.writeln('\t\t\t\t.cast<$enumName?>()');
-//   buffer.writeln(
-//       '\t\t\t\t.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);');
-//   buffer.writeln('\t\t}');
-//   buffer.writeln();
-//
-//   // match country
-//   buffer.writeln('\t\tif (selected == null && country != null) {');
-//   buffer.writeln('\t\t\t// match country');
-//   buffer.writeln('\t\t\tselected = $enumName.values');
-//   buffer.writeln('\t\t\t\t.cast<$enumName?>()');
-//   buffer.writeln(
-//       '\t\t\t\t.firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);');
-//   buffer.writeln('\t\t}');
-//
-//   buffer.writeln('\t}');
-//   buffer.writeln('\treturn selected;');
-//   buffer.writeln('}');
-// }
 
 int _countTranslations(Node node) {
   if (node is TextNode) {

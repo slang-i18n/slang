@@ -128,14 +128,6 @@ void _generateClass(
     }
     buffer.writeln(';');
 
-    buffer.writeln();
-    buffer.writeln('\t/// The same as [build] but calling on an instance');
-    buffer.writeln(
-        '\t@override $finalClassName copyWith({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) {');
-    buffer.writeln(
-        '\t\treturn $finalClassName.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
-    buffer.writeln('\t}');
-
     if (config.renderFlatMap) {
       // flat map
       buffer.writeln();
