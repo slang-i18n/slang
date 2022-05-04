@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-04 at 23:25 UTC
+ * Built on 2022-05-04 at 23:42 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -30,6 +30,8 @@ enum AppLocale with BaseAppLocale<_StringsEn> {
 	@override final String? scriptCode;
 	@override final String? countryCode;
 	@override final TranslationBuilder<_StringsEn> build;
+
+	/// Gets current instance managed by [LocaleSettings].
 	_StringsEn get translations => LocaleSettings.instance.translationMap[this]!;
 }
 

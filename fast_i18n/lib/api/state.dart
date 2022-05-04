@@ -7,13 +7,13 @@ class GlobalLocaleState {
 
   static GlobalLocaleState instance = GlobalLocaleState._();
 
-  BaseAppLocale _currLocaleId = BaseAppLocale.UNDEFINED_LANGUAGE;
+  BaseAppLocale _currLocale = BaseAppLocale.UNDEFINED_LANGUAGE;
 
   BaseAppLocale getLocale() {
-    return _currLocaleId;
+    return _currLocale;
   }
 
   void setLocale(BaseAppLocale locale) {
-    _currLocaleId = locale;
+    _currLocale = locale;
   }
 }

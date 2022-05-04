@@ -208,6 +208,8 @@ void _generateEnum({
   buffer.writeln('\t@override final String? countryCode;');
   buffer.writeln('\t@override final TranslationBuilder<$baseClassName> build;');
   if (config.renderLocaleHandling) {
+    buffer.writeln();
+    buffer.writeln('\t/// Gets current instance managed by [LocaleSettings].');
     buffer.writeln(
         '\t$baseClassName get translations => LocaleSettings.instance.translationMap[this]!;');
   }
