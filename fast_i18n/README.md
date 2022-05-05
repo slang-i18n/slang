@@ -32,10 +32,11 @@ String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
 String e = t.intro.step[4];                            // with index
 String f = t.error.type['WARNING'];                    // with dynamic key
 String g = t['mainScreen.title'];                      // with fully dynamic key
+InlineSpan h = t.greet(name: TextSpan(text: 'Tom'));   // with RichText
 
 PageData page0 = t.onboarding.pages[0];                // with interfaces
 PageData page1 = t.onboarding.pages[1];
-String h = page1.title; // type-safe call
+String i = page1.title; // type-safe call
 ```
 
 ## Table of Contents
