@@ -45,6 +45,7 @@ String h = page1.title; // type-safe call
 - [Main Features](#main-features)
     - [File Types](#-file-types)
     - [String Interpolation](#-string-interpolation)
+    - [RichText](#-richtext)
     - [Lists](#-lists)
     - [Maps](#-maps)
     - [Dynamic Keys](#-dynamic-keys--flat-map)
@@ -397,6 +398,33 @@ Hello {name}
 **double_braces**
 ```text
 Hello {{name}}
+```
+
+### ➤ RichText
+
+In Flutter environment, you can tell the library to generate `TextSpan` objects.
+
+To do this, please add the `(rich)` hint.
+
+```json
+{
+  "myText(rich)": "Welcome $name. Please click ${underline(here)}!"
+}
+```
+
+Usage:
+
+```dart
+Text.rich(t.myText(
+  name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
+  underline: (text) => TextSpan(
+    text: text,
+    style: TextStyle(color: Colors.blue),
+    recognizer: TapGestureRecognizer()..onTap=(){
+      print('tap');
+    },
+  ),
+));
 ```
 
 ### ➤ Lists
