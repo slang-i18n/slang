@@ -67,7 +67,7 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? _pluralCardinalDe)(count,
+	@override String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'Ein Nutzer',
 		other: '$count Nutzer und ${_root.onboarding.bye(firstName: firstName)}',

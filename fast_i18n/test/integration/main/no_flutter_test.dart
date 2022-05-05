@@ -1,5 +1,5 @@
 import 'package:fast_i18n/builder/builder/build_config_builder.dart';
-import 'package:fast_i18n/builder/decoder/csv_decoder.dart';
+import 'package:fast_i18n/builder/decoder/json_decoder.dart';
 import 'package:fast_i18n/builder/generator_facade.dart';
 import 'package:fast_i18n/builder/model/i18n_locale.dart';
 import 'package:fast_i18n/builder/model/namespace_translation_map.dart';
@@ -9,32 +9,26 @@ import '../../util/build_config_utils.dart';
 import '../../util/resources_utils.dart';
 
 void main() {
-  late String compactInput;
+  late String input;
   late String buildYaml;
   late String expectedOutput;
 
   setUp(() {
-    compactInput = loadResource('main/csv_comments.csv');
+    input = loadResource('main/json_simple.json');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/expected_comments.output');
+    expectedOutput = loadResource('main/expected_no_flutter.output');
   });
 
-  test('comments csv', () {
-    final parsed = CsvDecoder().decode(compactInput);
-
+  test('no flutter', () {
     final result = GeneratorFacade.generate(
       buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!.copyWith(
-        renderLocaleHandling: false,
+        dartOnly: true,
       ),
       baseName: 'translations',
       translationMap: NamespaceTranslationMap()
         ..addTranslations(
           locale: I18nLocale.fromString('en'),
-          translations: parsed['en'],
-        )
-        ..addTranslations(
-          locale: I18nLocale.fromString('de'),
-          translations: parsed['de'],
+          translations: JsonDecoder().decode(input),
         ),
     );
 

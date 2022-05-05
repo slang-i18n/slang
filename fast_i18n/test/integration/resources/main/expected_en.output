@@ -1,7 +1,7 @@
 part of 'translations.g.dart';
 
 // Path: <root>
-class _TranslationsEn {
+class _TranslationsEn implements BaseTranslations {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
@@ -67,7 +67,7 @@ class _TranslationsGroupEn {
 	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
+	String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 		zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'One User',
 		other: '$count Users and ${_root.onboarding.bye(firstName: firstName)}',

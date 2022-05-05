@@ -6,7 +6,9 @@
  * Strings: 2 
  */
 
-import 'package:flutter/widgets.dart';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'package:fast_i18n_flutter/fast_i18n_flutter.dart';
 
 const AppLocale _baseLocale = AppLocale.en;
 
@@ -16,32 +18,26 @@ const AppLocale _baseLocale = AppLocale.en;
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
 /// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
 /// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
-enum AppLocale {
-	en, // 'en' (base locale, fallback)
+enum AppLocale with BaseAppLocale<_TranslationsEn> {
+	en(languageCode: 'en', build: _TranslationsEn.build);
+
+	const AppLocale({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element
+
+	@override final String languageCode;
+	@override final String? scriptCode;
+	@override final String? countryCode;
+	@override final TranslationBuilder<_TranslationsEn> build;
 }
 
 /// Provides utility functions without any side effects.
-class AppLocaleUtils {
-	AppLocaleUtils._(); // no constructor
+class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, _TranslationsEn> {
+	AppLocaleUtils._() : super(baseLocale: _baseLocale, locales: AppLocale.values);
 
-	/// Returns the locale of the device as the enum type.
-	/// Fallbacks to base locale.
-	static AppLocale findDeviceLocale() {
-		final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
-		if (deviceLocale != null) {
-			final typedLocale = _selectLocale(deviceLocale);
-			if (typedLocale != null) {
-				return typedLocale;
-			}
-		}
-		return _baseLocale;
-	}
+	static final instance = AppLocaleUtils._();
 
-	/// Returns the enum type of the raw locale.
-	/// Fallbacks to base locale.
-	static AppLocale parse(String rawLocale) {
-		return _selectLocale(rawLocale) ?? _baseLocale;
-	}
+	// static aliases (checkout base methods for documentation)
+	static AppLocale parse(String rawLocale) => instance.parse(rawLocale);
+	static AppLocale findDeviceLocale() => instance.findDeviceLocale();
 }
 
 // context enums
@@ -51,94 +47,25 @@ enum GenderContext {
 	female,
 }
 
-// interfaces generated as mixins
-
-// extensions for AppLocale
-
-extension AppLocaleExtensions on AppLocale {
-
-	/// Gets a new translation instance.
-	/// Suitable for dependency injection and unit tests.
-	///
-	/// Usage:
-	/// final t = AppLocale.en.build(); // build
-	/// String a = t.my.path; // access
-	_TranslationsEn build() {
-		switch (this) {
-			case AppLocale.en: return _TranslationsEn.build();
-		}
-	}
-
-	String get languageTag {
-		switch (this) {
-			case AppLocale.en: return 'en';
-		}
-	}
-
-	Locale get flutterLocale {
-		switch (this) {
-			case AppLocale.en: return const Locale.fromSubtags(languageCode: 'en');
-		}
-	}
-}
-
-extension StringAppLocaleExtensions on String {
-	AppLocale? toAppLocale() {
-		switch (this) {
-			case 'en': return AppLocale.en;
-			default: return null;
-		}
-	}
-}
-
-// pluralization feature not used
-
-// helpers
-
-final _localeRegex = RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
-AppLocale? _selectLocale(String localeRaw) {
-	final match = _localeRegex.firstMatch(localeRaw);
-	AppLocale? selected;
-	if (match != null) {
-		final language = match.group(1);
-		final country = match.group(5);
-
-		// match exactly
-		selected = AppLocale.values
-			.cast<AppLocale?>()
-			.firstWhere((supported) => supported?.languageTag == localeRaw.replaceAll('_', '-'), orElse: () => null);
-
-		if (selected == null && language != null) {
-			// match language
-			selected = AppLocale.values
-				.cast<AppLocale?>()
-				.firstWhere((supported) => supported?.languageTag.startsWith(language) == true, orElse: () => null);
-		}
-
-		if (selected == null && country != null) {
-			// match country
-			selected = AppLocale.values
-				.cast<AppLocale?>()
-				.firstWhere((supported) => supported?.languageTag.contains(country) == true, orElse: () => null);
-		}
-	}
-	return selected;
-}
-
 // translations
 
 // Path: <root>
-class _TranslationsEn {
+class _TranslationsEn implements BaseTranslations {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsEn.build();
+	_TranslationsEn.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: _cardinalResolver = cardinalResolver,
+		  _ordinalResolver = ordinalResolver;
 
 	/// Access flat map
 	dynamic operator[](String key) => _flatMap[key];
 
 	// Internal flat map initialized lazily
 	late final Map<String, dynamic> _flatMap = _buildFlatMap();
+
+	final PluralResolver? _cardinalResolver; // ignore: unused_field
+	final PluralResolver? _ordinalResolver; // ignore: unused_field
 
 	late final _TranslationsEn _root = this; // ignore: unused_field
 
