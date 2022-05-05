@@ -163,7 +163,7 @@ class InheritedLocaleData<E extends BaseAppLocale<T>,
 
   @override
   bool updateShouldNotify(InheritedLocaleData oldWidget) {
-    return !oldWidget.locale.sameLocale(oldWidget.locale);
+    return !locale.sameLocale(oldWidget.locale);
   }
 }
 
