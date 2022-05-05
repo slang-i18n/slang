@@ -3,11 +3,13 @@
 **Transition to a federated package structure**
 
 - **Breaking:** add dependency `fast_i18n_flutter` and move `fast_i18n` out of `dev_dependencies`
-- feat: add dart-only support (`dart_only: true`)
+- feat: dart-only support (`flutter_integration: false`)
 - feat: multiple package support
-- feat: add RichText support
+- feat: RichText support
 
-Thanks to [@fzyzcjy](https://github.com/fzyzcjy)
+Thanks to [@fzyzcjy](https://github.com/fzyzcjy).
+
+You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/MIGRATION.md).
 
 ## 5.12.3
 
@@ -187,7 +189,7 @@ MaterialApp(
 - feat: generated file follows lint guidelines
 - feat: add support for linked translations, e.g. `Welcome to @:appName`
 
-You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/MIGRATION.md).
+You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/MIGRATION.md).
 
 ## 4.11.0
 

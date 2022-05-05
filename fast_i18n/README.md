@@ -63,6 +63,7 @@ String h = page1.title; // type-safe call
   - [Fallback](#-fallback)
   - [Comments](#-comments)
   - [Recasing](#-recasing)
+  - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
   - [Migration](#-migration)
@@ -80,12 +81,13 @@ Coming from ARB? There is a [tool](#arb) for that.
 
 **Step 1: Add dependencies**
 
-It is recommended to add `fast_i18n` to `dev_dependencies`.
-
 ```yaml
+dependencies:
+  fast_i18n: <latest version>
+  fast_i18n_flutter: <latest version> # also add this if you use flutter
+
 dev_dependencies:
   build_runner: any
-  fast_i18n: <latest version>
 ```
 
 **Step 2: Create JSON files**
@@ -247,11 +249,10 @@ targets:
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
-          output_file_pattern: .g.dart # deprecated, use output_file_name
           output_file_name: translations.g.dart
           output_format: single_file
           locale_handling: true
-          dart_only: false
+          flutter_integration: true
           namespaces: false
           translate_var: t
           enum_name: AppLocale
@@ -298,11 +299,10 @@ Key|Type|Usage|Default
 `input_directory`|`String`|path to input directory|`null`
 `input_file_pattern`|`String`|input file pattern, must end with .json, .yaml or .csv|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
-`output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
 `output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
 `locale_handling`|`Boolean`|generate locale handling logic [(i)](#-dependency-injection)|`true`
-`dart_only`|`Boolean`|only generate dart code|`false`
+`flutter_integration`|`Boolean`|generate flutter features|`true`
 `namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
@@ -1074,6 +1074,19 @@ targets:
 ```dart
 String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
+```
+
+### ➤ Dart Only
+
+You can use this library without flutter.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          flutter_integration: false # set this
 ```
 
 ## Tools

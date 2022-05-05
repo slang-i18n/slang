@@ -1,6 +1,34 @@
 # Migration Guides
 
-## Version 5.0
+## Version 5.0 to 6.0
+
+Move dependencies out of `dev_dependencies`:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  fast_i18n: 6.0.0 # add this
+  fast_i18n_flutter: 6.0.0 # also add this if you use flutter
+
+dev_dependencies:
+  build_runner: any # this is still there
+  # fast_i18n: 5.12.3 (removed)
+```
+
+Deprecated `output_file_pattern` removed. `output_file_name` defaulting to `strings.g.dart`.
+
+```yaml
+targets:
+  $default:
+    builders:
+      fast_i18n:
+        options:
+          # output_file_pattern: .g.dart (removed)
+          output_file_name: strings.g.dart # new default
+```
+
+## Version 4.0 to 5.0
 
 This release mostly focuses on simplifications of `build.yaml`.
 
