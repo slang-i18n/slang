@@ -191,11 +191,17 @@ class BuildConfig {
 }
 
 enum FileType { json, yaml, csv }
+
 enum FallbackStrategy { none, baseLocale }
+
 enum OutputFormat { singleFile, multipleFiles }
+
 enum StringInterpolation { dart, braces, doubleBraces }
+
 enum TranslationClassVisibility { private, public }
+
 enum CaseStyle { camel, pascal, snake }
+
 enum PluralAuto { off, cardinal, ordinal }
 
 extension Parser on String {
