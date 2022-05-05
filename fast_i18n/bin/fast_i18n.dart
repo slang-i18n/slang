@@ -165,49 +165,20 @@ Future<void> generateTranslations({
   bool statsMode = false,
 }) async {
   // STEP 1: determine base name and output file name / path
-  String? baseName;
-  String? outputFileName;
   final String outputFilePath;
-
-  if (buildConfig.outputFileName != null) {
-    // use newer version
-    // this will have a default non-null value in the future (6.0.0+)
-    outputFileName = buildConfig.outputFileName!;
-    baseName = buildConfig.outputFileName!.getFileNameNoExtension();
-  } else {
-    // use legacy mode by taking the namespace name
-    for (final file in files) {
-      final fileNameNoExtension = file.path.getFileNameNoExtension();
-      final baseFile = RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-      if (baseFile != null) {
-        baseName = fileNameNoExtension;
-        outputFileName = baseName + buildConfig.outputFilePattern;
-
-        if (verbose) {
-          print(
-              'Found base name: "$baseName" (used for output file name and class names)');
-        }
-        break;
-      }
-    }
-  }
-
-  if (baseName == null || outputFileName == null) {
-    print('Error: No base translation file.');
-    return;
-  }
 
   if (buildConfig.outputDirectory != null) {
     // output directory specified, use this path instead
-    outputFilePath =
-        buildConfig.outputDirectory! + Platform.pathSeparator + outputFileName;
+    outputFilePath = buildConfig.outputDirectory! +
+        Platform.pathSeparator +
+        buildConfig.outputFileName;
   } else {
     // use the directory of the first (random) translation file
     final fileName = files.first.path.getFileName();
     outputFilePath =
         files.first.path.replaceAll("${Platform.pathSeparator}$fileName", '') +
             Platform.pathSeparator +
-            outputFileName;
+            buildConfig.outputFileName;
   }
 
   // STEP 2: scan translations
@@ -317,7 +288,7 @@ Future<void> generateTranslations({
   // STEP 3: generate .g.dart content
   final result = GeneratorFacade.generate(
     buildConfig: buildConfig,
-    baseName: baseName,
+    baseName: buildConfig.outputFileName.getFileNameNoExtension(),
     translationMap: translationMap,
   );
 
@@ -359,12 +330,6 @@ Future<void> generateTranslations({
   }
 
   if (verbose) {
-    if (buildConfig.outputFileName == null && buildConfig.namespaces) {
-      print('');
-      print(
-          'WARNING: Please specify "output_file_name". Using fallback file name for now.');
-    }
-
     print('');
     if (buildConfig.outputFormat == OutputFormat.singleFile) {
       print('Output: $outputFilePath');

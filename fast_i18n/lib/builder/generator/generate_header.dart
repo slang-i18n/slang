@@ -52,7 +52,7 @@ String generateHeader(
     baseClassName: baseClassName,
   );
 
-  if (config.renderLocaleHandling) {
+  if (config.localeHandling) {
     _generateTranslationGetter(
       buffer: buffer,
       config: config,
@@ -116,11 +116,11 @@ void _generateHeaderComment({
 
 void _generateImports(I18nConfig config, StringBuffer buffer) {
   buffer.writeln();
-  if (config.dartOnly) {
-    buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
-  } else {
+  if (config.flutterIntegration) {
     buffer.writeln(
         'import \'package:fast_i18n_flutter/fast_i18n_flutter.dart\';');
+  } else {
+    buffer.writeln('import \'package:fast_i18n/fast_i18n.dart\';');
   }
 }
 
@@ -207,7 +207,7 @@ void _generateEnum({
   buffer.writeln('\t@override final String? scriptCode;');
   buffer.writeln('\t@override final String? countryCode;');
   buffer.writeln('\t@override final TranslationBuilder<$baseClassName> build;');
-  if (config.renderLocaleHandling) {
+  if (config.localeHandling) {
     buffer.writeln();
     buffer.writeln('\t/// Gets current instance managed by [LocaleSettings].');
     buffer.writeln(
@@ -244,7 +244,7 @@ void _generateTranslationGetter({
       '$baseClassName get $translateVar => LocaleSettings.instance.currentTranslations;');
 
   // t getter (advanced)
-  if (!config.dartOnly) {
+  if (config.flutterIntegration) {
     buffer.writeln();
     buffer.writeln('/// Method B: Advanced');
     buffer.writeln('///');
@@ -304,8 +304,9 @@ void _generateLocaleSettings({
 }) {
   const String settingsClass = 'LocaleSettings';
   final String enumName = config.enumName;
-  final String baseClass =
-      config.dartOnly ? 'BaseLocaleSettings' : 'BaseFlutterLocaleSettings';
+  final String baseClass = config.flutterIntegration
+      ? 'BaseFlutterLocaleSettings'
+      : 'BaseLocaleSettings';
 
   buffer.writeln();
   buffer
@@ -327,7 +328,7 @@ void _generateLocaleSettings({
       '\tstatic $enumName get currentLocale => instance.currentLocale;');
   buffer.writeln(
       '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
-  if (!config.dartOnly) {
+  if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
     buffer.writeln(
@@ -369,7 +370,7 @@ void _generateUtil({
       .writeln('\t// static aliases (checkout base methods for documentation)');
   buffer.writeln(
       '\tstatic $enumName parse(String rawLocale) => instance.parse(rawLocale);');
-  if (!config.dartOnly) {
+  if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');
   }

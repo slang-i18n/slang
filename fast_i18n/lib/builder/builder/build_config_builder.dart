@@ -53,15 +53,14 @@ class BuildConfigBuilder {
           map['input_file_pattern'] ?? BuildConfig.defaultInputFilePattern,
       outputDirectory:
           map['output_directory'] ?? BuildConfig.defaultOutputDirectory,
-      outputFilePattern:
-          map['output_file_pattern'] ?? BuildConfig.defaultOutputFilePattern,
       outputFileName:
           map['output_file_name'] ?? BuildConfig.defaultOutputFileName,
       outputFormat: (map['output_format'] as String?)?.toOutputFormat() ??
           BuildConfig.defaultOutputFormat,
-      renderLocaleHandling:
-          map['locale_handling'] ?? BuildConfig.defaultRenderLocaleHandling,
-      dartOnly: map['dart_only'] ?? BuildConfig.defaultDartOnly,
+      localeHandling:
+          map['locale_handling'] ?? BuildConfig.defaultLocaleHandling,
+      flutterIntegration:
+          map['flutter_integration'] ?? BuildConfig.defaultFlutterIntegration,
       namespaces: map['namespaces'] ?? BuildConfig.defaultNamespaces,
       translateVar: map['translate_var'] ?? BuildConfig.defaultTranslateVar,
       enumName: map['enum_name'] ?? BuildConfig.defaultEnumName,

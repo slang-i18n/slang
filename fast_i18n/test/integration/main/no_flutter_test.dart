@@ -22,7 +22,7 @@ void main() {
   test('no flutter', () {
     final result = GeneratorFacade.generate(
       buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!.copyWith(
-        dartOnly: true,
+        flutterIntegration: false,
       ),
       baseName: 'translations',
       translationMap: NamespaceTranslationMap()

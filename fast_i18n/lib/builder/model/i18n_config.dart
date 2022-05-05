@@ -9,8 +9,8 @@ class I18nConfig {
   final I18nLocale baseLocale; // defaults to 'en'
   final FallbackStrategy fallbackStrategy;
   final OutputFormat outputFormat;
-  final bool renderLocaleHandling;
-  final bool dartOnly;
+  final bool localeHandling;
+  final bool flutterIntegration;
   final String translateVariable;
   final String enumName;
   final TranslationClassVisibility translationClassVisibility;
@@ -24,8 +24,8 @@ class I18nConfig {
     required this.baseLocale,
     required this.fallbackStrategy,
     required this.outputFormat,
-    required this.renderLocaleHandling,
-    required this.dartOnly,
+    required this.localeHandling,
+    required this.flutterIntegration,
     required this.translateVariable,
     required this.enumName,
     required this.translationClassVisibility,

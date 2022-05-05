@@ -16,19 +16,8 @@ import 'package:glob/glob.dart';
 
 /// Static entry point for build_runner
 Builder i18nBuilder(BuilderOptions options) {
-  final buildConfig =
-      BuildConfigBuilder.fromMap(YamlUtils.deepCast(options.config));
-  String outputFilePattern;
-  if (buildConfig.outputFileName != null) {
-    // new variant
-    outputFilePattern = buildConfig.outputFileName!.getFileExtension();
-  } else {
-    // legacy variant
-    outputFilePattern = buildConfig.outputFilePattern;
-  }
   return I18nBuilder(
-    buildConfig: buildConfig,
-    outputFilePattern: outputFilePattern,
+    buildConfig: BuildConfigBuilder.fromMap(YamlUtils.deepCast(options.config)),
   );
 }
 
@@ -37,7 +26,8 @@ class I18nBuilder implements Builder {
   final String outputFilePattern;
   bool _generated = false;
 
-  I18nBuilder({required this.buildConfig, required this.outputFilePattern});
+  I18nBuilder({required this.buildConfig})
+      : this.outputFilePattern = buildConfig.outputFileName.getFileExtension();
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
@@ -54,47 +44,22 @@ class I18nBuilder implements Builder {
     // STEP 1: determine base name and output file name / path
 
     final assets = <AssetId>[];
-    String? baseName;
-    String? outputFileName;
     String outputFilePath;
-
-    if (buildConfig.outputFileName != null) {
-      // newer version
-      outputFileName = buildConfig.outputFileName!;
-      baseName = buildConfig.outputFileName!.getFileNameNoExtension();
-    }
 
     await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
       assets.add(assetId);
-
-      if (buildConfig.outputFileName == null) {
-        // use legacy mode by taking the namespace name
-        final fileNameNoExtension =
-            assetId.pathSegments.last.getFileNameNoExtension();
-        final baseFile =
-            RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-        if (baseFile != null) {
-          // base file
-          baseName = fileNameNoExtension;
-          outputFileName = fileNameNoExtension + buildConfig.outputFilePattern;
-        }
-      }
     });
-
-    if (baseName == null || outputFileName == null) {
-      print('Error: No base translation file.');
-      return;
-    }
 
     // CAUTION: in build_runner, the path separator seems to be hard coded to /
     if (buildConfig.outputDirectory != null) {
       // output directory specified, use this path instead
-      outputFilePath = buildConfig.outputDirectory! + '/' + outputFileName!;
+      outputFilePath =
+          buildConfig.outputDirectory! + '/' + buildConfig.outputFileName;
     } else {
       // use the directory of the first (random) translation file
       final finalOutputDirectory =
           (assets.first.pathSegments..removeLast()).join('/');
-      outputFilePath = '$finalOutputDirectory/$outputFileName';
+      outputFilePath = '$finalOutputDirectory/${buildConfig.outputFileName}';
     }
 
     // STEP 2: scan translations
@@ -166,7 +131,7 @@ class I18nBuilder implements Builder {
     // STEP 3: generate .g.dart content
     final result = GeneratorFacade.generate(
       buildConfig: buildConfig,
-      baseName: baseName!,
+      baseName: buildConfig.outputFileName.getFileNameNoExtension(),
       translationMap: translationMap,
     );
 
@@ -205,12 +170,6 @@ class I18nBuilder implements Builder {
           content: result.flatMap!,
         );
       }
-    }
-
-    if (buildConfig.outputFileName == null && buildConfig.namespaces) {
-      print('');
-      print(
-          'WARNING: Please specify "output_file_name". Using fallback file name for now.');
     }
   }
 

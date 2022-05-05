@@ -11,11 +11,10 @@ class BuildConfig {
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
-  static const String defaultOutputFilePattern = '.g.dart';
-  static const String? defaultOutputFileName = null;
+  static const String defaultOutputFileName = 'strings.g.dart';
   static const OutputFormat defaultOutputFormat = OutputFormat.singleFile;
-  static const bool defaultRenderLocaleHandling = true;
-  static const bool defaultDartOnly = false;
+  static const bool defaultLocaleHandling = true;
+  static const bool defaultFlutterIntegration = true;
   static const bool defaultNamespaces = false;
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
@@ -41,11 +40,10 @@ class BuildConfig {
   final String? inputDirectory;
   final String inputFilePattern;
   final String? outputDirectory;
-  final String outputFilePattern; // deprecated
-  final String? outputFileName;
+  final String outputFileName;
   final OutputFormat outputFormat;
-  final bool renderLocaleHandling;
-  final bool dartOnly;
+  final bool localeHandling;
+  final bool flutterIntegration;
   final bool namespaces;
   final String translateVar;
   final String enumName;
@@ -69,11 +67,10 @@ class BuildConfig {
     required this.inputDirectory,
     required this.inputFilePattern,
     required this.outputDirectory,
-    required this.outputFilePattern,
     required this.outputFileName,
     required this.outputFormat,
-    required this.renderLocaleHandling,
-    required this.dartOnly,
+    required this.localeHandling,
+    required this.flutterIntegration,
     required this.namespaces,
     required this.translateVar,
     required this.enumName,
@@ -111,11 +108,10 @@ class BuildConfig {
       inputDirectory: inputDirectory?.toAbsolutePath(),
       inputFilePattern: inputFilePattern,
       outputDirectory: outputDirectory?.toAbsolutePath(),
-      outputFilePattern: outputFilePattern,
       outputFileName: outputFileName,
       outputFormat: outputFormat,
-      renderLocaleHandling: renderLocaleHandling,
-      dartOnly: dartOnly,
+      localeHandling: localeHandling,
+      flutterIntegration: flutterIntegration,
       namespaces: namespaces,
       translateVar: translateVar,
       enumName: enumName,
@@ -144,11 +140,10 @@ class BuildConfig {
     print(' -> inputFilePattern: $inputFilePattern');
     print(
         ' -> outputDirectory: ${outputDirectory != null ? outputDirectory : 'null (directory of input)'}');
-    print(' -> outputFilePattern (deprecated): $outputFilePattern');
     print(' -> outputFileName: $outputFileName');
     print(' -> outputFileFormat: ${outputFormat.getEnumName()}');
-    print(' -> renderLocaleHandling: $renderLocaleHandling');
-    print(' -> dartOnly: $dartOnly');
+    print(' -> localeHandling: $localeHandling');
+    print(' -> flutterIntegration: $flutterIntegration');
     print(' -> namespaces: $namespaces');
     print(' -> translateVar: $translateVar');
     print(' -> enumName: $enumName');

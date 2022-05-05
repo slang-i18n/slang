@@ -89,7 +89,7 @@ void generateMainSplitIntegration(
 
 void generateNoFlutter(BuildConfig buildConfig, String simple) {
   final result = GeneratorFacade.generate(
-    buildConfig: buildConfig.copyWith(dartOnly: true),
+    buildConfig: buildConfig.copyWith(flutterIntegration: false),
     baseName: 'translations',
     translationMap: NamespaceTranslationMap()
       ..addTranslations(
