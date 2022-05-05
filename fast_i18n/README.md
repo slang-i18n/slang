@@ -18,7 +18,7 @@ Lightweight i18n solution. Use JSON, YAML or CSV files to create typesafe transl
 - ⚡ Fast, you get translations using native dart method calls, zero parsing!
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
-You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
+You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/example/lib/i18n/strings.g.dart).
 
 This is how you access the translations:
 

@@ -6,8 +6,6 @@ Move dependencies out of `dev_dependencies`:
 
 ```yaml
 dependencies:
-  flutter:
-    sdk: flutter
   fast_i18n: 6.0.0 # add this
   fast_i18n_flutter: 6.0.0 # also add this if you use flutter
 

@@ -3,6 +3,7 @@
 **Transition to a federated package structure**
 
 - **Breaking:** add dependency `fast_i18n_flutter` and move `fast_i18n` out of `dev_dependencies`
+- **Breaking:** remove `output_file_pattern` (was deprecated)
 - feat: dart-only support (`flutter_integration: false`)
 - feat: multiple package support
 - feat: RichText support
