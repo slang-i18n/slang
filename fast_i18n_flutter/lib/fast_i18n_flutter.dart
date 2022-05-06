@@ -11,7 +11,7 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<T>,
   /// Fallbacks to base locale.
   E findDeviceLocale() {
     final String? deviceLocale =
-        WidgetsBinding.instance?.window.locale.toLanguageTag();
+        WidgetsBinding.instance.window.locale.toLanguageTag();
     if (deviceLocale == null) {
       return baseLocale;
     }
@@ -58,13 +58,10 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<T>,
   E setLocale(E locale) {
     GlobalLocaleState.instance.setLocale(locale);
 
-    if (WidgetsBinding.instance != null) {
-      // force rebuild if TranslationProvider is used
-      _translationProviderKey.currentState?.setLocale(
-        newLocale: locale,
-        newTranslations: translationMap[locale]!,
-      );
-    }
+    _translationProviderKey.currentState?.setLocale(
+      newLocale: locale,
+      newTranslations: translationMap[locale]!,
+    );
 
     return locale;
   }
