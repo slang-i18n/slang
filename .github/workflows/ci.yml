@@ -27,10 +27,10 @@ jobs:
           channel: 'beta'
       - name: Dependencies (core)
         run: flutter pub get
-        working-directory: fast_i18n
+        working-directory: slang
       - name: Check format (core)
         run: flutter format --set-exit-if-changed lib bin test
-        working-directory: fast_i18n
+        working-directory: slang
       - name: Test (core)
         run: flutter test
-        working-directory: fast_i18n
+        working-directory: slang

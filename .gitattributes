@@ -1,3 +1,3 @@
 * text=auto
-/fast_i18n/test/integration/resources/** -text
-/fast_i18n/test/integration/resources/**/*.g.dart text eol=lf
+/slang/test/integration/resources/** -text
+/slang/test/integration/resources/**/*.g.dart text eol=lf

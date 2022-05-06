@@ -1,7 +1,7 @@
 .fvm/flutter_sdk
 
 # testing
-/fast_i18n/lib/builder/i18n/
+/slang/lib/builder/i18n/
 
 # Miscellaneous
 *.class

@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      slang:
+        options:
+          base_locale: en
+          maps:
+            - locales

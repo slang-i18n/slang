@@ -1,0 +1,21 @@
+name: slang
+description: Localization / Internationalization (i18n) solution. Use JSON, YAML or CSV files to create typesafe translations via source generation.
+version: 1.0.0-dev.0
+repository: https://github.com/Tienisto/flutter-fast-i18n
+
+environment:
+  sdk: ">=2.17.0-266.8.beta <3.0.0"
+
+dependencies:
+  build: ^2.2.1
+  collection: ^1.15.0
+  csv: ^5.0.1
+  glob: ^2.0.2
+  yaml: ^3.1.0
+
+dev_dependencies:
+  build_runner: ^2.0.6
+  test: ^1.16.8
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
