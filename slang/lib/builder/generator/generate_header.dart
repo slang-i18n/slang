@@ -327,8 +327,8 @@ void _generateLocaleSettings({
       '\tstatic $enumName get currentLocale => instance.currentLocale;');
   buffer.writeln(
       '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
-    buffer.writeln(
-        '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
+  buffer.writeln(
+      '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
   if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName useDeviceLocale() => instance.useDeviceLocale();');

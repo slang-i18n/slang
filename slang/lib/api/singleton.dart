@@ -106,7 +106,6 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<T>,
 // We use extension methods here to have a workaround for static members of the same name
 extension LocaleSettingsExt<E extends BaseAppLocale<T>,
     T extends BaseTranslations> on BaseLocaleSettings<E, T> {
-
   /// Gets current locale.
   E get currentLocale {
     final locale = GlobalLocaleState.instance.getLocale();
