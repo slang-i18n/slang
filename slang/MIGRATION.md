@@ -2,7 +2,7 @@
 
 ## fast_i18n 5.0 to slang 1.0
 
-Update dependencies:
+### Update dependencies
 
 ```yaml
 dependencies:
@@ -14,17 +14,25 @@ dev_dependencies:
   # fast_i18n: 5.12.3 (removed)
 ```
 
+### Update build.yaml
+
 Deprecated `output_file_pattern` removed. `output_file_name` defaulting to `strings.g.dart`.
 
 ```yaml
 targets:
   $default:
     builders:
-      slang: # rename from fast_i18n
+      slang: # rename from fast_i18n to slang
         options:
           # output_file_pattern: .g.dart (removed)
           output_file_name: strings.g.dart # new default
 ```
+
+### Command
+
+If you generate via `flutter pub run fast_i18n`, please make sure to call `slang` instead.
+
+`flutter pub run slang`
 
 ## fast_i18n 4.0 to 5.0
 

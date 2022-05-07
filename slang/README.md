@@ -308,7 +308,7 @@ Key|Type|Usage|Default
 `output_file_name`|`String`|output file name|`null`
 `output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
 `locale_handling`|`Boolean`|generate locale handling logic [(i)](#-dependency-injection)|`true`
-`flutter_integration`|`Boolean`|generate flutter features|`true`
+`flutter_integration`|`Boolean`|generate flutter features [(i)](#-dart-only)|`true`
 `namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
