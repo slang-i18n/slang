@@ -2,7 +2,7 @@
 
 # slang
 
-**[s]tructured [lan]guage [g]enerator**
+**[s]tructured [lan]guage file [g]enerator**
 
 [![pub package](https://img.shields.io/pub/v/slang.svg)](https://pub.dev/packages/slang)
 <a href="https://github.com/Solido/awesome-flutter">
@@ -11,15 +11,16 @@
 ![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Type-safe i18n solution. Use JSON, YAML or CSV files to create typesafe translations.
+Type-safe i18n solution using JSON, YAML or CSV files.
 
 The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
 
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
-- 🐞 Bug-resistant, no typos or missing arguments possible due to compiler errors.
+- 🐞 Bug-resistant, no typos or missing arguments possible due to compile-time checking.
 - ⚡ Fast, you get translations using native dart method calls, zero parsing!
+- 📁 Organized, split large files into smaller ones via namespaces.
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
 You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/example/lib/i18n/strings.g.dart).
