@@ -106,13 +106,6 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<T>,
 // We use extension methods here to have a workaround for static members of the same name
 extension LocaleSettingsExt<E extends BaseAppLocale<T>,
     T extends BaseTranslations> on BaseLocaleSettings<E, T> {
-  /// Sets locale, *but* do not change potential TranslationProvider's state
-  /// Useful when you are in a pure Dart environment (without Flutter)
-  /// This will be overwritten when using with flutter.
-  E setLocale(E locale) {
-    GlobalLocaleState.instance.setLocale(locale);
-    return locale;
-  }
 
   /// Gets current locale.
   E get currentLocale {
@@ -132,6 +125,22 @@ extension LocaleSettingsExt<E extends BaseAppLocale<T>,
   /// Gets supported locales in string format.
   List<String> get supportedLocalesRaw {
     return locales.map((locale) => locale.languageTag).toList();
+  }
+
+  /// Sets locale, *but* do not change potential TranslationProvider's state
+  /// Useful when you are in a pure Dart environment (without Flutter)
+  /// This will be overwritten when using with flutter.
+  E setLocale(E locale) {
+    GlobalLocaleState.instance.setLocale(locale);
+    return locale;
+  }
+
+  /// Sets locale using string tag (e.g. en_US, de-DE, fr)
+  /// Fallbacks to base locale.
+  /// Returns the locale which has been set.
+  E setLocaleRaw(String rawLocale) {
+    final E locale = utils.parse(rawLocale);
+    return setLocale(locale);
   }
 
   /// Sets plural resolvers.
