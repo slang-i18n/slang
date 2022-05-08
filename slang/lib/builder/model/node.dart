@@ -402,7 +402,6 @@ class RichTextNode extends TextNode {
     final escapedContent = _escapeContent(raw, interpolation);
     final rawParsedResult =
         _parseInterpolation(escapedContent, interpolation, paramCase);
-    // print('hi escapedContent=$escapedContent rawParsedResult=$rawParsedResult');
 
     final parsedParams =
         rawParsedResult.params.map(_parseParamWithArg).toList();
@@ -423,12 +422,13 @@ class RichTextNode extends TextNode {
     ).toList();
 
     return RichTextNode._(
-        path: path,
-        comment: comment,
-        raw: raw,
-        spans: spans,
-        params: params,
-        paramTypeMap: paramTypeMap);
+      path: path,
+      comment: comment,
+      raw: raw,
+      spans: spans,
+      params: params,
+      paramTypeMap: paramTypeMap,
+    );
   }
 }
 

@@ -111,7 +111,7 @@ void main() {
     });
   });
 
-  group(TextNode, () {
+  group(StringTextNode, () {
     group(StringInterpolation.dart, () {
       test('no arguments', () {
         final test = 'No arguments';
@@ -298,6 +298,52 @@ void main() {
             textNode(test, StringInterpolation.doubleBraces, CaseStyle.camel);
         expect(node.content, r'Nice $coolHi $wow ${yes}a $noYes');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
+      });
+    });
+  });
+
+  group(RichTextNode, () {
+    test('no arguments', () {
+      final test = 'No arguments';
+      final node = richTextNode(test, StringInterpolation.dart);
+      expect(node.spans.length, 1);
+      expect(node.spans.first.code, 'const TextSpan(text: \'No arguments\')');
+      expect(node.params, <String>{});
+    });
+
+    group(StringInterpolation.dart, () {
+      test('one argument', () {
+        final test = r'Hello $yey!';
+        final node = richTextNode(test, StringInterpolation.dart);
+        expect(node.spans.length, 3);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey');
+        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect(node.params, {'yey'});
+      });
+    });
+
+    group(StringInterpolation.braces, () {
+      test('one argument', () {
+        final test = r'Hello {yey}!';
+        final node = richTextNode(test, StringInterpolation.braces);
+        expect(node.spans.length, 3);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey');
+        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect(node.params, {'yey'});
+      });
+    });
+
+    group(StringInterpolation.doubleBraces, () {
+      test('one argument', () {
+        final test = r'Hello {{yey}}!';
+        final node = richTextNode(test, StringInterpolation.doubleBraces);
+        expect(node.spans.length, 3);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey');
+        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect(node.params, {'yey'});
       });
     });
   });

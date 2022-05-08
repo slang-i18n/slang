@@ -14,3 +14,17 @@ StringTextNode textNode(
     paramCase: paramCase,
   );
 }
+
+RichTextNode richTextNode(
+  String raw,
+  StringInterpolation interpolation, [
+  CaseStyle? paramCase,
+]) {
+  return RichTextNode(
+    path: '',
+    comment: null,
+    raw: raw,
+    interpolation: interpolation,
+    paramCase: paramCase,
+  );
+}
