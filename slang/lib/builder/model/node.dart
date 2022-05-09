@@ -39,11 +39,10 @@ abstract class IterableNode extends Node {
   String get genericType => _genericType;
 
   IterableNode({
-    required String path,
-    required String? comment,
+    required super.path,
+    required super.comment,
     required String genericType,
-  })  : _genericType = genericType,
-        super(path: path, comment: comment);
+  }) : _genericType = genericType;
 
   void setGenericType(String genericType) {
     _genericType = genericType;
@@ -60,13 +59,11 @@ class ObjectNode extends IterableNode {
   Interface? get interface => _interface;
 
   ObjectNode({
-    required String path,
-    required String? comment,
+    required super.path,
+    required super.comment,
     required this.entries,
     required this.isMap,
   }) : super(
-          path: path,
-          comment: comment,
           genericType: entries.values.every(
                   (child) => child is StringTextNode && child.params.isEmpty)
               ? 'String'
@@ -85,14 +82,10 @@ class ListNode extends IterableNode {
   final List<Node> entries;
 
   ListNode({
-    required String path,
-    required String? comment,
+    required super.path,
+    required super.comment,
     required this.entries,
-  }) : super(
-          path: path,
-          comment: comment,
-          genericType: _determineGenericType(entries),
-        );
+  }) : super(genericType: _determineGenericType(entries));
 
   static String _determineGenericType(List<Node> entries) {
     if (entries
@@ -135,13 +128,12 @@ class PluralNode extends Node implements LeafNode {
   final String paramName; // name of the plural parameter
 
   PluralNode({
-    required String path,
-    required String? comment,
+    required super.path,
+    required super.comment,
     required this.pluralType,
     required this.quantities,
     required String? parameterName,
-  })  : this.paramName = parameterName ?? 'count',
-        super(path: path, comment: comment);
+  }) : this.paramName = parameterName ?? 'count';
 
   @override
   String toString() => quantities.toString();
@@ -153,13 +145,12 @@ class ContextNode extends Node implements LeafNode {
   final String paramName; // name of the context parameter
 
   ContextNode({
-    required String path,
-    required String? comment,
+    required super.path,
+    required super.comment,
     required this.context,
     required this.entries,
     required String? parameterName,
-  })  : this.paramName = parameterName ?? 'context',
-        super(path: path, comment: comment);
+  }) : this.paramName = parameterName ?? 'context';
 
   @override
   String toString() => entries.toString();
@@ -170,10 +161,10 @@ abstract class TextNode extends Node implements LeafNode {
   final String raw;
 
   TextNode({
-    required String path,
-    required String? comment,
+    required super.path,
+    required super.comment,
     required this.raw,
-  }) : super(path: path, comment: comment);
+  });
 }
 
 class StringTextNode extends TextNode {
@@ -210,13 +201,13 @@ class StringTextNode extends TextNode {
   final CaseStyle? paramCase;
 
   StringTextNode({
-    required String path,
-    required String raw,
-    required String? comment,
+    required super.path,
+    required super.raw,
+    required super.comment,
     required this.interpolation,
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
-  }) : super(path: path, comment: comment, raw: raw) {
+  }) {
     final escapedContent = _escapeContent(raw, interpolation);
     final parsedResult =
         _parseInterpolation(escapedContent, interpolation, paramCase);
@@ -384,13 +375,13 @@ class RichTextNode extends TextNode {
   final Map<String, String> paramTypeMap;
 
   RichTextNode._({
-    required String path,
-    required String? comment,
-    required String raw,
+    required super.path,
+    required super.comment,
+    required super.raw,
     required this.spans,
     required this.params,
     required this.paramTypeMap,
-  }) : super(path: path, comment: comment, raw: raw);
+  });
 
   factory RichTextNode({
     required String path,

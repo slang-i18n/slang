@@ -34,14 +34,10 @@ extension ExtAppLocale on BaseAppLocale {
 class BaseFlutterLocaleSettings<E extends BaseAppLocale<T>,
     T extends BaseTranslations> extends BaseLocaleSettings<E, T> {
   BaseFlutterLocaleSettings({
-    required List<E> locales,
-    required E baseLocale,
-    required BaseAppLocaleUtils<E, T> utils,
-  }) : super(
-          locales: locales,
-          baseLocale: baseLocale,
-          utils: utils,
-        );
+    required super.locales,
+    required super.baseLocale,
+    required super.utils,
+  });
 }
 
 extension ExtBaseLocaleSettings<E extends BaseAppLocale<T>,
@@ -144,8 +140,8 @@ class InheritedLocaleData<E extends BaseAppLocale<T>,
   InheritedLocaleData({
     required this.locale,
     required this.translations,
-    required Widget child,
-  }) : super(child: child);
+    required super.child,
+  });
 
   static InheritedLocaleData<E, T>
       of<E extends BaseAppLocale<T>, T extends BaseTranslations>(

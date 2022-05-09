@@ -279,11 +279,10 @@ void _generateTranslationGetter({
     buffer.writeln('/// The provider for method B');
     buffer.writeln(
         'class TranslationProvider extends BaseTranslationProvider<$enumName, $baseClassName> {');
-    buffer.writeln('\tTranslationProvider({required Widget child}) : super(');
+    buffer.writeln('\tTranslationProvider({required super.child}) : super(');
     buffer.writeln('\t\tbaseLocale: _baseLocale,');
     buffer.writeln(
         '\t\tbaseTranslations: LocaleSettings.instance.currentTranslations,');
-    buffer.writeln('\t\tchild: child,');
     buffer.writeln('\t);');
     buffer.writeln();
     buffer.writeln(

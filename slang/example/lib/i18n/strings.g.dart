@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-07 at 14:55 UTC
+ * Built on 2022-05-09 at 13:58 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
@@ -68,10 +68,9 @@ class Translations {
 
 /// The provider for method B
 class TranslationProvider extends BaseTranslationProvider<AppLocale, _StringsEn> {
-	TranslationProvider({required Widget child}) : super(
+	TranslationProvider({required super.child}) : super(
 		baseLocale: _baseLocale,
 		baseTranslations: LocaleSettings.instance.currentTranslations,
-		child: child,
 	);
 
 	static InheritedLocaleData<AppLocale, _StringsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _StringsEn>(context);
