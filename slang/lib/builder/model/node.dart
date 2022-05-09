@@ -63,12 +63,7 @@ class ObjectNode extends IterableNode {
     required super.comment,
     required this.entries,
     required this.isMap,
-  }) : super(
-          genericType: entries.values.every(
-                  (child) => child is StringTextNode && child.params.isEmpty)
-              ? 'String'
-              : 'dynamic',
-        );
+  }) : super(genericType: _determineGenericType(entries.values));
 
   void setInterface(Interface interface) {
     _interface = interface;
@@ -86,32 +81,6 @@ class ListNode extends IterableNode {
     required super.comment,
     required this.entries,
   }) : super(genericType: _determineGenericType(entries));
-
-  static String _determineGenericType(List<Node> entries) {
-    if (entries
-        .every((child) => child is StringTextNode && child.params.isEmpty)) {
-      return 'String';
-    }
-    if (entries.every((child) => child is ListNode)) {
-      String? childGenericType = (entries.first as ListNode).genericType;
-      for (final child in entries) {
-        if (childGenericType != (child as ListNode).genericType) {
-          childGenericType = 'dynamic'; // default
-        }
-      }
-      return 'List<$childGenericType>'; // all lists have the same generic type
-    }
-    if (entries.every((child) => child is ObjectNode && child.isMap)) {
-      String? childGenericType = (entries.first as ObjectNode).genericType;
-      for (final child in entries) {
-        if (childGenericType != (child as ObjectNode).genericType) {
-          childGenericType = 'dynamic'; // default
-        }
-      }
-      return 'Map<String, $childGenericType>'; // all maps have same generics
-    }
-    return 'dynamic';
-  }
 
   @override
   String toString() => entries.toString();
@@ -482,4 +451,30 @@ class VariableSpan extends BaseSpan {
 
   @override
   String get code => '$variableName';
+}
+
+String _determineGenericType(Iterable<Node> entries) {
+  if (entries
+      .every((child) => child is StringTextNode && child.params.isEmpty)) {
+    return 'String';
+  }
+  if (entries.every((child) => child is ListNode)) {
+    String? childGenericType = (entries.first as ListNode).genericType;
+    for (final child in entries) {
+      if (childGenericType != (child as ListNode).genericType) {
+        childGenericType = 'dynamic'; // default
+      }
+    }
+    return 'List<$childGenericType>'; // all lists have the same generic type
+  }
+  if (entries.every((child) => child is ObjectNode && child.isMap)) {
+    String? childGenericType = (entries.first as ObjectNode).genericType;
+    for (final child in entries) {
+      if (childGenericType != (child as ObjectNode).genericType) {
+        childGenericType = 'dynamic'; // default
+      }
+    }
+    return 'Map<String, $childGenericType>'; // all maps have same generics
+  }
+  return 'dynamic';
 }
