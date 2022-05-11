@@ -88,7 +88,7 @@ Coming from ARB? There is a [tool](#arb) for that.
 
 **Step 1: Add dependencies**
 
-You will probably need 2 packages: [slang](https://pub.dev/packages/fast_i18n) and [slang_flutter](https://pub.dev/packages/fast_i18n_flutter).
+You will probably need 2 packages: [slang](https://pub.dev/packages/slang) and [slang_flutter](https://pub.dev/packages/slang_flutter).
 
 ```yaml
 dependencies:
