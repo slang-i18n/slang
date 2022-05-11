@@ -1,24 +1,29 @@
 ![featured](resources/featured.svg)
 
-# fast_i18n
+# slang
 
-[![pub package](https://img.shields.io/pub/v/fast_i18n.svg)](https://pub.dev/packages/fast_i18n)
+**[s]tructured [lan]guage file [g]enerator**
+
+[![pub package](https://img.shields.io/pub/v/slang.svg)](https://pub.dev/packages/slang)
 <a href="https://github.com/Solido/awesome-flutter">
    <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true" />
 </a>
-![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/Tienisto/slang/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Lightweight i18n solution. Use JSON, YAML or CSV files to create typesafe translations.
+Type-safe i18n solution using JSON, YAML or CSV files.
+
+The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
 
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
-- 🐞 Bug-resistant, no typos or missing arguments possible due to compiler errors.
+- 🐞 Bug-resistant, no typos or missing arguments possible due to compile-time checking.
 - ⚡ Fast, you get translations using native dart method calls, zero parsing!
+- 📁 Organized, split large files into smaller ones via namespaces.
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
-You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/example/lib/i18n/strings.g.dart).
+You can see an example of the generated file [here](https://github.com/Tienisto/slang/blob/master/slang/example/lib/i18n/strings.g.dart).
 
 This is how you access the translations:
 
@@ -32,10 +37,11 @@ String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
 String e = t.intro.step[4];                            // with index
 String f = t.error.type['WARNING'];                    // with dynamic key
 String g = t['mainScreen.title'];                      // with fully dynamic key
+InlineSpan h = t.greet(name: TextSpan(text: 'Tom'));   // with RichText
 
 PageData page0 = t.onboarding.pages[0];                // with interfaces
 PageData page1 = t.onboarding.pages[1];
-String h = page1.title; // type-safe call
+String i = page1.title; // type-safe call
 ```
 
 ## Table of Contents
@@ -43,11 +49,12 @@ String h = page1.title; // type-safe call
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Main Features](#main-features)
-    - [File Types](#-file-types)
-    - [String Interpolation](#-string-interpolation)
-    - [Lists](#-lists)
-    - [Maps](#-maps)
-    - [Dynamic Keys](#-dynamic-keys--flat-map)
+  - [File Types](#-file-types)
+  - [String Interpolation](#-string-interpolation)
+  - [RichText](#-richtext)
+  - [Lists](#-lists)
+  - [Maps](#-maps)
+  - [Dynamic Keys](#-dynamic-keys--flat-map)
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
@@ -63,6 +70,7 @@ String h = page1.title; // type-safe call
   - [Fallback](#-fallback)
   - [Comments](#-comments)
   - [Recasing](#-recasing)
+  - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
   - [Migration](#-migration)
@@ -80,12 +88,15 @@ Coming from ARB? There is a [tool](#arb) for that.
 
 **Step 1: Add dependencies**
 
-It is recommended to add `fast_i18n` to `dev_dependencies`.
+You will probably need 2 packages: [slang](https://pub.dev/packages/fast_i18n) and [slang_flutter](https://pub.dev/packages/fast_i18n_flutter).
 
 ```yaml
+dependencies:
+  slang: <latest version>
+  slang_flutter: <latest version> # also add this if you use flutter
+
 dev_dependencies:
-  build_runner: any
-  fast_i18n: <latest version>
+  build_runner: any # only needed if you use build_runner command
 ```
 
 **Step 2: Create JSON files**
@@ -139,7 +150,7 @@ lib/
 **Step 3: Generate the dart code**
 
 ```text
-flutter pub run fast_i18n
+flutter pub run slang
 ```
 alternative (but slower):
 ```text
@@ -240,14 +251,13 @@ For customization, you can create the `build.yaml` file. Place it in the root di
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           base_locale: fr
           fallback_strategy: base_locale
           input_directory: lib/i18n
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
-          output_file_pattern: .g.dart # deprecated, use output_file_name
           output_file_name: translations.g.dart
           output_format: single_file
           locale_handling: true
@@ -298,11 +308,10 @@ Key|Type|Usage|Default
 `input_directory`|`String`|path to input directory|`null`
 `input_file_pattern`|`String`|input file pattern, must end with .json, .yaml or .csv|`.i18n.json`
 `output_directory`|`String`|path to output directory|`null`
-`output_file_pattern`|`String`|deprecated: output file pattern|`.g.dart`
 `output_file_name`|`String`|output file name|`null`
 `output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
 `locale_handling`|`Boolean`|generate locale handling logic [(i)](#-dependency-injection)|`true`
-`flutter_integration`|`Boolean`|generate flutter integration|`true`
+`flutter_integration`|`Boolean`|generate flutter features [(i)](#-dart-only)|`true`
 `namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
 `translate_var`|`String`|translate variable name|`t`
 `enum_name`|`String`|enum name|`AppLocale`
@@ -335,7 +344,7 @@ To change to YAML or CSV, please modify `input_file_pattern`.
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           input_directory: assets/i18n
           input_file_pattern: .i18n.yaml # must end with .json, .yaml or .csv
@@ -377,7 +386,7 @@ Translations often have a dynamic parameter. There are multiple ways to define t
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           string_interpolation: dart # change to braces or double_braces
 ```
@@ -397,6 +406,33 @@ Hello {name}
 **double_braces**
 ```text
 Hello {{name}}
+```
+
+### ➤ RichText
+
+In Flutter environment, you can tell the library to generate `TextSpan` objects.
+
+To do this, please add the `(rich)` hint.
+
+```json
+{
+  "myText(rich)": "Welcome $name. Please click ${underline(here)}!"
+}
+```
+
+Usage:
+
+```dart
+Text.rich(t.myText(
+  name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
+  underline: (text) => TextSpan(
+    text: text,
+    style: TextStyle(color: Colors.blue),
+    recognizer: TapGestureRecognizer()..onTap=(){
+      print('tap');
+    },
+  ),
+));
 ```
 
 ### ➤ Lists
@@ -459,7 +495,7 @@ Keep in mind that all nice features like autocompletion are gone.
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           maps:
             - a
@@ -512,7 +548,7 @@ String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and 
 
 This library uses the concept defined [here](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
 
-Some languages have support out of the box. See [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart).
+Some languages have support out of the box. See [here](https://github.com/Tienisto/slang/blob/master/slang/lib/api/plural_resolver_map.dart).
 
 Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
 
@@ -565,7 +601,7 @@ However, if you have ordinals, then you will need some configurations.
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           pluralization:
             auto: off
@@ -637,7 +673,7 @@ You can utilize custom contexts to differentiate between male and female forms.
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           contexts:
             gender_context:
@@ -661,7 +697,7 @@ Auto detection is on by default. You can disable auto detection. This may speed 
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           contexts:
             gender_context:
@@ -731,7 +767,7 @@ Here we know that all objects inside `whatsNew` have the same attributes. Let's 
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           interfaces:
             ChangeData: onboarding.whatsNew.*
@@ -769,7 +805,7 @@ void main() {
 
 You can customize the attributes and use different node selectors.
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/interfaces.md).
+Checkout the [full article](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md).
 
 ### ➤ Locale Enum
 
@@ -806,7 +842,7 @@ First, set the following configuration:
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           locale_handling: false # remove unused t variable, LocaleSettings, etc.
           translation_class_visibility: public
@@ -824,7 +860,7 @@ final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/dependency_injection.md).
+Checkout the [full article](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md).
 
 ## Structuring Features
 
@@ -839,7 +875,7 @@ This feature is disabled by default for single-file usage. You must enable it.
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           namespaces: true # enable this feature
           output_directory: lib/i18n # optional
@@ -900,7 +936,7 @@ You can split this file into multiple ones to improve readability and IDE perfor
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           output_file_name: translations.g.dart
           output_format: multiple_files # set this
@@ -963,7 +999,7 @@ In case of rapid development, you can turn off this feature. Missing translation
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           base_locale: en
           fallback_strategy: base_locale # add this
@@ -1003,7 +1039,7 @@ If a `@key` key matches an existing key, then its value will be rendered as a co
 
     // ignored as translation but rendered as a comment
     "@button": "The submit button shown at the bottom",
-    
+
     // ARB style is also possible, the description will be rendered as a comment
     "@button2": {
       "context": "HomePage",
@@ -1062,7 +1098,7 @@ Possible cases are: `camel`, `snake` and `pascal`.
 targets:
   $default:
     builders:
-      fast_i18n:
+      slang:
         options:
           key_case: camel
           key_map_case: pascal
@@ -1076,6 +1112,19 @@ String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
 ```
 
+### ➤ Dart Only
+
+You can use this library without flutter.
+
+```yaml
+targets:
+  $default:
+    builders:
+      slang:
+        options:
+          flutter_integration: false # set this
+```
+
 ## Tools
 
 ### ➤ Main Command
@@ -1083,7 +1132,7 @@ String b = t.myMap['ThisShouldBeInPascal'];
 The main command to generate dart files from translation resources.
 
 ```sh
-flutter pub run fast_i18n
+flutter pub run slang
 ```
 
 ### ➤ Migration
@@ -1093,7 +1142,7 @@ There are some tools to make migration from other i18n solutions easier.
 General migration syntax:
 
 ```sh
-flutter pub run fast_i18n:migrate <type> <source> <destination>
+flutter pub run slang:migrate <type> <source> <destination>
 ```
 
 #### ARB
@@ -1101,7 +1150,7 @@ flutter pub run fast_i18n:migrate <type> <source> <destination>
 Transforms ARB files to compatible JSON format. All descriptions are retained.
 
 ```sh
-flutter pub run fast_i18n:migrate arb source.arb destination.json
+flutter pub run slang:migrate arb source.arb destination.json
 ```
 
 ARB Input
@@ -1156,7 +1205,7 @@ JSON Result
 There is a command to quickly get the number of words, characters, etc.
 
 ```sh
-flutter pub run fast_i18n:stats
+flutter pub run slang:stats
 ```
 
 Example console output:
@@ -1175,7 +1224,7 @@ You can let the library rebuild automatically for you.
 The watch function from `build_runner` is **NOT** maintained.
 
 ```sh
-flutter pub run fast_i18n:watch
+flutter pub run slang:watch
 ```
 
 ## FAQ
@@ -1190,7 +1239,7 @@ targets:
     sources:
       - "custom-directory/**" # optional; only assets/* and lib/* are scanned by build_runner
     builders:
-      fast_i18n:
+      slang:
         options:
           input_directory: assets/i18n
           output_directory: lib/i18n
@@ -1275,9 +1324,9 @@ The second one always returns a new instance.
 
 ### In Depth
 
-[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/interfaces.md)
+[Interfaces](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md)
 
-[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/fast_i18n/documentation/dependency_injection.md)
+[Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md)
 
 ### Tutorials
 

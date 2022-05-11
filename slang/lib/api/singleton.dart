@@ -144,7 +144,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<T>,
 
   /// Sets plural resolvers.
   /// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
-  /// See https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/lib/api/plural_resolver_map.dart
+  /// See https://github.com/Tienisto/slang/blob/master/slang/lib/api/plural_resolver_map.dart
   /// Either specify [language], or [locale]. Locale has precedence.
   void setPluralResolver({
     String? language,

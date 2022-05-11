@@ -8,7 +8,7 @@
 <a href="https://github.com/Solido/awesome-flutter">
    <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true" />
 </a>
-![ci](https://github.com/Tienisto/flutter-fast-i18n/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/Tienisto/slang/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Type-safe i18n solution using JSON, YAML or CSV files.
@@ -23,7 +23,7 @@ The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
 - 📁 Organized, split large files into smaller ones via namespaces.
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
-You can see an example of the generated file [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/example/lib/i18n/strings.g.dart).
+You can see an example of the generated file [here](https://github.com/Tienisto/slang/blob/master/slang/example/lib/i18n/strings.g.dart).
 
 This is how you access the translations:
 
@@ -49,12 +49,12 @@ String i = page1.title; // type-safe call
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Main Features](#main-features)
-    - [File Types](#-file-types)
-    - [String Interpolation](#-string-interpolation)
-    - [RichText](#-richtext)
-    - [Lists](#-lists)
-    - [Maps](#-maps)
-    - [Dynamic Keys](#-dynamic-keys--flat-map)
+  - [File Types](#-file-types)
+  - [String Interpolation](#-string-interpolation)
+  - [RichText](#-richtext)
+  - [Lists](#-lists)
+  - [Maps](#-maps)
+  - [Dynamic Keys](#-dynamic-keys--flat-map)
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
@@ -88,13 +88,15 @@ Coming from ARB? There is a [tool](#arb) for that.
 
 **Step 1: Add dependencies**
 
+You will probably need 2 packages: [slang](https://pub.dev/packages/fast_i18n) and [slang_flutter](https://pub.dev/packages/fast_i18n_flutter).
+
 ```yaml
 dependencies:
   slang: <latest version>
   slang_flutter: <latest version> # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: any
+  build_runner: any # only needed if you use build_runner command
 ```
 
 **Step 2: Create JSON files**
@@ -546,7 +548,7 @@ String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and 
 
 This library uses the concept defined [here](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
 
-Some languages have support out of the box. See [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/lib/src/model/pluralization_resolvers.dart).
+Some languages have support out of the box. See [here](https://github.com/Tienisto/slang/blob/master/slang/lib/api/plural_resolver_map.dart).
 
 Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
 
@@ -803,7 +805,7 @@ void main() {
 
 You can customize the attributes and use different node selectors.
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/documentation/interfaces.md).
+Checkout the [full article](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md).
 
 ### ➤ Locale Enum
 
@@ -858,7 +860,7 @@ final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-Checkout the [full article](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/documentation/dependency_injection.md).
+Checkout the [full article](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md).
 
 ## Structuring Features
 
@@ -1037,7 +1039,7 @@ If a `@key` key matches an existing key, then its value will be rendered as a co
 
     // ignored as translation but rendered as a comment
     "@button": "The submit button shown at the bottom",
-    
+
     // ARB style is also possible, the description will be rendered as a comment
     "@button2": {
       "context": "HomePage",
@@ -1322,9 +1324,9 @@ The second one always returns a new instance.
 
 ### In Depth
 
-[Interfaces](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/documentation/interfaces.md)
+[Interfaces](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md)
 
-[Dependency Injection](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/documentation/dependency_injection.md)
+[Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md)
 
 ### Tutorials
 

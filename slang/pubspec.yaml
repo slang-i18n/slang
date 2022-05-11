@@ -1,10 +1,10 @@
 name: slang
 description: Localization / Internationalization (i18n) solution. Use JSON, YAML or CSV files to create typesafe translations via source generation.
-version: 1.0.0-dev.1
-repository: https://github.com/Tienisto/flutter-fast-i18n
+version: 1.0.0
+repository: https://github.com/Tienisto/slang
 
 environment:
-  sdk: ">=2.17.0-266.8.beta <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   build: ^2.2.1

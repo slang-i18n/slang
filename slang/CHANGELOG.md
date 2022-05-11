@@ -10,4 +10,4 @@
 
 Thanks to [@fzyzcjy](https://github.com/fzyzcjy).
 
-You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).

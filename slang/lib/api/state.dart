@@ -7,7 +7,7 @@ class GlobalLocaleState {
 
   static GlobalLocaleState instance = GlobalLocaleState._();
 
-  BaseAppLocale _currLocale = BaseAppLocale.UNDEFINED_LANGUAGE;
+  BaseAppLocale _currLocale = BaseAppLocale.undefinedLocale;
 
   BaseAppLocale getLocale() {
     return _currLocale;

@@ -26,7 +26,7 @@ abstract class BaseAppLocale<T extends BaseTranslations> {
   /// String a = t.my.path; // access
   TranslationBuilder<T> get build;
 
-  static final BaseAppLocale UNDEFINED_LANGUAGE = _DefaultAppLocale();
+  static final BaseAppLocale undefinedLocale = _DefaultAppLocale();
 
   String get languageTag => [languageCode, scriptCode, countryCode]
       .where((element) => element != null)

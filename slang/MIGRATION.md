@@ -10,7 +10,7 @@ dependencies:
   slang_flutter: 1.0.0 # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: any # this is still there
+  build_runner: any # only needed if you use build_runner command
   # fast_i18n: 5.12.3 (removed)
 ```
 
