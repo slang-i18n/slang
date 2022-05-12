@@ -8,7 +8,4 @@ Import this package if you develop flutter apps.
 dependencies:
   slang: <version>
   slang_flutter: <version>
-
-dev_dependencies:
-  build_runner: <version>
 ```
