@@ -1,5 +1,5 @@
-name: slang_flutter
-description: Flutter support for slang
+name: slang_build_runner
+description: build_runner integration for slang
 version: 2.0.0-dev.0
 repository: https://github.com/Tienisto/slang
 
@@ -7,6 +7,6 @@ environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  slang: ^2.0.0-dev.0
-  flutter:
-    sdk: flutter
+  build: ^2.2.1
+  glob: ^2.0.2
+  slang: ^2.0.0

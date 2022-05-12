@@ -226,10 +226,11 @@ class StringTextNode extends TextNode {
 
   @override
   String toString() {
-    if (params.isEmpty)
+    if (params.isEmpty) {
       return content;
-    else
+    } else {
       return '$params => $content';
+    }
   }
 }
 

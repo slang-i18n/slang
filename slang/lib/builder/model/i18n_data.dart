@@ -2,7 +2,7 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
 
-typedef int I18nDataComparator(I18nData a, I18nData b);
+typedef I18nDataComparator = int Function(I18nData a, I18nData b);
 
 /// represents one locale and its localized strings
 class I18nData {

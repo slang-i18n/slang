@@ -1,3 +1,11 @@
+## 2.0.0
+
+**Extract build_runner to separate package**
+
+- **Breaking:** add `slang_build_runner` if you use the `build_runner` command (this ensures that `build` remains as a dev dependency)
+
+You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
+
 ## 1.0.0
 
 **Transition to a federated package structure**

@@ -1,24 +1,30 @@
 # Migration Guides
 
-## fast_i18n 5.0 to slang 1.0
+## fast_i18n to slang
 
 ### Update dependencies
 
 ```yaml
 dependencies:
-  slang: 1.0.0 # add this
-  slang_flutter: 1.0.0 # also add this if you use flutter
+  slang: <version>
+  slang_flutter: <version> # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: any # only needed if you use build_runner command
+  build_runner: <version> # if you use build_runner command
+  slang_build_runner: <version> # if you use build_runner command
   # fast_i18n: 5.12.3 (removed)
 ```
 
 ### Update build.yaml
 
-Deprecated `output_file_pattern` removed. `output_file_name` defaulting to `strings.g.dart`.
+Rename builder name to `slang`.
+
+Deprecated `output_file_pattern` removed.
+
+`output_file_name` defaulting to `strings.g.dart`.
 
 ```yaml
+# build.yaml
 targets:
   $default:
     builders:

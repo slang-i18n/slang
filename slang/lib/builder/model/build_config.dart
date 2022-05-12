@@ -278,12 +278,14 @@ extension Parser on String {
         .replaceAll('/', Platform.pathSeparator)
         .replaceAll('\\', Platform.pathSeparator);
 
-    if (result.startsWith(Platform.pathSeparator))
+    if (result.startsWith(Platform.pathSeparator)) {
       result = result.substring(Platform.pathSeparator.length);
+    }
 
-    if (result.endsWith(Platform.pathSeparator))
+    if (result.endsWith(Platform.pathSeparator)) {
       result =
           result.substring(0, result.length - Platform.pathSeparator.length);
+    }
 
     return Directory.current.path + Platform.pathSeparator + result;
   }

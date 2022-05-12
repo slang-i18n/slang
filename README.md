@@ -92,11 +92,12 @@ You will probably need 2 packages: [slang](https://pub.dev/packages/slang) and [
 
 ```yaml
 dependencies:
-  slang: <latest version>
-  slang_flutter: <latest version> # also add this if you use flutter
+  slang: <version>
+  slang_flutter: <version> # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: any # only needed if you use build_runner command
+  build_runner: <version> # if you use build_runner command
+  slang_build_runner: <version> # if you use build_runner command
 ```
 
 **Step 2: Create JSON files**
