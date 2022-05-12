@@ -55,7 +55,7 @@ extension ExtAppLocaleUtils on AppLocaleUtils {
   /// Fallbacks to base locale.
   AppLocaleId? findDeviceLocale() {
     final String? deviceLocale =
-        WidgetsBinding.instance?.window.locale.toLanguageTag();
+        WidgetsBinding.instance.window.locale.toLanguageTag();
     if (deviceLocale == null) return null;
     return selectLocale(deviceLocale);
   }
