@@ -9,4 +9,4 @@ environment:
 dependencies:
   build: ^2.2.1
   glob: ^2.0.2
-  slang: ^2.0.0
+  slang: ^2.0.0-dev.0
