@@ -150,10 +150,12 @@ lib/
 
 **Step 3: Generate the dart code**
 
+Built-in:
+
 ```text
 flutter pub run slang
 ```
-alternative (but slower):
+Alternative (requires [slang_build_runner](https://pub.dev/packages/slang_build_runner)):
 ```text
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
