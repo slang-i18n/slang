@@ -1,6 +1,6 @@
 ## 2.0.0
 
-**Extract build_runner to separate package**
+**Extract build_runner to a separate package**
 
 - **Breaking:** add `slang_build_runner` if you use the `build_runner` command (this ensures that `build` remains as a dev dependency)
 

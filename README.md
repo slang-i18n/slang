@@ -88,7 +88,7 @@ Coming from ARB? There is a [tool](#arb) for that.
 
 **Step 1: Add dependencies**
 
-You will probably need 2 packages: [slang](https://pub.dev/packages/slang) and [slang_flutter](https://pub.dev/packages/slang_flutter).
+You will probably need at least 2 packages: [slang](https://pub.dev/packages/slang) and [slang_flutter](https://pub.dev/packages/slang_flutter).
 
 ```yaml
 dependencies:
@@ -96,8 +96,8 @@ dependencies:
   slang_flutter: <version> # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: <version> # if you use build_runner command
-  slang_build_runner: <version> # if you use build_runner command
+  build_runner: <version> # if you use build_runner command (1/2)
+  slang_build_runner: <version> # if you use build_runner command (2/2)
 ```
 
 **Step 2: Create JSON files**
