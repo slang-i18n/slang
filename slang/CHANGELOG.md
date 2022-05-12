@@ -10,6 +10,8 @@ You can read the detailed migration guide [here](https://github.com/Tienisto/sla
 
 **Transition to a federated package structure**
 
+This is still a pre-release. Please consider `2.0.0` as the first release.
+
 - **Breaking:** rebranding to `slang`, add `slang_flutter` if you use flutter
 - **Breaking:** remove `output_file_pattern` (was deprecated)
 - feat: dart-only support (`flutter_integration: false`)
