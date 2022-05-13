@@ -17,7 +17,7 @@ dev_dependencies:
 
 ### Update build.yaml
 
-Rename builder name to `slang`.
+Rename builder name to `slang_build_runner`.
 
 Deprecated `output_file_pattern` removed.
 
@@ -32,6 +32,13 @@ targets:
         options:
           # output_file_pattern: .g.dart (removed)
           output_file_name: strings.g.dart # new default
+```
+
+Or make use of the new `slang.yaml` (works without `build_runner`):
+```yaml
+# slang.yaml
+base_locale: en
+translate_var: t
 ```
 
 ### Command

@@ -1,3 +1,8 @@
+## 2.1.0
+
+- feat: add `slang.yaml` support which has less boilerplate than `build.yaml`
+- fix: move internal `build.yaml` to correct package
+
 ## 2.0.0
 
 **Transition to a federated package structure**
