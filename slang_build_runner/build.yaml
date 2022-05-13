@@ -1,6 +1,6 @@
 # https://pub.dartlang.org/packages/build_config
 builders:
-  slang:
+  slang_build_runner:
     import: 'package:slang_build_runner/slang_build_runner.dart'
     builder_factories: ['i18nBuilder']
     build_extensions: {'.i18n.json': ['.g.dart']}

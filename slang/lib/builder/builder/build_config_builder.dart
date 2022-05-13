@@ -10,9 +10,13 @@ import 'package:yaml/yaml.dart';
 class BuildConfigBuilder {
   /// Parses the full build.yaml file to get the config
   /// May return null if no config entry is found.
-  static BuildConfig? fromYaml(String rawYaml) {
+  static BuildConfig? fromYaml(String rawYaml, [bool isSlangYaml = false]) {
     final parsedYaml = loadYaml(rawYaml);
-    final configEntry = _findConfigEntry(parsedYaml);
+    if (parsedYaml == null) {
+      return null;
+    }
+    final YamlMap? configEntry =
+        isSlangYaml ? parsedYaml as YamlMap? : _findConfigEntry(parsedYaml);
     if (configEntry == null) {
       return null;
     }
@@ -24,7 +28,7 @@ class BuildConfigBuilder {
   /// Returns the part of the yaml file which is "important"
   static YamlMap? _findConfigEntry(YamlMap parent) {
     for (final entry in parent.entries) {
-      if (entry.key == 'slang' && entry.value is YamlMap) {
+      if (entry.key == 'slang_build_runner' && entry.value is YamlMap) {
         final options = entry.value['options'];
         if (options != null) return options; // found
       }

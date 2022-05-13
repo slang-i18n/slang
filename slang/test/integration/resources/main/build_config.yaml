@@ -2,7 +2,7 @@
 targets:
   $default:
     builders:
-      slang:
+      slang_build_runner:
         options:
           base_locale: en
           input_file_pattern: .i18n.json # will be ignored anyways because we put in manually

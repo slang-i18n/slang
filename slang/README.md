@@ -248,91 +248,154 @@ String a = t.login.success; // get translation
 
 This is **optional**. This library works without any configuration (in most cases).
 
-For customization, you can create the `build.yaml` file. Place it in the root directory.
+For customization, you can create a `slang.yaml` or a `build.yaml` file. Place it in the root directory.
 
-```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          base_locale: fr
-          fallback_strategy: base_locale
-          input_directory: lib/i18n
-          input_file_pattern: .i18n.json
-          output_directory: lib/i18n
-          output_file_name: translations.g.dart
-          output_format: single_file
-          locale_handling: true
-          flutter_integration: true
-          namespaces: false
-          translate_var: t
-          enum_name: AppLocale
-          translation_class_visibility: private
-          key_case: snake
-          key_map_case: camel
-          param_case: pascal
-          string_interpolation: double_braces
-          flat_map: false
-          timestamp: true
-          maps:
-            - error.codes
-            - category
-            - iconNames
-          pluralization:
-            auto: cardinal
-            cardinal:
-              - someKey.apple
-            ordinal:
-              - someKey.place
-          contexts:
-            gender_context:
-              enum:
-                - male
-                - female
-              auto: false
-              paths:
-                - my.path.to.greet
-          interfaces:
-            PageData: onboarding.pages.*
-            PageData2:
-              paths:
-                - my.path
-                - cool.pages.*
-              attributes:
-                - String title
-                - String? content
-```
+<details>
+  <summary>slang.yaml</summary>
 
-Key|Type|Usage|Default
----|---|---|---
-`base_locale`|`String`|locale of default json|`en`
-`fallback_strategy`|`none`, `base_locale`|handle missing translations [(i)](#-fallback)|`none`
-`input_directory`|`String`|path to input directory|`null`
-`input_file_pattern`|`String`|input file pattern, must end with .json, .yaml or .csv|`.i18n.json`
-`output_directory`|`String`|path to output directory|`null`
-`output_file_name`|`String`|output file name|`null`
-`output_format`|`single_file`, `multiple_files`|split output files [(i)](#-output-format)|`single_file`
-`locale_handling`|`Boolean`|generate locale handling logic [(i)](#-dependency-injection)|`true`
-`flutter_integration`|`Boolean`|generate flutter features [(i)](#-dart-only)|`true`
-`namespaces`|`Boolean`|split input files [(i)](#-namespaces)|`false`
-`translate_var`|`String`|translate variable name|`t`
-`enum_name`|`String`|enum name|`AppLocale`
-`translation_class_visibility`|`private`, `public`|class visibility|`private`
-`key_case`|`null`, `camel`, `pascal`, `snake`|transform keys (optional) [(i)](#-recasing)|`null`
-`key_map_case`|`null`, `camel`, `pascal`, `snake`|transform keys for maps (optional) [(i)](#-recasing)|`null`
-`param_case`|`null`, `camel`, `pascal`, `snake`|transform parameters (optional) [(i)](#-recasing)|`null`
-`string_interpolation`|`dart`, `braces`, `double_braces`|string interpolation mode [(i)](#-string-interpolation)|`dart`
-`flat_map`|`Boolean`|generate flat map [(i)](#-dynamic-keys--flat-map)|`true`
-`timestamp`|`Boolean`|write "Built on" timestamp|`true`
-`maps`|`List<String>`|entries which should be accessed via keys [(i)](#-maps)|`[]`
-`pluralization`/`auto`|`off`, `cardinal`, `ordinal`|detect plurals automatically [(i)](#-pluralization)|`cardinal`
-`pluralization`/`cardinal`|`List<String>`|entries which have cardinals|`[]`
-`pluralization`/`ordinal`|`List<String>`|entries which have ordinals|`[]`
-`<context>`/`enum`|`List<String>`|context forms [(i)](#-custom-contexts)|no default
-`<context>`/`auto`|`Boolean`|auto detect context|`true`
-`<context>`/`paths`|`List<String>`|entries using this context|`[]`
-`children of interfaces`|`Pairs of Alias:Path`|alias interfaces [(i)](#-interfaces)|`null`
+  Using `slang.yaml` is useful if you don't want to use `build_runner`.
+
+  ```yaml
+  base_locale: fr
+  fallback_strategy: base_locale
+  input_directory: lib/i18n
+  input_file_pattern: .i18n.json
+  output_directory: lib/i18n
+  output_file_name: translations.g.dart
+  output_format: single_file
+  locale_handling: true
+  flutter_integration: true
+  namespaces: false
+  translate_var: t
+  enum_name: AppLocale
+  translation_class_visibility: private
+  key_case: snake
+  key_map_case: camel
+  param_case: pascal
+  string_interpolation: double_braces
+  flat_map: false
+  timestamp: true
+  maps:
+    - error.codes
+    - category
+    - iconNames
+  pluralization:
+    auto: cardinal
+    cardinal:
+      - someKey.apple
+    ordinal:
+      - someKey.place
+  contexts:
+    gender_context:
+      enum:
+        - male
+        - female
+      auto: false
+      paths:
+        - my.path.to.greet
+  interfaces:
+    PageData: onboarding.pages.*
+    PageData2:
+      paths:
+        - my.path
+        - cool.pages.*
+      attributes:
+        - String title
+        - String? content
+  ```
+
+</details>
+
+<details>
+  <summary>build.yaml</summary>
+
+  Using `build.yaml` is **necessary** if you use `build_runner`.
+
+  ```yaml
+  targets:
+    $default:
+      builders:
+        slang_build_runner:
+          options:
+            base_locale: fr
+            fallback_strategy: base_locale
+            input_directory: lib/i18n
+            input_file_pattern: .i18n.json
+            output_directory: lib/i18n
+            output_file_name: translations.g.dart
+            output_format: single_file
+            locale_handling: true
+            flutter_integration: true
+            namespaces: false
+            translate_var: t
+            enum_name: AppLocale
+            translation_class_visibility: private
+            key_case: snake
+            key_map_case: camel
+            param_case: pascal
+            string_interpolation: double_braces
+            flat_map: false
+            timestamp: true
+            maps:
+              - error.codes
+              - category
+              - iconNames
+            pluralization:
+              auto: cardinal
+              cardinal:
+                - someKey.apple
+              ordinal:
+                - someKey.place
+            contexts:
+              gender_context:
+                enum:
+                  - male
+                  - female
+                auto: false
+                paths:
+                  - my.path.to.greet
+            interfaces:
+              PageData: onboarding.pages.*
+              PageData2:
+                paths:
+                  - my.path
+                  - cool.pages.*
+                attributes:
+                  - String title
+                  - String? content
+  ```
+
+</details>
+
+| Key                            | Type                               | Usage                                                        | Default       |
+|--------------------------------|------------------------------------|--------------------------------------------------------------|---------------|
+| `base_locale`                  | `String`                           | locale of default json                                       | `en`          |
+| `fallback_strategy`            | `none`, `base_locale`              | handle missing translations [(i)](#-fallback)                | `none`        |
+| `input_directory`              | `String`                           | path to input directory                                      | `null`        |
+| `input_file_pattern`           | `String`                           | input file pattern, must end with .json, .yaml or .csv       | `.i18n.json`  |
+| `output_directory`             | `String`                           | path to output directory                                     | `null`        |
+| `output_file_name`             | `String`                           | output file name                                             | `null`        |
+| `output_format`                | `single_file`, `multiple_files`    | split output files [(i)](#-output-format)                    | `single_file` |
+| `locale_handling`              | `Boolean`                          | generate locale handling logic [(i)](#-dependency-injection) | `true`        |
+| `flutter_integration`          | `Boolean`                          | generate flutter features [(i)](#-dart-only)                 | `true`        |
+| `namespaces`                   | `Boolean`                          | split input files [(i)](#-namespaces)                        | `false`       |
+| `translate_var`                | `String`                           | translate variable name                                      | `t`           |
+| `enum_name`                    | `String`                           | enum name                                                    | `AppLocale`   |
+| `translation_class_visibility` | `private`, `public`                | class visibility                                             | `private`     |
+| `key_case`                     | `null`, `camel`, `pascal`, `snake` | transform keys (optional) [(i)](#-recasing)                  | `null`        |
+| `key_map_case`                 | `null`, `camel`, `pascal`, `snake` | transform keys for maps (optional) [(i)](#-recasing)         | `null`        |
+| `param_case`                   | `null`, `camel`, `pascal`, `snake` | transform parameters (optional) [(i)](#-recasing)            | `null`        |
+| `string_interpolation`         | `dart`, `braces`, `double_braces`  | string interpolation mode [(i)](#-string-interpolation)      | `dart`        |
+| `flat_map`                     | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`        |
+| `timestamp`                    | `Boolean`                          | write "Built on" timestamp                                   | `true`        |
+| `maps`                         | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`          |
+| `pluralization`/`auto`         | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`    |
+| `pluralization`/`cardinal`     | `List<String>`                     | entries which have cardinals                                 | `[]`          |
+| `pluralization`/`ordinal`      | `List<String>`                     | entries which have ordinals                                  | `[]`          |
+| `<context>`/`enum`             | `List<String>`                     | context forms [(i)](#-custom-contexts)                       | no default    |
+| `<context>`/`auto`             | `Boolean`                          | auto detect context                                          | `true`        |
+| `<context>`/`paths`            | `List<String>`                     | entries using this context                                   | `[]`          |
+| `children of interfaces`       | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
 
 ## Main Features
 

@@ -83,6 +83,15 @@ Future<BuildConfig> getBuildConfig(
   for (final file in files) {
     final fileName = file.path.getFileName();
 
+    if (fileName == 'slang.yaml') {
+      final content = await File(file.path).readAsString();
+      buildConfig = BuildConfigBuilder.fromYaml(content, true);
+      if (verbose) {
+        print('Found slang.yaml in ${file.path}');
+      }
+      break;
+    }
+
     if (fileName == 'build.yaml') {
       final content = await File(file.path).readAsString();
       buildConfig = BuildConfigBuilder.fromYaml(content);

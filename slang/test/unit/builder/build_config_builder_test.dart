@@ -8,7 +8,7 @@ void main() {
         targets:
           $default:
             builders:
-              slang:
+              slang_build_runner:
                 options:
                   input_directory: lib/i18n
                   fallback_strategy: base_locale

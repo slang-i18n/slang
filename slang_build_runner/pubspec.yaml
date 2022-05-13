@@ -1,6 +1,6 @@
 name: slang_build_runner
 description: build_runner integration for slang
-version: 2.0.0
+version: 2.1.0
 repository: https://github.com/Tienisto/slang
 
 environment:
@@ -9,4 +9,4 @@ environment:
 dependencies:
   build: ^2.2.1
   glob: ^2.0.2
-  slang: ^2.0.0
+  slang: ^2.1.0

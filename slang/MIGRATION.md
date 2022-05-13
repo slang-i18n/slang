@@ -28,7 +28,7 @@ Deprecated `output_file_pattern` removed.
 targets:
   $default:
     builders:
-      slang: # rename from fast_i18n to slang
+      slang_build_runner: # rename from fast_i18n to slang_build_runner
         options:
           # output_file_pattern: .g.dart (removed)
           output_file_name: strings.g.dart # new default
