@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-01-23 at 19:06 UTC
+ * Built on 2022-05-13 at 00:25 UTC
  */
 
 import 'package:flutter/widgets.dart';
@@ -78,10 +78,8 @@ class LocaleSettings {
 		_currLocale = locale;
 		_t = _currLocale.translations;
 
-		if (WidgetsBinding.instance != null) {
-			// force rebuild if TranslationProvider is used
-			_translationProviderKey.currentState?.setLocale(_currLocale);
-		}
+		// force rebuild if TranslationProvider is used
+		_translationProviderKey.currentState?.setLocale(_currLocale);
 
 		return _currLocale;
 	}
@@ -159,7 +157,7 @@ class AppLocaleUtils {
 	/// Returns the locale of the device as the enum type.
 	/// Fallbacks to base locale.
 	static AppLocale findDeviceLocale() {
-		final String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();
+		final String? deviceLocale = WidgetsBinding.instance.window.locale.toLanguageTag();
 		if (deviceLocale != null) {
 			final typedLocale = _selectLocale(deviceLocale);
 			if (typedLocale != null) {
@@ -364,13 +362,10 @@ class _StringsEn {
 	// Internal flat map initialized lazily
 	late final Map<String, dynamic> _flatMap = _buildFlatMap();
 
-	// ignore: unused_field
-	final PluralResolver? _cardinalResolver;
-	// ignore: unused_field
-	final PluralResolver? _ordinalResolver;
+	final PluralResolver? _cardinalResolver; // ignore: unused_field
+	final PluralResolver? _ordinalResolver; // ignore: unused_field
 
-	// ignore: unused_field
-	late final _StringsEn _root = this;
+	late final _StringsEn _root = this; // ignore: unused_field
 
 	// Translations
 	late final _StringsMainScreenEn mainScreen = _StringsMainScreenEn._(_root);
@@ -384,8 +379,7 @@ class _StringsEn {
 class _StringsMainScreenEn {
 	_StringsMainScreenEn._(this._root);
 
-	// ignore: unused_field
-	final _StringsEn _root;
+	final _StringsEn _root; // ignore: unused_field
 
 	// Translations
 	String get title => 'An English Title';
@@ -409,15 +403,12 @@ class _StringsDe implements _StringsEn {
 	@override dynamic operator[](String key) => _flatMap[key];
 
 	// Internal flat map initialized lazily
-	late final Map<String, dynamic> _flatMap = _buildFlatMap();
+	@override late final Map<String, dynamic> _flatMap = _buildFlatMap();
 
-	// ignore: unused_field
-	final PluralResolver? _cardinalResolver;
-	// ignore: unused_field
-	final PluralResolver? _ordinalResolver;
+	@override final PluralResolver? _cardinalResolver; // ignore: unused_field
+	@override final PluralResolver? _ordinalResolver; // ignore: unused_field
 
-	// ignore: unused_field
-	@override late final _StringsDe _root = this;
+	@override late final _StringsDe _root = this; // ignore: unused_field
 
 	// Translations
 	@override late final _StringsMainScreenDe mainScreen = _StringsMainScreenDe._(_root);
@@ -431,8 +422,7 @@ class _StringsDe implements _StringsEn {
 class _StringsMainScreenDe implements _StringsMainScreenEn {
 	_StringsMainScreenDe._(this._root);
 
-	// ignore: unused_field
-	@override final _StringsDe _root;
+	@override final _StringsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Ein deutscher Titel';
@@ -448,7 +438,7 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 
 extension on _StringsEn {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'mainScreen.title': 'An English Title',
 			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? _pluralCardinalEn)(count,
 				one: 'You pressed $count time.',
@@ -463,7 +453,7 @@ extension on _StringsEn {
 
 extension on _StringsDe {
 	Map<String, dynamic> _buildFlatMap() {
-		return {
+		return <String, dynamic>{
 			'mainScreen.title': 'Ein deutscher Titel',
 			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? _pluralCardinalDe)(count,
 				one: 'Du hast einmal gedrückt.',

@@ -325,11 +325,9 @@ void _generateLocaleSettings({
   buffer.writeln('\t\t$currLocaleVar = locale;');
   buffer.writeln('\t\t$translateVarInternal = $currLocaleVar.translations;');
   buffer.writeln();
-  buffer.writeln('\t\tif (WidgetsBinding.instance != null) {');
-  buffer.writeln('\t\t\t// force rebuild if TranslationProvider is used');
+  buffer.writeln('\t\t// force rebuild if TranslationProvider is used');
   buffer.writeln(
-      '\t\t\t$translationProviderKey.currentState?.setLocale($currLocaleVar);');
-  buffer.writeln('\t\t}');
+      '\t\t$translationProviderKey.currentState?.setLocale($currLocaleVar);');
   buffer.writeln();
   buffer.writeln('\t\treturn $currLocaleVar;');
   buffer.writeln('\t}');
@@ -457,7 +455,7 @@ void _generateUtilClass({
   buffer.writeln('\t/// Fallbacks to base locale.');
   buffer.writeln('\tstatic $enumName findDeviceLocale() {');
   buffer.writeln(
-      '\t\tfinal String? deviceLocale = WidgetsBinding.instance?.window.locale.toLanguageTag();');
+      '\t\tfinal String? deviceLocale = WidgetsBinding.instance.window.locale.toLanguageTag();');
   buffer.writeln('\t\tif (deviceLocale != null) {');
   buffer.writeln('\t\t\tfinal typedLocale = _selectLocale(deviceLocale);');
   buffer.writeln('\t\t\tif (typedLocale != null) {');

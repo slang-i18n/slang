@@ -1,3 +1,7 @@
+## 5.12.4
+
+- fix: Flutter 3.0.0 compatibility
+
 ## 5.12.3
 
 - fix: resolve some linting errors in generated file
