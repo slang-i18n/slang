@@ -15,16 +15,15 @@ dev_dependencies:
   slang_build_runner: <version>
 ```
 
-The `build.yaml` file should be already in the correct format.
+The `build.yaml` file should be in the correct format.
 
 ```yaml
 targets:
   $default:
     builders:
-      slang:
+      slang_build_runner:
         options:
           base_locale: en
-          # other options
 ```
 
 The generate command:

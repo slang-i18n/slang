@@ -96,8 +96,8 @@ dependencies:
   slang_flutter: <version> # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: <version> # if you use build_runner command (1/2)
-  slang_build_runner: <version> # if you use build_runner command (2/2)
+  build_runner: <version> # if you use build_runner (1/2)
+  slang_build_runner: <version> # if you use build_runner (2/2)
 ```
 
 **Step 2: Create JSON files**
