@@ -5,10 +5,10 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-09 at 13:58 UTC
+ * Built on 2022-05-13 at 13:21 UTC
  */
 
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
 
 import 'package:slang_flutter/slang_flutter.dart';
 

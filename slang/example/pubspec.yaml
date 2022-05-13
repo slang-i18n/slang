@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  slang: ^2.0.0-dev.0 # add this
-  slang_flutter: ^2.0.0-dev.0 # add this
+  slang: ^2.1.0 # add this
+  slang_flutter: ^2.0.0 # add this
   flutter_localizations: # add this
     sdk: flutter
   cupertino_icons: ^1.0.2

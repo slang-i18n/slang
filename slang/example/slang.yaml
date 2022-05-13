@@ -1,0 +1,6 @@
+# The slang config file which works without build_runner
+# 'flutter pub run slang' will pick up this file
+
+base_locale: en
+maps:
+  - locales
