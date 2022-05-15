@@ -43,12 +43,8 @@ class I18nBuilder implements Builder {
 
     // STEP 1: determine base name and output file name / path
 
-    final assets = <AssetId>[];
-    String outputFilePath;
-
-    await buildStep.findAssets(findAssetsPattern).forEach((assetId) {
-      assets.add(assetId);
-    });
+    final assets = await buildStep.findAssets(findAssetsPattern).toList();
+    final String outputFilePath;
 
     // CAUTION: in build_runner, the path separator seems to be hard coded to /
     if (buildConfig.outputDirectory != null) {
