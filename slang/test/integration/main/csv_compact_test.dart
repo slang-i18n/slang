@@ -2,7 +2,7 @@ import 'package:slang/builder/builder/build_config_builder.dart';
 import 'package:slang/builder/decoder/csv_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/namespace_translation_map.dart';
+import 'package:slang/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
 import '../../util/resources_utils.dart';
@@ -24,7 +24,7 @@ void main() {
     final result = GeneratorFacade.generate(
       buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!,
       baseName: 'translations',
-      translationMap: NamespaceTranslationMap()
+      translationMap: TranslationMap()
         ..addTranslations(
           locale: I18nLocale.fromString('en'),
           translations: parsed['en'],

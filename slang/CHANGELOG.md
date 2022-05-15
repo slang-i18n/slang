@@ -1,3 +1,7 @@
+## 2.2.0
+
+- feat: locale can be moved from file name to directory name (e.g. `i18n/fr/page1_fr.i18n.json` to `i18n/fr/page1.i18n.json`)
+
 ## 2.1.0
 
 - feat: add `slang.yaml` support which has less boilerplate than `build.yaml`

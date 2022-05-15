@@ -1,7 +1,7 @@
 import 'package:slang/builder/model/build_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/namespace_translation_map.dart';
+import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/stats_result.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
@@ -11,7 +11,7 @@ import 'builder/translation_model_builder.dart';
 class StatsFacade {
   static StatsResult parse({
     required BuildConfig buildConfig,
-    required NamespaceTranslationMap translationMap,
+    required TranslationMap translationMap,
     bool showPluralHint = false,
   }) {
     final List<I18nData> translationList =

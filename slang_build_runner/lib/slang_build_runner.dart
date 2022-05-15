@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:slang/builder/builder/build_config_builder.dart';
-import 'package:slang/builder/decoder/base_decoder.dart';
-import 'package:slang/builder/decoder/csv_decoder.dart';
+import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/build_config.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/namespace_translation_map.dart';
+import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/yaml_utils.dart';
 import 'package:glob/glob.dart';
@@ -59,70 +56,16 @@ class I18nBuilder implements Builder {
     }
 
     // STEP 2: scan translations
-    final translationMap = NamespaceTranslationMap();
-    for (final asset in assets) {
-      final content = await buildStep.readAsString(asset);
-      final Map<String, dynamic> translations;
-      try {
-        translations = BaseDecoder.getDecoderOfFileType(buildConfig.fileType)
-            .decode(content);
-      } on FormatException catch (e) {
-        throw 'File: ${asset.path}\n$e';
-      }
-
-      final fileNameNoExtension =
-          asset.pathSegments.last.getFileNameNoExtension();
-      final baseFileMatch =
-          RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-      if (baseFileMatch != null) {
-        // base file
-        final namespace = baseFileMatch.group(1)!;
-
-        if (buildConfig.fileType == FileType.csv &&
-            CsvDecoder.isCompactCSV(content)) {
-          // compact csv
-
-          translations.forEach((key, value) {
-            final locale = I18nLocale.fromString(key);
-            final localeTranslations = value as Map<String, dynamic>;
-            translationMap.addTranslations(
-              locale: locale,
-              namespace: namespace,
-              translations: localeTranslations,
-            );
-          });
-        } else {
-          // json, yaml or normal csv
-
-          translationMap.addTranslations(
-            locale: buildConfig.baseLocale,
-            namespace: namespace,
-            translations: translations,
-          );
-        }
-      } else {
-        // secondary files (strings_x)
-        final match =
-            RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
-        if (match != null) {
-          final namespace = match.group(2)!;
-          final language = match.group(3)!;
-          final script = match.group(5);
-          final country = match.group(7);
-          final locale = I18nLocale(
-            language: language,
-            script: script,
-            country: country,
-          );
-
-          translationMap.addTranslations(
-            locale: locale,
-            namespace: namespace,
-            translations: translations,
-          );
-        }
-      }
-    }
+    final translationMap = await TranslationMapBuilder.build(
+      buildConfig: buildConfig,
+      files: assets
+          .map((f) => TranslationFile(
+                path: f.path,
+                read: () => buildStep.readAsString(f),
+              ))
+          .toList(),
+      verbose: false,
+    );
 
     // STEP 3: generate .g.dart content
     final result = GeneratorFacade.generate(

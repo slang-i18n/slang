@@ -1,15 +1,12 @@
 import 'dart:io';
 
 import 'package:slang/builder/builder/build_config_builder.dart';
-import 'package:slang/builder/decoder/base_decoder.dart';
-import 'package:slang/builder/decoder/csv_decoder.dart';
+import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/build_config.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/namespace_translation_map.dart';
+import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/builder/stats_facade.dart';
 import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 /// To run this:
@@ -107,7 +104,7 @@ Future<BuildConfig> getBuildConfig(
   if (buildConfig == null) {
     buildConfig = BuildConfigBuilder.fromMap({});
     if (verbose) {
-      print('No build.yaml, use default settings.');
+      print('No build.yaml or slang.yaml, using default settings.');
     }
   }
 
@@ -161,9 +158,6 @@ Future<void> watchTranslations({
   }
 }
 
-const _defaultPadLeft = 12;
-const _namespacePadLeft = 24;
-
 /// Reads the translations from hard drive and generates the g.dart file
 /// The [files] are already filtered (only translation files!).
 Future<void> generateTranslations({
@@ -196,90 +190,16 @@ Future<void> generateTranslations({
     print('');
   }
 
-  final translationMap = NamespaceTranslationMap();
-  final padLeft = buildConfig.namespaces ? _namespacePadLeft : _defaultPadLeft;
-  for (final file in files) {
-    final content = await File(file.path).readAsString();
-    final Map<String, dynamic> translations;
-    try {
-      translations = BaseDecoder.getDecoderOfFileType(buildConfig.fileType)
-          .decode(content);
-    } on FormatException catch (e) {
-      print('');
-      throw 'File: ${file.path}\n$e';
-    }
-
-    final fileNameNoExtension = file.path.getFileNameNoExtension();
-    final baseFileMatch =
-        RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-    if (baseFileMatch != null) {
-      // base file (file without locale, may be multiples due to namespaces!)
-      final namespace = baseFileMatch.group(1)!;
-
-      if (buildConfig.fileType == FileType.csv &&
-          CsvDecoder.isCompactCSV(content)) {
-        // compact csv
-
-        translations.forEach((key, value) {
-          final locale = I18nLocale.fromString(key);
-          final localeTranslations = value as Map<String, dynamic>;
-          translationMap.addTranslations(
-            locale: locale,
-            namespace: namespace,
-            translations: localeTranslations,
-          );
-
-          if (verbose) {
-            final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
-            final base = locale == buildConfig.baseLocale ? '(base) ' : '';
-            print(
-                '${('$base$namespaceLog${locale.languageTag}').padLeft(padLeft)} -> ${file.path}');
-          }
-        });
-      } else {
-        // json, yaml or normal csv
-
-        translationMap.addTranslations(
-          locale: buildConfig.baseLocale,
-          namespace: namespace,
-          translations: translations,
-        );
-
-        if (verbose) {
-          final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
-          print(
-              '${('(base) $namespaceLog${buildConfig.baseLocale.languageTag}').padLeft(padLeft)} -> ${file.path}');
-        }
-      }
-    } else {
-      // secondary files (strings_x)
-      final match =
-          RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
-      if (match != null) {
-        final namespace = match.group(2)!;
-        final language = match.group(3)!;
-        final script = match.group(5);
-        final country = match.group(7);
-        final locale = I18nLocale(
-          language: language,
-          script: script,
-          country: country,
-        );
-
-        translationMap.addTranslations(
-          locale: locale,
-          namespace: namespace,
-          translations: translations,
-        );
-
-        if (verbose) {
-          final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
-          print(
-              '${(namespaceLog + locale.languageTag).padLeft(padLeft)} -> ${file.path}');
-        }
-      }
-    }
-  }
+  final translationMap = await TranslationMapBuilder.build(
+    buildConfig: buildConfig,
+    files: files
+        .map((f) => TranslationFile(
+              path: f.path.replaceAll('\\', '/'),
+              read: () => File(f.path).readAsString(),
+            ))
+        .toList(),
+    verbose: verbose,
+  );
 
   // STATS MODE
   if (statsMode) {

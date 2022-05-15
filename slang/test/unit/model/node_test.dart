@@ -2,7 +2,7 @@ import 'package:slang/builder/model/build_config.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:test/test.dart';
 
-import '../utils/text_node_builder.dart';
+import '../../util/text_node_builder.dart';
 
 void main() {
   group(ListNode, () {

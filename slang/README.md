@@ -253,117 +253,117 @@ For customization, you can create a `slang.yaml` or a `build.yaml` file. Place i
 <details>
   <summary>slang.yaml</summary>
 
-  Using `slang.yaml` is useful if you don't want to use `build_runner`.
+Using `slang.yaml` is useful if you don't want to use `build_runner`.
 
-  ```yaml
-  base_locale: fr
-  fallback_strategy: base_locale
-  input_directory: lib/i18n
-  input_file_pattern: .i18n.json
-  output_directory: lib/i18n
-  output_file_name: translations.g.dart
-  output_format: single_file
-  locale_handling: true
-  flutter_integration: true
-  namespaces: false
-  translate_var: t
-  enum_name: AppLocale
-  translation_class_visibility: private
-  key_case: snake
-  key_map_case: camel
-  param_case: pascal
-  string_interpolation: double_braces
-  flat_map: false
-  timestamp: true
-  maps:
-    - error.codes
-    - category
-    - iconNames
-  pluralization:
-    auto: cardinal
-    cardinal:
-      - someKey.apple
-    ordinal:
-      - someKey.place
-  contexts:
-    gender_context:
-      enum:
-        - male
-        - female
-      auto: false
-      paths:
-        - my.path.to.greet
-  interfaces:
-    PageData: onboarding.pages.*
-    PageData2:
-      paths:
-        - my.path
-        - cool.pages.*
-      attributes:
-        - String title
-        - String? content
-  ```
+```yaml
+base_locale: fr
+fallback_strategy: base_locale
+input_directory: lib/i18n
+input_file_pattern: .i18n.json
+output_directory: lib/i18n
+output_file_name: translations.g.dart
+output_format: single_file
+locale_handling: true
+flutter_integration: true
+namespaces: false
+translate_var: t
+enum_name: AppLocale
+translation_class_visibility: private
+key_case: snake
+key_map_case: camel
+param_case: pascal
+string_interpolation: double_braces
+flat_map: false
+timestamp: true
+maps:
+  - error.codes
+  - category
+  - iconNames
+pluralization:
+  auto: cardinal
+  cardinal:
+    - someKey.apple
+  ordinal:
+    - someKey.place
+contexts:
+  gender_context:
+    enum:
+      - male
+      - female
+    auto: false
+    paths:
+      - my.path.to.greet
+interfaces:
+  PageData: onboarding.pages.*
+  PageData2:
+    paths:
+      - my.path
+      - cool.pages.*
+    attributes:
+      - String title
+      - String? content
+```
 
 </details>
 
 <details>
   <summary>build.yaml</summary>
 
-  Using `build.yaml` is **necessary** if you use `build_runner`.
+Using `build.yaml` is **necessary** if you use `build_runner`.
 
-  ```yaml
-  targets:
-    $default:
-      builders:
-        slang_build_runner:
-          options:
-            base_locale: fr
-            fallback_strategy: base_locale
-            input_directory: lib/i18n
-            input_file_pattern: .i18n.json
-            output_directory: lib/i18n
-            output_file_name: translations.g.dart
-            output_format: single_file
-            locale_handling: true
-            flutter_integration: true
-            namespaces: false
-            translate_var: t
-            enum_name: AppLocale
-            translation_class_visibility: private
-            key_case: snake
-            key_map_case: camel
-            param_case: pascal
-            string_interpolation: double_braces
-            flat_map: false
-            timestamp: true
-            maps:
-              - error.codes
-              - category
-              - iconNames
-            pluralization:
-              auto: cardinal
-              cardinal:
-                - someKey.apple
-              ordinal:
-                - someKey.place
-            contexts:
-              gender_context:
-                enum:
-                  - male
-                  - female
-                auto: false
-                paths:
-                  - my.path.to.greet
-            interfaces:
-              PageData: onboarding.pages.*
-              PageData2:
-                paths:
-                  - my.path
-                  - cool.pages.*
-                attributes:
-                  - String title
-                  - String? content
-  ```
+```yaml
+targets:
+  $default:
+    builders:
+      slang_build_runner:
+        options:
+          base_locale: fr
+          fallback_strategy: base_locale
+          input_directory: lib/i18n
+          input_file_pattern: .i18n.json
+          output_directory: lib/i18n
+          output_file_name: translations.g.dart
+          output_format: single_file
+          locale_handling: true
+          flutter_integration: true
+          namespaces: false
+          translate_var: t
+          enum_name: AppLocale
+          translation_class_visibility: private
+          key_case: snake
+          key_map_case: camel
+          param_case: pascal
+          string_interpolation: double_braces
+          flat_map: false
+          timestamp: true
+          maps:
+            - error.codes
+            - category
+            - iconNames
+          pluralization:
+            auto: cardinal
+            cardinal:
+              - someKey.apple
+            ordinal:
+              - someKey.place
+          contexts:
+            gender_context:
+              enum:
+                - male
+                - female
+              auto: false
+              paths:
+                - my.path.to.greet
+          interfaces:
+            PageData: onboarding.pages.*
+            PageData2:
+              paths:
+                - my.path
+                - cool.pages.*
+              attributes:
+                - String title
+                - String? content
+```
 
 </details>
 
@@ -406,14 +406,9 @@ Supported file types: `JSON (default)`, `YAML` and `CSV`.
 To change to YAML or CSV, please modify `input_file_pattern`.
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          input_directory: assets/i18n
-          input_file_pattern: .i18n.yaml # must end with .json, .yaml or .csv
+# Config
+input_directory: assets/i18n
+input_file_pattern: .i18n.yaml # must end with .json, .yaml or .csv
 ```
 
 **JSON Example**
@@ -448,13 +443,8 @@ pages.1.title,Second Page
 Translations often have a dynamic parameter. There are multiple ways to define them.
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          string_interpolation: dart # change to braces or double_braces
+# Config
+string_interpolation: dart # change to braces or double_braces
 ```
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
@@ -557,15 +547,10 @@ Keep in mind that all nice features like autocompletion are gone.
 ```
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          maps:
-            - a
-            - b.b1
+# Config
+maps:
+  - a
+  - b.b1
 ```
 
 Now you can access the translations via keys:
@@ -663,18 +648,13 @@ However, if you have ordinals, then you will need some configurations.
 ```
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          pluralization:
-            auto: off
-            cardinal:
-              - someKey.apple
-            ordinal:
-              - someKey.place
+# Config
+pluralization:
+  auto: off
+  cardinal:
+    - someKey.apple
+  ordinal:
+    - someKey.place
 ```
 
 In case your language is not supported, you must provide a custom pluralization resolver:
@@ -735,21 +715,16 @@ You can utilize custom contexts to differentiate between male and female forms.
 ```
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          contexts:
-            gender_context:
-              enum:
-                - male
-                - female
-            polite_context:
-              enum:
-                - polite
-                - rude
+# Config
+contexts:
+  gender_context:
+    enum:
+      - male
+      - female
+  polite_context:
+    enum:
+      - polite
+      - rude
 ```
 
 ```dart
@@ -759,20 +734,15 @@ String a = t.greet(name: 'Maria', context: GenderContext.female);
 Auto detection is on by default. You can disable auto detection. This may speed up build time.
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          contexts:
-            gender_context:
-              enum:
-                - male
-                - female
-              auto: false # disable auto detection
-              paths: # now you must specify paths manually
-                - my.path.to.greet
+# Config
+contexts:
+  gender_context:
+    enum:
+      - male
+      - female
+    auto: false # disable auto detection
+    paths: # now you must specify paths manually
+      - my.path.to.greet
 ```
 
 In contrast to pluralization, you **must** provide all forms. Collapse it to save space.
@@ -829,14 +799,9 @@ Often, multiple objects have the same attributes. You can create a common super 
 Here we know that all objects inside `whatsNew` have the same attributes. Let's name these objects `ChangeData`.
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          interfaces:
-            ChangeData: onboarding.whatsNew.*
+# Config
+interfaces:
+  ChangeData: onboarding.whatsNew.*
 ```
 
 This would create the following mixin:
@@ -904,14 +869,9 @@ Just create custom translation instances that don't depend on `LocaleSettings` o
 First, set the following configuration:
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          locale_handling: false # remove unused t variable, LocaleSettings, etc.
-          translation_class_visibility: public
+# Config
+locale_handling: false # remove unused t variable, LocaleSettings, etc.
+translation_class_visibility: public
 ```
 
 Example using the `riverpod` library:
@@ -937,15 +897,10 @@ You can split the translations into multiple files. Each file represents a names
 This feature is disabled by default for single-file usage. You must enable it.
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          namespaces: true # enable this feature
-          output_directory: lib/i18n # optional
-          output_file_name: translations.g.dart # set file name (mandatory)
+# Config
+namespaces: true # enable this feature
+output_directory: lib/i18n # optional
+output_file_name: translations.g.dart # set file name (mandatory)
 ```
 
 Let's create two namespaces called `widgets` and `dialogs`.
@@ -981,7 +936,7 @@ i18n/
       └── dialogs.i18n.json
  └── fr/
       └── widgets_fr.i18n.json
-      └── dialogs_fr.i18n.json
+      └── dialogs.i18n.json <-- directory locale will be used
 ```
 
 Now access the translations:
@@ -999,13 +954,9 @@ By default, a single `.g.dart` file will be generated.
 You can split this file into multiple ones to improve readability and IDE performance.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          output_file_name: translations.g.dart
-          output_format: multiple_files # set this
+# Config
+output_file_name: translations.g.dart
+output_format: multiple_files # set this
 ```
 
 This will generate the following files:
@@ -1062,13 +1013,9 @@ By default, you must provide all translations for all locales. Otherwise, you ca
 In case of rapid development, you can turn off this feature. Missing translations will fallback to base locale.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          base_locale: en
-          fallback_strategy: base_locale # add this
+# Config
+base_locale: en
+fallback_strategy: base_locale # add this
 ```
 
 ```json5
@@ -1161,16 +1108,12 @@ Possible cases are: `camel`, `snake` and `pascal`.
 ```
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          key_case: camel
-          key_map_case: pascal
-          param_case: snake
-          maps:
-            - myMap # all paths must be cased accordingly
+# Config
+key_case: camel
+key_map_case: pascal
+param_case: snake
+maps:
+  - myMap # all paths must be cased accordingly
 ```
 
 ```dart
@@ -1183,12 +1126,8 @@ String b = t.myMap['ThisShouldBeInPascal'];
 You can use this library without flutter.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          flutter_integration: false # set this
+# Config
+flutter_integration: false # set this
 ```
 
 ## Tools

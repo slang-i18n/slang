@@ -1,9 +1,10 @@
 import 'package:slang/builder/model/i18n_locale.dart';
 
-/// Used during the read step of all translation assets
+/// Contains ALL translations of ALL locales
+/// Represented as pure maps without modifications
 ///
 /// locale -> (namespace -> translation map)
-class NamespaceTranslationMap {
+class TranslationMap {
   final _internalMap = <I18nLocale, Map<String, Map<String, dynamic>>>{};
 
   /// Add a namespace and its translations

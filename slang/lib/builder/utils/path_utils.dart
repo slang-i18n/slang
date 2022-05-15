@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:slang/builder/model/i18n_locale.dart';
 
 /// Operations on paths
 class PathUtils {
   /// converts /some/path/file.json to file.json
   static String getFileName(String path) {
-    return path.replaceAll(Platform.pathSeparator, '/').split('/').last;
+    return path.replaceAll('\\', '/').split('/').last;
   }
 
   /// converts /some/path/file.json to file
@@ -19,6 +17,15 @@ class PathUtils {
     final fileName = getFileName(path);
     final firstDot = fileName.indexOf('.');
     return fileName.substring(firstDot + 1);
+  }
+
+  /// converts /a/b/file.json to b
+  static String? getParentDirectory(String path) {
+    final segments = path.replaceAll('\\', '/').split('/');
+    if (segments.length == 1) {
+      return null;
+    }
+    return segments[segments.length - 2];
   }
 
   /// converts /some/path/file.json to /some/path/newFile.json

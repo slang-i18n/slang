@@ -3,7 +3,7 @@ import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/build_config.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/namespace_translation_map.dart';
+import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 
 import '../util/build_config_utils.dart';
@@ -30,7 +30,7 @@ void generateMainIntegration(BuildConfig buildConfig, String en, String de) {
   final result = GeneratorFacade.generate(
     buildConfig: buildConfig,
     baseName: 'translations',
-    translationMap: NamespaceTranslationMap()
+    translationMap: TranslationMap()
       ..addTranslations(
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(en),
@@ -55,7 +55,7 @@ void generateMainSplitIntegration(
   final result = GeneratorFacade.generate(
     buildConfig: buildConfig.copyWith(outputFormat: OutputFormat.multipleFiles),
     baseName: 'translations',
-    translationMap: NamespaceTranslationMap()
+    translationMap: TranslationMap()
       ..addTranslations(
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(en),
@@ -91,7 +91,7 @@ void generateNoFlutter(BuildConfig buildConfig, String simple) {
   final result = GeneratorFacade.generate(
     buildConfig: buildConfig.copyWith(flutterIntegration: false),
     baseName: 'translations',
-    translationMap: NamespaceTranslationMap()
+    translationMap: TranslationMap()
       ..addTranslations(
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(simple),
@@ -108,7 +108,7 @@ void generateNoLocaleHandling(BuildConfig buildConfig, String simple) {
   final result = GeneratorFacade.generate(
     buildConfig: buildConfig.copyWith(renderLocaleHandling: false),
     baseName: 'translations',
-    translationMap: NamespaceTranslationMap()
+    translationMap: TranslationMap()
       ..addTranslations(
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(simple),

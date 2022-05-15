@@ -5,14 +5,14 @@ import 'package:slang/builder/model/build_config.dart';
 import 'package:slang/builder/model/build_result.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/interface.dart';
-import 'package:slang/builder/model/namespace_translation_map.dart';
+import 'package:slang/builder/model/translation_map.dart';
 
 class GeneratorFacade {
   /// Common step used by custom runner and builder to get the .g.dart content
   static BuildResult generate({
     required BuildConfig buildConfig,
     required String baseName,
-    required NamespaceTranslationMap translationMap,
+    required TranslationMap translationMap,
   }) {
     // combine namespaces and build the internal model
     final List<I18nData> translationList =
