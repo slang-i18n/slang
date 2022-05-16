@@ -335,9 +335,10 @@ class TextNode extends Node implements LeafNode {
 
   @override
   String toString() {
-    if (params.isEmpty)
+    if (params.isEmpty) {
       return content;
-    else
+    } else {
       return '$params => $content';
+    }
   }
 }

@@ -21,7 +21,7 @@ void main(List<String> arguments) async {
   final bool watchMode;
   final bool statsMode;
   final bool verbose;
-  if (arguments.length >= 1) {
+  if (arguments.isNotEmpty) {
     watchMode = arguments[0] == 'watch';
     statsMode = arguments[0] == 'stats';
     verbose = !statsMode ||

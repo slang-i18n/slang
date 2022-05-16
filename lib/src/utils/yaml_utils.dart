@@ -3,7 +3,7 @@ class YamlUtils {
   /// forcing all keys to be strings
   static Map<String, dynamic> deepCast(Map<dynamic, dynamic> source) {
     return source.map((key, value) {
-      final castedValue;
+      final dynamic castedValue;
       if (value is Map) {
         castedValue = deepCast(value);
       } else if (value is List) {

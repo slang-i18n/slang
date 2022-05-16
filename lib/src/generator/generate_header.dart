@@ -628,15 +628,17 @@ void _generateExtensions({
   for (I18nData locale in allLocales) {
     buffer.write(
         '\t\t\tcase $enumName.${locale.locale.enumConstant}: return const Locale.fromSubtags(');
-    if (locale.locale.language != null)
+    if (locale.locale.language != null) {
       buffer.write('languageCode: \'${locale.locale.language}\'');
+    }
     if (locale.locale.script != null) {
       if (locale.locale.language != null) buffer.write(', ');
       buffer.write('scriptCode: \'${locale.locale.script}\', ');
     }
     if (locale.locale.country != null) {
-      if (locale.locale.language != null || locale.locale.script != null)
+      if (locale.locale.language != null || locale.locale.script != null) {
         buffer.write(', ');
+      }
       buffer.write('countryCode: \'${locale.locale.country}\'');
     }
     buffer.writeln(');');
