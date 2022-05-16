@@ -15,7 +15,7 @@ dev_dependencies:
   slang_build_runner: <version>
 ```
 
-The `build.yaml` file should be in the correct format.
+Make sure to use `build.yaml` instead of `slang.yaml`.
 
 ```yaml
 targets:
