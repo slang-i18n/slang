@@ -39,10 +39,7 @@ void main() {
 
     test('strings_CN', () {
       RegExpMatch? match = regex.firstMatch('strings_CN');
-      expect(match?.group(2), 'strings'); // base name
-      expect(match?.group(3), null);
-      expect(match?.group(5), null);
-      expect(match?.group(7), 'CN');
+      expect(match, null);
     });
   });
 
