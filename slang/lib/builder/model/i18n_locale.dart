@@ -45,11 +45,10 @@ class I18nLocale {
   static I18nLocale fromString(String localeRaw) {
     final match = RegexUtils.localeRegex.firstMatch(localeRaw);
     if (match != null) {
-      final language = match.group(1);
-      final script = match.group(3);
-      final country = match.group(5);
-      return I18nLocale(
-          language: language ?? '', script: script, country: country);
+      final language = match.group(1)!;
+      final script = match.group(2);
+      final country = match.group(3);
+      return I18nLocale(language: language, script: script, country: country);
     }
     return I18nLocale(language: localeRaw);
   }

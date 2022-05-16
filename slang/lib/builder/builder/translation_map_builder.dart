@@ -76,8 +76,8 @@ class TranslationMapBuilder {
               if (match != null) {
                 directoryLocale = I18nLocale(
                   language: match.group(1)!,
-                  script: match.group(3),
-                  country: match.group(5),
+                  script: match.group(2),
+                  country: match.group(3),
                 );
               }
             }
@@ -103,11 +103,11 @@ class TranslationMapBuilder {
         final match =
             RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
         if (match != null) {
-          final namespace = match.group(2)!;
+          final namespace = match.group(1)!;
           final locale = I18nLocale(
-            language: match.group(3)!,
-            script: match.group(5),
-            country: match.group(7),
+            language: match.group(2)!,
+            script: match.group(3),
+            country: match.group(4),
           );
 
           translationMap.addTranslations(

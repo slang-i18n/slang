@@ -7,34 +7,34 @@ void main() {
 
     test('strings_en', () {
       RegExpMatch? match = regex.firstMatch('strings_en');
-      expect(match?.group(2), 'strings'); // base name
-      expect(match?.group(3), 'en'); // language
-      expect(match?.group(5), null);
-      expect(match?.group(7), null);
+      expect(match?.group(1), 'strings'); // base name
+      expect(match?.group(2), 'en'); // language
+      expect(match?.group(3), null);
+      expect(match?.group(4), null);
     });
 
     test('strings_en_US', () {
       RegExpMatch? match = regex.firstMatch('strings_en_US');
-      expect(match?.group(2), 'strings'); // base name
-      expect(match?.group(3), 'en');
-      expect(match?.group(5), null);
-      expect(match?.group(7), 'US');
+      expect(match?.group(1), 'strings'); // base name
+      expect(match?.group(2), 'en');
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'US');
     });
 
     test('translations_en-US', () {
       RegExpMatch? match = regex.firstMatch('translations_en-US');
-      expect(match?.group(2), 'translations'); // base name
-      expect(match?.group(3), 'en');
-      expect(match?.group(5), null);
-      expect(match?.group(7), 'US');
+      expect(match?.group(1), 'translations'); // base name
+      expect(match?.group(2), 'en');
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'US');
     });
 
     test('strings_zh-Hant-TW', () {
       RegExpMatch? match = regex.firstMatch('strings_zh-Hant-TW');
-      expect(match?.group(2), 'strings'); // base name
-      expect(match?.group(3), 'zh');
-      expect(match?.group(5), 'Hant');
-      expect(match?.group(7), 'TW');
+      expect(match?.group(1), 'strings'); // base name
+      expect(match?.group(2), 'zh');
+      expect(match?.group(3), 'Hant');
+      expect(match?.group(4), 'TW');
     });
 
     test('strings_CN', () {
@@ -54,20 +54,20 @@ void main() {
     test('en_US', () {
       RegExpMatch? match = regex.firstMatch('en_US');
       expect(match?.group(1), 'en');
-      expect(match?.group(5), 'US');
+      expect(match?.group(3), 'US');
     });
 
     test('en-US', () {
       RegExpMatch? match = regex.firstMatch('en-US');
       expect(match?.group(1), 'en');
-      expect(match?.group(5), 'US');
+      expect(match?.group(3), 'US');
     });
 
     test('zh-Hant-TW', () {
       RegExpMatch? match = regex.firstMatch('zh-Hant-TW');
       expect(match?.group(1), 'zh');
-      expect(match?.group(3), 'Hant');
-      expect(match?.group(5), 'TW');
+      expect(match?.group(2), 'Hant');
+      expect(match?.group(3), 'TW');
     });
   });
 

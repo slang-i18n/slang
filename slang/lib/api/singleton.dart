@@ -2,9 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:slang/api/locale.dart';
 import 'package:slang/api/pluralization.dart';
 import 'package:slang/api/state.dart';
-
-final _localeRegex =
-    RegExp(r'^([a-z]{2,8})?([_-]([A-Za-z]{4}))?([_-]?([A-Z]{2}|[0-9]{3}))?$');
+import 'package:slang/builder/utils/regex_utils.dart';
 
 /// Provides utility functions without any side effects.
 abstract class BaseAppLocaleUtils<E extends BaseAppLocale<T>,
@@ -27,11 +25,11 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<T>,
   /// Parses the raw locale to get the enum.
   /// Fallbacks to base locale.
   E parse(String rawLocale) {
-    final match = _localeRegex.firstMatch(rawLocale);
+    final match = RegexUtils.localeRegex.firstMatch(rawLocale);
     E? selected;
     if (match != null) {
       final language = match.group(1);
-      final country = match.group(5);
+      final country = match.group(3);
 
       // match exactly
       selected = locales.firstWhereOrNull((supported) =>
