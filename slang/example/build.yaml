@@ -1,4 +1,4 @@
-# This is how I would look like if you use slang_build_runner + build.yaml
+# This is how it would look like if you use slang_build_runner + build.yaml
 #
 # targets:
 #  $default:
