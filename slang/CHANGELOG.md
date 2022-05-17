@@ -1,3 +1,8 @@
+## 2.2.1
+
+- fix: throw error if base locale not found
+- fix: use more strict locale regex to avoid false-positives when detecting locale of directory name
+
 ## 2.2.0
 
 - feat: locale can be moved from file name to directory name (e.g. `i18n/fr/page1_fr.i18n.json` to `i18n/fr/page1.i18n.json`)
