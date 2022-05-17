@@ -1,0 +1,5 @@
+dependency_overrides:
+  slang:
+    path: ..
+  slang_flutter:
+    path: ../../slang_flutter

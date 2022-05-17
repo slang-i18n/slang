@@ -280,9 +280,9 @@ void _generateTranslationGetter({
     buffer.writeln(
         'class TranslationProvider extends BaseTranslationProvider<$enumName, $baseClassName> {');
     buffer.writeln('\tTranslationProvider({required super.child}) : super(');
-    buffer.writeln('\t\tbaseLocale: _baseLocale,');
+    buffer.writeln('\t\tinitLocale: LocaleSettings.instance.currentLocale,');
     buffer.writeln(
-        '\t\tbaseTranslations: LocaleSettings.instance.currentTranslations,');
+        '\t\tinitTranslations: LocaleSettings.instance.currentTranslations,');
     buffer.writeln('\t);');
     buffer.writeln();
     buffer.writeln(

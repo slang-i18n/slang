@@ -80,12 +80,12 @@ final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
 abstract class BaseTranslationProvider<E extends BaseAppLocale<T>,
     T extends BaseTranslations> extends StatefulWidget {
-  final E baseLocale;
-  final T baseTranslations;
+  final E initLocale;
+  final T initTranslations;
 
   BaseTranslationProvider({
-    required this.baseLocale,
-    required this.baseTranslations,
+    required this.initLocale,
+    required this.initTranslations,
     required this.child,
   }) : super(key: _translationProviderKey);
 
@@ -94,8 +94,8 @@ abstract class BaseTranslationProvider<E extends BaseAppLocale<T>,
   @override
   _TranslationProviderState<E, T> createState() =>
       _TranslationProviderState<E, T>(
-        locale: baseLocale,
-        translations: baseTranslations,
+        locale: initLocale,
+        translations: initTranslations,
       );
 }
 
