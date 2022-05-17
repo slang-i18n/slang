@@ -125,6 +125,15 @@ class TranslationMapBuilder {
       }
     }
 
+    if (translationMap
+        .getEntries()
+        .every((locale) => locale.key != buildConfig.baseLocale)) {
+      if (verbose) {
+        print('');
+      }
+      throw 'Translation file for base locale "${buildConfig.baseLocale.languageTag}" not found.';
+    }
+
     return translationMap;
   }
 }
