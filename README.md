@@ -11,6 +11,14 @@
 
 Lightweight i18n solution. Use JSON, YAML or CSV files to create typesafe translations.
 
+## Important
+
+[slang](https://pub.dev/packages/slang) is the official successor of this library!
+
+It is recommended to migrate to [slang](https://pub.dev/packages/slang) as new features are only implemented there.
+
+You can read the migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
+
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.

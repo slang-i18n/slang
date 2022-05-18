@@ -1,3 +1,15 @@
+## 5.12.5
+
+In parallel with a new federated package structure, we have rebranded this library to [slang](https://pub.dev/packages/slang).
+
+It is recommended to migrate to [slang](https://pub.dev/packages/slang) as new features are only implemented there.
+
+fast_i18n will only receive bug fixes.
+
+You can read the migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
+
+- docs: add slang notice
+
 ## 5.12.4
 
 - fix: Flutter 3.0.0 compatibility
@@ -180,7 +192,7 @@ MaterialApp(
 - feat: generated file follows lint guidelines
 - feat: add support for linked translations, e.g. `Welcome to @:appName`
 
-You can read the detailed migration guide [here](https://github.com/Tienisto/flutter-fast-i18n/blob/master/MIGRATION.md).
+You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
 
 ## 4.11.0
 
