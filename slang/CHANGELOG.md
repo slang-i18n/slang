@@ -1,6 +1,8 @@
-## 2.2.1
+## 2.3.0
 
+- feat: use tight version for `slang_flutter` and `slang_build_runner`
 - fix: throw error if base locale not found
+- fix: `TranslationProvider` should use current locale
 - fix: use more strict locale regex to avoid false-positives when detecting locale of directory name
 
 ## 2.2.0

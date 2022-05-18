@@ -2,11 +2,12 @@
 
 `build_runner` support for [slang](https://pub.dev/packages/slang).
 
-Using `slang` alone, you can already run `flutter pub run slang` but sometimes you want to combine multiple source generators.
+Useful if you want to combine multiple code generators.
 
-This library ensures that `build_runner` recognizes `slang` without having `build` as transitive dependency.
+This library ensures that `slang` is recognized by `build_runner`.
 
 ```yaml
+# pubspec.yaml
 dependencies:
   slang: <version>
 
@@ -18,6 +19,7 @@ dev_dependencies:
 Make sure to use `build.yaml` instead of `slang.yaml`.
 
 ```yaml
+# build.yaml
 targets:
   $default:
     builders:

@@ -1,3 +1,8 @@
+## 2.3.0
+
+- Bump `slang` to `2.3.0`
+- Use a tight version for `slang`
+
 ## 2.2.0
 
 - Read directory locale

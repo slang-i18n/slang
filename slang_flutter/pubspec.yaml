@@ -1,6 +1,6 @@
 name: slang_flutter
 description: Flutter support for slang
-version: 2.0.0
+version: 2.3.0
 repository: https://github.com/Tienisto/slang
 
 environment:
@@ -9,4 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  slang: ^2.0.0
+
+  # Use tight version to ensure that all features are available
+  slang: '>=2.3.0 <2.4.0'
