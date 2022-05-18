@@ -40,18 +40,14 @@ mixin ChangeData {
 ### Example (most explicit version)
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          interfaces:
-            MyInterface:
-              paths:
-                - onboarding.whatsNew.*
-              attributes:
-                - String title
-                - String content
+# Config
+interfaces:
+  MyInterface:
+    paths:
+      - onboarding.whatsNew.*
+    attributes:
+      - String title
+      - String content
 ```
 
 ### Paths
@@ -115,13 +111,9 @@ both|**Multiple** nodes will get the **predefined** interface
 Use this, if you want to target one node.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          interfaces:
-            MyInterface: a.c.* # all children of c (non-recursive)
+# Config
+interfaces:
+  MyInterface: a.c.* # all children of c (non-recursive)
 ```
 
 ### Multiple Paths
@@ -131,16 +123,12 @@ Use this, if you want to target multiple translations.
 All nodes should only have the **same mandatory** parameters. Otherwise unexpected things may occur.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          interfaces:
-            MyInterface:
-              paths:
-                - a.b # single node
-                - a.c.* # all children of c (non-recursive)
+# Config
+interfaces:
+  MyInterface:
+    paths:
+      - a.b # single node
+      - a.c.* # all children of c (non-recursive)
 ```
 
 ### Attributes Only
@@ -148,17 +136,13 @@ targets:
 Use this, if your selected translations are spread across the file.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          interfaces:
-            MyInterface:
-              attributes:
-                - String title
-                - String content
-                - List<String>? features
+# Config
+interfaces:
+  MyInterface:
+    attributes:
+      - String title
+      - String content
+      - List<String>? features
 ```
 
 ```json5
@@ -196,16 +180,12 @@ targets:
 This is the most explicit configuration.
 
 ```yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          interfaces:
-            MyInterface:
-              paths:
-                - onboarding.whatsNew.*
-              attributes:
-                - String title
-                - String content
+# Config
+interfaces:
+  MyInterface:
+    paths:
+      - onboarding.whatsNew.*
+    attributes:
+      - String title
+      - String content
 ```

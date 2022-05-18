@@ -1244,10 +1244,17 @@ targets:
     sources:
       - "custom-directory/**" # optional; only assets/* and lib/* are scanned by build_runner
     builders:
-      slang:
+      slang_build_runner:
         options:
           input_directory: assets/i18n
           output_directory: lib/i18n
+```
+
+... or in `slang.yaml`:
+
+```yaml
+input_directory: assets/i18n
+output_directory: lib/i18n
 ```
 
 **Can I skip translations or use them from base locale?**

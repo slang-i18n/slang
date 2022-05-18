@@ -13,13 +13,9 @@ You can make use of that to increase code quality.
 Please set the translation classes public:
 
 ```yaml
-# File: build.yaml
-targets:
-  $default:
-    builders:
-      slang:
-        options:
-          translation_class_visibility: public
+# Config
+locale_handling: false # remove unused t variable, LocaleSettings, etc.
+translation_class_visibility: public
 ```
 
 ## Usage
