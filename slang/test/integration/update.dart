@@ -15,6 +15,9 @@ import '../util/resources_utils.dart';
 /// Generates expected integration results
 /// Using JSON files only.
 void main() {
+  print('Generate integration test results...');
+  print('');
+
   final en = loadResource('main/json_en.json');
   final de = loadResource('main/json_de.json');
   final simple = loadResource('main/json_simple.json');
@@ -24,6 +27,8 @@ void main() {
   generateMainSplitIntegration(buildConfig, en, de);
   generateNoFlutter(buildConfig, simple);
   generateNoLocaleHandling(buildConfig, simple);
+
+  print('');
 }
 
 void generateMainIntegration(BuildConfig buildConfig, String en, String de) {
@@ -125,6 +130,7 @@ void _write({
   required String path,
   required String content,
 }) {
-  FileUtils.writeFile(
-      path: 'test/integration/resources/$path.output', content: content);
+  final finalPath = 'test/integration/resources/$path.output';
+  print(' -> $finalPath');
+  FileUtils.writeFile(path: finalPath, content: content);
 }
