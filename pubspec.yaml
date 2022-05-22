@@ -1,6 +1,6 @@
 name: fast_i18n
 description: Localization / Internationalization (i18n) solution. Use JSON, YAML or CSV files to create typesafe translations via source generation.
-version: 5.12.5
+version: 5.12.6
 repository: https://github.com/Tienisto/slang
 
 environment:

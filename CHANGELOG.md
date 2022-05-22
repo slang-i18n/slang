@@ -1,3 +1,7 @@
+## 5.12.6
+
+- fix: add missing fallback for flat map if configured
+
 ## 5.12.5
 
 In parallel with a new federated package structure, we have rebranded this library to [slang](https://pub.dev/packages/slang).
