@@ -150,8 +150,18 @@ void _generateClass(
       buffer.writeln();
       buffer.writeln('\t/// Access flat map');
       buffer.write('\t');
-      if (!localeData.base) buffer.write('@override ');
-      buffer.writeln('dynamic operator[](String key) => _flatMap[key];');
+      if (!localeData.base) {
+        buffer.write('@override ');
+      }
+
+      buffer.write('dynamic operator[](String key) => _flatMap[key]');
+
+      if (config.fallbackStrategy == FallbackStrategy.baseLocale &&
+          !localeData.base) {
+        buffer.writeln(' ?? super._flatMap[key];');
+      } else {
+        buffer.writeln(';');
+      }
 
       buffer.writeln();
       buffer.writeln('\t// Internal flat map initialized lazily');
