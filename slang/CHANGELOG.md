@@ -1,3 +1,7 @@
+## 2.3.1
+
+- fix: add missing fallback for flat map if configured
+
 ## 2.3.0
 
 - feat: use tight version for `slang_flutter` and `slang_build_runner`
