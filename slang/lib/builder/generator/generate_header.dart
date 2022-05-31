@@ -118,8 +118,10 @@ void _generateImports(I18nConfig config, StringBuffer buffer) {
   buffer.writeln();
   if (config.flutterIntegration) {
     buffer.writeln('import \'package:slang_flutter/slang_flutter.dart\';');
+    buffer.writeln('export \'package:slang_flutter/slang_flutter.dart\';');
   } else {
     buffer.writeln('import \'package:slang/slang.dart\';');
+    buffer.writeln('export \'package:slang/slang.dart\';');
   }
 }
 
