@@ -120,8 +120,9 @@ void main() {
           ContextType(
             enumName: 'GenderCon',
             enumValues: ['male', 'female'],
-            auto: true,
             paths: [],
+            defaultParameter: 'gender',
+            generateEnum: true,
           ),
         ]),
         locale: defaultLocale,
@@ -134,9 +135,9 @@ void main() {
         },
       );
       final textNode = result.root.entries['b'] as StringTextNode;
-      expect(textNode.params, {'p1', 'context'});
-      expect(textNode.paramTypeMap, {'context': 'GenderCon'});
-      expect(textNode.content, r'Hello ${_root.a(p1: p1, context: context)}');
+      expect(textNode.params, {'p1', 'gender'});
+      expect(textNode.paramTypeMap, {'gender': 'GenderCon'});
+      expect(textNode.content, r'Hello ${_root.a(p1: p1, gender: gender)}');
     });
 
     test('empty lists should take generic type of interface', () {

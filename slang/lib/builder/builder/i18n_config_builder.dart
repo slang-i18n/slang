@@ -22,6 +22,7 @@ class I18nConfigBuilder {
       renderTimestamp: buildConfig.renderTimestamp,
       contexts: buildConfig.contexts,
       interface: interfaces,
+      imports: buildConfig.imports,
     );
   }
 }

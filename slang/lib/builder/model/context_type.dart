@@ -1,16 +1,19 @@
 class ContextType {
-  static const bool defaultAuto = true;
+  static const String DEFAULT_PARAMETER = 'context';
   static const List<String> defaultPaths = <String>[];
+  static const bool defaultGenerateEnum = true;
 
   final String enumName;
   final List<String> enumValues;
-  final bool auto;
   final List<String> paths;
+  final String defaultParameter;
+  final bool generateEnum;
 
   ContextType({
     required this.enumName,
     required this.enumValues,
-    required this.auto,
     required this.paths,
+    required this.defaultParameter,
+    required this.generateEnum,
   });
 }

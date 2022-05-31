@@ -116,11 +116,22 @@ void _generateHeaderComment({
 
 void _generateImports(I18nConfig config, StringBuffer buffer) {
   buffer.writeln();
+  final imports = [
+    ...config.imports,
+    if (config.flutterIntegration)
+      'package:slang_flutter/slang_flutter.dart'
+    else
+      'package:slang/slang.dart'
+  ]..sort((a, b) => a.compareTo(b));
+
+  for (final i in imports) {
+    buffer.writeln('import \'$i\';');
+  }
+
+  // add export statements
   if (config.flutterIntegration) {
-    buffer.writeln('import \'package:slang_flutter/slang_flutter.dart\';');
     buffer.writeln('export \'package:slang_flutter/slang_flutter.dart\';');
   } else {
-    buffer.writeln('import \'package:slang/slang.dart\';');
     buffer.writeln('export \'package:slang/slang.dart\';');
   }
 }
@@ -384,12 +395,14 @@ void _generateContextEnums({
   required StringBuffer buffer,
   required I18nConfig config,
 }) {
-  if (config.contexts.isNotEmpty) {
+  final contexts = config.contexts.where((c) => c.generateEnum);
+
+  if (contexts.isNotEmpty) {
     buffer.writeln();
     buffer.writeln('// context enums');
   }
 
-  for (final contextType in config.contexts) {
+  for (final contextType in contexts) {
     buffer.writeln();
     buffer.writeln('enum ${contextType.enumName} {');
     for (final enumValue in contextType.enumValues) {

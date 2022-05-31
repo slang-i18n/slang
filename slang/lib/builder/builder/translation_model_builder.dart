@@ -294,12 +294,13 @@ class TranslationModelBuilder {
             final String? paramNameHint =
                 RegexUtils.paramHintRegex.firstMatch(originalKey)?.group(1);
             if (detectedType.nodeType == _DetectionType.context) {
+              final context = detectedType.contextHint!;
               node = ContextNode(
                 path: currPath,
                 comment: comment,
-                context: detectedType.contextHint!,
+                context: context,
                 entries: digestedMap,
-                parameterName: paramNameHint,
+                paramName: paramNameHint ?? context.defaultParameter,
               );
             } else {
               node = PluralNode(
@@ -376,7 +377,10 @@ class TranslationModelBuilder {
       }
 
       for (final contextType in config.contexts) {
-        if (contextType.auto) {
+        if (contextType.paths.contains(nodePath)) {
+          return _DetectionResult(_DetectionType.context, contextType);
+        } else if (contextType.paths.isEmpty) {
+          // empty paths => auto detection
           final isContext = childrenSplitByComma.length ==
                   contextType.enumValues.length &&
               childrenSplitByComma
@@ -384,8 +388,6 @@ class TranslationModelBuilder {
           if (isContext) {
             return _DetectionResult(_DetectionType.context, contextType);
           }
-        } else if (contextType.paths.contains(nodePath)) {
-          return _DetectionResult(_DetectionType.context, contextType);
         }
       }
 

@@ -95,6 +95,7 @@ class BuildConfigBuilder {
       interfaces:
           (map['interfaces'] as Map<String, dynamic>?)?.toInterfaces() ??
               BuildConfig.defaultInterfaces,
+      imports: map['imports']?.cast<String>() ?? BuildConfig.defaultImports,
     );
   }
 }
@@ -106,13 +107,20 @@ extension on Map<String, dynamic> {
       final enumName = e.key.toCase(CaseStyle.pascal);
       final config = e.value as Map<String, dynamic>;
 
+      if (config['auto'] != null) {
+        print('context "auto" config is redundant. Remove it.');
+      }
+
       return ContextType(
         enumName: enumName,
         enumValues: (config['enum'].cast<String>() as List<String>)
             .map((e) => e.toCase(CaseStyle.camel))
             .toList(),
-        auto: config['auto'] ?? ContextType.defaultAuto,
         paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
+        defaultParameter:
+            config['default_parameter'] ?? ContextType.DEFAULT_PARAMETER,
+        generateEnum:
+            config['generate_enum'] ?? ContextType.defaultGenerateEnum,
       );
     }).toList();
   }

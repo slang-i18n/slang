@@ -31,6 +31,7 @@ final baseConfig = BuildConfig(
   pluralOrdinal: BuildConfig.defaultOrdinal,
   contexts: BuildConfig.defaultContexts,
   interfaces: BuildConfig.defaultInterfaces,
+  imports: BuildConfig.defaultImports,
 );
 
 extension BuildConfigCopy on BuildConfig {
@@ -74,6 +75,7 @@ extension BuildConfigCopy on BuildConfig {
       pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
       contexts: contexts ?? this.contexts,
       interfaces: interfaces ?? this.interfaces,
+      imports: imports,
     );
   }
 }

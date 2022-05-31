@@ -33,6 +33,7 @@ class BuildConfig {
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
   static const List<InterfaceConfig> defaultInterfaces = <InterfaceConfig>[];
+  static const List<String> defaultImports = <String>[];
 
   final FileType fileType;
   final I18nLocale baseLocale;
@@ -60,6 +61,7 @@ class BuildConfig {
   final List<String> pluralOrdinal;
   final List<ContextType> contexts;
   final List<InterfaceConfig> interfaces;
+  final List<String> imports;
 
   BuildConfig({
     required this.baseLocale,
@@ -87,6 +89,7 @@ class BuildConfig {
     required this.pluralOrdinal,
     required this.contexts,
     required this.interfaces,
+    required this.imports,
   }) : fileType = _determineFileType(inputFilePattern);
 
   static FileType _determineFileType(String extension) {
@@ -128,6 +131,7 @@ class BuildConfig {
       pluralOrdinal: pluralOrdinal,
       contexts: contexts,
       interfaces: interfaces,
+      imports: imports,
     );
   }
 
@@ -182,6 +186,7 @@ class BuildConfig {
             '          - ${path.isContainer ? 'children of: ' : ''}${path.path}');
       }
     }
+    print(' -> imports: $imports');
   }
 }
 

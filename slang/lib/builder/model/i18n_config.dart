@@ -18,6 +18,7 @@ class I18nConfig {
   final bool renderTimestamp;
   final List<ContextType> contexts;
   final List<Interface> interface; // may include more than in build config
+  final List<String> imports;
 
   I18nConfig({
     required this.baseName,
@@ -33,5 +34,6 @@ class I18nConfig {
     required this.renderTimestamp,
     required this.contexts,
     required this.interface,
+    required this.imports,
   });
 }

@@ -118,8 +118,8 @@ class ContextNode extends Node implements LeafNode {
     required super.comment,
     required this.context,
     required this.entries,
-    required String? parameterName,
-  }) : this.paramName = parameterName ?? 'context';
+    required this.paramName,
+  });
 
   @override
   String toString() => entries.toString();

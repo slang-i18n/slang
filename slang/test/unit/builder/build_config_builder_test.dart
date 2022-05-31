@@ -17,13 +17,15 @@ void main() {
                       enum:
                         - male
                         - female
+                      default_parameter: gender
+                      render_enum: false
         ''');
 
       expect(result, isNotNull);
       expect(result!.contexts.length, 1);
       expect(result.contexts.first.enumName, 'GenderContext');
       expect(result.contexts.first.enumValues, ['male', 'female']);
-      expect(result.contexts.first.auto, true);
+      expect(result.contexts.first.defaultParameter, 'gender');
       expect(result.contexts.first.paths, []);
     });
   });
@@ -47,7 +49,7 @@ void main() {
       expect(result.contexts.length, 1);
       expect(result.contexts.first.enumName, 'GenderContext');
       expect(result.contexts.first.enumValues, ['male', 'female', 'neutral']);
-      expect(result.contexts.first.auto, true);
+      expect(result.contexts.first.defaultParameter, 'context');
       expect(result.contexts.first.paths, []);
     });
 
@@ -60,7 +62,6 @@ void main() {
                 'male',
                 'female',
               ],
-              'auto': false,
               'paths': [
                 'myPath',
                 'mySecondPath.subPath',
@@ -73,7 +74,7 @@ void main() {
       expect(result.contexts.length, 1);
       expect(result.contexts.first.enumName, 'GenderContext');
       expect(result.contexts.first.enumValues, ['male', 'female']);
-      expect(result.contexts.first.auto, false);
+      expect(result.contexts.first.defaultParameter, 'context');
       expect(result.contexts.first.paths, [
         'myPath',
         'mySecondPath.subPath',

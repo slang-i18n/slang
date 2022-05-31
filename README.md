@@ -58,7 +58,7 @@ String i = page1.title; // type-safe call
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
-  - [Custom Contexts](#-custom-contexts)
+  - [Custom Contexts / Enums](#-custom-contexts--enums)
   - [Interfaces](#-interfaces)
   - [Locale Enum](#-locale-enum)
   - [Dependency Injection](#-dependency-injection)
@@ -251,9 +251,9 @@ This is **optional**. This library works without any configuration (in most case
 For customization, you can create a `slang.yaml` or a `build.yaml` file. Place it in the root directory.
 
 <details>
-  <summary>slang.yaml</summary>
+  <summary>slang.yaml (Click to open example)</summary>
 
-Using `slang.yaml` is useful if you don't want to use `build_runner`.
+If you don't use `build_runner`, then you can define your config in `slang.yaml` for less boilerplate.
 
 ```yaml
 base_locale: fr
@@ -290,9 +290,10 @@ contexts:
     enum:
       - male
       - female
-    auto: false
     paths:
       - my.path.to.greet
+    default_parameter: gender
+    generate_enum: true
 interfaces:
   PageData: onboarding.pages.*
   PageData2:
@@ -302,12 +303,14 @@ interfaces:
     attributes:
       - String title
       - String? content
+imports:
+  - 'package:my_package/path_to_enum.dart'
 ```
 
 </details>
 
 <details>
-  <summary>build.yaml</summary>
+  <summary>build.yaml (Click to open example)</summary>
 
 Using `build.yaml` is **necessary** if you use `build_runner`.
 
@@ -351,9 +354,10 @@ targets:
               enum:
                 - male
                 - female
-              auto: false
               paths:
                 - my.path.to.greet
+              default_parameter: gender
+              generate_enum: true
           interfaces:
             PageData: onboarding.pages.*
             PageData2:
@@ -363,39 +367,43 @@ targets:
               attributes:
                 - String title
                 - String? content
+          imports:
+            - 'package:my_package/path_to_enum.dart'
 ```
 
 </details>
 
-| Key                            | Type                               | Usage                                                        | Default       |
-|--------------------------------|------------------------------------|--------------------------------------------------------------|---------------|
-| `base_locale`                  | `String`                           | locale of default json                                       | `en`          |
-| `fallback_strategy`            | `none`, `base_locale`              | handle missing translations [(i)](#-fallback)                | `none`        |
-| `input_directory`              | `String`                           | path to input directory                                      | `null`        |
-| `input_file_pattern`           | `String`                           | input file pattern, must end with .json, .yaml or .csv       | `.i18n.json`  |
-| `output_directory`             | `String`                           | path to output directory                                     | `null`        |
-| `output_file_name`             | `String`                           | output file name                                             | `null`        |
-| `output_format`                | `single_file`, `multiple_files`    | split output files [(i)](#-output-format)                    | `single_file` |
-| `locale_handling`              | `Boolean`                          | generate locale handling logic [(i)](#-dependency-injection) | `true`        |
-| `flutter_integration`          | `Boolean`                          | generate flutter features [(i)](#-dart-only)                 | `true`        |
-| `namespaces`                   | `Boolean`                          | split input files [(i)](#-namespaces)                        | `false`       |
-| `translate_var`                | `String`                           | translate variable name                                      | `t`           |
-| `enum_name`                    | `String`                           | enum name                                                    | `AppLocale`   |
-| `translation_class_visibility` | `private`, `public`                | class visibility                                             | `private`     |
-| `key_case`                     | `null`, `camel`, `pascal`, `snake` | transform keys (optional) [(i)](#-recasing)                  | `null`        |
-| `key_map_case`                 | `null`, `camel`, `pascal`, `snake` | transform keys for maps (optional) [(i)](#-recasing)         | `null`        |
-| `param_case`                   | `null`, `camel`, `pascal`, `snake` | transform parameters (optional) [(i)](#-recasing)            | `null`        |
-| `string_interpolation`         | `dart`, `braces`, `double_braces`  | string interpolation mode [(i)](#-string-interpolation)      | `dart`        |
-| `flat_map`                     | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`        |
-| `timestamp`                    | `Boolean`                          | write "Built on" timestamp                                   | `true`        |
-| `maps`                         | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`          |
-| `pluralization`/`auto`         | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`    |
-| `pluralization`/`cardinal`     | `List<String>`                     | entries which have cardinals                                 | `[]`          |
-| `pluralization`/`ordinal`      | `List<String>`                     | entries which have ordinals                                  | `[]`          |
-| `<context>`/`enum`             | `List<String>`                     | context forms [(i)](#-custom-contexts)                       | no default    |
-| `<context>`/`auto`             | `Boolean`                          | auto detect context                                          | `true`        |
-| `<context>`/`paths`            | `List<String>`                     | entries using this context                                   | `[]`          |
-| `children of interfaces`       | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
+| Key                             | Type                               | Usage                                                        | Default       |
+|---------------------------------|------------------------------------|--------------------------------------------------------------|---------------|
+| `base_locale`                   | `String`                           | locale of default json                                       | `en`          |
+| `fallback_strategy`             | `none`, `base_locale`              | handle missing translations [(i)](#-fallback)                | `none`        |
+| `input_directory`               | `String`                           | path to input directory                                      | `null`        |
+| `input_file_pattern`            | `String`                           | input file pattern, must end with .json, .yaml or .csv       | `.i18n.json`  |
+| `output_directory`              | `String`                           | path to output directory                                     | `null`        |
+| `output_file_name`              | `String`                           | output file name                                             | `null`        |
+| `output_format`                 | `single_file`, `multiple_files`    | split output files [(i)](#-output-format)                    | `single_file` |
+| `locale_handling`               | `Boolean`                          | generate locale handling logic [(i)](#-dependency-injection) | `true`        |
+| `flutter_integration`           | `Boolean`                          | generate flutter features [(i)](#-dart-only)                 | `true`        |
+| `namespaces`                    | `Boolean`                          | split input files [(i)](#-namespaces)                        | `false`       |
+| `translate_var`                 | `String`                           | translate variable name                                      | `t`           |
+| `enum_name`                     | `String`                           | enum name                                                    | `AppLocale`   |
+| `translation_class_visibility`  | `private`, `public`                | class visibility                                             | `private`     |
+| `key_case`                      | `null`, `camel`, `pascal`, `snake` | transform keys (optional) [(i)](#-recasing)                  | `null`        |
+| `key_map_case`                  | `null`, `camel`, `pascal`, `snake` | transform keys for maps (optional) [(i)](#-recasing)         | `null`        |
+| `param_case`                    | `null`, `camel`, `pascal`, `snake` | transform parameters (optional) [(i)](#-recasing)            | `null`        |
+| `string_interpolation`          | `dart`, `braces`, `double_braces`  | string interpolation mode [(i)](#-string-interpolation)      | `dart`        |
+| `flat_map`                      | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`        |
+| `timestamp`                     | `Boolean`                          | write "Built on" timestamp                                   | `true`        |
+| `maps`                          | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`          |
+| `pluralization`/`auto`          | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`    |
+| `pluralization`/`cardinal`      | `List<String>`                     | entries which have cardinals                                 | `[]`          |
+| `pluralization`/`ordinal`       | `List<String>`                     | entries which have ordinals                                  | `[]`          |
+| `<context>`/`enum`              | `List<String>`                     | context forms [(i)](#-custom-contexts--enums)                | no default    |
+| `<context>`/`paths`             | `List<String>`                     | entries using this context                                   | `[]`          |
+| `<context>`/`default_parameter` | `String`                           | default parameter name                                       | `context`     |
+| `<context>`/`generate_enum`     | `Boolean`                          | generate enum                                                | `true`        |
+| `children of interfaces`        | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
+| `imports`                       | `List<String>`                     | generate import statements                                   | `[]`          |
 
 ## Main Features
 
@@ -469,6 +477,10 @@ Hello {{name}}
 In Flutter environment, you can tell the library to generate `TextSpan` objects.
 
 To do this, please add the `(rich)` hint.
+
+Parameters are formatted according to `string_interpolation`.
+
+Default texts can be defined via `parameter(text)`.
 
 ```json
 {
@@ -700,9 +712,9 @@ By default, the parameter name is `count`. You can change that by adding a hint.
 String a = t.someKey.apple(appleCount: 2); // notice 'appleCount' instead of 'count'
 ```
 
-### ➤ Custom Contexts
+### ➤ Custom Contexts / Enums
 
-You can utilize custom contexts to differentiate between male and female forms.
+You can utilize custom contexts to differentiate between male and female forms (or other enums).
 
 ```json5
 // File: strings.i18n.json
@@ -717,14 +729,14 @@ You can utilize custom contexts to differentiate between male and female forms.
 ```yaml
 # Config
 contexts:
-  gender_context:
+  GenderContext:
     enum:
       - male
       - female
-  polite_context:
+  UserType:
     enum:
-      - polite
-      - rude
+      - user
+      - admin
 ```
 
 ```dart
@@ -736,12 +748,11 @@ Auto detection is on by default. You can disable auto detection. This may speed 
 ```yaml
 # Config
 contexts:
-  gender_context:
+  GenderContext:
     enum:
       - male
       - female
-    auto: false # disable auto detection
-    paths: # now you must specify paths manually
+    paths: # only these paths will be considered
       - my.path.to.greet
 ```
 
@@ -768,6 +779,32 @@ Similarly to plurals, the parameter name is `context` by default. You can change
 
 ```dart
 String a = t.greet(gender: GenderContext.female); // notice 'gender' instead of 'context'
+```
+
+... or set it globally:
+
+```yaml
+# Config
+contexts:
+  UserType:
+    enum:
+      - user
+      - admin
+    default_parameter: type # by default: "context"
+```
+
+You already have existing enums? You can disable enum generation and import them instead:
+
+```yaml
+# Config
+imports:
+  - 'package:my_package/path_to_enum.dart' # define where your enum is
+contexts:
+  UserType:
+    enum:
+      - user
+      - admin
+    generate_enum: false # turn off enum generation
 ```
 
 ### ➤ Interfaces
