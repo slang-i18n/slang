@@ -1,6 +1,6 @@
 name: slang_flutter
 description: Flutter support for slang
-version: 2.4.0+1
+version: 2.4.1
 repository: https://github.com/Tienisto/slang
 
 environment:

@@ -1,3 +1,7 @@
+## 2.4.1
+
+- fix: do not export `package:flutter/widgets.dart`
+
 ## 2.4.0
 
 - feat: allow external enums for context feature (add `generate_enum` and `imports` config)

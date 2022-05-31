@@ -3,7 +3,6 @@ import 'package:slang/slang.dart';
 import 'package:flutter/widgets.dart';
 
 export 'package:slang/slang.dart';
-export 'package:flutter/widgets.dart';
 
 extension ExtAppLocaleUtils<E extends BaseAppLocale<T>,
     T extends BaseTranslations> on BaseAppLocaleUtils<E, T> {

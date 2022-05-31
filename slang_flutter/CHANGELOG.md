@@ -1,3 +1,7 @@
+## 2.4.1
+
+- Do not export `package:flutter/widgets.dart`
+
 ## 2.4.0+1
 
 - Bump `slang` to `2.4.0`

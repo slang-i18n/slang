@@ -119,7 +119,10 @@ void _generateImports(I18nConfig config, StringBuffer buffer) {
   final imports = [
     ...config.imports,
     if (config.flutterIntegration)
-      'package:slang_flutter/slang_flutter.dart'
+      ...[
+        'package:flutter/widgets.dart',
+        'package:slang_flutter/slang_flutter.dart',
+      ]
     else
       'package:slang/slang.dart'
   ]..sort((a, b) => a.compareTo(b));
