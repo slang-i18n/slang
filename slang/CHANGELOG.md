@@ -1,3 +1,9 @@
+## 2.4.0
+
+- feat: allow external enums for context feature (add `generate_enum` and `imports` config)
+- feat: add default context parameter name (`default_parameter`)
+- feat: add export statement in generated file to avoid imports of extension methods
+
 ## 2.3.1
 
 - fix: add missing fallback for flat map if configured
