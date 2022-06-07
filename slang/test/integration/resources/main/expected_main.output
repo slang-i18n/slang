@@ -80,6 +80,16 @@ class TranslationProvider extends BaseTranslationProvider<AppLocale, _Translatio
 	static InheritedLocaleData<AppLocale, _TranslationsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context);
 }
 
+/// Method C: BuildContext extension
+///
+/// For a shorter alternative to `TranslationProvider.of(context)`, a BuildContext extension is provided:
+///
+/// Usage (e.g. in a widget's `build` method:
+/// context.tr.someKey.anotherKey
+extension BuildContextTranslationsExtension on BuildContext {
+  _TranslationsEn get tr => TranslationProvider.of(this).translations;
+}
+
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsEn> {
 	LocaleSettings._() : super(
