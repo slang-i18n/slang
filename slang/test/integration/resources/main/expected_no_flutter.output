@@ -37,6 +37,7 @@ enum AppLocale with BaseAppLocale<_TranslationsEn> {
 ///
 /// No rebuild after locale change.
 /// Translation happens during initialization of the widget (call of t).
+/// Configurable via 'translate_var'.
 ///
 /// Usage:
 /// String a = t.someKey.anotherKey;
@@ -55,6 +56,7 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, _TranslationsEn> {
 
 	// static aliases (checkout base methods for documentation)
 	static AppLocale get currentLocale => instance.currentLocale;
+	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
 	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
 	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
 	static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;

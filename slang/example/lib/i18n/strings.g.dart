@@ -5,7 +5,7 @@
  * Locales: 2
  * Strings: 12 (6.0 per locale)
  *
- * Built on 2022-05-31 at 23:50 UTC
+ * Built on 2022-06-07 at 20:07 UTC
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
@@ -41,6 +41,7 @@ enum AppLocale with BaseAppLocale<_StringsEn> {
 ///
 /// No rebuild after locale change.
 /// Translation happens during initialization of the widget (call of t).
+/// Configurable via 'translate_var'.
 ///
 /// Usage:
 /// String a = t.someKey.anotherKey;
@@ -78,6 +79,15 @@ class TranslationProvider extends BaseTranslationProvider<AppLocale, _StringsEn>
 	static InheritedLocaleData<AppLocale, _StringsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _StringsEn>(context);
 }
 
+/// Method B shorthand via [BuildContext] extension method.
+/// Configurable via 'translate_var'.
+///
+/// Usage (e.g. in a widget's build method):
+/// context.t.someKey.anotherKey
+extension BuildContextTranslationsExtension on BuildContext {
+	_StringsEn get t => TranslationProvider.of(this).translations;
+}
+
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _StringsEn> {
 	LocaleSettings._() : super(
@@ -90,6 +100,7 @@ class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _StringsEn> {
 
 	// static aliases (checkout base methods for documentation)
 	static AppLocale get currentLocale => instance.currentLocale;
+	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
 	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
 	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
 	static AppLocale useDeviceLocale() => instance.useDeviceLocale();

@@ -32,6 +32,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    LocaleSettings.getLocaleStream().listen((event) {
+      print('locale changed: $event');
+    });
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;

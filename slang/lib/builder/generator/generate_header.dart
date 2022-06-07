@@ -246,6 +246,7 @@ void _generateTranslationGetter({
   buffer.writeln('/// No rebuild after locale change.');
   buffer.writeln(
       '/// Translation happens during initialization of the widget (call of $translateVar).');
+  buffer.writeln('/// Configurable via \'translate_var\'.');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln('/// String a = $translateVar.someKey.anotherKey;');
@@ -305,17 +306,16 @@ void _generateTranslationGetter({
 
     // BuildContext extension for provider
     buffer.writeln();
-    buffer.writeln('/// Method C: BuildContext extension');
+    buffer
+        .writeln('/// Method B shorthand via [BuildContext] extension method.');
+    buffer.writeln('/// Configurable via \'translate_var\'.');
     buffer.writeln('///');
-    buffer.writeln(
-        '/// For a shorter alternative to `TranslationProvider.of(context)`, a BuildContext extension is provided:');
-    buffer.writeln('///');
-    buffer.writeln('/// Usage (e.g. in a widget\'s `build` method:');
-    buffer.writeln('/// context.tr.someKey.anotherKey');
+    buffer.writeln('/// Usage (e.g. in a widget\'s build method):');
+    buffer.writeln('/// context.$translateVar.someKey.anotherKey');
     buffer.writeln(
         'extension BuildContextTranslationsExtension on BuildContext {');
     buffer.writeln(
-        '  $baseClassName get tr => TranslationProvider.of(this).translations;');
+        '\t$baseClassName get $translateVar => TranslationProvider.of(this).translations;');
     buffer.writeln('}');
   }
 }

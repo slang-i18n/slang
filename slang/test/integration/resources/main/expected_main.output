@@ -43,6 +43,7 @@ enum AppLocale with BaseAppLocale<_TranslationsEn> {
 ///
 /// No rebuild after locale change.
 /// Translation happens during initialization of the widget (call of t).
+/// Configurable via 'translate_var'.
 ///
 /// Usage:
 /// String a = t.someKey.anotherKey;
@@ -80,14 +81,13 @@ class TranslationProvider extends BaseTranslationProvider<AppLocale, _Translatio
 	static InheritedLocaleData<AppLocale, _TranslationsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context);
 }
 
-/// Method C: BuildContext extension
+/// Method B shorthand via [BuildContext] extension method.
+/// Configurable via 'translate_var'.
 ///
-/// For a shorter alternative to `TranslationProvider.of(context)`, a BuildContext extension is provided:
-///
-/// Usage (e.g. in a widget's `build` method:
-/// context.tr.someKey.anotherKey
+/// Usage (e.g. in a widget's build method):
+/// context.t.someKey.anotherKey
 extension BuildContextTranslationsExtension on BuildContext {
-  _TranslationsEn get tr => TranslationProvider.of(this).translations;
+	_TranslationsEn get t => TranslationProvider.of(this).translations;
 }
 
 /// Manages all translation instances and the current locale
@@ -102,6 +102,7 @@ class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsE
 
 	// static aliases (checkout base methods for documentation)
 	static AppLocale get currentLocale => instance.currentLocale;
+	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
 	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
 	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
 	static AppLocale useDeviceLocale() => instance.useDeviceLocale();
