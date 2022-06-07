@@ -111,7 +111,7 @@ void _generateHeaderComment({
 
   buffer.writeln();
   buffer.writeln(
-      '// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api');
+      '// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, unnecessary_string_interpolations');
 }
 
 void _generateImports(I18nConfig config, StringBuffer buffer) {
