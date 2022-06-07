@@ -1,3 +1,9 @@
+## 2.5.0
+
+- feat: add extension method shorthand (e.g. `context.tr.someKey.anotherKey`)
+- feat: add `LocaleSettings.getLocaleStream` to keep track of every locale change
+- feat: return more specific `TextSpan` instead of `InlineSpan` for rich texts
+
 ## 2.4.1
 
 - fix: do not export `package:flutter/widgets.dart`
