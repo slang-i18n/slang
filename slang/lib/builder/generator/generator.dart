@@ -12,8 +12,10 @@ class Generator {
     required List<I18nData> translations,
   }) {
     final header = generateHeader(config, translations);
-    final list = Map.fromEntries(translations
-        .map((t) => MapEntry(t.locale, generateTranslations(config, t))));
+    final list = {
+      for (final t in translations)
+        t.locale: generateTranslations(config, t),
+    };
     final String? flatMap;
     if (config.renderFlatMap) {
       flatMap = generateTranslationMap(config, translations);

@@ -302,6 +302,18 @@ void _generateTranslationGetter({
     buffer.writeln(
         '\tstatic InheritedLocaleData<$enumName, $baseClassName> of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context);');
     buffer.writeln('}');
+
+    // BuildContext extension for provider
+    buffer.writeln();
+    buffer.writeln('/// Method C: BuildContext extension');
+    buffer.writeln('///');
+    buffer.writeln('/// For a shorter alternative to `TranslationProvider.of(context)`, a BuildContext extension is provided:');
+    buffer.writeln('///');
+    buffer.writeln('/// Usage (e.g. in a widget\'s `build` method:');
+    buffer.writeln('/// context.tr.someKey.anotherKey');
+    buffer.writeln('extension BuildContextTranslationsExtension on BuildContext {');
+    buffer.writeln('  $baseClassName get tr => TranslationProvider.of(this).translations;');
+    buffer.writeln('}');
   }
 }
 
