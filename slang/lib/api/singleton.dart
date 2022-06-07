@@ -56,6 +56,10 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<T>,
   /// [locale] may have a locale which is unsupported by [E].
   /// In this case, the base locale will be returned.
   E parseAppLocale(BaseAppLocale locale) {
+    if (locale is E) {
+      return locale; // take it directly
+    }
+
     E? selected;
 
     // match exactly
@@ -107,11 +111,19 @@ extension LocaleSettingsExt<E extends BaseAppLocale<T>,
   /// Gets current locale.
   E get currentLocale {
     final locale = GlobalLocaleState.instance.getLocale();
-    if (locale is E) {
-      return locale; // take it directly
-    } else {
-      return utils.parseAppLocale(locale); // parse it
-    }
+    return utils.parseAppLocale(locale);
+  }
+
+  /// Gets the broadcast stream to keep track of every locale change.
+  ///
+  /// Usage:
+  /// LocaleSettings.getLocaleStream().listen((locale) {
+  ///   print('new locale: $locale');
+  /// });
+  Stream<E> getLocaleStream() {
+    return GlobalLocaleState.instance.getStream().map((locale) {
+      return utils.parseAppLocale(locale);
+    });
   }
 
   /// Gets current translations
@@ -143,7 +155,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<T>,
   /// Sets plural resolvers.
   /// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
   /// See https://github.com/Tienisto/slang/blob/master/slang/lib/api/plural_resolver_map.dart
-  /// Either specify [language], or [locale]. Locale has precedence.
+  /// Either specify [language], or [locale]. [locale] has precedence.
   void setPluralResolver({
     String? language,
     E? locale,

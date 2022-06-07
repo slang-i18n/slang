@@ -13,8 +13,7 @@ class Generator {
   }) {
     final header = generateHeader(config, translations);
     final list = {
-      for (final t in translations)
-        t.locale: generateTranslations(config, t),
+      for (final t in translations) t.locale: generateTranslations(config, t),
     };
     final String? flatMap;
     if (config.renderFlatMap) {

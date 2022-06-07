@@ -307,12 +307,15 @@ void _generateTranslationGetter({
     buffer.writeln();
     buffer.writeln('/// Method C: BuildContext extension');
     buffer.writeln('///');
-    buffer.writeln('/// For a shorter alternative to `TranslationProvider.of(context)`, a BuildContext extension is provided:');
+    buffer.writeln(
+        '/// For a shorter alternative to `TranslationProvider.of(context)`, a BuildContext extension is provided:');
     buffer.writeln('///');
     buffer.writeln('/// Usage (e.g. in a widget\'s `build` method:');
     buffer.writeln('/// context.tr.someKey.anotherKey');
-    buffer.writeln('extension BuildContextTranslationsExtension on BuildContext {');
-    buffer.writeln('  $baseClassName get tr => TranslationProvider.of(this).translations;');
+    buffer.writeln(
+        'extension BuildContextTranslationsExtension on BuildContext {');
+    buffer.writeln(
+        '  $baseClassName get tr => TranslationProvider.of(this).translations;');
     buffer.writeln('}');
   }
 }
@@ -350,6 +353,8 @@ void _generateLocaleSettings({
       .writeln('\t// static aliases (checkout base methods for documentation)');
   buffer.writeln(
       '\tstatic $enumName get currentLocale => instance.currentLocale;');
+  buffer.writeln(
+      '\tstatic Stream<$enumName> getLocaleStream() => instance.getLocaleStream();');
   buffer.writeln(
       '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
   buffer.writeln(
