@@ -230,7 +230,7 @@ void _generateClass(
             'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
       }
     } else if (value is RichTextNode) {
-      buffer.write('InlineSpan$optional ');
+      buffer.write('TextSpan$optional ');
       buffer.write(value.params.isEmpty
           ? 'get $key'
           : '$key${_toParameterList(value.params, value.paramTypeMap)}');
