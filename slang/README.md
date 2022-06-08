@@ -59,6 +59,7 @@ String i = page1.title; // type-safe call
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
   - [Custom Contexts / Enums](#-custom-contexts--enums)
+  - [Locale Stream](#-locale-stream)
   - [Interfaces](#-interfaces)
   - [Locale Enum](#-locale-enum)
   - [Dependency Injection](#-dependency-injection)
@@ -436,6 +437,8 @@ welcome:
 
 **CSV Example**
 
+Line terminations must be `CRLF`.
+
 You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
 
 ```csv
@@ -805,6 +808,16 @@ contexts:
       - user
       - admin
     generate_enum: false # turn off enum generation
+```
+
+### ➤ Locale Stream
+
+You may want to track locale changes. Please use `LocaleSettings.getLocaleStream`.
+
+```dart
+LocaleSettings.getLocaleStream().listen((event) {
+  print('locale changed: $event');
+});
 ```
 
 ### ➤ Interfaces
@@ -1293,6 +1306,10 @@ targets:
 input_directory: assets/i18n
 output_directory: lib/i18n
 ```
+
+**CSV files are not parsed correctly**
+
+Note that line terminations must be `CRLF`.
 
 **Can I skip translations or use them from base locale?**
 
