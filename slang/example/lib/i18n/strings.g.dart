@@ -8,7 +8,7 @@
  * Built on 2022-06-07 at 20:07 UTC
  */
 
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, unnecessary_string_interpolations, avoid_escaping_inner_quotes
 
 import 'package:flutter/widgets.dart';
 import 'package:slang_flutter/slang_flutter.dart';
