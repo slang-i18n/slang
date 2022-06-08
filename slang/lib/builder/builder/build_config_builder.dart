@@ -113,9 +113,7 @@ extension on Map<String, dynamic> {
 
       return ContextType(
         enumName: enumName,
-        enumValues: (config['enum'].cast<String>() as List<String>)
-            .map((e) => e.toCase(CaseStyle.camel))
-            .toList(),
+        enumValues: config['enum'].cast<String>(),
         paths: config['paths']?.cast<String>() ?? ContextType.defaultPaths,
         defaultParameter:
             config['default_parameter'] ?? ContextType.DEFAULT_PARAMETER,

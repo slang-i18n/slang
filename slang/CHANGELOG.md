@@ -1,3 +1,8 @@
+## 2.6.0
+
+- feat: render context enum values as is, instead of forcing to camel case
+- feat: add additional lint ignores to generated file
+
 ## 2.5.0
 
 - feat: add extension method shorthand (e.g. `context.tr.someKey.anotherKey`)
