@@ -473,8 +473,9 @@ void _addPluralizationCall({
   }
 
   // custom resolver has precedence
+  final prefix = node.pluralType.name;
   buffer.writeln(
-      '}) => (${node.pluralType == PluralType.cardinal ? '_root._cardinalResolver' : '_root._ordinalResolver'} ?? PluralResolvers.cardinal(\'$language\'))(${node.paramName},');
+      '}) => (_root._${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'))(${node.paramName},');
 
   for (final quantity in node.quantities.entries) {
     _addTabs(buffer, depth + 2);

@@ -2,6 +2,7 @@
 
 - feat: render context enum values as is, instead of forcing to camel case
 - feat: add additional lint ignores to generated file
+- fix: generate correct ordinal (plural) call
 
 ## 2.5.0
 
