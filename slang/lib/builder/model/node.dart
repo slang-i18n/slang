@@ -177,9 +177,11 @@ class StringTextNode extends TextNode {
     this.paramCase,
     Map<String, Set<String>>? linkParamMap,
   }) {
-    final escapedContent = _escapeContent(raw, interpolation);
-    final parsedResult =
-        _parseInterpolation(escapedContent, interpolation, paramCase);
+    final parsedResult = _parseInterpolation(
+      raw: _escapeContent(raw, interpolation),
+      interpolation: interpolation,
+      paramCase: paramCase,
+    );
     _params = parsedResult.params;
 
     // detect linked translations
@@ -254,6 +256,7 @@ String _escapeContent(String raw, StringInterpolation interpolation) {
       return result;
     });
   } else {
+    // escape any $ with \$
     return escapedRaw.replaceAllMapped(RegexUtils.dollarRegex, (match) {
       if (match.group(1) != null) {
         return '${match.group(1)}\\\$'; // with pre character
@@ -275,8 +278,11 @@ class _ParseInterpolationResult {
       '_ParseInterpolationResult{parsedContent: $parsedContent, params: $params}';
 }
 
-_ParseInterpolationResult _parseInterpolation(
-    String raw, StringInterpolation interpolation, CaseStyle? paramCase) {
+_ParseInterpolationResult _parseInterpolation({
+  required String raw,
+  required StringInterpolation interpolation,
+  required CaseStyle? paramCase,
+}) {
   final String parsedContent;
   final params = Set<String>();
 
@@ -360,9 +366,11 @@ class RichTextNode extends TextNode {
     required StringInterpolation interpolation,
     required CaseStyle? paramCase,
   }) {
-    final escapedContent = _escapeContent(raw, interpolation);
-    final rawParsedResult =
-        _parseInterpolation(escapedContent, interpolation, paramCase);
+    final rawParsedResult = _parseInterpolation(
+      raw: _escapeContent(raw, interpolation),
+      interpolation: interpolation,
+      paramCase: paramCase,
+    );
 
     final parsedParams =
         rawParsedResult.params.map(_parseParamWithArg).toList();
@@ -403,10 +411,14 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
   final nonMatches = s.split(pattern);
   assert(matches.length == nonMatches.length - 1);
   for (var i = 0; i < matches.length; ++i) {
-    yield onNonMatch(nonMatches[i]);
+    if (nonMatches[i].isNotEmpty) {
+      yield onNonMatch(nonMatches[i]);
+    }
     yield onMatch(matches[i]);
   }
-  yield onNonMatch(nonMatches.last);
+  if (nonMatches.last.isNotEmpty) {
+    yield onNonMatch(nonMatches.last);
+  }
 }
 
 _ParamWithArg _parseParamWithArg(String src) {
