@@ -296,7 +296,7 @@ class RichTextNode extends TextNode {
         _links.addAll(parsedLinksResult.links);
         return LiteralSpan(
           literal: parsedLinksResult.parsedContent,
-          isConstant: !parsedLinksResult.linksHasParams,
+          isConstant: parsedLinksResult.links.isEmpty,
         );
       },
       onMatch: (match) {
@@ -442,9 +442,8 @@ _ParseInterpolationResult _parseInterpolation({
 class _ParseLinksResult {
   final String parsedContent;
   final Set<String> links;
-  final bool linksHasParams;
 
-  _ParseLinksResult(this.parsedContent, this.links, this.linksHasParams);
+  _ParseLinksResult(this.parsedContent, this.links);
 
   @override
   String toString() =>
@@ -456,7 +455,6 @@ _ParseLinksResult _parseLinks({
   required Map<String, Set<String>>? linkParamMap,
 }) {
   final links = Set<String>();
-  bool linksHasParams = false;
   final parsedContent = input.replaceAllMapped(RegexUtils.linkedRegex, (match) {
     final linkedPath = match.group(1)!;
     links.add(linkedPath);
@@ -469,12 +467,9 @@ _ParseLinksResult _parseLinks({
     final linkedParams = linkParamMap[linkedPath]!;
     final parameterString =
         linkedParams.map((param) => '$param: $param').join(', ');
-    if (linkedParams.isNotEmpty) {
-      linksHasParams = true;
-    }
     return '\${_root.$linkedPath($parameterString)}';
   });
-  return _ParseLinksResult(parsedContent, links, linksHasParams);
+  return _ParseLinksResult(parsedContent, links);
 }
 
 Iterable<T> _splitWithMatchAndNonMatch<T>(

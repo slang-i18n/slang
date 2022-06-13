@@ -1,3 +1,7 @@
+## 2.6.1
+
+- fix: remove `const` if rich text has links
+
 ## 2.6.0
 
 - feat: render context enum values as is, instead of forcing to camel case
