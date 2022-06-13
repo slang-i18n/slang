@@ -494,16 +494,18 @@ Default texts can be defined via `parameter(text)`.
 Usage:
 
 ```dart
-Text.rich(t.myText(
-  name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
-  underline: (text) => TextSpan(
-    text: text,
-    style: TextStyle(color: Colors.blue),
-    recognizer: TapGestureRecognizer()..onTap=(){
-      print('tap');
-    },
-  ),
-));
+Center(
+  child: Text.rich(t.myText(
+    name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
+    underline: (text) => TextSpan(
+      text: text,
+      style: TextStyle(color: Colors.blue),
+      recognizer: TapGestureRecognizer()..onTap=(){
+        print('tap');
+      },
+    ),
+  )),
+);
 ```
 
 ### ➤ Lists
@@ -542,7 +544,7 @@ String d = t.niceList[4]['a map entry']; // "access via key"
 
 You can access each translation via string keys by defining maps.
 
-Define maps in your `build.yaml`.
+Define maps in your `slang.yaml` or `build.yaml`.
 
 Keep in mind that all nice features like autocompletion are gone.
 
@@ -609,6 +611,8 @@ You can link one translation to another. Add the prefix `@:` followed by the tra
 ```dart
 String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
 ```
+
+[RichTexts](#-richtext) can also contain links! But only [RichTexts](#-richtext) can link to [RichTexts](#-richtext).
 
 ### ➤ Pluralization
 
