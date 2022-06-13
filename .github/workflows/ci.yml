@@ -31,6 +31,9 @@ jobs:
       - name: Check format (core)
         run: flutter format --set-exit-if-changed lib bin test
         working-directory: slang
+      - name: Analyze (core)
+        run: flutter analyze
+        working-directory: slang
       - name: Test (core)
         run: flutter test
         working-directory: slang
