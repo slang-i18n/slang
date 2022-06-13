@@ -50,10 +50,10 @@ class TranslationModelBuilder {
     //
     // TextNodes with parameterized linked translations are rebuilt with correct parameters.
     leavesMap.entries
-        .where((entry) => entry.value is StringTextNode)
+        .where((entry) => entry.value is TextNode)
         .forEach((entry) {
       final key = entry.key;
-      final value = entry.value as StringTextNode;
+      final value = entry.value as TextNode;
 
       final linkParamMap = <String, Set<String>>{};
       final paramTypeMap = <String, String>{};
@@ -72,8 +72,9 @@ class TranslationModelBuilder {
 
           visitedLinks.add(currLink);
 
-          if (linkedNode is StringTextNode) {
+          if (linkedNode is TextNode) {
             paramSet.addAll(linkedNode.params);
+            paramTypeMap.addAll(linkedNode.paramTypeMap);
 
             // lookup links
             linkedNode.links.forEach((child) {
@@ -589,8 +590,8 @@ class TranslationModelBuilder {
       final child = entry.value;
       String returnType;
       Set<AttributeParameter> parameters;
-      if (child is StringTextNode) {
-        returnType = 'String';
+      if (child is TextNode) {
+        returnType = child is StringTextNode ? 'String' : 'TextSpan';
         parameters = child.params.map((p) {
           return AttributeParameter(
             parameterName: p,
@@ -598,12 +599,13 @@ class TranslationModelBuilder {
           );
         }).toSet();
       } else if (child is ListNode) {
-        parameters = {}; // lists never have parameters
         returnType = 'List<${child.genericType}>';
+        parameters = {}; // lists never have parameters
       } else if (child is ObjectNode) {
-        parameters = {}; // objects never have parameters
         returnType = 'Map<String, ${child.genericType}>';
+        parameters = {}; // objects never have parameters
       } else if (child is PluralNode) {
+        returnType = 'String';
         parameters = {
           AttributeParameter(parameterName: child.paramName, type: 'num'),
           ...child.quantities.values
@@ -614,8 +616,8 @@ class TranslationModelBuilder {
               .map((param) =>
                   AttributeParameter(parameterName: param, type: 'Object'))
         };
-        returnType = 'String';
       } else if (child is ContextNode) {
+        returnType = 'String';
         parameters = {
           AttributeParameter(
               parameterName: child.paramName, type: child.context.enumName),
@@ -627,7 +629,6 @@ class TranslationModelBuilder {
               .map((param) =>
                   AttributeParameter(parameterName: param, type: 'Object'))
         };
-        returnType = 'String';
       } else {
         throw 'This should not happen';
       }

@@ -8,6 +8,11 @@ extension on _TranslationsEn {
 		return <String, dynamic>{
 			'onboarding.welcome': ({required Object fullName}) => 'Welcome $fullName',
 			'onboarding.bye': ({required Object firstName}) => 'Bye $firstName',
+			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				const TextSpan(text: 'Hi '),
+				name,
+				TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+			]),
 			'onboarding.pages.0.title': 'First Page',
 			'onboarding.pages.0.content': 'First Page Content',
 			'onboarding.pages.1.title': 'Second Page',
@@ -46,6 +51,11 @@ extension on _TranslationsDe {
 		return <String, dynamic>{
 			'onboarding.welcome': ({required Object fullName}) => 'Willkommen $fullName',
 			'onboarding.bye': ({required Object firstName}) => 'Tschüss $firstName',
+			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				const TextSpan(text: 'Hi '),
+				name,
+				TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+			]),
 			'onboarding.pages.0.title': 'Erste Seite',
 			'onboarding.pages.0.content': 'Erster Seiteninhalt',
 			'onboarding.pages.1.title': 'Zweite Seite',

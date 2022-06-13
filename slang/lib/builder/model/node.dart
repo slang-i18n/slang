@@ -129,10 +129,39 @@ abstract class TextNode extends Node implements LeafNode {
   /// The original string
   final String raw;
 
+  /// Set of parameters.
+  /// Hello {name}, I am {age} years old -> {'name', 'age'}
+  Set<String> get params;
+
+  /// Plural and context parameters need to have a special parameter type (e.g. num)
+  /// In a normal case, this parameter and its type will be added at generate stage
+  ///
+  /// For special cases, i.e. a translation is linked to a plural translation,
+  /// the type must be specified and cannot be [Object].
+  Map<String, String> get paramTypeMap;
+
+  /// Set of paths to [TextNode]s
+  /// Will be used for 2nd round, determining the final set of parameters
+  Set<String> get links;
+
+  /// Several configs, persisted into node to make it easier to copy
+  /// See [updateWithLinkParams]
+  final StringInterpolation interpolation;
+  final CaseStyle? paramCase;
+
   TextNode({
     required super.path,
     required super.comment,
     required this.raw,
+    required this.interpolation,
+    required this.paramCase,
+  });
+
+  /// Updates [content], [params] and [paramTypeMap]
+  /// according to the new linked parameters
+  void updateWithLinkParams({
+    required Map<String, Set<String>> linkParamMap,
+    required Map<String, String> paramTypeMap,
   });
 }
 
@@ -140,41 +169,26 @@ class StringTextNode extends TextNode {
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
   late String _content;
-
   String get content => _content;
 
-  /// Set of parameters.
-  /// Hello {name}, I am {age} years old -> {'name', 'age'}
   late Set<String> _params;
-
+  @override
   Set<String> get params => _params;
 
-  /// Set of [TextNode] represented as path
-  /// Will be used for 2nd round, determining the final set of parameters
   late Set<String> _links;
-
+  @override
   Set<String> get links => _links;
 
-  /// Plural and context parameters need to have a special parameter type (e.g. num)
-  /// In a normal case, this parameter and its type will be added at generate stage
-  ///
-  /// For special cases, i.e. a translation is linked to a plural translation,
-  /// the type must be specified and cannot be [Object].
   Map<String, String> _paramTypeMap = <String, String>{};
-
+  @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
-
-  /// Several configs, persisted into node to make it easier to copy
-  /// See [updateWithLinkParams]
-  final StringInterpolation interpolation;
-  final CaseStyle? paramCase;
 
   StringTextNode({
     required super.path,
     required super.raw,
     required super.comment,
-    required this.interpolation,
-    this.paramCase,
+    required super.interpolation,
+    required super.paramCase,
     Map<String, Set<String>>? linkParamMap,
   }) {
     final parsedResult = _parseInterpolation(
@@ -184,35 +198,28 @@ class StringTextNode extends TextNode {
     );
     _params = parsedResult.params;
 
-    // detect linked translations
-    this._links = Set<String>();
-    this._content = parsedResult.parsedContent
-        .replaceAllMapped(RegexUtils.linkedRegex, (match) {
-      final linkedPath = match.group(1)!;
-      links.add(linkedPath);
+    if (linkParamMap != null) {
+      _params.addAll(linkParamMap.values.expand((e) => e));
+    }
 
-      if (linkParamMap == null) {
-        // assume no parameters
-        return '\${_root.$linkedPath}';
-      }
+    final parsedLinksResult = _parseLinks(
+      input: parsedResult.parsedContent,
+      linkParamMap: linkParamMap,
+    );
 
-      final linkedParams = linkParamMap[linkedPath]!;
-      params.addAll(linkedParams);
-      final parameterString =
-          linkedParams.map((param) => '$param: $param').join(', ');
-      return '\${_root.$linkedPath($parameterString)}';
-    });
+    this._links = parsedLinksResult.links;
+    this._content = parsedLinksResult.parsedContent;
   }
 
-  /// Updates [content], [params] and [paramTypeMap]
-  /// according to the new linked parameters
+  @override
   void updateWithLinkParams({
-    required Map<String, Set<String>>? linkParamMap,
+    required Map<String, Set<String>> linkParamMap,
     required Map<String, String> paramTypeMap,
   }) {
     this._paramTypeMap = paramTypeMap;
+    this._params.addAll(linkParamMap.values.expand((e) => e));
 
-    // build a temporary TextNode to get the updated content and params
+    // build a temporary TextNode to get the updated content
     final temp = StringTextNode(
       path: path,
       raw: raw,
@@ -222,7 +229,6 @@ class StringTextNode extends TextNode {
       linkParamMap: linkParamMap,
     );
 
-    this._params = temp.params;
     this._content = temp.content;
   }
 
@@ -233,6 +239,94 @@ class StringTextNode extends TextNode {
     } else {
       return '$params => $content';
     }
+  }
+}
+
+class RichTextNode extends TextNode {
+  late List<BaseSpan> _spans;
+  List<BaseSpan> get spans => _spans;
+
+  late Set<String> _params;
+  @override
+  Set<String> get params => _params;
+
+  late Set<String> _links;
+  @override
+  Set<String> get links => _links;
+
+  Map<String, String> _paramTypeMap = <String, String>{};
+  @override
+  Map<String, String> get paramTypeMap => _paramTypeMap;
+
+  RichTextNode({
+    required super.path,
+    required super.raw,
+    required super.comment,
+    required super.interpolation,
+    required super.paramCase,
+    Map<String, Set<String>>? linkParamMap,
+  }) {
+    final rawParsedResult = _parseInterpolation(
+      raw: _escapeContent(raw, interpolation),
+      interpolation: interpolation,
+      paramCase: paramCase,
+    );
+
+    final parsedParams =
+        rawParsedResult.params.map(_parseParamWithArg).toList();
+    _params = parsedParams.map((e) => e.paramName).toSet();
+    if (linkParamMap != null) {
+      _params.addAll(linkParamMap.values.expand((e) => e));
+    }
+
+    _paramTypeMap = {
+      for (final p in parsedParams)
+        p.paramName: (p.arg != null ? 'InlineSpanBuilder' : 'InlineSpan'),
+    };
+
+    _links = {};
+    _spans = _splitWithMatchAndNonMatch(
+      rawParsedResult.parsedContent,
+      RegexUtils.argumentsDartRegex,
+      onNonMatch: (text) {
+        final parsedLinksResult = _parseLinks(
+          input: text,
+          linkParamMap: linkParamMap,
+        );
+        _links.addAll(parsedLinksResult.links);
+        return LiteralSpan(
+          literal: parsedLinksResult.parsedContent,
+          isConstant: !parsedLinksResult.linksHasParams,
+        );
+      },
+      onMatch: (match) {
+        final parsed = _parseParamWithArg((match.group(3) ?? match.group(4))!);
+        final parsedArg = parsed.arg;
+        if (parsedArg != null) return FunctionSpan(parsed.paramName, parsedArg);
+        return VariableSpan(parsed.paramName);
+      },
+    ).toList();
+  }
+
+  @override
+  void updateWithLinkParams({
+    required Map<String, Set<String>> linkParamMap,
+    required Map<String, String> paramTypeMap,
+  }) {
+    this._paramTypeMap.addAll(paramTypeMap);
+    this._params.addAll(linkParamMap.values.expand((e) => e));
+
+    // build a temporary TextNode to get the updated content
+    final temp = RichTextNode(
+      path: path,
+      raw: raw,
+      comment: comment,
+      interpolation: interpolation,
+      paramCase: paramCase,
+      linkParamMap: linkParamMap,
+    );
+
+    this._spans = temp.spans;
   }
 }
 
@@ -345,60 +439,42 @@ _ParseInterpolationResult _parseInterpolation({
   return _ParseInterpolationResult(parsedContent, params);
 }
 
-class RichTextNode extends TextNode {
-  final List<BaseSpan> spans;
-  final Set<String> params;
-  final Map<String, String> paramTypeMap;
+class _ParseLinksResult {
+  final String parsedContent;
+  final Set<String> links;
+  final bool linksHasParams;
 
-  RichTextNode._({
-    required super.path,
-    required super.comment,
-    required super.raw,
-    required this.spans,
-    required this.params,
-    required this.paramTypeMap,
+  _ParseLinksResult(this.parsedContent, this.links, this.linksHasParams);
+
+  @override
+  String toString() =>
+      '_ParseLinksResult{parsedContent: $parsedContent, links: $links}';
+}
+
+_ParseLinksResult _parseLinks({
+  required String input,
+  required Map<String, Set<String>>? linkParamMap,
+}) {
+  final links = Set<String>();
+  bool linksHasParams = false;
+  final parsedContent = input.replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    final linkedPath = match.group(1)!;
+    links.add(linkedPath);
+
+    if (linkParamMap == null) {
+      // assume no parameters
+      return '\${_root.$linkedPath}';
+    }
+
+    final linkedParams = linkParamMap[linkedPath]!;
+    final parameterString =
+        linkedParams.map((param) => '$param: $param').join(', ');
+    if (linkedParams.isNotEmpty) {
+      linksHasParams = true;
+    }
+    return '\${_root.$linkedPath($parameterString)}';
   });
-
-  factory RichTextNode({
-    required String path,
-    required String? comment,
-    required String raw,
-    required StringInterpolation interpolation,
-    required CaseStyle? paramCase,
-  }) {
-    final rawParsedResult = _parseInterpolation(
-      raw: _escapeContent(raw, interpolation),
-      interpolation: interpolation,
-      paramCase: paramCase,
-    );
-
-    final parsedParams =
-        rawParsedResult.params.map(_parseParamWithArg).toList();
-    final params = parsedParams.map((e) => e.paramName).toSet();
-    final paramTypeMap = Map.fromEntries(parsedParams.map((e) => MapEntry(
-        e.paramName, e.arg != null ? 'InlineSpanBuilder' : 'InlineSpan')));
-
-    final spans = _splitWithMatchAndNonMatch(
-      rawParsedResult.parsedContent,
-      RegexUtils.argumentsDartRegex,
-      onNonMatch: (text) => LiteralSpan(text),
-      onMatch: (match) {
-        final parsed = _parseParamWithArg((match.group(3) ?? match.group(4))!);
-        final parsedArg = parsed.arg;
-        if (parsedArg != null) return FunctionSpan(parsed.paramName, parsedArg);
-        return VariableSpan(parsed.paramName);
-      },
-    ).toList();
-
-    return RichTextNode._(
-      path: path,
-      comment: comment,
-      raw: raw,
-      spans: spans,
-      params: params,
-      paramTypeMap: paramTypeMap,
-    );
-  }
+  return _ParseLinksResult(parsedContent, links, linksHasParams);
 }
 
 Iterable<T> _splitWithMatchAndNonMatch<T>(
@@ -442,10 +518,11 @@ abstract class BaseSpan {
 
 class LiteralSpan extends BaseSpan {
   final String literal;
+  final bool isConstant;
 
-  LiteralSpan(this.literal);
+  LiteralSpan({required this.literal, required this.isConstant});
 
-  String get code => "const TextSpan(text: '$literal')";
+  String get code => "${isConstant ? 'const ' : ''}TextSpan(text: '$literal')";
 }
 
 class FunctionSpan extends BaseSpan {

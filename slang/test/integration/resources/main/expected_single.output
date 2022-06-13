@@ -3,7 +3,7 @@
  * Generated file. Do not edit.
  *
  * Locales: 2
- * Strings: 42 (21.0 per locale)
+ * Strings: 44 (22.0 per locale)
  */
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, unnecessary_string_interpolations, avoid_escaping_inner_quotes
@@ -182,6 +182,11 @@ class _TranslationsOnboardingEn {
 	/// Bye text
 	String bye({required Object firstName}) => 'Bye $firstName';
 
+	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		const TextSpan(text: 'Hi '),
+		name,
+		TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+	]);
 	List<PageData> get pages => [
 		_TranslationsOnboarding0i0En._(_root),
 		_TranslationsOnboarding0i1En._(_root),
@@ -299,6 +304,11 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 	/// Bye text
 	@override String bye({required Object firstName}) => 'Tschüss $firstName';
 
+	@override TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		const TextSpan(text: 'Hi '),
+		name,
+		TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+	]);
 	@override List<PageData> get pages => [
 		_TranslationsOnboarding0i0De._(_root),
 		_TranslationsOnboarding0i1De._(_root),
@@ -386,6 +396,11 @@ extension on _TranslationsEn {
 		return <String, dynamic>{
 			'onboarding.welcome': ({required Object fullName}) => 'Welcome $fullName',
 			'onboarding.bye': ({required Object firstName}) => 'Bye $firstName',
+			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				const TextSpan(text: 'Hi '),
+				name,
+				TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+			]),
 			'onboarding.pages.0.title': 'First Page',
 			'onboarding.pages.0.content': 'First Page Content',
 			'onboarding.pages.1.title': 'Second Page',
@@ -424,6 +439,11 @@ extension on _TranslationsDe {
 		return <String, dynamic>{
 			'onboarding.welcome': ({required Object fullName}) => 'Willkommen $fullName',
 			'onboarding.bye': ({required Object firstName}) => 'Tschüss $firstName',
+			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				const TextSpan(text: 'Hi '),
+				name,
+				TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+			]),
 			'onboarding.pages.0.title': 'Erste Seite',
 			'onboarding.pages.0.content': 'Erster Seiteninhalt',
 			'onboarding.pages.1.title': 'Zweite Seite',

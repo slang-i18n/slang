@@ -38,6 +38,11 @@ class _TranslationsOnboardingEn {
 	/// Bye text
 	String bye({required Object firstName}) => 'Bye $firstName';
 
+	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		const TextSpan(text: 'Hi '),
+		name,
+		TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+	]);
 	List<PageData> get pages => [
 		_TranslationsOnboarding0i0En._(_root),
 		_TranslationsOnboarding0i1En._(_root),

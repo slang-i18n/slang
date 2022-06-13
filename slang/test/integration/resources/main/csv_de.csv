@@ -1,6 +1,7 @@
 onboarding.welcome,Willkommen {fullName}
 onboarding.bye,Tschüss {firstName}
 onboarding.@bye,Bye text
+onboarding.hi(rich),Hi {name} und @:onboarding.greet
 onboarding.pages.0.title,Erste Seite
 onboarding.pages.0.content,Erster Seiteninhalt
 onboarding.pages.1.title,Zweite Seite

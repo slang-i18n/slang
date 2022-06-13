@@ -6,6 +6,7 @@
       "this should be ignored": "ignored",
       "description": "Bye text"
     },
+    "hi(rich)": "Hi {name} and @:onboarding.greet",
     "pages": [
       {
         "title": "First Page",

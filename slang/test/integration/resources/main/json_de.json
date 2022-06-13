@@ -3,6 +3,7 @@
     "welcome": "Willkommen {fullName}",
     "bye": "Tschüss {firstName}",
     "@bye": "Bye text",
+    "hi(rich)": "Hi {name} und @:onboarding.greet",
     "pages": [
       {
         "title": "Erste Seite",

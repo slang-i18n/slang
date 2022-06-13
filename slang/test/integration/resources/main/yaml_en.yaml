@@ -2,6 +2,7 @@ onboarding:
   welcome: Welcome {fullName}
   bye: Bye {firstName}
   "@bye": Bye text
+  hi(rich): Hi {name} and @:onboarding.greet
   pages:
     - title: First Page
       content: First Page Content
