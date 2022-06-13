@@ -53,7 +53,13 @@ _generateTranslationMapRecursive({
           '\t\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
     }
   } else if (curr is RichTextNode) {
-    // not implemented yet
+    buffer.write('\t\t\t\'${curr.path}\': ');
+    _addRichTextCall(
+      buffer: buffer,
+      node: curr,
+      includeArrowIfNoParams: false,
+      depth: 2,
+    );
   } else if (curr is ListNode) {
     // recursive
     curr.entries.forEach((child) {

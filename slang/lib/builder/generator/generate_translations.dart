@@ -231,14 +231,17 @@ void _generateClass(
       }
     } else if (value is RichTextNode) {
       buffer.write('TextSpan$optional ');
-      buffer.write(value.params.isEmpty
-          ? 'get $key'
-          : '$key${_toParameterList(value.params, value.paramTypeMap)}');
-      buffer.writeln(' => TextSpan(children: [');
-      for (final span in value.spans) {
-        buffer.writeln('\t\t${span.code},');
+      if (value.params.isEmpty) {
+        buffer.write('get $key');
+      } else {
+        buffer.write(key);
       }
-      buffer.writeln('\t]);');
+      _addRichTextCall(
+        buffer: buffer,
+        node: value,
+        includeArrowIfNoParams: true,
+        depth: 0,
+      );
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
       _generateList(config, localeData.base, localeData.locale, buffer, queue,
@@ -490,6 +493,34 @@ void _addPluralizationCall({
     buffer.writeln(';');
   } else {
     buffer.writeln(',');
+  }
+}
+
+void _addRichTextCall({
+  required StringBuffer buffer,
+  required RichTextNode node,
+  required bool includeArrowIfNoParams,
+  required int depth,
+}) {
+  if (node.params.isNotEmpty) {
+    buffer.write(_toParameterList(node.params, node.paramTypeMap));
+  }
+
+  if (node.params.isNotEmpty || includeArrowIfNoParams) {
+    buffer.write(' => ');
+  }
+
+  buffer.writeln('TextSpan(children: [');
+  for (final span in node.spans) {
+    _addTabs(buffer, depth + 2);
+    buffer.write(span.code);
+    buffer.writeln(',');
+  }
+  _addTabs(buffer, depth + 1);
+  if (depth == 0) {
+    buffer.writeln(']);');
+  } else {
+    buffer.writeln(']),');
   }
 }
 
