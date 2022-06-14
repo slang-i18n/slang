@@ -300,7 +300,7 @@ class RichTextNode extends TextNode {
         );
       },
       onMatch: (match) {
-        final parsed = _parseParamWithArg((match.group(3) ?? match.group(4))!);
+        final parsed = _parseParamWithArg((match.group(1) ?? match.group(2))!);
         final parsedArg = parsed.arg;
         if (parsedArg != null) return FunctionSpan(parsed.paramName, parsedArg);
         return VariableSpan(parsed.paramName);
@@ -384,7 +384,7 @@ _ParseInterpolationResult _parseInterpolation({
     case StringInterpolation.dart:
       parsedContent =
           raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
-        final paramOriginal = (match.group(3) ?? match.group(4))!;
+        final paramOriginal = (match.group(1) ?? match.group(2))!;
         if (paramCase == null) {
           // no transformations
           params.add(paramOriginal);

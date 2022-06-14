@@ -121,37 +121,37 @@ void main() {
       });
 
       test('one argument', () {
-        final test = 'I have one argument named \$apple.';
+        final test = r'I have one argument named $apple.';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content, test);
         expect(node.params, {'apple'});
       });
 
       test('one duplicate argument', () {
-        final test = 'This string has one \$argument and \$argument.';
+        final test = r'This string has one $argument and $argument.';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content, test);
         expect(node.params, {'argument'});
       });
 
       test('one argument at the beginning', () {
-        final test = '\$test at the beginning.';
+        final test = r'$test at the beginning.';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content, test);
         expect(node.params, {'test'});
       });
 
       test('one escaped argument', () {
-        final test = 'I have one argument named \\\$apple.';
+        final test = r'I have one argument named \$apple.';
         final node = textNode(test, StringInterpolation.dart);
-        expect(node.content, 'I have one argument named \\\$apple.'); // \$apple
+        expect(node.content, test);
         expect(node.params, <String>{});
       });
 
       test('one argument with link', () {
-        final test = '\$apple is linked to @:wow!';
+        final test = r'$apple is linked to @:wow!';
         final node = textNode(test, StringInterpolation.dart);
-        expect(node.content, '\$apple is linked to \${_root.wow}!');
+        expect(node.content, r'$apple is linked to ${_root.wow}!');
         expect(node.params, {'apple'});
       });
 
@@ -320,6 +320,22 @@ void main() {
         expect(node.spans[1].code, 'yey');
         expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
         expect(node.params, {'yey'});
+      });
+
+      test('with default text', () {
+        final test = r'Hello $yey ${underline(hi)}!';
+        final node = richTextNode(test, StringInterpolation.dart);
+        expect(node.spans.length, 5);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey');
+        expect(node.spans[2].code, 'const TextSpan(text: \' \')');
+        expect(node.spans[3].code, 'underline(\'hi\')');
+        expect(node.spans[4].code, 'const TextSpan(text: \'!\')');
+        expect(node.params, {'yey', 'underline'});
+        expect(node.paramTypeMap, {
+          'yey': 'InlineSpan',
+          'underline': 'InlineSpanBuilder',
+        });
       });
 
       test('with link', () {

@@ -1,7 +1,8 @@
 class RegexUtils {
-  /// matches $argument or ${argument}
-  static RegExp argumentsDartRegex =
-      RegExp(r'(?<=([^\\]|^))\$(([\w]+)|\{(.+?)\})');
+  /// matches $argument or ${argument} but not \$argument
+  /// 1 = argument of $argument
+  /// 2 = argument of ${argument}
+  static RegExp argumentsDartRegex = RegExp(r'(?<!\\)\$(?:([\w]+)|\{(.+?)\})');
 
   /// matches {argument}
   /// 1 = pre character (to check \)
