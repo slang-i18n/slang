@@ -321,6 +321,17 @@ void main() {
         expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
         expect(node.params, {'yey'});
       });
+
+      test('with link', () {
+        final test = r'Hello $yey @:myLink!';
+        final node = richTextNode(test, StringInterpolation.dart);
+        expect(node.spans.length, 3);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey');
+        expect(node.spans[2].code, 'TextSpan(text: \' \${_root.myLink}!\')');
+        expect(node.links, {'myLink'});
+        expect(node.params, {'yey'});
+      });
     });
 
     group(StringInterpolation.braces, () {
