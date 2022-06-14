@@ -32,19 +32,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-
   @override
   void initState() {
     super.initState();
 
     LocaleSettings.getLocaleStream().listen((event) {
       print('locale changed: $event');
-    });
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
     });
   }
 
@@ -68,16 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
               // lets loop over all supported locales
               children: AppLocale.values.map((locale) {
-                AppLocale activeLocale =
-                    LocaleSettings.currentLocale; // active locale
-                bool active = activeLocale ==
-                    locale; // typed version is preferred to avoid typos
+                // active locale
+                AppLocale activeLocale = LocaleSettings.currentLocale;
+
+                // typed version is preferred to avoid typos
+                bool active = activeLocale == locale;
 
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                        backgroundColor: active ? Colors.blue.shade100 : null),
+                      backgroundColor: active ? Colors.blue.shade100 : null,
+                    ),
                     onPressed: () {
                       // locale change, will trigger a rebuild (no setState needed)
                       LocaleSettings.setLocale(locale);
@@ -91,8 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: t.mainScreen.tapMe,
+        onPressed: () {
+          setState(() => _counter++);
+        },
+        tooltip: context.t.mainScreen.tapMe, // using extension method
         child: Icon(Icons.add),
       ),
     );

@@ -11,11 +11,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  slang: ^2.3.0 # add this
-  slang_flutter: ^2.3.0 # add this
+  slang: ^2.6.1 # add this
+  slang_flutter: ^2.6.0 # add this
   flutter_localizations: # add this
     sdk: flutter
-  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   lints: ^2.0.0
