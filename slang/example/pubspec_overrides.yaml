@@ -3,3 +3,5 @@ dependency_overrides:
     path: ..
   slang_flutter:
     path: ../../slang_flutter
+#  slang_build_runner:
+#    path: ../../slang_build_runner

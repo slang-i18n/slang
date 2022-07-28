@@ -270,6 +270,7 @@ class RichTextNode extends TextNode {
       raw: _escapeContent(raw, interpolation),
       interpolation: interpolation,
       paramCase: paramCase,
+      allowBracketsInsideParameters: true,
     );
 
     final parsedParams =
@@ -376,6 +377,7 @@ _ParseInterpolationResult _parseInterpolation({
   required String raw,
   required StringInterpolation interpolation,
   required CaseStyle? paramCase,
+  bool allowBracketsInsideParameters = false,
 }) {
   final String parsedContent;
   final params = Set<String>();
@@ -398,8 +400,10 @@ _ParseInterpolationResult _parseInterpolation({
       });
       break;
     case StringInterpolation.braces:
-      parsedContent =
-          raw.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
+      parsedContent = raw.replaceAllMapped(
+          allowBracketsInsideParameters
+              ? RegexUtils.argumentsBracesAdvancedRegex
+              : RegexUtils.argumentsBracesRegex, (match) {
         if (match.group(1) == '\\') {
           return '{${match.group(2)}}'; // escape
         }
@@ -407,9 +411,10 @@ _ParseInterpolationResult _parseInterpolation({
         final param = match.group(2)!.toCase(paramCase);
         params.add(param);
 
-        if (match.group(3) != null) {
+        if (match.group(3) != null || param.contains('(')) {
           // ${...} because a word follows
-          return '${match.group(1)}\${$param}${match.group(3)}';
+          // ... or contains brackets '(' which is needed for rich text, otherwise this would be invalid syntax anyways
+          return '${match.group(1)}\${$param}${match.group(3) ?? ''}';
         } else {
           // $...
           return '${match.group(1)}\$$param';
@@ -417,8 +422,10 @@ _ParseInterpolationResult _parseInterpolation({
       });
       break;
     case StringInterpolation.doubleBraces:
-      parsedContent =
-          raw.replaceAllMapped(RegexUtils.argumentsDoubleBracesRegex, (match) {
+      parsedContent = raw.replaceAllMapped(
+          allowBracketsInsideParameters
+              ? RegexUtils.argumentsDoubleBracesAdvancedRegex
+              : RegexUtils.argumentsDoubleBracesRegex, (match) {
         if (match.group(1) == '\\') {
           return '{{${match.group(2)}}}'; // escape
         }
@@ -426,9 +433,10 @@ _ParseInterpolationResult _parseInterpolation({
         final param = match.group(2)!.toCase(paramCase);
         params.add(param);
 
-        if (match.group(3) != null) {
+        if (match.group(3) != null || param.contains('(')) {
           // ${...} because a word follows
-          return '${match.group(1)}\${$param}${match.group(3)}';
+          // ... or contains brackets '(' which is needed for rich text, otherwise this would be invalid syntax anyways
+          return '${match.group(1)}\${$param}${match.group(3) ?? ''}';
         } else {
           // $...
           return '${match.group(1)}\$$param';

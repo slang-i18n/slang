@@ -18,6 +18,8 @@ dependencies:
 
 dev_dependencies:
   lints: ^2.0.0
+#  build_runner: any
+#  slang_build_runner: any
 
 flutter:
   uses-material-design: true

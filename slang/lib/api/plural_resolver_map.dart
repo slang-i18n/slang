@@ -137,7 +137,9 @@ final Map<String, _Resolvers> _resolverMap = {
       if (fr10.clamp(2, 4) == fr10 && fr100.clamp(12, 14) != fr100) {
         return few ?? other!;
       }
-      if (fr10 == 0 || fr10.clamp(5, 9) == fr10 || fr100.clamp(11, 14) == fr100) {
+      if (fr10 == 0 ||
+          fr10.clamp(5, 9) == fr10 ||
+          fr100.clamp(11, 14) == fr100) {
         return many ?? other!;
       }
       return other!;

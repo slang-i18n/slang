@@ -360,6 +360,16 @@ void main() {
         expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
         expect(node.params, {'yey'});
       });
+
+      test('one argument with default text', () {
+        final test = r'Hello {yey(my text)}!';
+        final node = richTextNode(test, StringInterpolation.braces);
+        expect(node.spans.length, 3);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey(\'my text\')');
+        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect(node.params, {'yey'});
+      });
     });
 
     group(StringInterpolation.doubleBraces, () {
@@ -369,6 +379,16 @@ void main() {
         expect(node.spans.length, 3);
         expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
         expect(node.spans[1].code, 'yey');
+        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect(node.params, {'yey'});
+      });
+
+      test('one argument with default text', () {
+        final test = r'Hello {{yey(my text)}}!';
+        final node = richTextNode(test, StringInterpolation.doubleBraces);
+        expect(node.spans.length, 3);
+        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
+        expect(node.spans[1].code, 'yey(\'my text\')');
         expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
         expect(node.params, {'yey'});
       });

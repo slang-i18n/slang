@@ -10,9 +10,19 @@ class RegexUtils {
   /// 3 = post character is word, therefore ${...}
   static RegExp argumentsBracesRegex = RegExp(r'(.|^)\{(\w+)\}(\w)?');
 
+  /// Same as [argumentsBracesRegex]
+  /// But allowing brackets: {hello(my text)}
+  static RegExp argumentsBracesAdvancedRegex =
+      RegExp(r'(.|^)\{([\w\s()]+)\}(\w)?');
+
   /// matches {{argument}}
   /// similar group indices like [argumentsBracesRegex]
   static RegExp argumentsDoubleBracesRegex = RegExp(r'(.|^)\{\{(\w+)\}\}(\w)?');
+
+  /// Same as [argumentsDoubleBracesRegex]
+  /// But allowing brackets: {{hello(my text)}}
+  static RegExp argumentsDoubleBracesAdvancedRegex =
+      RegExp(r'(.|^)\{\{([\w\s()]+)\}\}(\w)?');
 
   /// matches @:translation.key
   static RegExp linkedRegex = RegExp(r'@:(\w[\w|.]*\w|\w)');

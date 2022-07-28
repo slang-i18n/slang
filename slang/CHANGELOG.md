@@ -1,3 +1,8 @@
+## 2.6.2
+
+- feat: add Russian plural resolver (thanks to @LuckyWins)
+- fix: parse rich text with interpolation `braces` and `double_braces` correctly
+
 ## 2.6.1
 
 - fix: remove `const` if rich text has links
