@@ -477,13 +477,13 @@ Hello {{name}}
 
 ### ➤ RichText
 
-In Flutter environment, you can tell the library to generate `TextSpan` objects.
+Make part of your text bold or turn it into a different color? Need inline links? `TextSpan` will help!
 
 To do this, please add the `(rich)` hint.
 
 Parameters are formatted according to `string_interpolation`.
 
-Default texts can be defined via `parameter(text)`.
+Default text can be defined via brackets `(...)`, e.g. `underline(here)`.
 
 ```json
 {
@@ -494,18 +494,20 @@ Default texts can be defined via `parameter(text)`.
 Usage:
 
 ```dart
-Center(
-  child: Text.rich(t.myText(
-    name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
-    underline: (text) => TextSpan(
-      text: text,
-      style: TextStyle(color: Colors.blue),
-      recognizer: TapGestureRecognizer()..onTap=(){
-        print('tap');
-      },
-    ),
-  )),
-);
+// Text.rich is a Flutter built-in feature!
+Widget a = Text.rich(t.myText(
+  // Show name in blue color
+  name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
+  
+  // Turn 'here' into a link
+  underline: (text) => TextSpan(
+    text: text,
+    style: TextStyle(color: Colors.blue),
+    recognizer: TapGestureRecognizer()..onTap=(){
+      print('tap');
+    },
+  ),
+));
 ```
 
 ### ➤ Lists
