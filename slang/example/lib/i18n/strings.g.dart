@@ -1,14 +1,14 @@
+/// Generated file. Do not edit.
+///
+/// Locales: 2
+/// Strings: 12 (6 per locale)
+///
+/// Built on 2022-08-07 at 18:29 UTC
 
-/*
- * Generated file. Do not edit.
- *
- * Locales: 2
- * Strings: 12 (6.0 per locale)
- *
- * Built on 2022-06-07 at 20:07 UTC
- */
 
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, unnecessary_string_interpolations, avoid_escaping_inner_quotes
+// coverage:ignore-file
+// ignore_for_file: type=lint
+
 
 import 'package:flutter/widgets.dart';
 import 'package:slang_flutter/slang_flutter.dart';
