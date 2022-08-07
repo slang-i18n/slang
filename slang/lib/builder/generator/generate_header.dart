@@ -97,7 +97,7 @@ void _generateHeaderComment({
 
   String translationsPerLocale='';
   if(translations.length != 1){
-    translationsPerLocale ='(${(translationCount / translations.length).toStringAsFixed(1)})';
+    translationsPerLocale ='(${(translationCount / translations.length).floor()} per locale)';
   }
 
   String twoDigits(int value) => value.toString().padLeft(2, '0');
@@ -107,27 +107,20 @@ void _generateHeaderComment({
     final String date = '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
     final String time = '${twoDigits(now.hour)}:${twoDigits(now.minute)}';
     renderTimestamp = '''
-///
 /// Built on $date at $time UTC
 ''';
   }
 
   buffer.writeln('''
-///
 /// Generated file. Do not edit.
 ///
 /// Locales: ${translations.length}
 /// Strings: $translationCount $translationsPerLocale
 ///
 $renderTimestamp
-///
 
 // coverage:ignore-file
-// ignore_for_file: prefer_const_constructors
-// ignore_for_file: prefer_const_literals_to_create_immutables
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: unnecessary_string_interpolations
-// ignore_for_file: avoid_escaping_inner_quotes
+// ignore_for_file: type=lint
 ''');
 }
 
