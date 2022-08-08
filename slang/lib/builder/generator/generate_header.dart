@@ -90,25 +90,24 @@ void _generateHeaderComment({
   required List<I18nData> translations,
   required DateTime now,
 }) {
-  final int translationCount = translations.fold(
+  final int count = translations.fold(
     0,
     (prev, curr) => prev + _countTranslations(curr.root),
   );
 
-  String translationsPerLocale = '';
+  String countPerLocale = '';
   if (translations.length != 1) {
-    translationsPerLocale =
-        '(${(translationCount / translations.length).floor()} per locale)';
+    countPerLocale = ' (${(count / translations.length).floor()} per locale)';
   }
 
   String twoDigits(int value) => value.toString().padLeft(2, '0');
 
   String renderTimestamp = '';
   if (config.renderTimestamp) {
-    final String date =
-        '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
-    final String time = '${twoDigits(now.hour)}:${twoDigits(now.minute)}';
+    final date = '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
+    final time = '${twoDigits(now.hour)}:${twoDigits(now.minute)}';
     renderTimestamp = '''
+///
 /// Built on $date at $time UTC
 ''';
   }
@@ -117,8 +116,7 @@ void _generateHeaderComment({
 /// Generated file. Do not edit.
 ///
 /// Locales: ${translations.length}
-/// Strings: $translationCount $translationsPerLocale
-///
+/// Strings: $count$countPerLocale
 $renderTimestamp
 
 // coverage:ignore-file
