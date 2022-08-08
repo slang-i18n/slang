@@ -1,12 +1,12 @@
+/// Generated file. Do not edit.
+///
+/// Locales: 1
+/// Strings: 2
 
-/*
- * Generated file. Do not edit.
- *
- * Locales: 1
- * Strings: 2 
- */
 
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, unnecessary_string_interpolations, avoid_escaping_inner_quotes
+// coverage:ignore-file
+// ignore_for_file: type=lint
+
 
 import 'package:flutter/widgets.dart';
 import 'package:slang_flutter/slang_flutter.dart';
