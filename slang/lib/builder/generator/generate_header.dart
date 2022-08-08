@@ -91,27 +91,37 @@ void _generateHeaderComment({
   required DateTime now,
 }) {
   final int translationCount = translations.fold(
-      0, (prev, curr) => prev + _countTranslations(curr.root));
+    0,
+    (prev, curr) => prev + _countTranslations(curr.root),
+  );
 
-  buffer.writeln();
-  buffer.writeln('/*');
-  buffer.writeln(' * Generated file. Do not edit.');
-  buffer.writeln(' *');
-  buffer.writeln(' * Locales: ${translations.length}');
-  buffer.writeln(
-      ' * Strings: $translationCount ${translations.length != 1 ? '(${(translationCount / translations.length).toStringAsFixed(1)} per locale)' : ''}');
-
-  if (config.renderTimestamp) {
-    buffer.writeln(' *');
-    buffer.writeln(
-        ' * Built on ${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} UTC');
+  String translationsPerLocale='';
+  if(translations.length != 1){
+    translationsPerLocale ='(${(translationCount / translations.length).floor()} per locale)';
   }
 
-  buffer.writeln(' */');
+  String twoDigits(int value) => value.toString().padLeft(2, '0');
 
-  buffer.writeln();
-  buffer.writeln(
-      '// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, unnecessary_string_interpolations, avoid_escaping_inner_quotes');
+  String renderTimestamp = '';
+  if (config.renderTimestamp) {
+    final String date = '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
+    final String time = '${twoDigits(now.hour)}:${twoDigits(now.minute)}';
+    renderTimestamp = '''
+/// Built on $date at $time UTC
+''';
+  }
+
+  buffer.writeln('''
+/// Generated file. Do not edit.
+///
+/// Locales: ${translations.length}
+/// Strings: $translationCount $translationsPerLocale
+///
+$renderTimestamp
+
+// coverage:ignore-file
+// ignore_for_file: type=lint
+''');
 }
 
 void _generateImports(I18nConfig config, StringBuffer buffer) {
