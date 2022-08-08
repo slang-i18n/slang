@@ -3,7 +3,7 @@
 /// Locales: 2
 /// Strings: 12 (6 per locale)
 ///
-/// Built on 2022-08-07 at 18:43 UTC
+/// Built on 2022-08-08 at 00:01 UTC
 
 
 // coverage:ignore-file
