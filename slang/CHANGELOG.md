@@ -1,3 +1,8 @@
+## 2.7.0
+
+- feat: ignore empty plural / context nodes when `fallback_strategy: base_locale` is used
+- feat: add `coverage:ignore-file` to generated file and ignore every lint
+
 ## 2.6.2
 
 - feat: add Russian plural resolver (thanks to @LuckyWins)

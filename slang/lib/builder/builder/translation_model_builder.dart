@@ -33,6 +33,7 @@ class TranslationModelBuilder {
     // Assumption: They are basic linked translations without parameters
     // Reason: Not all TextNodes are built, so final parameters are unknown
     final resultNodeTree = _parseMapNode(
+      locale: locale,
       parentPath: '',
       curr: map,
       config: buildConfig,
@@ -158,6 +159,7 @@ class TranslationModelBuilder {
   /// Takes the [curr] map which is (a part of) the raw tree from json / yaml
   /// and returns the node model.
   static Map<String, Node> _parseMapNode({
+    required I18nLocale locale,
     required String parentPath,
     required Map<String, dynamic> curr,
     required BuildConfig config,
@@ -229,6 +231,7 @@ class TranslationModelBuilder {
             for (int i = 0; i < value.length; i++) i.toString(): value[i],
           };
           children = _parseMapNode(
+            locale: locale,
             parentPath: currPath,
             curr: listAsMap,
             config: config,
@@ -249,6 +252,7 @@ class TranslationModelBuilder {
         } else {
           // key: { ...value }
           final children = _parseMapNode(
+            locale: locale,
             parentPath: currPath,
             curr: value,
             config: config,
@@ -269,6 +273,15 @@ class TranslationModelBuilder {
           if (detectedType.nodeType == _DetectionType.context ||
               detectedType.nodeType == _DetectionType.pluralCardinal ||
               detectedType.nodeType == _DetectionType.pluralOrdinal) {
+            if (children.isEmpty) {
+              switch (config.fallbackStrategy) {
+                case FallbackStrategy.none:
+                  throw '"$currPath" in <${locale.languageTag}> is empty but it is marked for pluralization. Define "fallback_strategy: base_locale" to ignore this node.';
+                case FallbackStrategy.baseLocale:
+                  return;
+              }
+            }
+
             if (detectedType.nodeType == _DetectionType.pluralCardinal) {
               cardinalNotifier();
             } else if (detectedType.nodeType == _DetectionType.pluralOrdinal) {
