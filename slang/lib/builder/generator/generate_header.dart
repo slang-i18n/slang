@@ -95,16 +95,18 @@ void _generateHeaderComment({
     (prev, curr) => prev + _countTranslations(curr.root),
   );
 
-  String translationsPerLocale='';
-  if(translations.length != 1){
-    translationsPerLocale ='(${(translationCount / translations.length).floor()} per locale)';
+  String translationsPerLocale = '';
+  if (translations.length != 1) {
+    translationsPerLocale =
+        '(${(translationCount / translations.length).floor()} per locale)';
   }
 
   String twoDigits(int value) => value.toString().padLeft(2, '0');
 
   String renderTimestamp = '';
   if (config.renderTimestamp) {
-    final String date = '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
+    final String date =
+        '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
     final String time = '${twoDigits(now.hour)}:${twoDigits(now.minute)}';
     renderTimestamp = '''
 /// Built on $date at $time UTC
