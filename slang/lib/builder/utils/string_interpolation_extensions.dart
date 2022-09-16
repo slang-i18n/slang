@@ -22,13 +22,6 @@ extension StringInterpolationExtensions on String {
   }
 }
 
-String _replaceDartInterpolation({
-  required String input,
-  required String Function(String match) replace,
-}) {
-  return input;
-}
-
 String _replaceBetween({
   required String input,
   required String startCharacter,
