@@ -372,6 +372,11 @@ class TranslationModelBuilder {
       final childrenSplitByComma =
           children.keys.expand((key) => key.split(Node.KEY_DELIMITER)).toList();
 
+      if (childrenSplitByComma.isEmpty) {
+        // fallback: empty node is a class by default
+        return _DetectionResult(_DetectionType.classType);
+      }
+
       if (config.pluralAuto != PluralAuto.off) {
         // check if every children is 'zero', 'one', 'two', 'few', 'many' or 'other'
         final isPlural =
