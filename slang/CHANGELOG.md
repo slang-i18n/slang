@@ -1,7 +1,7 @@
 ## 2.8.0
 
 - feat: add `AppLocaleUtils.parseLocaleParts`
-- fix: `LocaleSettings.useDeviceLocale()` now does not complain of weird locales on Linux
+- fix: `LocaleSettings.useDeviceLocale` now does not complain of weird locales on Linux
 - fix: rich text now handles all characters
 - fix: rich text properly applies param_case
 - fix: empty nodes are rendered as classes instead of claiming them as plurals
