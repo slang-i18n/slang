@@ -1,13 +1,13 @@
 import 'package:slang/builder/generator/helper.dart';
-import 'package:slang/builder/model/build_config.dart';
-import 'package:slang/builder/model/i18n_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 String generateHeader(
-  I18nConfig config,
+  GenerateConfig config,
   List<I18nData> allLocales,
 ) {
   const String baseLocaleVar = '_baseLocale';
@@ -86,7 +86,7 @@ String generateHeader(
 
 void _generateHeaderComment({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required List<I18nData> translations,
   required DateTime now,
 }) {
@@ -124,7 +124,7 @@ $renderTimestamp
 ''');
 }
 
-void _generateImports(I18nConfig config, StringBuffer buffer) {
+void _generateImports(GenerateConfig config, StringBuffer buffer) {
   buffer.writeln();
   final imports = [
     ...config.imports,
@@ -149,7 +149,7 @@ void _generateImports(I18nConfig config, StringBuffer buffer) {
 
 void _generateParts({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required List<I18nData> locales,
 }) {
   buffer.writeln();
@@ -165,7 +165,7 @@ void _generateParts({
 
 void _generateBaseLocale({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required String baseLocaleVar,
 }) {
   final String enumName = config.enumName;
@@ -177,7 +177,7 @@ void _generateBaseLocale({
 
 void _generateEnum({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required List<I18nData> allLocales,
   required String baseClassName,
 }) {
@@ -242,7 +242,7 @@ void _generateEnum({
 
 void _generateTranslationGetter({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required String baseClassName,
 }) {
   const String translationsClass = 'Translations';
@@ -332,7 +332,7 @@ void _generateTranslationGetter({
 
 void _generateLocaleSettings({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required List<I18nData> allLocales,
   required String baseClassName,
   required String pluralResolverType,
@@ -390,7 +390,7 @@ void _generateLocaleSettings({
 
 void _generateUtil({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required String baseLocaleVar,
   required String baseClassName,
 }) {
@@ -423,7 +423,7 @@ void _generateUtil({
 
 void _generateContextEnums({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
 }) {
   final contexts = config.contexts.where((c) => c.generateEnum);
 
@@ -444,7 +444,7 @@ void _generateContextEnums({
 
 void _generateInterfaces({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
 }) {
   if (config.interface.isNotEmpty) {
     buffer.writeln();

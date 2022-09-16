@@ -1,6 +1,7 @@
 import 'dart:collection';
 
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/build_model_config.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -16,7 +17,7 @@ class TranslationModelBuilder {
   /// The map must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
   static I18nData build({
-    required BuildConfig buildConfig,
+    required BuildModelConfig buildConfig,
     required I18nLocale locale,
     required Map<String, dynamic> map,
   }) {
@@ -151,7 +152,7 @@ class TranslationModelBuilder {
     required I18nLocale locale,
     required String parentPath,
     required Map<String, dynamic> curr,
-    required BuildConfig config,
+    required BuildModelConfig config,
     required CaseStyle? keyCase,
     required Map<String, LeafNode> leavesMap,
   }) {
@@ -335,7 +336,7 @@ class TranslationModelBuilder {
   }
 
   static _DetectionResult _determineNodeType(
-    BuildConfig config,
+    BuildModelConfig config,
     String nodePath,
     Map<String, Node> children,
   ) {
@@ -672,7 +673,7 @@ class _DetectionResult {
   _DetectionResult(this.nodeType, [this.contextHint]);
 }
 
-extension on BuildConfig {
+extension on BuildModelConfig {
   InterfaceCollection buildInterfaceCollection() {
     Set<Interface> globalInterfaces = {};
     Map<String, Interface> nameInterfaceMap = {};

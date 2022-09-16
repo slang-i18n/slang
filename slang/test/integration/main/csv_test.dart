@@ -1,4 +1,4 @@
-import 'package:slang/builder/builder/build_config_builder.dart';
+import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/decoder/csv_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -22,7 +22,7 @@ void main() {
 
   test('separated csv', () {
     final result = GeneratorFacade.generate(
-      buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!,
+      rawConfig: RawConfigBuilder.fromYaml(buildYaml)!,
       baseName: 'translations',
       translationMap: TranslationMap()
         ..addTranslations(

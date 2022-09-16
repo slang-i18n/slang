@@ -1,7 +1,7 @@
 import 'package:slang/builder/decoder/csv_decoder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/decoder/yaml_decoder.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
 
 abstract class BaseDecoder {
   /// Transforms the raw string (json, yaml, csv) to a standardized map structure

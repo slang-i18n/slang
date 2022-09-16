@@ -1,7 +1,7 @@
 part of 'generate_translations.dart';
 
 String generateTranslationMap(
-  I18nConfig config,
+  GenerateConfig config,
   List<I18nData> translations,
 ) {
   final buffer = StringBuffer();
@@ -42,7 +42,7 @@ String generateTranslationMap(
 _generateTranslationMapRecursive({
   required StringBuffer buffer,
   required Node curr,
-  required I18nConfig config,
+  required GenerateConfig config,
   required String language,
 }) {
   if (curr is StringTextNode) {

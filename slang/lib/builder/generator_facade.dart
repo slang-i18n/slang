@@ -1,7 +1,8 @@
-import 'package:slang/builder/builder/i18n_config_builder.dart';
+import 'package:slang/builder/builder/build_model_config_builder.dart';
+import 'package:slang/builder/builder/generate_config_builder.dart';
 import 'package:slang/builder/builder/translation_model_builder.dart';
 import 'package:slang/builder/generator/generator.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/build_result.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/interface.dart';
@@ -10,7 +11,7 @@ import 'package:slang/builder/model/translation_map.dart';
 class GeneratorFacade {
   /// Common step used by custom runner and builder to get the .g.dart content
   static BuildResult generate({
-    required BuildConfig buildConfig,
+    required RawConfig rawConfig,
     required String baseName,
     required TranslationMap translationMap,
   }) {
@@ -20,9 +21,9 @@ class GeneratorFacade {
       final locale = localeEntry.key;
       final namespaces = localeEntry.value;
       return TranslationModelBuilder.build(
-        buildConfig: buildConfig,
+        buildConfig: rawConfig.toBuildModelConfig(),
         locale: locale,
-        map: buildConfig.namespaces ? namespaces : namespaces.values.first,
+        map: rawConfig.namespaces ? namespaces : namespaces.values.first,
       );
     }).toList();
 
@@ -44,9 +45,9 @@ class GeneratorFacade {
     });
 
     // build config
-    final config = I18nConfigBuilder.build(
+    final config = GenerateConfigBuilder.build(
       baseName: baseName,
-      buildConfig: buildConfig,
+      buildConfig: rawConfig,
       interfaces: interfaceMap.values.toList(),
     );
 

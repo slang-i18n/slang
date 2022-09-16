@@ -1,12 +1,13 @@
-import 'package:slang/builder/builder/build_config_builder.dart';
+import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 
-import '../util/build_config_utils.dart';
+import '../util/config_utils.dart';
 import '../util/resources_utils.dart';
 
 /// To run this:
@@ -22,7 +23,7 @@ void main() {
   final de = loadResource('main/json_de.json');
   final simple = loadResource('main/json_simple.json');
   final buildConfig =
-      BuildConfigBuilder.fromYaml(loadResource('main/build_config.yaml'))!;
+      RawConfigBuilder.fromYaml(loadResource('main/build_config.yaml'))!;
   generateMainIntegration(buildConfig, en, de);
   generateMainSplitIntegration(buildConfig, en, de);
   generateNoFlutter(buildConfig, simple);
@@ -31,9 +32,9 @@ void main() {
   print('');
 }
 
-void generateMainIntegration(BuildConfig buildConfig, String en, String de) {
+void generateMainIntegration(RawConfig buildConfig, String en, String de) {
   final result = GeneratorFacade.generate(
-    buildConfig: buildConfig,
+    rawConfig: buildConfig,
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(
@@ -53,12 +54,12 @@ void generateMainIntegration(BuildConfig buildConfig, String en, String de) {
 }
 
 void generateMainSplitIntegration(
-  BuildConfig buildConfig,
+  RawConfig buildConfig,
   String en,
   String de,
 ) {
   final result = GeneratorFacade.generate(
-    buildConfig: buildConfig.copyWith(outputFormat: OutputFormat.multipleFiles),
+    rawConfig: buildConfig.copyWith(outputFormat: OutputFormat.multipleFiles),
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(
@@ -92,9 +93,9 @@ void generateMainSplitIntegration(
   );
 }
 
-void generateNoFlutter(BuildConfig buildConfig, String simple) {
+void generateNoFlutter(RawConfig buildConfig, String simple) {
   final result = GeneratorFacade.generate(
-    buildConfig: buildConfig.copyWith(flutterIntegration: false),
+    rawConfig: buildConfig.copyWith(flutterIntegration: false),
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(
@@ -109,9 +110,9 @@ void generateNoFlutter(BuildConfig buildConfig, String simple) {
   );
 }
 
-void generateNoLocaleHandling(BuildConfig buildConfig, String simple) {
+void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
   final result = GeneratorFacade.generate(
-    buildConfig: buildConfig.copyWith(renderLocaleHandling: false),
+    rawConfig: buildConfig.copyWith(renderLocaleHandling: false),
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(

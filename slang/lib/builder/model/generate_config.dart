@@ -1,10 +1,11 @@
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 
-/// general config, applies to all locales
-class I18nConfig {
+/// Config for the generation step (generate dart-content from model)
+/// Applies to all locales
+class GenerateConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
   final FallbackStrategy fallbackStrategy;
@@ -20,7 +21,7 @@ class I18nConfig {
   final List<Interface> interface; // may include more than in build config
   final List<String> imports;
 
-  I18nConfig({
+  GenerateConfig({
     required this.baseName,
     required this.baseLocale,
     required this.fallbackStrategy,

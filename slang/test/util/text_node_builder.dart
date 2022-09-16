@@ -1,4 +1,4 @@
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/node.dart';
 
 StringTextNode textNode(

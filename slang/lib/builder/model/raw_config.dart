@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 
 /// represents a build.yaml
-class BuildConfig {
+class RawConfig {
   static const String defaultBaseLocale = 'en';
   static const FallbackStrategy defaultFallbackStrategy = FallbackStrategy.none;
   static const String? defaultInputDirectory = null;
@@ -63,7 +64,7 @@ class BuildConfig {
   final List<InterfaceConfig> interfaces;
   final List<String> imports;
 
-  BuildConfig({
+  RawConfig({
     required this.baseLocale,
     required this.fallbackStrategy,
     required this.inputDirectory,
@@ -104,8 +105,8 @@ class BuildConfig {
     }
   }
 
-  BuildConfig withAbsolutePaths() {
-    return BuildConfig(
+  RawConfig withAbsolutePaths() {
+    return RawConfig(
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       inputDirectory: inputDirectory?.toAbsolutePath(),
@@ -136,34 +137,33 @@ class BuildConfig {
   }
 
   void printConfig() {
-    print(' -> fileType: ${fileType.getEnumName()}');
+    print(' -> fileType: ${fileType.name}');
     print(' -> baseLocale: ${baseLocale.languageTag}');
-    print(' -> fallbackStrategy: ${fallbackStrategy.getEnumName()}');
+    print(' -> fallbackStrategy: ${fallbackStrategy.name}');
     print(
         ' -> inputDirectory: ${inputDirectory != null ? inputDirectory : 'null (everywhere)'}');
     print(' -> inputFilePattern: $inputFilePattern');
     print(
         ' -> outputDirectory: ${outputDirectory != null ? outputDirectory : 'null (directory of input)'}');
     print(' -> outputFileName: $outputFileName');
-    print(' -> outputFileFormat: ${outputFormat.getEnumName()}');
+    print(' -> outputFileFormat: ${outputFormat.name}');
     print(' -> localeHandling: $localeHandling');
     print(' -> flutterIntegration: $flutterIntegration');
     print(' -> namespaces: $namespaces');
     print(' -> translateVar: $translateVar');
     print(' -> enumName: $enumName');
+    print(' -> translationClassVisibility: ${translationClassVisibility.name}');
     print(
-        ' -> translationClassVisibility: ${translationClassVisibility.getEnumName()}');
+        ' -> keyCase: ${keyCase != null ? keyCase?.name : 'null (no change)'}');
     print(
-        ' -> keyCase: ${keyCase != null ? keyCase?.getEnumName() : 'null (no change)'}');
+        ' -> keyCase (for maps): ${keyMapCase != null ? keyMapCase?.name : 'null (no change)'}');
     print(
-        ' -> keyCase (for maps): ${keyMapCase != null ? keyMapCase?.getEnumName() : 'null (no change)'}');
-    print(
-        ' -> paramCase: ${paramCase != null ? paramCase?.getEnumName() : 'null (no change)'}');
-    print(' -> stringInterpolation: ${stringInterpolation.getEnumName()}');
+        ' -> paramCase: ${paramCase != null ? paramCase?.name : 'null (no change)'}');
+    print(' -> stringInterpolation: ${stringInterpolation.name}');
     print(' -> renderFlatMap: $renderFlatMap');
     print(' -> renderTimestamp: $renderTimestamp');
     print(' -> maps: $maps');
-    print(' -> pluralization/auto: ${pluralAuto.getEnumName()}');
+    print(' -> pluralization/auto: ${pluralAuto.name}');
     print(' -> pluralization/cardinal: $pluralCardinal');
     print(' -> pluralization/ordinal: $pluralOrdinal');
     print(' -> contexts: ${contexts.isEmpty ? 'no custom contexts' : ''}');
@@ -190,93 +190,7 @@ class BuildConfig {
   }
 }
 
-enum FileType { json, yaml, csv }
-
-enum FallbackStrategy { none, baseLocale }
-
-enum OutputFormat { singleFile, multipleFiles }
-
-enum StringInterpolation { dart, braces, doubleBraces }
-
-enum TranslationClassVisibility { private, public }
-
-enum CaseStyle { camel, pascal, snake }
-
-enum PluralAuto { off, cardinal, ordinal }
-
-extension Parser on String {
-  FallbackStrategy? toFallbackStrategy() {
-    switch (this) {
-      case 'none':
-        return FallbackStrategy.none;
-      case 'base_locale':
-        return FallbackStrategy.baseLocale;
-      default:
-        return null;
-    }
-  }
-
-  OutputFormat? toOutputFormat() {
-    switch (this) {
-      case 'single_file':
-        return OutputFormat.singleFile;
-      case 'multiple_files':
-        return OutputFormat.multipleFiles;
-      default:
-        return null;
-    }
-  }
-
-  TranslationClassVisibility? toTranslationClassVisibility() {
-    switch (this) {
-      case 'private':
-        return TranslationClassVisibility.private;
-      case 'public':
-        return TranslationClassVisibility.public;
-      default:
-        return null;
-    }
-  }
-
-  StringInterpolation? toStringInterpolation() {
-    switch (this) {
-      case 'dart':
-        return StringInterpolation.dart;
-      case 'braces':
-        return StringInterpolation.braces;
-      case 'double_braces':
-        return StringInterpolation.doubleBraces;
-      default:
-        return null;
-    }
-  }
-
-  CaseStyle? toCaseStyle() {
-    switch (this) {
-      case 'camel':
-        return CaseStyle.camel;
-      case 'snake':
-        return CaseStyle.snake;
-      case 'pascal':
-        return CaseStyle.pascal;
-      default:
-        return null;
-    }
-  }
-
-  PluralAuto? toPluralAuto() {
-    switch (this) {
-      case 'off':
-        return PluralAuto.off;
-      case 'cardinal':
-        return PluralAuto.cardinal;
-      case 'ordinal':
-        return PluralAuto.ordinal;
-      default:
-        return null;
-    }
-  }
-
+extension RawConfigStringExt on String {
   /// converts to absolute file path
   String toAbsolutePath() {
     String result = this
@@ -293,12 +207,5 @@ extension Parser on String {
     }
 
     return Directory.current.path + Platform.pathSeparator + result;
-  }
-}
-
-extension on Object {
-  /// expects an enum and get its string representation without enum class name
-  String getEnumName() {
-    return this.toString().split('.').last;
   }
 }

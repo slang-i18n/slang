@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:slang/builder/builder/build_config_builder.dart';
+import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/builder/stats_facade.dart';
 import 'package:slang/builder/utils/file_utils.dart';
@@ -47,23 +48,23 @@ void main(List<String> arguments) async {
       (await Directory.current.list(recursive: true).toList())
           .where((item) => FileSystemEntity.isFileSync(item.path));
 
-  final buildConfig = await getBuildConfig(files, verbose);
+  final config = await getConfig(files, verbose);
 
   // filter files according to build config
   files = files.where((file) {
-    if (!file.path.endsWith(buildConfig.inputFilePattern)) return false;
+    if (!file.path.endsWith(config.inputFilePattern)) return false;
 
-    if (buildConfig.inputDirectory != null &&
-        !file.path.contains(buildConfig.inputDirectory!)) return false;
+    if (config.inputDirectory != null &&
+        !file.path.contains(config.inputDirectory!)) return false;
 
     return true;
   });
 
   if (watchMode) {
-    await watchTranslations(buildConfig: buildConfig, files: files);
+    await watchTranslations(config: config, files: files);
   } else {
     await generateTranslations(
-      buildConfig: buildConfig,
+      rawConfig: config,
       files: files,
       verbose: verbose,
       stopwatch: stopwatch,
@@ -72,17 +73,17 @@ void main(List<String> arguments) async {
   }
 }
 
-Future<BuildConfig> getBuildConfig(
+Future<RawConfig> getConfig(
   Iterable<FileSystemEntity> files,
   bool verbose,
 ) async {
-  BuildConfig? buildConfig;
+  RawConfig? config;
   for (final file in files) {
     final fileName = file.path.getFileName();
 
     if (fileName == 'slang.yaml') {
       final content = await File(file.path).readAsString();
-      buildConfig = BuildConfigBuilder.fromYaml(content, true);
+      config = RawConfigBuilder.fromYaml(content, true);
       if (verbose) {
         print('Found slang.yaml in ${file.path}');
       }
@@ -91,8 +92,8 @@ Future<BuildConfig> getBuildConfig(
 
     if (fileName == 'build.yaml') {
       final content = await File(file.path).readAsString();
-      buildConfig = BuildConfigBuilder.fromYaml(content);
-      if (buildConfig != null) {
+      config = RawConfigBuilder.fromYaml(content);
+      if (config != null) {
         if (verbose) {
           print('Found build.yaml in ${file.path}');
         }
@@ -101,31 +102,31 @@ Future<BuildConfig> getBuildConfig(
     }
   }
 
-  if (buildConfig == null) {
-    buildConfig = BuildConfigBuilder.fromMap({});
+  if (config == null) {
+    config = RawConfigBuilder.fromMap({});
     if (verbose) {
       print('No build.yaml or slang.yaml, using default settings.');
     }
   }
 
   // convert to absolute paths
-  buildConfig = buildConfig.withAbsolutePaths();
+  config = config.withAbsolutePaths();
 
   // show build config
   if (verbose) {
     print('');
-    buildConfig.printConfig();
+    config.printConfig();
     print('');
   }
 
-  return buildConfig;
+  return config;
 }
 
 Future<void> watchTranslations({
-  required BuildConfig buildConfig,
+  required RawConfig config,
   required Iterable<FileSystemEntity> files,
 }) async {
-  final inputDirectoryPath = buildConfig.inputDirectory;
+  final inputDirectoryPath = config.inputDirectory;
   if (inputDirectoryPath == null) {
     print('Please set input_directory in build.yaml.');
     return;
@@ -135,7 +136,7 @@ Future<void> watchTranslations({
   final stream = inputDirectory.watch(events: FileSystemEvent.all);
 
   await generateTranslations(
-    buildConfig: buildConfig,
+    rawConfig: config,
     files: files,
     verbose: false,
   );
@@ -143,13 +144,13 @@ Future<void> watchTranslations({
   print('Listening to changes in $inputDirectoryPath (non-recursive)');
   stdout.write('\r -> Init at $currentTime.');
   await for (final event in stream) {
-    if (event.path.endsWith(buildConfig.inputFilePattern)) {
+    if (event.path.endsWith(config.inputFilePattern)) {
       stdout.write('\r -> Generating...           ');
       final newFiles = (await inputDirectory.list().toList()).where((item) =>
           FileSystemEntity.isFileSync(item.path) &&
-          item.path.endsWith(buildConfig.inputFilePattern));
+          item.path.endsWith(config.inputFilePattern));
       await generateTranslations(
-        buildConfig: buildConfig,
+        rawConfig: config,
         files: newFiles,
         verbose: false,
       );
@@ -161,7 +162,7 @@ Future<void> watchTranslations({
 /// Reads the translations from hard drive and generates the g.dart file
 /// The [files] are already filtered (only translation files!).
 Future<void> generateTranslations({
-  required BuildConfig buildConfig,
+  required RawConfig rawConfig,
   required Iterable<FileSystemEntity> files,
   required bool verbose,
   Stopwatch? stopwatch,
@@ -170,18 +171,18 @@ Future<void> generateTranslations({
   // STEP 1: determine base name and output file name / path
   final String outputFilePath;
 
-  if (buildConfig.outputDirectory != null) {
+  if (rawConfig.outputDirectory != null) {
     // output directory specified, use this path instead
-    outputFilePath = buildConfig.outputDirectory! +
+    outputFilePath = rawConfig.outputDirectory! +
         Platform.pathSeparator +
-        buildConfig.outputFileName;
+        rawConfig.outputFileName;
   } else {
     // use the directory of the first (random) translation file
     final fileName = files.first.path.getFileName();
     outputFilePath =
         files.first.path.replaceAll("${Platform.pathSeparator}$fileName", '') +
             Platform.pathSeparator +
-            buildConfig.outputFileName;
+            rawConfig.outputFileName;
   }
 
   // STEP 2: scan translations
@@ -191,7 +192,7 @@ Future<void> generateTranslations({
   }
 
   final translationMap = await TranslationMapBuilder.build(
-    buildConfig: buildConfig,
+    rawConfig: rawConfig,
     files: files
         .map((f) => TranslationFile(
               path: f.path.replaceAll('\\', '/'),
@@ -204,7 +205,7 @@ Future<void> generateTranslations({
   // STATS MODE
   if (statsMode) {
     StatsFacade.parse(
-      buildConfig: buildConfig,
+      rawConfig: rawConfig,
       translationMap: translationMap,
     ).printResult();
     if (stopwatch != null) {
@@ -216,14 +217,14 @@ Future<void> generateTranslations({
 
   // STEP 3: generate .g.dart content
   final result = GeneratorFacade.generate(
-    buildConfig: buildConfig,
-    baseName: buildConfig.outputFileName.getFileNameNoExtension(),
+    rawConfig: rawConfig,
+    baseName: rawConfig.outputFileName.getFileNameNoExtension(),
     translationMap: translationMap,
   );
 
   // STEP 4: write output to hard drive
   FileUtils.createMissingFolders(filePath: outputFilePath);
-  if (buildConfig.outputFormat == OutputFormat.singleFile) {
+  if (rawConfig.outputFormat == OutputFormat.singleFile) {
     // single file
     FileUtils.writeFile(
       path: outputFilePath,
@@ -260,7 +261,7 @@ Future<void> generateTranslations({
 
   if (verbose) {
     print('');
-    if (buildConfig.outputFormat == OutputFormat.singleFile) {
+    if (rawConfig.outputFormat == OutputFormat.singleFile) {
       print('Output: $outputFilePath');
     } else {
       print('Output:');

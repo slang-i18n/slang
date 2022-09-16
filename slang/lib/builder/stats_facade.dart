@@ -1,4 +1,5 @@
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/builder/build_model_config_builder.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
@@ -10,7 +11,7 @@ import 'builder/translation_model_builder.dart';
 
 class StatsFacade {
   static StatsResult parse({
-    required BuildConfig buildConfig,
+    required RawConfig rawConfig,
     required TranslationMap translationMap,
     bool showPluralHint = false,
   }) {
@@ -19,9 +20,9 @@ class StatsFacade {
       final locale = localeEntry.key;
       final namespaces = localeEntry.value;
       return TranslationModelBuilder.build(
-        buildConfig: buildConfig,
+        buildConfig: rawConfig.toBuildModelConfig(),
         locale: locale,
-        map: buildConfig.namespaces ? namespaces : namespaces.values.first,
+        map: rawConfig.namespaces ? namespaces : namespaces.values.first,
       );
     }).toList();
 

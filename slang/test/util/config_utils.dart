@@ -1,41 +1,42 @@
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 
-final defaultLocale = I18nLocale.fromString(BuildConfig.defaultBaseLocale);
+final defaultLocale = I18nLocale.fromString(RawConfig.defaultBaseLocale);
 
-final baseConfig = BuildConfig(
+final baseConfig = RawConfig(
   baseLocale: defaultLocale,
-  fallbackStrategy: BuildConfig.defaultFallbackStrategy,
-  inputDirectory: BuildConfig.defaultInputDirectory,
-  inputFilePattern: BuildConfig.defaultInputFilePattern,
-  outputDirectory: BuildConfig.defaultOutputDirectory,
-  outputFileName: BuildConfig.defaultOutputFileName,
-  outputFormat: BuildConfig.defaultOutputFormat,
-  localeHandling: BuildConfig.defaultLocaleHandling,
-  flutterIntegration: BuildConfig.defaultFlutterIntegration,
-  namespaces: BuildConfig.defaultNamespaces,
-  translateVar: BuildConfig.defaultTranslateVar,
-  enumName: BuildConfig.defaultEnumName,
-  translationClassVisibility: BuildConfig.defaultTranslationClassVisibility,
-  keyCase: BuildConfig.defaultKeyCase,
-  keyMapCase: BuildConfig.defaultKeyMapCase,
-  paramCase: BuildConfig.defaultParamCase,
-  stringInterpolation: BuildConfig.defaultStringInterpolation,
-  renderFlatMap: BuildConfig.defaultRenderFlatMap,
-  renderTimestamp: BuildConfig.defaultRenderTimestamp,
-  maps: BuildConfig.defaultMaps,
-  pluralAuto: BuildConfig.defaultPluralAuto,
-  pluralCardinal: BuildConfig.defaultCardinal,
-  pluralOrdinal: BuildConfig.defaultOrdinal,
-  contexts: BuildConfig.defaultContexts,
-  interfaces: BuildConfig.defaultInterfaces,
-  imports: BuildConfig.defaultImports,
+  fallbackStrategy: RawConfig.defaultFallbackStrategy,
+  inputDirectory: RawConfig.defaultInputDirectory,
+  inputFilePattern: RawConfig.defaultInputFilePattern,
+  outputDirectory: RawConfig.defaultOutputDirectory,
+  outputFileName: RawConfig.defaultOutputFileName,
+  outputFormat: RawConfig.defaultOutputFormat,
+  localeHandling: RawConfig.defaultLocaleHandling,
+  flutterIntegration: RawConfig.defaultFlutterIntegration,
+  namespaces: RawConfig.defaultNamespaces,
+  translateVar: RawConfig.defaultTranslateVar,
+  enumName: RawConfig.defaultEnumName,
+  translationClassVisibility: RawConfig.defaultTranslationClassVisibility,
+  keyCase: RawConfig.defaultKeyCase,
+  keyMapCase: RawConfig.defaultKeyMapCase,
+  paramCase: RawConfig.defaultParamCase,
+  stringInterpolation: RawConfig.defaultStringInterpolation,
+  renderFlatMap: RawConfig.defaultRenderFlatMap,
+  renderTimestamp: RawConfig.defaultRenderTimestamp,
+  maps: RawConfig.defaultMaps,
+  pluralAuto: RawConfig.defaultPluralAuto,
+  pluralCardinal: RawConfig.defaultCardinal,
+  pluralOrdinal: RawConfig.defaultOrdinal,
+  contexts: RawConfig.defaultContexts,
+  interfaces: RawConfig.defaultInterfaces,
+  imports: RawConfig.defaultImports,
 );
 
-extension BuildConfigCopy on BuildConfig {
-  BuildConfig copyWith({
+extension BuildConfigCopy on RawConfig {
+  RawConfig copyWith({
     String? inputFilePattern,
     OutputFormat? outputFormat,
     bool? renderLocaleHandling,
@@ -49,7 +50,7 @@ extension BuildConfigCopy on BuildConfig {
     List<ContextType>? contexts,
     List<InterfaceConfig>? interfaces,
   }) {
-    return BuildConfig(
+    return RawConfig(
       baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       inputDirectory: inputDirectory,

@@ -1,14 +1,14 @@
-import 'package:slang/builder/model/build_config.dart';
-import 'package:slang/builder/model/i18n_config.dart';
+import 'package:slang/builder/model/raw_config.dart';
+import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/interface.dart';
 
-class I18nConfigBuilder {
-  static I18nConfig build({
+class GenerateConfigBuilder {
+  static GenerateConfig build({
     required String baseName,
-    required BuildConfig buildConfig,
+    required RawConfig buildConfig,
     required List<Interface> interfaces,
   }) {
-    return I18nConfig(
+    return GenerateConfig(
       baseName: baseName,
       baseLocale: buildConfig.baseLocale,
       fallbackStrategy: buildConfig.fallbackStrategy,

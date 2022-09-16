@@ -1,4 +1,5 @@
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
@@ -7,10 +8,10 @@ import 'package:slang/builder/utils/string_extensions.dart';
 import 'package:slang/builder/utils/yaml_utils.dart';
 import 'package:yaml/yaml.dart';
 
-class BuildConfigBuilder {
+class RawConfigBuilder {
   /// Parses the full build.yaml file to get the config
   /// May return null if no config entry is found.
-  static BuildConfig? fromYaml(String rawYaml, [bool isSlangYaml = false]) {
+  static RawConfig? fromYaml(String rawYaml, [bool isSlangYaml = false]) {
     final parsedYaml = loadYaml(rawYaml);
     if (parsedYaml == null) {
       return null;
@@ -44,58 +45,56 @@ class BuildConfigBuilder {
   }
 
   /// Parses the config entry
-  static BuildConfig fromMap(Map<String, dynamic> map) {
-    return BuildConfig(
+  static RawConfig fromMap(Map<String, dynamic> map) {
+    return RawConfig(
       baseLocale: I18nLocale.fromString(
-          map['base_locale'] ?? BuildConfig.defaultBaseLocale),
+          map['base_locale'] ?? RawConfig.defaultBaseLocale),
       fallbackStrategy:
           (map['fallback_strategy'] as String?)?.toFallbackStrategy() ??
-              BuildConfig.defaultFallbackStrategy,
-      inputDirectory:
-          map['input_directory'] ?? BuildConfig.defaultInputDirectory,
+              RawConfig.defaultFallbackStrategy,
+      inputDirectory: map['input_directory'] ?? RawConfig.defaultInputDirectory,
       inputFilePattern:
-          map['input_file_pattern'] ?? BuildConfig.defaultInputFilePattern,
+          map['input_file_pattern'] ?? RawConfig.defaultInputFilePattern,
       outputDirectory:
-          map['output_directory'] ?? BuildConfig.defaultOutputDirectory,
+          map['output_directory'] ?? RawConfig.defaultOutputDirectory,
       outputFileName:
-          map['output_file_name'] ?? BuildConfig.defaultOutputFileName,
+          map['output_file_name'] ?? RawConfig.defaultOutputFileName,
       outputFormat: (map['output_format'] as String?)?.toOutputFormat() ??
-          BuildConfig.defaultOutputFormat,
-      localeHandling:
-          map['locale_handling'] ?? BuildConfig.defaultLocaleHandling,
+          RawConfig.defaultOutputFormat,
+      localeHandling: map['locale_handling'] ?? RawConfig.defaultLocaleHandling,
       flutterIntegration:
-          map['flutter_integration'] ?? BuildConfig.defaultFlutterIntegration,
-      namespaces: map['namespaces'] ?? BuildConfig.defaultNamespaces,
-      translateVar: map['translate_var'] ?? BuildConfig.defaultTranslateVar,
-      enumName: map['enum_name'] ?? BuildConfig.defaultEnumName,
+          map['flutter_integration'] ?? RawConfig.defaultFlutterIntegration,
+      namespaces: map['namespaces'] ?? RawConfig.defaultNamespaces,
+      translateVar: map['translate_var'] ?? RawConfig.defaultTranslateVar,
+      enumName: map['enum_name'] ?? RawConfig.defaultEnumName,
       translationClassVisibility:
           (map['translation_class_visibility'] as String?)
                   ?.toTranslationClassVisibility() ??
-              BuildConfig.defaultTranslationClassVisibility,
+              RawConfig.defaultTranslationClassVisibility,
       keyCase: (map['key_case'] as String?)?.toCaseStyle() ??
-          BuildConfig.defaultKeyCase,
+          RawConfig.defaultKeyCase,
       keyMapCase: (map['key_map_case'] as String?)?.toCaseStyle() ??
-          BuildConfig.defaultKeyMapCase,
+          RawConfig.defaultKeyMapCase,
       paramCase: (map['param_case'] as String?)?.toCaseStyle() ??
-          BuildConfig.defaultParamCase,
+          RawConfig.defaultParamCase,
       stringInterpolation:
           (map['string_interpolation'] as String?)?.toStringInterpolation() ??
-              BuildConfig.defaultStringInterpolation,
-      renderFlatMap: map['flat_map'] ?? BuildConfig.defaultRenderFlatMap,
-      renderTimestamp: map['timestamp'] ?? BuildConfig.defaultRenderTimestamp,
-      maps: map['maps']?.cast<String>() ?? BuildConfig.defaultMaps,
+              RawConfig.defaultStringInterpolation,
+      renderFlatMap: map['flat_map'] ?? RawConfig.defaultRenderFlatMap,
+      renderTimestamp: map['timestamp'] ?? RawConfig.defaultRenderTimestamp,
+      maps: map['maps']?.cast<String>() ?? RawConfig.defaultMaps,
       pluralAuto: (map['pluralization']?['auto'] as String?)?.toPluralAuto() ??
-          BuildConfig.defaultPluralAuto,
+          RawConfig.defaultPluralAuto,
       pluralCardinal: map['pluralization']?['cardinal']?.cast<String>() ??
-          BuildConfig.defaultCardinal,
+          RawConfig.defaultCardinal,
       pluralOrdinal: map['pluralization']?['ordinal']?.cast<String>() ??
-          BuildConfig.defaultOrdinal,
+          RawConfig.defaultOrdinal,
       contexts: (map['contexts'] as Map<String, dynamic>?)?.toContextTypes() ??
-          BuildConfig.defaultContexts,
+          RawConfig.defaultContexts,
       interfaces:
           (map['interfaces'] as Map<String, dynamic>?)?.toInterfaces() ??
-              BuildConfig.defaultInterfaces,
-      imports: map['imports']?.cast<String>() ?? BuildConfig.defaultImports,
+              RawConfig.defaultInterfaces,
+      imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/decoder/csv_decoder.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/builder/model/translation_map.dart';
@@ -14,18 +15,17 @@ class TranslationMapBuilder {
   /// Read all files and build a [TranslationMap]
   /// containing all locales, their namespaces and their locales
   static Future<TranslationMap> build({
-    required BuildConfig buildConfig,
+    required RawConfig rawConfig,
     required List<TranslationFile> files,
     required bool verbose,
   }) async {
     final translationMap = TranslationMap();
-    final padLeft =
-        buildConfig.namespaces ? _namespacePadLeft : _defaultPadLeft;
+    final padLeft = rawConfig.namespaces ? _namespacePadLeft : _defaultPadLeft;
     for (final file in files) {
       final content = await file.read();
       final Map<String, dynamic> translations;
       try {
-        translations = BaseDecoder.getDecoderOfFileType(buildConfig.fileType)
+        translations = BaseDecoder.getDecoderOfFileType(rawConfig.fileType)
             .decode(content);
       } on FormatException catch (e) {
         if (verbose) {
@@ -43,7 +43,7 @@ class TranslationMapBuilder {
 
         final namespace = baseFileMatch.group(1)!;
 
-        if (buildConfig.fileType == FileType.csv &&
+        if (rawConfig.fileType == FileType.csv &&
             CsvDecoder.isCompactCSV(content)) {
           // compact csv
 
@@ -57,9 +57,8 @@ class TranslationMapBuilder {
             );
 
             if (verbose) {
-              final namespaceLog =
-                  buildConfig.namespaces ? '($namespace) ' : '';
-              final base = locale == buildConfig.baseLocale ? '(base) ' : '';
+              final namespaceLog = rawConfig.namespaces ? '($namespace) ' : '';
+              final base = locale == rawConfig.baseLocale ? '(base) ' : '';
               print(
                   '${('$base$namespaceLog${locale.languageTag}').padLeft(padLeft)} -> ${file.path}');
             }
@@ -69,7 +68,7 @@ class TranslationMapBuilder {
 
           // directory name could be a locale
           I18nLocale? directoryLocale = null;
-          if (buildConfig.namespaces) {
+          if (rawConfig.namespaces) {
             final directoryName = PathUtils.getParentDirectory(file.path);
             if (directoryName != null) {
               final match = RegexUtils.localeRegex.firstMatch(directoryName);
@@ -83,7 +82,7 @@ class TranslationMapBuilder {
             }
           }
 
-          final locale = directoryLocale ?? buildConfig.baseLocale;
+          final locale = directoryLocale ?? rawConfig.baseLocale;
 
           translationMap.addTranslations(
             locale: locale,
@@ -92,8 +91,8 @@ class TranslationMapBuilder {
           );
 
           if (verbose) {
-            final baseLog = locale == buildConfig.baseLocale ? '(base) ' : '';
-            final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
+            final baseLog = locale == rawConfig.baseLocale ? '(base) ' : '';
+            final namespaceLog = rawConfig.namespaces ? '($namespace) ' : '';
             print(
                 '${'$baseLog$namespaceLog${locale.languageTag}'.padLeft(padLeft)} -> ${file.path}');
           }
@@ -117,7 +116,7 @@ class TranslationMapBuilder {
           );
 
           if (verbose) {
-            final namespaceLog = buildConfig.namespaces ? '($namespace) ' : '';
+            final namespaceLog = rawConfig.namespaces ? '($namespace) ' : '';
             print(
                 '${(namespaceLog + locale.languageTag).padLeft(padLeft)} -> ${file.path}');
           }
@@ -127,11 +126,11 @@ class TranslationMapBuilder {
 
     if (translationMap
         .getEntries()
-        .every((locale) => locale.key != buildConfig.baseLocale)) {
+        .every((locale) => locale.key != rawConfig.baseLocale)) {
       if (verbose) {
         print('');
       }
-      throw 'Translation file for base locale "${buildConfig.baseLocale.languageTag}" not found.';
+      throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
     }
 
     return translationMap;

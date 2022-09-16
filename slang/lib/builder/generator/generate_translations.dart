@@ -1,8 +1,8 @@
 import 'dart:collection';
 
 import 'package:slang/builder/generator/helper.dart';
-import 'package:slang/builder/model/build_config.dart';
-import 'package:slang/builder/model/i18n_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
@@ -21,7 +21,7 @@ class ClassTask {
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-String generateTranslations(I18nConfig config, I18nData localeData) {
+String generateTranslations(GenerateConfig config, I18nData localeData) {
   final queue = Queue<ClassTask>();
   final buffer = StringBuffer();
 
@@ -56,7 +56,7 @@ String generateTranslations(I18nConfig config, I18nData localeData) {
 /// generates a class and all of its members of ONE locale
 /// adds subclasses to the queue
 void _generateClass(
-  I18nConfig config,
+  GenerateConfig config,
   I18nData localeData,
   StringBuffer buffer,
   Queue<ClassTask> queue,
@@ -289,7 +289,7 @@ void _generateClass(
 /// generates a map of ONE locale
 /// similar to _generateClass but anonymous and accessible via key
 void _generateMap(
-  I18nConfig config,
+  GenerateConfig config,
   bool base,
   I18nLocale locale,
   StringBuffer buffer,
@@ -362,7 +362,7 @@ void _generateMap(
 
 /// generates a list
 void _generateList(
-  I18nConfig config,
+  GenerateConfig config,
   bool base,
   I18nLocale locale,
   StringBuffer buffer,
@@ -450,7 +450,7 @@ String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
 
 void _addPluralizationCall({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required String language,
   required PluralNode node,
   required int depth,
@@ -526,7 +526,7 @@ void _addRichTextCall({
 
 void _addContextCall({
   required StringBuffer buffer,
-  required I18nConfig config,
+  required GenerateConfig config,
   required ContextNode node,
   required int depth,
 }) {

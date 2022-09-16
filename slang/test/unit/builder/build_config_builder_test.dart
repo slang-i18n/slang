@@ -1,10 +1,10 @@
-import 'package:slang/builder/builder/build_config_builder.dart';
+import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group(BuildConfigBuilder.fromYaml, () {
+  group(RawConfigBuilder.fromYaml, () {
     test('context gender default', () {
-      final result = BuildConfigBuilder.fromYaml(r'''
+      final result = RawConfigBuilder.fromYaml(r'''
         targets:
           $default:
             builders:
@@ -30,9 +30,9 @@ void main() {
     });
   });
 
-  group(BuildConfigBuilder.fromMap, () {
+  group(RawConfigBuilder.fromMap, () {
     test('context gender default', () {
-      final result = BuildConfigBuilder.fromMap(
+      final result = RawConfigBuilder.fromMap(
         {
           'contexts': {
             'gender_context': {
@@ -54,7 +54,7 @@ void main() {
     });
 
     test('context gender with path', () {
-      final result = BuildConfigBuilder.fromMap(
+      final result = RawConfigBuilder.fromMap(
         {
           'contexts': {
             'gender_context': {

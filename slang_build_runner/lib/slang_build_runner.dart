@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
-import 'package:slang/builder/builder/build_config_builder.dart';
+import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
@@ -14,17 +15,17 @@ import 'package:glob/glob.dart';
 /// Static entry point for build_runner
 Builder i18nBuilder(BuilderOptions options) {
   return I18nBuilder(
-    buildConfig: BuildConfigBuilder.fromMap(YamlUtils.deepCast(options.config)),
+    config: RawConfigBuilder.fromMap(YamlUtils.deepCast(options.config)),
   );
 }
 
 class I18nBuilder implements Builder {
-  final BuildConfig buildConfig;
+  final RawConfig config;
   final String outputFilePattern;
   bool _generated = false;
 
-  I18nBuilder({required this.buildConfig})
-      : this.outputFilePattern = buildConfig.outputFileName.getFileExtension();
+  I18nBuilder({required this.config})
+      : this.outputFilePattern = config.outputFileName.getFileExtension();
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
@@ -33,10 +34,9 @@ class I18nBuilder implements Builder {
 
     _generated = true;
 
-    final Glob findAssetsPattern = buildConfig.inputDirectory != null
-        ? Glob(
-            '**${buildConfig.inputDirectory}/**${buildConfig.inputFilePattern}')
-        : Glob('**${buildConfig.inputFilePattern}');
+    final Glob findAssetsPattern = config.inputDirectory != null
+        ? Glob('**${config.inputDirectory}/**${config.inputFilePattern}')
+        : Glob('**${config.inputFilePattern}');
 
     // STEP 1: determine base name and output file name / path
 
@@ -44,20 +44,19 @@ class I18nBuilder implements Builder {
     final String outputFilePath;
 
     // CAUTION: in build_runner, the path separator seems to be hard coded to /
-    if (buildConfig.outputDirectory != null) {
+    if (config.outputDirectory != null) {
       // output directory specified, use this path instead
-      outputFilePath =
-          buildConfig.outputDirectory! + '/' + buildConfig.outputFileName;
+      outputFilePath = config.outputDirectory! + '/' + config.outputFileName;
     } else {
       // use the directory of the first (random) translation file
       final finalOutputDirectory =
           (assets.first.pathSegments..removeLast()).join('/');
-      outputFilePath = '$finalOutputDirectory/${buildConfig.outputFileName}';
+      outputFilePath = '$finalOutputDirectory/${config.outputFileName}';
     }
 
     // STEP 2: scan translations
     final translationMap = await TranslationMapBuilder.build(
-      buildConfig: buildConfig,
+      rawConfig: config,
       files: assets
           .map((f) => TranslationFile(
                 path: f.path,
@@ -69,14 +68,14 @@ class I18nBuilder implements Builder {
 
     // STEP 3: generate .g.dart content
     final result = GeneratorFacade.generate(
-      buildConfig: buildConfig,
-      baseName: buildConfig.outputFileName.getFileNameNoExtension(),
+      rawConfig: config,
+      baseName: config.outputFileName.getFileNameNoExtension(),
       translationMap: translationMap,
     );
 
     // STEP 4: write output to hard drive
     FileUtils.createMissingFolders(filePath: outputFilePath.toAbsolutePath());
-    if (buildConfig.outputFormat == OutputFormat.singleFile) {
+    if (config.outputFormat == OutputFormat.singleFile) {
       // single file
       FileUtils.writeFile(
         path: outputFilePath,
@@ -114,7 +113,7 @@ class I18nBuilder implements Builder {
 
   @override
   get buildExtensions => {
-        buildConfig.inputFilePattern: [outputFilePattern],
+        config.inputFilePattern: [outputFilePattern],
       };
 }
 

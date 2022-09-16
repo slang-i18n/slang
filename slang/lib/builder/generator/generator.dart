@@ -1,14 +1,14 @@
 import 'package:slang/builder/generator/generate_header.dart';
 import 'package:slang/builder/generator/generate_translations.dart';
 import 'package:slang/builder/model/build_result.dart';
-import 'package:slang/builder/model/i18n_config.dart';
+import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 
 class Generator {
   /// main generate function
   /// returns a string representing the content of the .g.dart file
   static BuildResult generate({
-    required I18nConfig config,
+    required GenerateConfig config,
     required List<I18nData> translations,
   }) {
     final header = generateHeader(config, translations);

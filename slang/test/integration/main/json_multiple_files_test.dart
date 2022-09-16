@@ -1,12 +1,12 @@
-import 'package:slang/builder/builder/build_config_builder.dart';
+import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
-import 'package:slang/builder/model/build_config.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
-import '../../util/build_config_utils.dart';
+import '../../util/config_utils.dart';
 import '../../util/resources_utils.dart';
 
 void main() {
@@ -30,7 +30,7 @@ void main() {
 
   test('json', () {
     final result = GeneratorFacade.generate(
-      buildConfig: BuildConfigBuilder.fromYaml(buildYaml)!.copyWith(
+      rawConfig: RawConfigBuilder.fromYaml(buildYaml)!.copyWith(
         outputFormat: OutputFormat.multipleFiles,
       ),
       baseName: 'translations',
