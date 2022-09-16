@@ -6,8 +6,8 @@ part of 'translations.g.dart';
 extension on _TranslationsEn {
 	Map<String, dynamic> _buildFlatMap() {
 		return <String, dynamic>{
-			'onboarding.welcome': ({required Object fullName}) => 'Welcome $fullName',
-			'onboarding.bye': ({required Object firstName}) => 'Bye $firstName',
+			'onboarding.welcome': ({required Object fullName}) => 'Welcome ${fullName}',
+			'onboarding.bye': ({required Object firstName}) => 'Bye ${firstName}',
 			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
 				name,
@@ -18,8 +18,8 @@ extension on _TranslationsEn {
 			'onboarding.pages.1.title': 'Second Page',
 			'onboarding.greet': ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
-					case GenderContext.male: return 'Hello Mr $lastName and ${_root.onboarding.welcome(fullName: fullName)}';
-					case GenderContext.female: return 'Hello Ms $lastName and ${_root.onboarding.bye(firstName: firstName)}';
+					case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
+					case GenderContext.female: return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 				}
 			},
 			'onboarding.greet2': ({required GenderContext gender}) {
@@ -35,7 +35,7 @@ extension on _TranslationsEn {
 			'group.users': ({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 				zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'One User',
-				other: '$count Users and ${_root.onboarding.bye(firstName: firstName)}',
+				other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
 			),
 			'end.stringPages.0': '1st Page',
 			'end.stringPages.1': '2nd Page',
@@ -49,8 +49,8 @@ extension on _TranslationsEn {
 extension on _TranslationsDe {
 	Map<String, dynamic> _buildFlatMap() {
 		return <String, dynamic>{
-			'onboarding.welcome': ({required Object fullName}) => 'Willkommen $fullName',
-			'onboarding.bye': ({required Object firstName}) => 'Tschüss $firstName',
+			'onboarding.welcome': ({required Object fullName}) => 'Willkommen ${fullName}',
+			'onboarding.bye': ({required Object firstName}) => 'Tschüss ${firstName}',
 			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
 				name,
@@ -61,8 +61,8 @@ extension on _TranslationsDe {
 			'onboarding.pages.1.title': 'Zweite Seite',
 			'onboarding.greet': ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
-					case GenderContext.male: return 'Hallo Herr $lastName und ${_root.onboarding.welcome(fullName: fullName)}';
-					case GenderContext.female: return 'Hallo Frau $lastName und ${_root.onboarding.bye(firstName: firstName)}';
+					case GenderContext.male: return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+					case GenderContext.female: return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
 				}
 			},
 			'onboarding.greet2': ({required GenderContext gender}) {
@@ -78,7 +78,7 @@ extension on _TranslationsDe {
 			'group.users': ({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'Ein Nutzer',
-				other: '$count Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+				other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 			),
 			'end.stringPages.0': '1. Seite',
 			'end.stringPages.1': '2. Seite',

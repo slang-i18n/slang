@@ -8,6 +8,7 @@ import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
+import 'package:slang/builder/utils/string_interpolation_extensions.dart';
 
 final _setEquality = SetEquality();
 
@@ -226,16 +227,14 @@ List<_DetectedContext> _digestEntry(
 /// Transforms arguments to camel case
 /// Adds 'arg' to every positional argument
 String _digestLeafText(String text) {
-  return text.replaceAllMapped(RegexUtils.argumentsBracesRegex, (match) {
-    final rawParam = match.group(2)!;
-    final preCharacter = match.group(1) != null ? match.group(1)! : '';
-    final postCharacter = match.group(3) != null ? match.group(3)! : '';
-    final number = int.tryParse(rawParam);
+  return text.replaceBracesInterpolation(replace: (match) {
+    final param = match.substring(1, match.length - 1);
+    final number = int.tryParse(param);
     if (number != null) {
-      return '$preCharacter{arg$number}$postCharacter';
+      return '{arg$number}';
+    } else {
+      return '{${param.toCase(CaseStyle.camel)}}';
     }
-    final param = rawParam.toCase(CaseStyle.camel);
-    return '$preCharacter{$param}$postCharacter';
   });
 }
 

@@ -192,14 +192,14 @@ void main() {
       test('one argument', () {
         final test = 'I have one argument named {apple}.';
         final node = textNode(test, StringInterpolation.braces);
-        expect(node.content, 'I have one argument named \$apple.');
+        expect(node.content, 'I have one argument named \${apple}.');
         expect(node.params, {'apple'});
       });
 
       test('one argument without space', () {
         final test = 'I have one argument named{apple}.';
         final node = textNode(test, StringInterpolation.braces);
-        expect(node.content, 'I have one argument named\$apple.');
+        expect(node.content, 'I have one argument named\${apple}.');
         expect(node.params, {'apple'});
       });
 
@@ -222,7 +222,7 @@ void main() {
             r'$ I have one argument named {apple} but this is $fake. \$ $';
         final node = textNode(test, StringInterpolation.braces);
         expect(node.content,
-            r'\$ I have one argument named $apple but this is \$fake. \$ \$');
+            r'\$ I have one argument named ${apple} but this is \$fake. \$ \$');
         expect(node.params, {'apple'});
       });
 
@@ -236,7 +236,7 @@ void main() {
       test('one argument with link', () {
         final test = '{apple} is linked to @:wow!';
         final node = textNode(test, StringInterpolation.braces);
-        expect(node.content, '\$apple is linked to \${_root.wow}!');
+        expect(node.content, '\${apple} is linked to \${_root.wow}!');
         expect(node.params, {'apple'});
       });
 
@@ -244,7 +244,7 @@ void main() {
         final test = r'Nice {cool_hi} {wow} {yes}a {no_yes}';
         final node =
             textNode(test, StringInterpolation.braces, CaseStyle.camel);
-        expect(node.content, r'Nice $coolHi $wow ${yes}a $noYes');
+        expect(node.content, r'Nice ${coolHi} ${wow} ${yes}a ${noYes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
     });
@@ -260,7 +260,7 @@ void main() {
       test('one argument', () {
         final test = 'I have one argument named {{apple}}.';
         final node = textNode(test, StringInterpolation.doubleBraces);
-        expect(node.content, 'I have one argument named \$apple.');
+        expect(node.content, 'I have one argument named \${apple}.');
         expect(node.params, {'apple'});
       });
 
@@ -296,7 +296,7 @@ void main() {
         final test = r'Nice {{cool_hi}} {{wow}} {{yes}}a {{no_yes}}';
         final node =
             textNode(test, StringInterpolation.doubleBraces, CaseStyle.camel);
-        expect(node.content, r'Nice $coolHi $wow ${yes}a $noYes');
+        expect(node.content, r'Nice ${coolHi} ${wow} ${yes}a ${noYes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
     });
@@ -323,13 +323,13 @@ void main() {
       });
 
       test('with default text', () {
-        final test = r'Hello $yey ${underline(hi)}!';
+        final test = r'Hello $yey ${underline(hi !>)}!';
         final node = richTextNode(test, StringInterpolation.dart);
         expect(node.spans.length, 5);
         expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
         expect(node.spans[1].code, 'yey');
         expect(node.spans[2].code, 'const TextSpan(text: \' \')');
-        expect(node.spans[3].code, 'underline(\'hi\')');
+        expect(node.spans[3].code, 'underline(\'hi !>\')');
         expect(node.spans[4].code, 'const TextSpan(text: \'!\')');
         expect(node.params, {'yey', 'underline'});
         expect(node.paramTypeMap, {
@@ -384,11 +384,11 @@ void main() {
       });
 
       test('one argument with default text', () {
-        final test = r'Hello {{yey(my text)}}!';
+        final test = r'Hello {{yey(my -Text!>)}}!';
         final node = richTextNode(test, StringInterpolation.doubleBraces);
         expect(node.spans.length, 3);
         expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey(\'my text\')');
+        expect(node.spans[1].code, 'yey(\'my -Text!>\')');
         expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
         expect(node.params, {'yey'});
       });

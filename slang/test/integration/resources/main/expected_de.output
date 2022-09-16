@@ -33,10 +33,10 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String welcome({required Object fullName}) => 'Willkommen $fullName';
+	@override String welcome({required Object fullName}) => 'Willkommen ${fullName}';
 
 	/// Bye text
-	@override String bye({required Object firstName}) => 'Tschüss $firstName';
+	@override String bye({required Object firstName}) => 'Tschüss ${firstName}';
 
 	@override TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		const TextSpan(text: 'Hi '),
@@ -49,8 +49,8 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 	];
 	@override String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
-			case GenderContext.male: return 'Hallo Herr $lastName und ${_root.onboarding.welcome(fullName: fullName)}';
-			case GenderContext.female: return 'Hallo Frau $lastName und ${_root.onboarding.bye(firstName: firstName)}';
+			case GenderContext.male: return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female: return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
 		}
 	}
 	@override String greet2({required GenderContext gender}) {
@@ -75,7 +75,7 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 	@override String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'Ein Nutzer',
-		other: '$count Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+		other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 	);
 }
 

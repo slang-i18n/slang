@@ -33,10 +33,10 @@ class _TranslationsOnboardingEn {
 	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	String welcome({required Object fullName}) => 'Welcome $fullName';
+	String welcome({required Object fullName}) => 'Welcome ${fullName}';
 
 	/// Bye text
-	String bye({required Object firstName}) => 'Bye $firstName';
+	String bye({required Object firstName}) => 'Bye ${firstName}';
 
 	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		const TextSpan(text: 'Hi '),
@@ -49,8 +49,8 @@ class _TranslationsOnboardingEn {
 	];
 	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
-			case GenderContext.male: return 'Hello Mr $lastName and ${_root.onboarding.welcome(fullName: fullName)}';
-			case GenderContext.female: return 'Hello Ms $lastName and ${_root.onboarding.bye(firstName: firstName)}';
+			case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female: return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 		}
 	}
 	String greet2({required GenderContext gender}) {
@@ -75,7 +75,7 @@ class _TranslationsGroupEn {
 	String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 		zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'One User',
-		other: '$count Users and ${_root.onboarding.bye(firstName: firstName)}',
+		other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
 	);
 }
 

@@ -4,6 +4,7 @@ import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/builder/utils/string_interpolation_extensions.dart';
 
 /// the super class of every node
 abstract class Node {
@@ -270,7 +271,6 @@ class RichTextNode extends TextNode {
       raw: _escapeContent(raw, interpolation),
       interpolation: interpolation,
       paramCase: paramCase,
-      allowBracketsInsideParameters: true,
     );
 
     final parsedParams =
@@ -377,7 +377,6 @@ _ParseInterpolationResult _parseInterpolation({
   required String raw,
   required StringInterpolation interpolation,
   required CaseStyle? paramCase,
-  bool allowBracketsInsideParameters = false,
 }) {
   final String parsedContent;
   final params = Set<String>();
@@ -400,47 +399,17 @@ _ParseInterpolationResult _parseInterpolation({
       });
       break;
     case StringInterpolation.braces:
-      parsedContent = raw.replaceAllMapped(
-          allowBracketsInsideParameters
-              ? RegexUtils.argumentsBracesAdvancedRegex
-              : RegexUtils.argumentsBracesRegex, (match) {
-        if (match.group(1) == '\\') {
-          return '{${match.group(2)}}'; // escape
-        }
-
-        final param = match.group(2)!.toCase(paramCase);
+      parsedContent = raw.replaceBracesInterpolation(replace: (match) {
+        final param = match.substring(1, match.length - 1).toCase(paramCase);
         params.add(param);
-
-        if (match.group(3) != null || param.contains('(')) {
-          // ${...} because a word follows
-          // ... or contains brackets '(' which is needed for rich text, otherwise this would be invalid syntax anyways
-          return '${match.group(1)}\${$param}${match.group(3) ?? ''}';
-        } else {
-          // $...
-          return '${match.group(1)}\$$param';
-        }
+        return '\${$param}';
       });
       break;
     case StringInterpolation.doubleBraces:
-      parsedContent = raw.replaceAllMapped(
-          allowBracketsInsideParameters
-              ? RegexUtils.argumentsDoubleBracesAdvancedRegex
-              : RegexUtils.argumentsDoubleBracesRegex, (match) {
-        if (match.group(1) == '\\') {
-          return '{{${match.group(2)}}}'; // escape
-        }
-
-        final param = match.group(2)!.toCase(paramCase);
+      parsedContent = raw.replaceDoubleBracesInterpolation(replace: (match) {
+        final param = match.substring(2, match.length - 2).toCase(paramCase);
         params.add(param);
-
-        if (match.group(3) != null || param.contains('(')) {
-          // ${...} because a word follows
-          // ... or contains brackets '(' which is needed for rich text, otherwise this would be invalid syntax anyways
-          return '${match.group(1)}\${$param}${match.group(3) ?? ''}';
-        } else {
-          // $...
-          return '${match.group(1)}\$$param';
-        }
+        return '\${$param}';
       });
   }
 
