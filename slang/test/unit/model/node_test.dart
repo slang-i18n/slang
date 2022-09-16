@@ -383,7 +383,7 @@ void main() {
         expect(node.params, {'yey'});
       });
 
-      test('one argument with default text and param case', () {
+      test('two arguments with default text and param case', () {
         final test = r'Hello {{myFirstSpan}}{{mySpan(Default Text)}}!';
         final node = richTextNode(
             test, StringInterpolation.doubleBraces, CaseStyle.snake);
@@ -395,7 +395,7 @@ void main() {
         expect(node.params, {'my_first_span', 'my_span'});
       });
 
-      test('one argument with default text', () {
+      test('one argument with default text having special chars', () {
         final test = r'Hello {{yey(my -Text!>)}}!';
         final node = richTextNode(test, StringInterpolation.doubleBraces);
         expect(node.spans.length, 3);
