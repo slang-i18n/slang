@@ -1,3 +1,8 @@
+## 2.8.0
+
+- fix: `LocaleSettings.useDeviceLocale()` now does not complain of weird locales on Linux
+- Bump `slang` to `2.8.0`
+
 ## 2.7.0
 
 - Bump `slang` to `2.7.0`

@@ -1,3 +1,11 @@
+## 2.8.0
+
+- feat: add `AppLocaleUtils.parseLocaleParts`
+- fix: `LocaleSettings.useDeviceLocale()` now does not complain of weird locales on Linux
+- fix: rich text now handles all characters
+- fix: rich text properly applies param_case
+- fix: empty nodes are rendered as classes instead of claiming them as plurals
+
 ## 2.7.0
 
 - feat: ignore empty plural / context nodes when `fallback_strategy: base_locale` is used
