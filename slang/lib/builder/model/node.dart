@@ -170,17 +170,21 @@ class StringTextNode extends TextNode {
   /// Content of the text node, normalized.
   /// Will be written to .g.dart as is.
   late String _content;
+
   String get content => _content;
 
   late Set<String> _params;
+
   @override
   Set<String> get params => _params;
 
   late Set<String> _links;
+
   @override
   Set<String> get links => _links;
 
   Map<String, String> _paramTypeMap = <String, String>{};
+
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
 
@@ -245,17 +249,21 @@ class StringTextNode extends TextNode {
 
 class RichTextNode extends TextNode {
   late List<BaseSpan> _spans;
+
   List<BaseSpan> get spans => _spans;
 
   late Set<String> _params;
+
   @override
   Set<String> get params => _params;
 
   late Set<String> _links;
+
   @override
   Set<String> get links => _links;
 
   Map<String, String> _paramTypeMap = <String, String>{};
+
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
 
@@ -270,11 +278,12 @@ class RichTextNode extends TextNode {
     final rawParsedResult = _parseInterpolation(
       raw: _escapeContent(raw, interpolation),
       interpolation: interpolation,
-      paramCase: paramCase,
+      paramCase: null, // param case will be applied later
     );
 
-    final parsedParams =
-        rawParsedResult.params.map(_parseParamWithArg).toList();
+    final parsedParams = rawParsedResult.params
+        .map((p) => _parseParamWithArg(input: p, paramCase: paramCase))
+        .toList();
     _params = parsedParams.map((e) => e.paramName).toSet();
     if (linkParamMap != null) {
       _params.addAll(linkParamMap.values.expand((e) => e));
@@ -301,7 +310,10 @@ class RichTextNode extends TextNode {
         );
       },
       onMatch: (match) {
-        final parsed = _parseParamWithArg((match.group(1) ?? match.group(2))!);
+        final parsed = _parseParamWithArg(
+          input: (match.group(1) ?? match.group(2))!,
+          paramCase: paramCase,
+        );
         final parsedArg = parsed.arg;
         if (parsedArg != null) return FunctionSpan(parsed.paramName, parsedArg);
         return VariableSpan(parsed.paramName);
@@ -469,9 +481,12 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
   }
 }
 
-_ParamWithArg _parseParamWithArg(String src) {
-  final match = RegexUtils.paramWithArg.firstMatch(src)!;
-  return _ParamWithArg(match.group(1)!, match.group(3));
+_ParamWithArg _parseParamWithArg({
+  required String input,
+  required CaseStyle? paramCase,
+}) {
+  final match = RegexUtils.paramWithArg.firstMatch(input)!;
+  return _ParamWithArg(match.group(1)!.toCase(paramCase), match.group(3));
 }
 
 class _ParamWithArg {
