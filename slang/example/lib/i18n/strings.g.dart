@@ -165,8 +165,8 @@ class _StringsMainScreenEn {
 	// Translations
 	String get title => 'An English Title';
 	String counter({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
-		one: 'You pressed $count time.',
-		other: 'You pressed $count times.',
+		one: 'You pressed ${count} time.',
+		other: 'You pressed ${count} times.',
 	);
 	String get tapMe => 'Tap me';
 }
@@ -209,7 +209,7 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 	@override String get title => 'Ein deutscher Titel';
 	@override String counter({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 		one: 'Du hast einmal gedrückt.',
-		other: 'Du hast $count mal gedrückt.',
+		other: 'Du hast ${count} mal gedrückt.',
 	);
 	@override String get tapMe => 'Drück mich';
 }
@@ -222,8 +222,8 @@ extension on _StringsEn {
 		return <String, dynamic>{
 			'mainScreen.title': 'An English Title',
 			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
-				one: 'You pressed $count time.',
-				other: 'You pressed $count times.',
+				one: 'You pressed ${count} time.',
+				other: 'You pressed ${count} times.',
 			),
 			'mainScreen.tapMe': 'Tap me',
 			'locales.en': 'English',
@@ -238,7 +238,7 @@ extension on _StringsDe {
 			'mainScreen.title': 'Ein deutscher Titel',
 			'mainScreen.counter': ({required num count}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 				one: 'Du hast einmal gedrückt.',
-				other: 'Du hast $count mal gedrückt.',
+				other: 'Du hast ${count} mal gedrückt.',
 			),
 			'mainScreen.tapMe': 'Drück mich',
 			'locales.en': 'Englisch',

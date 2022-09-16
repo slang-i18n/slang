@@ -6,16 +6,62 @@ String _replacer(String s) {
 }
 
 extension on String {
+  String dart() => replaceDartInterpolation(
+        replacer: _replacer,
+      );
+
   String braces() => replaceBracesInterpolation(
-        replace: _replacer,
+        replacer: _replacer,
       );
 
   String doubleBraces() => replaceDoubleBracesInterpolation(
-        replace: _replacer,
+        replacer: _replacer,
       );
 }
 
 void main() {
+  group('dart', () {
+    test('no matches', () {
+      final input = 'Hello World';
+      expect(input.dart(), input);
+    });
+
+    test('match only', () {
+      final input = r'${m!<-~}';
+      expect(input.dart(), 'X');
+    });
+
+    test('match only dollar', () {
+      final input = r'$mam';
+      expect(input.dart(), 'X');
+    });
+
+    test('match start', () {
+      final input = r'${m!<-~} Hello';
+      expect(input.dart(), 'X Hello');
+    });
+
+    test('match end', () {
+      final input = r'Hello ${m!<-~}';
+      expect(input.dart(), 'Hello X');
+    });
+
+    test('start with closing bracket', () {
+      final input = r'} $a';
+      expect(input.dart(), '} X');
+    });
+
+    test('ends with dollar', () {
+      final input = r'$a $';
+      expect(input.dart(), r'X $');
+    });
+
+    test('ends with missing closing bracket', () {
+      final input = r'$a ${bc';
+      expect(input.dart(), r'X ${bc');
+    });
+  });
+
   group('braces', () {
     test('no matches', () {
       final input = 'Hello World';

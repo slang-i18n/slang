@@ -228,7 +228,7 @@ List<_DetectedContext> _digestEntry(
 /// Transforms arguments to camel case
 /// Adds 'arg' to every positional argument
 String _digestLeafText(String text) {
-  return text.replaceBracesInterpolation(replace: (match) {
+  return text.replaceBracesInterpolation(replacer: (match) {
     final param = match.substring(1, match.length - 1);
     final number = int.tryParse(param);
     if (number != null) {

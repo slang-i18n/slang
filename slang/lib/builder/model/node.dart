@@ -395,30 +395,24 @@ _ParseInterpolationResult _parseInterpolation({
 
   switch (interpolation) {
     case StringInterpolation.dart:
-      parsedContent =
-          raw.replaceAllMapped(RegexUtils.argumentsDartRegex, (match) {
-        final paramOriginal = (match.group(1) ?? match.group(2))!;
-        if (paramCase == null) {
-          // no transformations
-          params.add(paramOriginal);
-          return match.group(0)!;
-        } else {
-          // apply param case
-          final paramWithCase = paramOriginal.toCase(paramCase);
-          params.add(paramWithCase);
-          return match.group(0)!.replaceAll(paramOriginal, paramWithCase);
-        }
+      parsedContent = raw.replaceDartInterpolation(replacer: (match) {
+        final rawParam = match.startsWith(r'${')
+            ? match.substring(2, match.length - 1)
+            : match.substring(1, match.length);
+        final param = rawParam.toCase(paramCase);
+        params.add(param);
+        return '\${$param}';
       });
       break;
     case StringInterpolation.braces:
-      parsedContent = raw.replaceBracesInterpolation(replace: (match) {
+      parsedContent = raw.replaceBracesInterpolation(replacer: (match) {
         final param = match.substring(1, match.length - 1).toCase(paramCase);
         params.add(param);
         return '\${$param}';
       });
       break;
     case StringInterpolation.doubleBraces:
-      parsedContent = raw.replaceDoubleBracesInterpolation(replace: (match) {
+      parsedContent = raw.replaceDoubleBracesInterpolation(replacer: (match) {
         final param = match.substring(2, match.length - 2).toCase(paramCase);
         params.add(param);
         return '\${$param}';

@@ -123,19 +123,20 @@ void main() {
       test('one argument', () {
         final test = r'I have one argument named $apple.';
         final node = textNode(test, StringInterpolation.dart);
-        expect(node.content, test);
+        expect(node.content, r'I have one argument named ${apple}.');
         expect(node.params, {'apple'});
       });
 
       test('one duplicate argument', () {
         final test = r'This string has one $argument and $argument.';
         final node = textNode(test, StringInterpolation.dart);
-        expect(node.content, test);
+        expect(
+            node.content, r'This string has one ${argument} and ${argument}.');
         expect(node.params, {'argument'});
       });
 
       test('one argument at the beginning', () {
-        final test = r'$test at the beginning.';
+        final test = r'${test} at the beginning.';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content, test);
         expect(node.params, {'test'});
@@ -151,7 +152,7 @@ void main() {
       test('one argument with link', () {
         final test = r'$apple is linked to @:wow!';
         final node = textNode(test, StringInterpolation.dart);
-        expect(node.content, r'$apple is linked to ${_root.wow}!');
+        expect(node.content, r'${apple} is linked to ${_root.wow}!');
         expect(node.params, {'apple'});
       });
 
@@ -160,7 +161,7 @@ void main() {
             r'$ I have \$ one argument named $apple but also a $ and a $';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content,
-            r'\$ I have \$ one argument named $apple but also a \$ and a \$');
+            r'\$ I have \$ one argument named ${apple} but also a \$ and a \$');
         expect(node.params, {'apple'});
       });
 
@@ -168,7 +169,7 @@ void main() {
         final test = r'Nice $cool_hi $wow ${yes} ${no_yes} @:hello_world.yes';
         final node = textNode(test, StringInterpolation.dart, CaseStyle.camel);
         expect(node.content,
-            r'Nice $coolHi $wow ${yes} ${noYes} ${_root.hello_world.yes}');
+            r'Nice ${coolHi} ${wow} ${yes} ${noYes} ${_root.hello_world.yes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
 

@@ -94,7 +94,7 @@ void main() {
       final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'p2', 'p3', 'p4'});
       expect(textNode.content,
-          r'Hello $p3 ${_root.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
+          r'Hello ${p3} ${_root.a(p1: p1, p2: p2, p3: p3, p4: p4)}');
     });
 
     test('linked translation with plural', () {

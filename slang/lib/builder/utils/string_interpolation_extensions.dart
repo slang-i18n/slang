@@ -1,23 +1,86 @@
+const _DOLLAR = '\$';
+final _nonWordRegex = RegExp(r'[^\w]');
+
 extension StringInterpolationExtensions on String {
+  /// Replaces every $x or ${x} with the result of [replacer].
+  String replaceDartInterpolation({
+    required String Function(String match) replacer,
+  }) {
+    String curr = this;
+    final buffer = StringBuffer();
+
+    do {
+      int startCharacterLength = 1;
+      int startIndex = curr.indexOf(_DOLLAR);
+      if (startIndex == -1) {
+        buffer.write(curr);
+        break;
+      }
+      if (startIndex >= startCharacterLength && curr[startIndex - 1] == '\\') {
+        // ignore because of preceding \
+        buffer.write(curr.substring(0, startIndex)); // *do* include \
+        buffer.write(_DOLLAR);
+        if (startIndex + 1 < curr.length) {
+          curr = curr.substring(startIndex + startCharacterLength);
+          continue;
+        } else {
+          break;
+        }
+      }
+
+      if (startIndex != 0) {
+        // add prefix
+        buffer.write(curr.substring(0, startIndex));
+      }
+
+      if (startIndex + 1 < curr.length && curr[startIndex + 1] == '{') {
+        startCharacterLength = 2; // it is now "${"
+      }
+
+      final endRegex = startCharacterLength == 1 ? _nonWordRegex : '}';
+      int endIndex = curr.indexOf(endRegex, startIndex + startCharacterLength);
+      if (endIndex == -1) {
+        if (startCharacterLength == 1 && startIndex + 1 < curr.length) {
+          // $arg goes to the end
+          buffer.write(replacer(curr.substring(startIndex)));
+        } else {
+          // ${ has no }, therefore no transformation
+          // or single $ in the end
+          buffer.write(curr.substring(startIndex));
+        }
+        break;
+      }
+
+      final endCharacterLength = startCharacterLength == 1 ? 0 : 1;
+      buffer.write(
+          replacer(curr.substring(startIndex, endIndex + endCharacterLength)));
+      curr = curr.substring(endIndex + endCharacterLength);
+    } while (curr.isNotEmpty);
+
+    return buffer.toString();
+  }
+
+  /// Replaces every {x} with the result of [replacer].
   String replaceBracesInterpolation({
-    required String Function(String match) replace,
+    required String Function(String match) replacer,
   }) {
     return _replaceBetween(
       input: this,
       startCharacter: '{',
       endCharacter: '}',
-      replace: replace,
+      replacer: replacer,
     );
   }
 
+  /// Replaces every {{x}} with the result of [replacer].
   String replaceDoubleBracesInterpolation({
-    required String Function(String match) replace,
+    required String Function(String match) replacer,
   }) {
     return _replaceBetween(
       input: this,
       startCharacter: '{{',
       endCharacter: '}}',
-      replace: replace,
+      replacer: replacer,
     );
   }
 }
@@ -26,7 +89,7 @@ String _replaceBetween({
   required String input,
   required String startCharacter,
   required String endCharacter,
-  required String Function(String match) replace,
+  required String Function(String match) replacer,
 }) {
   String curr = input;
   final buffer = StringBuffer();
@@ -64,7 +127,7 @@ String _replaceBetween({
     }
 
     buffer.write(
-        replace(curr.substring(startIndex, endIndex + endCharacterLength)));
+        replacer(curr.substring(startIndex, endIndex + endCharacterLength)));
     curr = curr.substring(endIndex + endCharacterLength);
   } while (curr.isNotEmpty);
 
