@@ -56,9 +56,10 @@ String _replaceBetween({
       buffer.write(curr.substring(0, startIndex));
     }
 
-    int endIndex = curr.indexOf(endCharacter);
+    int endIndex =
+        curr.indexOf(endCharacter, startIndex + startCharacterLength);
     if (endIndex == -1) {
-      buffer.write(curr);
+      buffer.write(curr.substring(startIndex));
       break;
     }
 

@@ -485,7 +485,10 @@ _ParamWithArg _parseParamWithArg({
   required String input,
   required CaseStyle? paramCase,
 }) {
-  final match = RegexUtils.paramWithArg.firstMatch(input)!;
+  final match = RegexUtils.paramWithArg.firstMatch(input);
+  if (match == null) {
+    throw 'Rich text parameters must follow the syntax: "param(default text)"\nGot instead: "$input"\n';
+  }
   return _ParamWithArg(match.group(1)!.toCase(paramCase), match.group(3));
 }
 

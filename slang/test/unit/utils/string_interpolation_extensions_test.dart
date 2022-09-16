@@ -37,6 +37,21 @@ void main() {
       expect(input.braces(), 'Hello X');
     });
 
+    test('start with closing bracket', () {
+      final input = '} {a}';
+      expect(input.braces(), '} X');
+    });
+
+    test('ends with opening bracket', () {
+      final input = '{a} {';
+      expect(input.braces(), 'X {');
+    });
+
+    test('has double braces instead single braces', () {
+      final input = 'Hello {{a}} {{b}}';
+      expect(input.braces(), 'Hello X} X}');
+    });
+
     test('ignore \\{ only', () {
       final input = 'Hello \\{ World!';
       expect(input.braces(), 'Hello { World!');
@@ -67,6 +82,16 @@ void main() {
     test('match end', () {
       final input = 'Hello {{m!<-~}}';
       expect(input.doubleBraces(), 'Hello X');
+    });
+
+    test('start with closing bracket', () {
+      final input = '}} {{a}}';
+      expect(input.doubleBraces(), '}} X');
+    });
+
+    test('ends with opening bracket', () {
+      final input = '{{a}} {{';
+      expect(input.doubleBraces(), 'X {{');
     });
 
     test('ignore \\{{ only', () {
