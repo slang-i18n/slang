@@ -411,6 +411,8 @@ void _generateUtil({
       .writeln('\t// static aliases (checkout base methods for documentation)');
   buffer.writeln(
       '\tstatic $enumName parse(String rawLocale) => instance.parse(rawLocale);');
+  buffer.writeln(
+      '\tstatic $enumName parseLocaleParts({required String languageCode, String? scriptCode, String? countryCode}) => instance.parseLocaleParts(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);');
   if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');

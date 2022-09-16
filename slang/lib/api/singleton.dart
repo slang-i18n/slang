@@ -26,29 +26,15 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<T>,
   /// Fallbacks to base locale.
   E parse(String rawLocale) {
     final match = RegexUtils.localeRegex.firstMatch(rawLocale);
-    E? selected;
-    if (match != null) {
-      final language = match.group(1);
-      final country = match.group(3);
-
-      // match exactly
-      selected = locales.firstWhereOrNull((supported) =>
-          supported.languageTag == rawLocale.replaceAll('_', '-'));
-
-      if (selected == null && language != null) {
-        // match language
-        selected = locales.firstWhereOrNull(
-            (supported) => supported.languageCode == language);
-      }
-
-      if (selected == null && country != null) {
-        // match country
-        selected = locales
-            .firstWhereOrNull((supported) => supported.countryCode == country);
-      }
+    if (match == null) {
+      return baseLocale;
     }
 
-    return selected ?? baseLocale;
+    return parseLocaleParts(
+      languageCode: match.group(1)!,
+      scriptCode: match.group(2),
+      countryCode: match.group(3),
+    );
   }
 
   /// Gets the [E] type of [locale].
@@ -60,22 +46,39 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<T>,
       return locale; // take it directly
     }
 
+    return parseLocaleParts(
+      languageCode: locale.languageCode,
+      scriptCode: locale.scriptCode,
+      countryCode: locale.countryCode,
+    );
+  }
+
+  /// Finds the locale type [E] which fits the locale parts the best.
+  /// Fallbacks to base locale.
+  E parseLocaleParts({
+    required String languageCode,
+    String? scriptCode,
+    String? countryCode,
+  }) {
     E? selected;
 
     // match exactly
-    selected = locales.firstWhereOrNull((supported) => supported == locale);
+    selected = locales.firstWhereOrNull((supported) =>
+        supported.languageCode == languageCode &&
+        supported.scriptCode == scriptCode &&
+        supported.countryCode == countryCode);
 
     if (selected == null) {
       // match language
       selected = locales.firstWhereOrNull((supported) {
-        return supported.languageCode == locale.languageCode;
+        return supported.languageCode == languageCode;
       });
     }
 
-    if (selected == null && locale.countryCode != null) {
+    if (selected == null && countryCode != null) {
       // match country
       selected = locales.firstWhereOrNull((supported) {
-        return supported.countryCode == locale.countryCode;
+        return supported.countryCode == countryCode;
       });
     }
 

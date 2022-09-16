@@ -14,7 +14,9 @@ typedef TranslationBuilder<T extends BaseTranslations> = T Function({
 /// but available without any flutter dependencies
 abstract class BaseAppLocale<T extends BaseTranslations> {
   String get languageCode;
+
   String? get scriptCode;
+
   String? get countryCode;
 
   /// Gets a new translation instance.
@@ -26,7 +28,8 @@ abstract class BaseAppLocale<T extends BaseTranslations> {
   /// String a = t.my.path; // access
   TranslationBuilder<T> get build;
 
-  static final BaseAppLocale undefinedLocale = _DefaultAppLocale();
+  static final BaseAppLocale undefinedLocale =
+      BasicAppLocale(languageCode: 'und');
 
   String get languageTag => [languageCode, scriptCode, countryCode]
       .where((element) => element != null)
@@ -43,23 +46,25 @@ abstract class BaseAppLocale<T extends BaseTranslations> {
       'BaseAppLocale{languageCode: $languageCode, scriptCode: $scriptCode, countryCode: $countryCode}';
 }
 
-// default classes to avoid null values
-
-class _DefaultAppLocale extends BaseAppLocale<_DefaultTranslations> {
+class BasicAppLocale extends BaseAppLocale<_DefaultTranslations> {
   @override
-  String get languageCode => 'und';
+  final String languageCode;
 
   @override
-  String? get scriptCode => null;
+  final String? scriptCode;
 
   @override
-  String? get countryCode => null;
+  final String? countryCode;
+
+  BasicAppLocale({
+    required this.languageCode,
+    this.scriptCode,
+    this.countryCode,
+  });
 
   @override
   TranslationBuilder<_DefaultTranslations> get build {
-    return ({cardinalResolver, ordinalResolver}) {
-      return _DefaultTranslations();
-    };
+    return ({cardinalResolver, ordinalResolver}) => _DefaultTranslations();
   }
 }
 

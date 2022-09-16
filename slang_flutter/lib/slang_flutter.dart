@@ -9,12 +9,12 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<T>,
   /// Returns the locale of the device.
   /// Fallbacks to base locale.
   E findDeviceLocale() {
-    final String? deviceLocale =
-        WidgetsBinding.instance.window.locale.toLanguageTag();
-    if (deviceLocale == null) {
-      return baseLocale;
-    }
-    return parse(deviceLocale);
+    final Locale deviceLocale = WidgetsBinding.instance.window.locale;
+    return parseLocaleParts(
+      languageCode: deviceLocale.languageCode,
+      scriptCode: deviceLocale.scriptCode,
+      countryCode: deviceLocale.countryCode,
+    );
   }
 }
 
