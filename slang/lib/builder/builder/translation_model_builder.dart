@@ -20,9 +20,6 @@ class TranslationModelBuilder {
     required I18nLocale locale,
     required Map<String, dynamic> map,
   }) {
-    bool hasCardinal = false;
-    bool hasOrdinal = false;
-
     // flat map for leaves (TextNode, PluralNode, ContextNode)
     final Map<String, LeafNode> leavesMap = {};
 
@@ -39,12 +36,6 @@ class TranslationModelBuilder {
       config: buildConfig,
       keyCase: buildConfig.keyCase,
       leavesMap: leavesMap,
-      cardinalNotifier: () {
-        hasCardinal = true;
-      },
-      ordinalNotifier: () {
-        hasOrdinal = true;
-      },
     );
 
     // 2nd round: Handle parameterized linked translations
@@ -151,8 +142,6 @@ class TranslationModelBuilder {
       locale: locale,
       root: root,
       interfaces: resultInterfaces,
-      hasCardinal: hasCardinal,
-      hasOrdinal: hasOrdinal,
     );
   }
 
@@ -165,8 +154,6 @@ class TranslationModelBuilder {
     required BuildConfig config,
     required CaseStyle? keyCase,
     required Map<String, LeafNode> leavesMap,
-    required Function cardinalNotifier,
-    required Function ordinalNotifier,
   }) {
     final Map<String, Node> resultNodeTree = {};
 
@@ -237,8 +224,6 @@ class TranslationModelBuilder {
             config: config,
             keyCase: config.keyCase,
             leavesMap: leavesMap,
-            cardinalNotifier: cardinalNotifier,
-            ordinalNotifier: ordinalNotifier,
           );
 
           // finally only take their values, ignoring keys
@@ -261,8 +246,6 @@ class TranslationModelBuilder {
                 ? config.keyMapCase
                 : config.keyCase,
             leavesMap: leavesMap,
-            cardinalNotifier: cardinalNotifier,
-            ordinalNotifier: ordinalNotifier,
           );
 
           Node node;
@@ -280,12 +263,6 @@ class TranslationModelBuilder {
                 case FallbackStrategy.baseLocale:
                   return;
               }
-            }
-
-            if (detectedType.nodeType == _DetectionType.pluralCardinal) {
-              cardinalNotifier();
-            } else if (detectedType.nodeType == _DetectionType.pluralOrdinal) {
-              ordinalNotifier();
             }
 
             // split children by comma for plurals and contexts
