@@ -145,6 +145,11 @@ void main() {
       expect(input.doubleBraces(), 'Hello {{ World!');
     });
 
+    test('ignore \\{{ at the start', () {
+      final input = '\\{{ World!';
+      expect(input.doubleBraces(), '{{ World!');
+    });
+
     test('ignore \\{{ end', () {
       final input = 'Hello World! \\{{';
       expect(input.doubleBraces(), 'Hello World! {{');

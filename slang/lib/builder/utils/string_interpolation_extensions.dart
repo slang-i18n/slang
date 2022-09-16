@@ -16,7 +16,7 @@ extension StringInterpolationExtensions on String {
         buffer.write(curr);
         break;
       }
-      if (startIndex >= startCharacterLength && curr[startIndex - 1] == '\\') {
+      if (startIndex >= 1 && curr[startIndex - 1] == '\\') {
         // ignore because of preceding \
         buffer.write(curr.substring(0, startIndex)); // *do* include \
         buffer.write(_DOLLAR);
@@ -102,7 +102,7 @@ String _replaceBetween({
       buffer.write(curr);
       break;
     }
-    if (startIndex >= startCharacterLength && curr[startIndex - 1] == '\\') {
+    if (startIndex >= 1 && curr[startIndex - 1] == '\\') {
       // ignore because of preceding \
       buffer.write(curr.substring(0, startIndex - 1)); // do not include \
       buffer.write(startCharacter);
