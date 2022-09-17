@@ -3,9 +3,9 @@ import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
-import 'package:slang/builder/utils/yaml_utils.dart';
 import 'package:yaml/yaml.dart';
 
 class RawConfigBuilder {
@@ -22,7 +22,7 @@ class RawConfigBuilder {
       return null;
     }
 
-    final map = YamlUtils.deepCast(configEntry.value);
+    final map = MapUtils.deepCast(configEntry.value);
     return fromMap(map);
   }
 
@@ -81,6 +81,8 @@ class RawConfigBuilder {
           (map['string_interpolation'] as String?)?.toStringInterpolation() ??
               RawConfig.defaultStringInterpolation,
       renderFlatMap: map['flat_map'] ?? RawConfig.defaultRenderFlatMap,
+      translationOverrides:
+          map['translation_overrides'] ?? RawConfig.defaultTranslationOverrides,
       renderTimestamp: map['timestamp'] ?? RawConfig.defaultRenderTimestamp,
       maps: map['maps']?.cast<String>() ?? RawConfig.defaultMaps,
       pluralAuto: (map['pluralization']?['auto'] as String?)?.toPluralAuto() ??

@@ -119,6 +119,8 @@ Future<RawConfig> getConfig(
     print('');
   }
 
+  config.validate();
+
   return config;
 }
 

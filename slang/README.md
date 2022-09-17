@@ -62,6 +62,7 @@ String i = page1.title; // type-safe call
   - [Locale Stream](#-locale-stream)
   - [Interfaces](#-interfaces)
   - [Locale Enum](#-locale-enum)
+  - [Translation Overrides](#-translation-overrides)
   - [Dependency Injection](#-dependency-injection)
 - [Structuring Features](#structuring-features)
   - [Namespaces](#-namespaces)
@@ -275,6 +276,7 @@ key_map_case: camel
 param_case: pascal
 string_interpolation: double_braces
 flat_map: false
+translation_overrides: false
 timestamp: true
 maps:
   - error.codes
@@ -339,6 +341,7 @@ targets:
           param_case: pascal
           string_interpolation: double_braces
           flat_map: false
+          translation_overrides: false
           timestamp: true
           maps:
             - error.codes
@@ -394,6 +397,7 @@ targets:
 | `param_case`                    | `null`, `camel`, `pascal`, `snake` | transform parameters (optional) [(i)](#-recasing)            | `null`        |
 | `string_interpolation`          | `dart`, `braces`, `double_braces`  | string interpolation mode [(i)](#-string-interpolation)      | `dart`        |
 | `flat_map`                      | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`        |
+| `translation_overrides`         | `Boolean`                          | enable translation overrides [(i)](#-translation-overrides)  | `false`       |
 | `timestamp`                     | `Boolean`                          | write "Built on" timestamp                                   | `true`        |
 | `maps`                          | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`          |
 | `pluralization`/`auto`          | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`    |
@@ -912,6 +916,36 @@ enum AppLocale {
 Locale locale = AppLocale.en.flutterLocale; // to native flutter locale
 String tag = AppLocale.en.languageTag; // to string tag (e.g. en-US)
 final t = AppLocale.en.translations; // get translations of one locale
+```
+
+### ➤ Translation Overrides
+
+This is useful if you want to update translations dynamically (e.g. via backend server).
+
+You can only update existing translations.
+
+Set the following configuration:
+
+```yaml
+# Config
+translation_overrides: true
+```
+
+Example:
+
+```dart
+// override
+LocaleSettings.overrideTranslations(
+  locale: AppLocale.en,
+  fileType: FileType.yaml,
+  content: r'''{
+    onboarding
+      title: 'Welcome {name}'
+  }'''
+);
+
+// access
+String a = t.onboarding.title(name: 'Tom'); // "Welcome Tom"
 ```
 
 ### ➤ Dependency Injection

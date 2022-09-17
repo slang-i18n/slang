@@ -34,7 +34,6 @@ abstract class LeafNode {}
 /// the super class for list and object nodes
 abstract class IterableNode extends Node {
   /// If not null, then all its children have a specific interface.
-  /// This overwrites the [plainStrings] attribute.
   String _genericType;
 
   String get genericType => _genericType;

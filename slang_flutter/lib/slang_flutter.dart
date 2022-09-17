@@ -1,11 +1,12 @@
-import 'package:slang/api/state.dart';
+import 'package:slang/api/translation_overrides.dart';
+import 'package:slang/builder/model/node.dart';
 import 'package:slang/slang.dart';
 import 'package:flutter/widgets.dart';
 
 export 'package:slang/slang.dart';
 
-extension ExtAppLocaleUtils<E extends BaseAppLocale<T>,
-    T extends BaseTranslations> on BaseAppLocaleUtils<E, T> {
+extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
+    T extends BaseTranslations<E, T>> on BaseAppLocaleUtils<E, T> {
   /// Returns the locale of the device.
   /// Fallbacks to base locale.
   E findDeviceLocale() {
@@ -30,42 +31,29 @@ extension ExtAppLocale on BaseAppLocale {
 
 /// Similar to [BaseLocaleSettings] but allows for specific overwrites
 /// e.g. setLocale now also updates the provider
-class BaseFlutterLocaleSettings<E extends BaseAppLocale<T>,
-    T extends BaseTranslations> extends BaseLocaleSettings<E, T> {
+class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
+    T extends BaseTranslations<E, T>> extends BaseLocaleSettings<E, T> {
   BaseFlutterLocaleSettings({
     required super.locales,
     required super.baseLocale,
     required super.utils,
   });
+
+  @override
+  updateProviderState(E locale, T translations) {
+    _translationProviderKey.currentState?.setLocale(
+      newLocale: locale,
+      newTranslations: translations,
+    );
+  }
 }
 
-extension ExtBaseLocaleSettings<E extends BaseAppLocale<T>,
-    T extends BaseTranslations> on BaseFlutterLocaleSettings<E, T> {
+extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
+    T extends BaseTranslations<E, T>> on BaseFlutterLocaleSettings<E, T> {
   /// Uses locale of the device, fallbacks to base locale.
   /// Returns the locale which has been set.
   E useDeviceLocale() {
     final E locale = utils.findDeviceLocale();
-    return setLocale(locale);
-  }
-
-  /// Sets locale
-  /// Returns the locale which has been set.
-  E setLocale(E locale) {
-    GlobalLocaleState.instance.setLocale(locale);
-
-    _translationProviderKey.currentState?.setLocale(
-      newLocale: locale,
-      newTranslations: translationMap[locale]!,
-    );
-
-    return locale;
-  }
-
-  /// Sets locale using string tag (e.g. en_US, de-DE, fr)
-  /// Fallbacks to base locale.
-  /// Returns the locale which has been set.
-  E setLocaleRaw(String rawLocale) {
-    final E locale = utils.parse(rawLocale);
     return setLocale(locale);
   }
 
@@ -77,8 +65,8 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<T>,
 
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
-abstract class BaseTranslationProvider<E extends BaseAppLocale<T>,
-    T extends BaseTranslations> extends StatefulWidget {
+abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
+    T extends BaseTranslations<E, T>> extends StatefulWidget {
   final E initLocale;
   final T initTranslations;
 
@@ -98,8 +86,9 @@ abstract class BaseTranslationProvider<E extends BaseAppLocale<T>,
       );
 }
 
-class _TranslationProviderState<E extends BaseAppLocale<T>,
-    T extends BaseTranslations> extends State<BaseTranslationProvider<E, T>> {
+class _TranslationProviderState<E extends BaseAppLocale<E, T>,
+        T extends BaseTranslations<E, T>>
+    extends State<BaseTranslationProvider<E, T>> {
   E locale;
   T translations;
 
@@ -128,8 +117,8 @@ class _TranslationProviderState<E extends BaseAppLocale<T>,
   }
 }
 
-class InheritedLocaleData<E extends BaseAppLocale<T>,
-    T extends BaseTranslations> extends InheritedWidget {
+class InheritedLocaleData<E extends BaseAppLocale<E, T>,
+    T extends BaseTranslations<E, T>> extends InheritedWidget {
   final E locale;
   final T translations;
 
@@ -143,7 +132,7 @@ class InheritedLocaleData<E extends BaseAppLocale<T>,
   });
 
   static InheritedLocaleData<E, T>
-      of<E extends BaseAppLocale<T>, T extends BaseTranslations>(
+      of<E extends BaseAppLocale<E, T>, T extends BaseTranslations<E, T>>(
           BuildContext context) {
     final inheritedWidget =
         context.dependOnInheritedWidgetOfExactType<InheritedLocaleData<E, T>>();
@@ -154,9 +143,39 @@ class InheritedLocaleData<E extends BaseAppLocale<T>,
   }
 
   @override
-  bool updateShouldNotify(InheritedLocaleData oldWidget) {
-    return !locale.sameLocale(oldWidget.locale);
+  bool updateShouldNotify(InheritedLocaleData<E, T> oldWidget) {
+    // we need to check the actual translations
+    // because locale may be the same after overriding translations
+    return !identical(translations, oldWidget.translations);
   }
 }
 
 typedef InlineSpanBuilder = InlineSpan Function(String);
+
+class TranslationOverridesFlutter {
+  static TextSpan? rich(
+      TranslationMetadata meta, String path, Map<String, Object> param) {
+    final node = meta.overrides[path];
+
+    if (node == null || node is! RichTextNode) {
+      return null;
+    }
+
+    return TextSpan(
+      children: node.spans.map((e) {
+        if (e is LiteralSpan) {
+          return TextSpan(
+            text: e.literal.applyParamsAndLinks(meta, param),
+          );
+        }
+        if (e is FunctionSpan) {
+          return (param[e.functionName] as InlineSpanBuilder)(e.arg);
+        }
+        if (e is VariableSpan) {
+          return param[e.variableName] as InlineSpan;
+        }
+        throw 'This should not happen';
+      }).toList(),
+    );
+  }
+}

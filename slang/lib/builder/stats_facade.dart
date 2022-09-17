@@ -21,9 +21,9 @@ class StatsFacade {
       final namespaces = localeEntry.value;
       return TranslationModelBuilder.build(
         buildConfig: rawConfig.toBuildModelConfig(),
-        locale: locale,
         map: rawConfig.namespaces ? namespaces : namespaces.values.first,
-      );
+        localeDebug: locale.languageTag,
+      ).toI18nData(base: rawConfig.baseLocale == locale, locale: locale);
     }).toList();
 
     // sort: base locale, then all other locales

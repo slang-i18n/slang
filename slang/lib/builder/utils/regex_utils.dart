@@ -59,6 +59,8 @@ class RegexUtils {
 
   static RegExp spaceRegex = RegExp(r'\s+');
 
+  static RegExp linkPathRegex = RegExp(r'^_root\.((?:[.\w])+)\(?');
+
   /// Matches plurals or selects of format (variable,type,content)
   /// {sex, select, male{His birthday} female{Her birthday} other{Their birthday}}
   /// 1 - sex

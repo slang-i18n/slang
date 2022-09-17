@@ -27,6 +27,7 @@ class RawConfig {
   static const StringInterpolation defaultStringInterpolation =
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
+  static const bool defaultTranslationOverrides = false;
   static const bool defaultRenderTimestamp = true;
   static const List<String> defaultMaps = <String>[];
   static const PluralAuto defaultPluralAuto = PluralAuto.cardinal;
@@ -55,6 +56,7 @@ class RawConfig {
   final CaseStyle? paramCase;
   final StringInterpolation stringInterpolation;
   final bool renderFlatMap;
+  final bool translationOverrides;
   final bool renderTimestamp;
   final List<String> maps;
   final PluralAuto pluralAuto;
@@ -83,6 +85,7 @@ class RawConfig {
     required this.paramCase,
     required this.stringInterpolation,
     required this.renderFlatMap,
+    required this.translationOverrides,
     required this.renderTimestamp,
     required this.maps,
     required this.pluralAuto,
@@ -92,6 +95,12 @@ class RawConfig {
     required this.interfaces,
     required this.imports,
   }) : fileType = _determineFileType(inputFilePattern);
+
+  void validate() {
+    if (translationOverrides && !renderFlatMap) {
+      throw 'flat_map is deactivated but it is required by translation_overrides.';
+    }
+  }
 
   static FileType _determineFileType(String extension) {
     if (extension.endsWith('.json')) {
@@ -125,6 +134,7 @@ class RawConfig {
       paramCase: paramCase,
       stringInterpolation: stringInterpolation,
       renderFlatMap: renderFlatMap,
+      translationOverrides: translationOverrides,
       renderTimestamp: renderTimestamp,
       maps: maps,
       pluralAuto: pluralAuto,
@@ -161,6 +171,7 @@ class RawConfig {
         ' -> paramCase: ${paramCase != null ? paramCase?.name : 'null (no change)'}');
     print(' -> stringInterpolation: ${stringInterpolation.name}');
     print(' -> renderFlatMap: $renderFlatMap');
+    print(' -> translationOverrides: $translationOverrides');
     print(' -> renderTimestamp: $renderTimestamp');
     print(' -> maps: $maps');
     print(' -> pluralization/auto: ${pluralAuto.name}');

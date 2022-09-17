@@ -7,8 +7,8 @@
 // coverage:ignore-file
 // ignore_for_file: type=lint
 
-
 import 'package:flutter/widgets.dart';
+import 'package:slang/builder/model/node.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
@@ -20,7 +20,7 @@ const AppLocale _baseLocale = AppLocale.en;
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
 /// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
 /// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
-enum AppLocale with BaseAppLocale<_TranslationsEn> {
+enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
 	en(languageCode: 'en', build: _TranslationsEn.build),
 	de(languageCode: 'de', build: _TranslationsDe.build);
 
@@ -29,7 +29,7 @@ enum AppLocale with BaseAppLocale<_TranslationsEn> {
 	@override final String languageCode;
 	@override final String? scriptCode;
 	@override final String? countryCode;
-	@override final TranslationBuilder<_TranslationsEn> build;
+	@override final TranslationBuilder<AppLocale, _TranslationsEn> build;
 
 	/// Gets current instance managed by [LocaleSettings].
 	_TranslationsEn get translations => LocaleSettings.instance.translationMap[this]!;
@@ -88,11 +88,7 @@ extension BuildContextTranslationsExtension on BuildContext {
 
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsEn> {
-	LocaleSettings._() : super(
-		locales: AppLocale.values,
-		baseLocale: _baseLocale,
-		utils: AppLocaleUtils.instance,
-	);
+	LocaleSettings._() : super(locales: AppLocale.values, baseLocale: _baseLocale, utils: AppLocaleUtils.instance);
 
 	static final instance = LocaleSettings._();
 
@@ -146,22 +142,26 @@ mixin EndData {
 // translations
 
 // Path: <root>
-class _TranslationsEn implements BaseTranslations {
+class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsEn.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
-		: _cardinalResolver = cardinalResolver,
-		  _ordinalResolver = ordinalResolver;
+	_TranslationsEn.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.en,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <en>.
+	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
 
 	/// Access flat map
-	dynamic operator[](String key) => _flatMap[key];
-
-	// Internal flat map initialized lazily
-	late final Map<String, dynamic> _flatMap = _buildFlatMap();
-
-	final PluralResolver? _cardinalResolver; // ignore: unused_field
-	final PluralResolver? _ordinalResolver; // ignore: unused_field
+	dynamic operator[](String key) => $meta.getTranslation(key);
 
 	late final _TranslationsEn _root = this; // ignore: unused_field
 
@@ -217,7 +217,7 @@ class _TranslationsGroupEn {
 	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+	String users({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 		zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'One User',
 		other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
@@ -272,18 +272,22 @@ class _TranslationsDe implements _TranslationsEn {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsDe.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
-		: _cardinalResolver = cardinalResolver,
-		  _ordinalResolver = ordinalResolver;
+	_TranslationsDe.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.de,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <de>.
+	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
 
 	/// Access flat map
-	@override dynamic operator[](String key) => _flatMap[key];
-
-	// Internal flat map initialized lazily
-	@override late final Map<String, dynamic> _flatMap = _buildFlatMap();
-
-	@override final PluralResolver? _cardinalResolver; // ignore: unused_field
-	@override final PluralResolver? _ordinalResolver; // ignore: unused_field
+	@override dynamic operator[](String key) => $meta.getTranslation(key);
 
 	@override late final _TranslationsDe _root = this; // ignore: unused_field
 
@@ -339,7 +343,7 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+	@override String users({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'Ein Nutzer',
 		other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
@@ -393,87 +397,89 @@ class _TranslationsOnboarding0i1De with PageData implements _TranslationsOnboard
 /// Only for edge cases! For simple maps, use the map function of this library.
 
 extension on _TranslationsEn {
-	Map<String, dynamic> _buildFlatMap() {
-		return <String, dynamic>{
-			'onboarding.welcome': ({required Object fullName}) => 'Welcome ${fullName}',
-			'onboarding.bye': ({required Object firstName}) => 'Bye ${firstName}',
-			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'onboarding.welcome': return ({required Object fullName}) => 'Welcome ${fullName}';
+			case 'onboarding.bye': return ({required Object firstName}) => 'Bye ${firstName}';
+			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
 				name,
 				TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
-			]),
-			'onboarding.pages.0.title': 'First Page',
-			'onboarding.pages.0.content': 'First Page Content',
-			'onboarding.pages.1.title': 'Second Page',
-			'onboarding.greet': ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+			]);
+			case 'onboarding.pages.0.title': return 'First Page';
+			case 'onboarding.pages.0.content': return 'First Page Content';
+			case 'onboarding.pages.1.title': return 'Second Page';
+			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
 					case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
 					case GenderContext.female: return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 				}
-			},
-			'onboarding.greet2': ({required GenderContext gender}) {
+			};
+			case 'onboarding.greet2': return ({required GenderContext gender}) {
 				switch (gender) {
 					case GenderContext.male: return 'Hello Mr';
 					case GenderContext.female: return 'Hello Ms';
 				}
-			},
-			'onboarding.greetCombination': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}',
-			'onboarding.welcomeLinkedPlural': ({required num count, required Object fullName, required Object firstName}) => 'Hello ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}',
-			'onboarding.welcomeLinkedContext': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
-			'onboarding.welcomeFullLink': ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
-			'group.users': ({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+			};
+			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num count, required Object fullName, required Object firstName}) => 'Hello ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'onboarding.welcomeFullLink': return ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
 				zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'One User',
 				other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
-			),
-			'end.stringPages.0': '1st Page',
-			'end.stringPages.1': '2nd Page',
-			'end.pages.0.unknown': 'Unknown Error',
-			'end.pages.1.with space': 'An Error',
-			'end.pages.1.with second space': 'An 2nd Error',
-		};
+			);
+			case 'end.stringPages.0': return '1st Page';
+			case 'end.stringPages.1': return '2nd Page';
+			case 'end.pages.0.unknown': return 'Unknown Error';
+			case 'end.pages.1.with space': return 'An Error';
+			case 'end.pages.1.with second space': return 'An 2nd Error';
+			default: return null;
+		}
 	}
 }
 
 extension on _TranslationsDe {
-	Map<String, dynamic> _buildFlatMap() {
-		return <String, dynamic>{
-			'onboarding.welcome': ({required Object fullName}) => 'Willkommen ${fullName}',
-			'onboarding.bye': ({required Object firstName}) => 'Tschüss ${firstName}',
-			'onboarding.hi': ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'onboarding.welcome': return ({required Object fullName}) => 'Willkommen ${fullName}';
+			case 'onboarding.bye': return ({required Object firstName}) => 'Tschüss ${firstName}';
+			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
 				name,
 				TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
-			]),
-			'onboarding.pages.0.title': 'Erste Seite',
-			'onboarding.pages.0.content': 'Erster Seiteninhalt',
-			'onboarding.pages.1.title': 'Zweite Seite',
-			'onboarding.greet': ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+			]);
+			case 'onboarding.pages.0.title': return 'Erste Seite';
+			case 'onboarding.pages.0.content': return 'Erster Seiteninhalt';
+			case 'onboarding.pages.1.title': return 'Zweite Seite';
+			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
 					case GenderContext.male: return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
 					case GenderContext.female: return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
 				}
-			},
-			'onboarding.greet2': ({required GenderContext gender}) {
+			};
+			case 'onboarding.greet2': return ({required GenderContext gender}) {
 				switch (gender) {
 					case GenderContext.male: return 'Hallo Herr';
 					case GenderContext.female: return 'Hallo Frau';
 				}
-			},
-			'onboarding.greetCombination': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}',
-			'onboarding.welcomeLinkedPlural': ({required num count, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}',
-			'onboarding.welcomeLinkedContext': ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
-			'onboarding.welcomeFullLink': ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}',
-			'group.users': ({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+			};
+			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num count, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'onboarding.welcomeFullLink': return ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'Ein Nutzer',
 				other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
-			),
-			'end.stringPages.0': '1. Seite',
-			'end.stringPages.1': '2. Seite',
-			'end.pages.0.unknown': 'Unbekannter Fehler',
-			'end.pages.1.with space': 'Ein Fehler',
-			'end.pages.1.with second space': 'Ein 2. Fehler',
-		};
+			);
+			case 'end.stringPages.0': return '1. Seite';
+			case 'end.stringPages.1': return '2. Seite';
+			case 'end.pages.0.unknown': return 'Unbekannter Fehler';
+			case 'end.pages.1.with space': return 'Ein Fehler';
+			case 'end.pages.1.with second space': return 'Ein 2. Fehler';
+			default: return null;
+		}
 	}
 }

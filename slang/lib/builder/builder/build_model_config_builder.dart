@@ -4,7 +4,6 @@ import 'package:slang/builder/model/raw_config.dart';
 extension BuildModelConfigBuilder on RawConfig {
   BuildModelConfig toBuildModelConfig() {
     return BuildModelConfig(
-      baseLocale: baseLocale,
       fallbackStrategy: fallbackStrategy,
       keyCase: keyCase,
       keyMapCase: keyMapCase,

@@ -8,14 +8,15 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/builder/utils/file_utils.dart';
+import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
-import 'package:slang/builder/utils/yaml_utils.dart';
 import 'package:glob/glob.dart';
 
 /// Static entry point for build_runner
 Builder i18nBuilder(BuilderOptions options) {
   return I18nBuilder(
-    config: RawConfigBuilder.fromMap(YamlUtils.deepCast(options.config)),
+    config: RawConfigBuilder.fromMap(MapUtils.deepCast(options.config))
+      ..validate(),
   );
 }
 

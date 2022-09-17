@@ -7,7 +7,7 @@
 // coverage:ignore-file
 // ignore_for_file: type=lint
 
-
+import 'package:slang/builder/model/node.dart';
 import 'package:slang/slang.dart';
 export 'package:slang/slang.dart';
 
@@ -19,7 +19,7 @@ const AppLocale _baseLocale = AppLocale.en;
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
 /// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
 /// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
-enum AppLocale with BaseAppLocale<_TranslationsEn> {
+enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
 	en(languageCode: 'en', build: _TranslationsEn.build);
 
 	const AppLocale({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element
@@ -27,7 +27,7 @@ enum AppLocale with BaseAppLocale<_TranslationsEn> {
 	@override final String languageCode;
 	@override final String? scriptCode;
 	@override final String? countryCode;
-	@override final TranslationBuilder<_TranslationsEn> build;
+	@override final TranslationBuilder<AppLocale, _TranslationsEn> build;
 
 	/// Gets current instance managed by [LocaleSettings].
 	_TranslationsEn get translations => LocaleSettings.instance.translationMap[this]!;
@@ -46,11 +46,7 @@ _TranslationsEn get t => LocaleSettings.instance.currentTranslations;
 
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseLocaleSettings<AppLocale, _TranslationsEn> {
-	LocaleSettings._() : super(
-		locales: AppLocale.values,
-		baseLocale: _baseLocale,
-		utils: AppLocaleUtils.instance,
-	);
+	LocaleSettings._() : super(locales: AppLocale.values, baseLocale: _baseLocale, utils: AppLocaleUtils.instance);
 
 	static final instance = LocaleSettings._();
 
@@ -89,22 +85,26 @@ enum GenderContext {
 // translations
 
 // Path: <root>
-class _TranslationsEn implements BaseTranslations {
+class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsEn.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
-		: _cardinalResolver = cardinalResolver,
-		  _ordinalResolver = ordinalResolver;
+	_TranslationsEn.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.en,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <en>.
+	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
 
 	/// Access flat map
-	dynamic operator[](String key) => _flatMap[key];
-
-	// Internal flat map initialized lazily
-	late final Map<String, dynamic> _flatMap = _buildFlatMap();
-
-	final PluralResolver? _cardinalResolver; // ignore: unused_field
-	final PluralResolver? _ordinalResolver; // ignore: unused_field
+	dynamic operator[](String key) => $meta.getTranslation(key);
 
 	late final _TranslationsEn _root = this; // ignore: unused_field
 
@@ -127,10 +127,11 @@ class _TranslationsBEn {
 /// Only for edge cases! For simple maps, use the map function of this library.
 
 extension on _TranslationsEn {
-	Map<String, dynamic> _buildFlatMap() {
-		return <String, dynamic>{
-			'a': 'a',
-			'b.bb': 'bb',
-		};
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'a': return 'a';
+			case 'b.bb': return 'bb';
+			default: return null;
+		}
 	}
 }

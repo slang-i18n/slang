@@ -7,8 +7,8 @@
 // coverage:ignore-file
 // ignore_for_file: type=lint
 
-
 import 'package:flutter/widgets.dart';
+import 'package:slang/builder/model/node.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
@@ -24,7 +24,7 @@ const AppLocale _baseLocale = AppLocale.en;
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
 /// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
 /// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
-enum AppLocale with BaseAppLocale<_TranslationsEn> {
+enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
 	en(languageCode: 'en', build: _TranslationsEn.build),
 	de(languageCode: 'de', build: _TranslationsDe.build);
 
@@ -33,7 +33,7 @@ enum AppLocale with BaseAppLocale<_TranslationsEn> {
 	@override final String languageCode;
 	@override final String? scriptCode;
 	@override final String? countryCode;
-	@override final TranslationBuilder<_TranslationsEn> build;
+	@override final TranslationBuilder<AppLocale, _TranslationsEn> build;
 
 	/// Gets current instance managed by [LocaleSettings].
 	_TranslationsEn get translations => LocaleSettings.instance.translationMap[this]!;
@@ -92,11 +92,7 @@ extension BuildContextTranslationsExtension on BuildContext {
 
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsEn> {
-	LocaleSettings._() : super(
-		locales: AppLocale.values,
-		baseLocale: _baseLocale,
-		utils: AppLocaleUtils.instance,
-	);
+	LocaleSettings._() : super(locales: AppLocale.values, baseLocale: _baseLocale, utils: AppLocaleUtils.instance);
 
 	static final instance = LocaleSettings._();
 
