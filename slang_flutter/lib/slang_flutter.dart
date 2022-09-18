@@ -41,9 +41,9 @@ class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
 
   @override
   updateProviderState(E locale, T translations) {
-    _translationProviderKey.currentState?.setLocale(
-      newLocale: locale,
-      newTranslations: translations,
+    _translationProviderKey.currentState?.updateState(
+      locale: locale,
+      translations: translations,
     );
   }
 }
@@ -97,13 +97,13 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
     required this.translations,
   });
 
-  void setLocale({
-    required E newLocale,
-    required T newTranslations,
+  void updateState({
+    required E locale,
+    required T translations,
   }) {
     setState(() {
-      locale = newLocale;
-      translations = newTranslations;
+      this.locale = locale;
+      this.translations = translations;
     });
   }
 

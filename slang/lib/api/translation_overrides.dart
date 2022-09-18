@@ -109,7 +109,7 @@ extension TranslationOverridesStringExt on String {
     });
   }
 
-  /// Replaces every @:link with the real string
+  /// Replaces every ${_root.<path>} with the real string
   String applyLinks(TranslationMetadata meta, Map<String, Object> param) {
     return replaceDartNormalizedInterpolation(replacer: (match) {
       final nodeParam = match.substring(2, match.length - 1);
@@ -127,6 +127,10 @@ extension TranslationOverridesStringExt on String {
         return match;
       }
 
+      if (refInFlatMap is String) {
+        return refInFlatMap;
+      }
+
       if (refInFlatMap is Function) {
         return Function.apply(
           refInFlatMap,
@@ -137,7 +141,7 @@ extension TranslationOverridesStringExt on String {
         );
       }
 
-      return match; // this should not happen (must be function)
+      return match; // this should not happen (must be string or function)
     });
   }
 

@@ -21,9 +21,13 @@ class TranslationModelBuilder {
   ///
   /// The map must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
+  ///
+  /// [handleLinks] can be set false to ignore links at leave them as is
+  /// e.g. ${_root.greet(name: name} will be ${_root.greet}
   static BuildModelResult build({
     required BuildModelConfig buildConfig,
     required Map<String, dynamic> map,
+    bool handleLinks = true,
     required String localeDebug,
   }) {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
@@ -47,82 +51,86 @@ class TranslationModelBuilder {
     // 2nd round: Handle parameterized linked translations
     //
     // TextNodes with parameterized linked translations are rebuilt with correct parameters.
-    leavesMap.entries
-        .where((entry) => entry.value is TextNode)
-        .forEach((entry) {
-      final key = entry.key;
-      final value = entry.value as TextNode;
+    if (handleLinks) {
+      leavesMap.entries
+          .where((entry) => entry.value is TextNode)
+          .forEach((entry) {
+        final key = entry.key;
+        final value = entry.value as TextNode;
 
-      final linkParamMap = <String, Set<String>>{};
-      final paramTypeMap = <String, String>{};
-      value.links.forEach((link) {
-        final paramSet = <String>{};
-        final visitedLinks = <String>{};
-        final pathQueue = Queue<String>();
-        pathQueue.add(link);
+        final linkParamMap = <String, Set<String>>{};
+        final paramTypeMap = <String, String>{};
+        value.links.forEach((link) {
+          final paramSet = <String>{};
+          final visitedLinks = <String>{};
+          final pathQueue = Queue<String>();
+          pathQueue.add(link);
 
-        while (pathQueue.isNotEmpty) {
-          final currLink = pathQueue.removeFirst();
-          final linkedNode = leavesMap[currLink];
-          if (linkedNode == null) {
-            throw '"$key" is linked to "$currLink" but "$currLink" is undefined (locale: $localeDebug).';
-          }
-
-          visitedLinks.add(currLink);
-
-          if (linkedNode is TextNode) {
-            paramSet.addAll(linkedNode.params);
-            paramTypeMap.addAll(linkedNode.paramTypeMap);
-
-            // lookup links
-            linkedNode.links.forEach((child) {
-              if (!visitedLinks.contains(child)) {
-                pathQueue.add(child);
-              }
-            });
-          } else if (linkedNode is PluralNode || linkedNode is ContextNode) {
-            final Iterable<StringTextNode> textNodes = linkedNode is PluralNode
-                ? linkedNode.quantities.values
-                : (linkedNode as ContextNode).entries.values;
-            final linkedParamSet = textNodes
-                .map((e) => e.params)
-                .expand((params) => params)
-                .toSet();
-
-            if (linkedNode is PluralNode) {
-              linkedParamSet.add(linkedNode.paramName);
-              paramTypeMap[linkedNode.paramName] = 'num';
-            } else if (linkedNode is ContextNode) {
-              linkedParamSet.add(linkedNode.paramName);
-              paramTypeMap[linkedNode.paramName] = linkedNode.context.enumName;
+          while (pathQueue.isNotEmpty) {
+            final currLink = pathQueue.removeFirst();
+            final linkedNode = leavesMap[currLink];
+            if (linkedNode == null) {
+              throw '"$key" is linked to "$currLink" but "$currLink" is undefined (locale: $localeDebug).';
             }
 
-            paramSet.addAll(linkedParamSet);
+            visitedLinks.add(currLink);
 
-            // lookup links of children
-            textNodes.forEach((element) {
-              element.links.forEach((child) {
+            if (linkedNode is TextNode) {
+              paramSet.addAll(linkedNode.params);
+              paramTypeMap.addAll(linkedNode.paramTypeMap);
+
+              // lookup links
+              linkedNode.links.forEach((child) {
                 if (!visitedLinks.contains(child)) {
                   pathQueue.add(child);
                 }
               });
-            });
-          } else {
-            throw '"$key" is linked to "$currLink" which is a ${linkedNode.runtimeType} (must be $TextNode or $ObjectNode).';
+            } else if (linkedNode is PluralNode || linkedNode is ContextNode) {
+              final Iterable<StringTextNode> textNodes =
+                  linkedNode is PluralNode
+                      ? linkedNode.quantities.values
+                      : (linkedNode as ContextNode).entries.values;
+              final linkedParamSet = textNodes
+                  .map((e) => e.params)
+                  .expand((params) => params)
+                  .toSet();
+
+              if (linkedNode is PluralNode) {
+                linkedParamSet.add(linkedNode.paramName);
+                paramTypeMap[linkedNode.paramName] = 'num';
+              } else if (linkedNode is ContextNode) {
+                linkedParamSet.add(linkedNode.paramName);
+                paramTypeMap[linkedNode.paramName] =
+                    linkedNode.context.enumName;
+              }
+
+              paramSet.addAll(linkedParamSet);
+
+              // lookup links of children
+              textNodes.forEach((element) {
+                element.links.forEach((child) {
+                  if (!visitedLinks.contains(child)) {
+                    pathQueue.add(child);
+                  }
+                });
+              });
+            } else {
+              throw '"$key" is linked to "$currLink" which is a ${linkedNode.runtimeType} (must be $TextNode or $ObjectNode).';
+            }
           }
+
+          linkParamMap[link] = paramSet;
+        });
+
+        if (linkParamMap.values.any((params) => params.isNotEmpty)) {
+          // rebuild TextNode because its linked translations have parameters
+          value.updateWithLinkParams(
+            linkParamMap: linkParamMap,
+            paramTypeMap: paramTypeMap,
+          );
         }
-
-        linkParamMap[link] = paramSet;
       });
-
-      if (linkParamMap.values.any((params) => params.isNotEmpty)) {
-        // rebuild TextNode because its linked translations have parameters
-        value.updateWithLinkParams(
-          linkParamMap: linkParamMap,
-          paramTypeMap: paramTypeMap,
-        );
-      }
-    });
+    }
 
     // imaginary root node
     final root = ObjectNode(

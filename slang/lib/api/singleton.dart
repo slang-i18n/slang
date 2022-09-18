@@ -124,8 +124,9 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
 
     final buildResult = TranslationModelBuilder.build(
       buildConfig: buildConfig!,
-      localeDebug: locale.languageTag,
       map: MapUtils.deepCast(map),
+      handleLinks: false,
+      localeDebug: locale.languageTag,
     );
 
     return locale.build(
