@@ -619,13 +619,13 @@ You can combine multiple hints like this:
 
 These hints are available:
 
-| Hint                        | Meaning                                       | Applicable for                  |
-|-----------------------------|-----------------------------------------------|---------------------------------|
-| `(rich)`                    | This is a rich text.                          | Leaves, Maps (Plural / Context) |
-| `(map)`                     | This is a map / dictionary (and not a class). | Maps                            |
-| `(plural)`                  | This is a plural (type: cardinal)             | Maps                            |
-| `(cardinal)`                | This is a plural (type: cardinal)             | Maps                            |
-| `(ordinal)`                 | This is a plural (type: ordinal)              | Maps                            |
+| Hint                       | Meaning                                       | Applicable for                  |
+|----------------------------|-----------------------------------------------|---------------------------------|
+| `(rich)`                   | This is a rich text.                          | Leaves, Maps (Plural / Context) |
+| `(map)`                    | This is a map / dictionary (and not a class). | Maps                            |
+| `(plural)`                 | This is a plural (type: cardinal)             | Maps                            |
+| `(cardinal)`               | This is a plural (type: cardinal)             | Maps                            |
+| `(ordinal)`                | This is a plural (type: ordinal)              | Maps                            |
 | `(context=<Context Type>)` | This is a context of type `<Context Type>`    | Maps                            |
 | `(param=<Param Name>)`     | This has the parameter `<Param Name>`         | Maps (Plural / Context)         |
 
