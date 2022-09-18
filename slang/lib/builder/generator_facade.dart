@@ -22,9 +22,9 @@ class GeneratorFacade {
       final namespaces = localeEntry.value;
       return TranslationModelBuilder.build(
         buildConfig: rawConfig.toBuildModelConfig(),
-        locale: locale,
         map: rawConfig.namespaces ? namespaces : namespaces.values.first,
-      );
+        localeDebug: locale.languageTag,
+      ).toI18nData(base: rawConfig.baseLocale == locale, locale: locale);
     }).toList();
 
     // prepare model for generation
@@ -44,10 +44,10 @@ class GeneratorFacade {
       });
     });
 
-    // build config
+    // generate config
     final config = GenerateConfigBuilder.build(
       baseName: baseName,
-      buildConfig: rawConfig,
+      config: rawConfig,
       interfaces: interfaceMap.values.toList(),
     );
 

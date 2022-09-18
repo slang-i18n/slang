@@ -60,6 +60,19 @@ extension StringInterpolationExtensions on String {
     return buffer.toString();
   }
 
+  /// Replaces every ${x} with the result of [replacer].
+  /// Escaped \${x} will be transformed to ${x} without replacer call
+  String replaceDartNormalizedInterpolation({
+    required String Function(String match) replacer,
+  }) {
+    return _replaceBetween(
+      input: this,
+      startCharacter: r'${',
+      endCharacter: '}',
+      replacer: replacer,
+    );
+  }
+
   /// Replaces every {x} with the result of [replacer].
   String replaceBracesInterpolation({
     required String Function(String match) replacer,

@@ -22,16 +22,17 @@ String generateTranslationMap(
     buffer.writeln();
     buffer.writeln(
         'extension on ${getClassNameRoot(baseName: config.baseName, locale: localeData.locale, visibility: config.translationClassVisibility)} {');
-    buffer.writeln('\tMap<String, dynamic> _buildFlatMap() {');
+    buffer.writeln('\tdynamic _flatMapFunction(String path) {');
 
-    buffer.writeln('\t\treturn <String, dynamic>{');
+    buffer.writeln('\t\tswitch (path) {');
     _generateTranslationMapRecursive(
       buffer: buffer,
       curr: localeData.root,
       config: config,
       language: language,
     );
-    buffer.writeln('\t\t};');
+    buffer.writeln('\t\t\tdefault: return null;');
+    buffer.writeln('\t\t}');
     buffer.writeln('\t}');
     buffer.writeln('}');
   }
@@ -46,19 +47,25 @@ _generateTranslationMapRecursive({
   required String language,
 }) {
   if (curr is StringTextNode) {
+    final translationOverrides = config.translationOverrides
+        ? 'TranslationOverrides.string(_root.\$meta, \'${curr.path}\', ${_toParameterMap(curr.params)}) ?? '
+        : '';
     if (curr.params.isEmpty) {
-      buffer.writeln('\t\t\t\'${curr.path}\': \'${curr.content}\',');
+      buffer.writeln(
+          '\t\t\tcase \'${curr.path}\': return $translationOverrides\'${curr.content}\';');
     } else {
       buffer.writeln(
-          '\t\t\t\'${curr.path}\': ${_toParameterList(curr.params, curr.paramTypeMap)} => \'${curr.content}\',');
+          '\t\t\tcase \'${curr.path}\': return ${_toParameterList(curr.params, curr.paramTypeMap)} => $translationOverrides\'${curr.content}\';');
     }
   } else if (curr is RichTextNode) {
-    buffer.write('\t\t\t\'${curr.path}\': ');
+    buffer.write('\t\t\tcase \'${curr.path}\': return ');
     _addRichTextCall(
       buffer: buffer,
+      config: config,
       node: curr,
       includeArrowIfNoParams: false,
       depth: 2,
+      forceSemicolon: true,
     );
   } else if (curr is ListNode) {
     // recursive
@@ -81,21 +88,23 @@ _generateTranslationMapRecursive({
       );
     });
   } else if (curr is PluralNode) {
-    buffer.write('\t\t\t\'${curr.path}\': ');
+    buffer.write('\t\t\tcase \'${curr.path}\': return ');
     _addPluralizationCall(
       buffer: buffer,
       config: config,
       language: language,
       node: curr,
       depth: 2,
+      forceSemicolon: true,
     );
   } else if (curr is ContextNode) {
-    buffer.write('\t\t\t\'${curr.path}\': ');
+    buffer.write('\t\t\tcase \'${curr.path}\': return ');
     _addContextCall(
       buffer: buffer,
       config: config,
       node: curr,
       depth: 2,
+      forceSemicolon: true,
     );
   } else {
     throw 'This should not happen';

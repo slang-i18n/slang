@@ -5,18 +5,22 @@ class _TranslationsDe implements _TranslationsEn {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsDe.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
-		: _cardinalResolver = cardinalResolver,
-		  _ordinalResolver = ordinalResolver;
+	_TranslationsDe.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.de,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <de>.
+	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
 
 	/// Access flat map
-	@override dynamic operator[](String key) => _flatMap[key];
-
-	// Internal flat map initialized lazily
-	@override late final Map<String, dynamic> _flatMap = _buildFlatMap();
-
-	@override final PluralResolver? _cardinalResolver; // ignore: unused_field
-	@override final PluralResolver? _ordinalResolver; // ignore: unused_field
+	@override dynamic operator[](String key) => $meta.getTranslation(key);
 
 	@override late final _TranslationsDe _root = this; // ignore: unused_field
 
@@ -72,7 +76,7 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String users({required num count, required Object fullName, required Object firstName}) => (_root._cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+	@override String users({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
 		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'Ein Nutzer',
 		other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',

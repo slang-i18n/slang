@@ -1,3 +1,9 @@
+## 3.0.0
+
+**Translation Overrides**
+
+- feat: it is now possible to override translations via `LocaleSettings.overrideTranslations` (checkout updated README)
+
 ## 2.8.0
 
 - feat: add `AppLocaleUtils.parseLocaleParts`

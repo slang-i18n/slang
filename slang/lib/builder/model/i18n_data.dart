@@ -1,3 +1,4 @@
+import 'package:slang/builder/builder/translation_model_builder.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
@@ -28,4 +29,18 @@ class I18nData {
       return -1; // move base to the left
     }
   };
+}
+
+extension I18nBuilderExt on BuildModelResult {
+  I18nData toI18nData({
+    required bool base,
+    required I18nLocale locale,
+  }) {
+    return I18nData(
+      base: base,
+      locale: locale,
+      root: root,
+      interfaces: interfaces,
+    );
+  }
 }

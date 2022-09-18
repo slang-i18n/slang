@@ -28,6 +28,7 @@ void main() {
   generateMainSplitIntegration(buildConfig, en, de);
   generateNoFlutter(buildConfig, simple);
   generateNoLocaleHandling(buildConfig, simple);
+  generateTranslationOverrides(buildConfig, en, de);
 
   print('');
 }
@@ -123,6 +124,27 @@ void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
 
   _write(
     path: 'main/expected_no_locale_handling',
+    content: result,
+  );
+}
+
+void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
+  final result = GeneratorFacade.generate(
+    rawConfig: buildConfig.copyWith(translationOverrides: true),
+    baseName: 'translations',
+    translationMap: TranslationMap()
+      ..addTranslations(
+        locale: I18nLocale.fromString('en'),
+        translations: JsonDecoder().decode(en),
+      )
+      ..addTranslations(
+        locale: I18nLocale.fromString('de'),
+        translations: JsonDecoder().decode(de),
+      ),
+  ).joinAsSingleOutput();
+
+  _write(
+    path: 'main/expected_translation_overrides',
     content: result,
   );
 }

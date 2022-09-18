@@ -3,23 +3,28 @@ import 'dart:collection';
 import 'package:slang/builder/model/build_model_config.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
-import 'package:slang/builder/model/i18n_data.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 
+class BuildModelResult {
+  final ObjectNode root; // the actual strings
+  final List<Interface> interfaces; // detected interfaces
+
+  BuildModelResult({required this.root, required this.interfaces});
+}
+
 class TranslationModelBuilder {
   /// Builds the i18n model for ONE locale
   ///
   /// The map must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
-  static I18nData build({
+  static BuildModelResult build({
     required BuildModelConfig buildConfig,
-    required I18nLocale locale,
     required Map<String, dynamic> map,
+    required String localeDebug,
   }) {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
     final Map<String, LeafNode> leavesMap = {};
@@ -31,7 +36,7 @@ class TranslationModelBuilder {
     // Assumption: They are basic linked translations without parameters
     // Reason: Not all TextNodes are built, so final parameters are unknown
     final resultNodeTree = _parseMapNode(
-      locale: locale,
+      localeDebug: localeDebug,
       parentPath: '',
       curr: map,
       config: buildConfig,
@@ -60,7 +65,7 @@ class TranslationModelBuilder {
           final currLink = pathQueue.removeFirst();
           final linkedNode = leavesMap[currLink];
           if (linkedNode == null) {
-            throw '"$key" is linked to "$currLink" but it is undefined (locale: ${locale.languageTag}).';
+            throw '"$key" is linked to "$currLink" but "$currLink" is undefined (locale: $localeDebug).';
           }
 
           visitedLinks.add(currLink);
@@ -138,9 +143,7 @@ class TranslationModelBuilder {
       ).toList();
     }
 
-    return I18nData(
-      base: buildConfig.baseLocale == locale,
-      locale: locale,
+    return BuildModelResult(
       root: root,
       interfaces: resultInterfaces,
     );
@@ -149,7 +152,7 @@ class TranslationModelBuilder {
   /// Takes the [curr] map which is (a part of) the raw tree from json / yaml
   /// and returns the node model.
   static Map<String, Node> _parseMapNode({
-    required I18nLocale locale,
+    required String localeDebug,
     required String parentPath,
     required Map<String, dynamic> curr,
     required BuildModelConfig config,
@@ -219,7 +222,7 @@ class TranslationModelBuilder {
             for (int i = 0; i < value.length; i++) i.toString(): value[i],
           };
           children = _parseMapNode(
-            locale: locale,
+            localeDebug: localeDebug,
             parentPath: currPath,
             curr: listAsMap,
             config: config,
@@ -238,7 +241,7 @@ class TranslationModelBuilder {
         } else {
           // key: { ...value }
           final children = _parseMapNode(
-            locale: locale,
+            localeDebug: localeDebug,
             parentPath: currPath,
             curr: value,
             config: config,
@@ -260,7 +263,7 @@ class TranslationModelBuilder {
             if (children.isEmpty) {
               switch (config.fallbackStrategy) {
                 case FallbackStrategy.none:
-                  throw '"$currPath" in <${locale.languageTag}> is empty but it is marked for pluralization. Define "fallback_strategy: base_locale" to ignore this node.';
+                  throw '"$currPath" in <$localeDebug> is empty but it is marked for pluralization. Define "fallback_strategy: base_locale" to ignore this node.';
                 case FallbackStrategy.baseLocale:
                   return;
               }

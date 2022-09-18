@@ -72,6 +72,10 @@ void _generateClass(
     buffer.writeln('// Path: ${node.path}');
   }
 
+  final baseClassName = getClassName(
+    parentName: className,
+    locale: config.baseLocale,
+  );
   final rootClassName = getClassNameRoot(
     baseName: config.baseName,
     visibility: config.translationClassVisibility,
@@ -88,14 +92,11 @@ void _generateClass(
   if (localeData.base) {
     if (root) {
       buffer.writeln(
-          'class $finalClassName$mixinStr implements BaseTranslations {');
+          'class $finalClassName$mixinStr implements BaseTranslations<${config.enumName}, $rootClassName> {');
     } else {
       buffer.writeln('class $finalClassName$mixinStr {');
     }
   } else {
-    final baseClassName =
-        getClassName(parentName: className, locale: config.baseLocale);
-
     if (config.fallbackStrategy == FallbackStrategy.none) {
       buffer.writeln(
           'class $finalClassName$mixinStr implements $baseClassName {');
@@ -113,20 +114,45 @@ void _generateClass(
         '\t/// You can call this constructor and build your own translation instance of this locale.');
     buffer.writeln(
         '\t/// Constructing via the enum [${config.enumName}.build] is preferred.');
+    if (config.translationOverrides) {
+      buffer.writeln(
+          '\t/// [AppLocaleUtils.buildWithOverrides] is recommended for overriding.');
+    }
 
     buffer.writeln(
-        '\t$finalClassName.build({PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
-
-    buffer.write('\t\t: ');
-
-    buffer.writeln('_cardinalResolver = cardinalResolver,');
-    buffer.write('\t\t  _ordinalResolver = ordinalResolver');
+        '\t$finalClassName.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
+    if (!config.translationOverrides) {
+      buffer.write(
+          '\t\t: assert(overrides == null, \'Set "translation_overrides: true" in order to enable this feature.\'),\n\t\t  ');
+    } else {
+      buffer.write('\t\t: ');
+    }
+    buffer.writeln('\$meta = TranslationMetadata(');
+    buffer.writeln(
+        '\t\t    locale: ${config.enumName}.${localeData.locale.enumConstant},');
+    buffer.writeln('\t\t    overrides: overrides ?? {},');
+    buffer.writeln('\t\t    cardinalResolver: cardinalResolver,');
+    buffer.writeln('\t\t    ordinalResolver: ordinalResolver,');
+    buffer.write('\t\t  )');
 
     if (callSuperConstructor) {
-      buffer.writeln(',');
-      buffer.write('\t\tsuper.build()');
+      buffer.write(
+          ',\n\t\t  super.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver)');
     }
-    buffer.writeln(';');
+
+    if (config.renderFlatMap) {
+      buffer.writeln(' {');
+      buffer.writeln('\t\t\$meta.setFlatMapFunction(_flatMapFunction);');
+      buffer.writeln('\t}');
+    } else {
+      buffer.writeln(';');
+    }
+
+    buffer.writeln();
+    buffer.writeln(
+        '\t/// Metadata for the translations of <${localeData.locale.languageTag}>.');
+    buffer.writeln(
+        '\t@override final TranslationMetadata<${config.enumName}, $baseClassName> \$meta;');
 
     if (config.renderFlatMap) {
       // flat map
@@ -137,32 +163,16 @@ void _generateClass(
         buffer.write('@override ');
       }
 
-      buffer.write('dynamic operator[](String key) => _flatMap[key]');
+      buffer.write(
+          'dynamic operator[](String key) => \$meta.getTranslation(key)');
 
       if (config.fallbackStrategy == FallbackStrategy.baseLocale &&
           !localeData.base) {
-        buffer.writeln(' ?? super._flatMap[key];');
+        buffer.writeln(' ?? super.\$meta.getTranslation(key);');
       } else {
         buffer.writeln(';');
       }
-
-      buffer.writeln();
-      buffer.writeln('\t// Internal flat map initialized lazily');
-      buffer.write('\t');
-      if (!localeData.base) buffer.write('@override ');
-      buffer.writeln(
-          'late final Map<String, dynamic> _flatMap = _buildFlatMap();');
     }
-
-    buffer.writeln();
-    buffer.write('\t');
-    if (!localeData.base) buffer.write('@override ');
-    buffer.writeln(
-        'final PluralResolver? _cardinalResolver; // ignore: unused_field');
-    buffer.write('\t');
-    if (!localeData.base) buffer.write('@override ');
-    buffer.writeln(
-        'final PluralResolver? _ordinalResolver; // ignore: unused_field');
   } else {
     if (callSuperConstructor) {
       buffer.writeln(
@@ -223,11 +233,15 @@ void _generateClass(
         : '';
 
     if (value is StringTextNode) {
+      final translationOverrides = config.translationOverrides
+          ? 'TranslationOverrides.string(_root.\$meta, \'${value.path}\', ${_toParameterMap(value.params)}) ?? '
+          : '';
       if (value.params.isEmpty) {
-        buffer.writeln('String$optional get $key => \'${value.content}\';');
+        buffer.writeln(
+            'String$optional get $key => $translationOverrides\'${value.content}\';');
       } else {
         buffer.writeln(
-            'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\';');
+            'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => $translationOverrides\'${value.content}\';');
       }
     } else if (value is RichTextNode) {
       buffer.write('TextSpan$optional ');
@@ -238,14 +252,23 @@ void _generateClass(
       }
       _addRichTextCall(
         buffer: buffer,
+        config: config,
         node: value,
         includeArrowIfNoParams: true,
         depth: 0,
       );
     } else if (value is ListNode) {
       buffer.write('List<${value.genericType}>$optional get $key => ');
-      _generateList(config, localeData.base, localeData.locale, buffer, queue,
-          className, value.entries, 0);
+      _generateList(
+        config: config,
+        base: localeData.base,
+        locale: localeData.locale,
+        buffer: buffer,
+        queue: queue,
+        className: className,
+        node: value,
+        depth: 0,
+      );
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -253,8 +276,16 @@ void _generateClass(
       if (value.isMap) {
         // inline map
         buffer.write('Map<String, ${value.genericType}>$optional get $key => ');
-        _generateMap(config, localeData.base, localeData.locale, buffer, queue,
-            childClassNoLocale, value.entries, 0);
+        _generateMap(
+          config: config,
+          base: localeData.base,
+          locale: localeData.locale,
+          buffer: buffer,
+          queue: queue,
+          className: childClassNoLocale,
+          node: value,
+          depth: 0,
+        );
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
@@ -288,19 +319,23 @@ void _generateClass(
 
 /// generates a map of ONE locale
 /// similar to _generateClass but anonymous and accessible via key
-void _generateMap(
-  GenerateConfig config,
-  bool base,
-  I18nLocale locale,
-  StringBuffer buffer,
-  Queue<ClassTask> queue,
-  String className, // without locale
-  Map<String, Node> currMembers,
-  int depth,
-) {
+void _generateMap({
+  required GenerateConfig config,
+  required bool base,
+  required I18nLocale locale,
+  required StringBuffer buffer,
+  required Queue<ClassTask> queue,
+  required String className, // without locale
+  required ObjectNode node,
+  required int depth,
+}) {
+  if (config.translationOverrides && node.genericType == 'String') {
+    buffer
+        .write('TranslationOverrides.map(_root.\$meta, \'${node.path}\') ?? ');
+  }
   buffer.writeln('{');
 
-  currMembers.forEach((key, value) {
+  node.entries.forEach((key, value) {
     _addTabs(buffer, depth + 2);
     if (value is StringTextNode) {
       if (value.params.isEmpty) {
@@ -311,8 +346,16 @@ void _generateMap(
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
-      _generateList(config, base, locale, buffer, queue, className,
-          value.entries, depth + 1);
+      _generateList(
+        config: config,
+        base: base,
+        locale: locale,
+        buffer: buffer,
+        queue: queue,
+        className: className,
+        node: value,
+        depth: depth + 1,
+      );
     } else if (value is ObjectNode) {
       String childClassNoLocale =
           getClassName(parentName: className, childName: key);
@@ -320,8 +363,16 @@ void _generateMap(
       if (value.isMap) {
         // inline map
         buffer.write('\'$key\': ');
-        _generateMap(config, base, locale, buffer, queue, childClassNoLocale,
-            value.entries, depth + 1);
+        _generateMap(
+          config: config,
+          base: base,
+          locale: locale,
+          buffer: buffer,
+          queue: queue,
+          className: childClassNoLocale,
+          node: value,
+          depth: depth + 1,
+        );
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
@@ -361,20 +412,25 @@ void _generateMap(
 }
 
 /// generates a list
-void _generateList(
-  GenerateConfig config,
-  bool base,
-  I18nLocale locale,
-  StringBuffer buffer,
-  Queue<ClassTask> queue,
-  String className,
-  List<Node> currList,
-  int depth,
-) {
+void _generateList({
+  required GenerateConfig config,
+  required bool base,
+  required I18nLocale locale,
+  required StringBuffer buffer,
+  required Queue<ClassTask> queue,
+  required String className,
+  required ListNode node,
+  required int depth,
+}) {
+  if (config.translationOverrides && node.genericType == 'String') {
+    buffer
+        .write('TranslationOverrides.list(_root.\$meta, \'${node.path}\') ?? ');
+  }
+
   buffer.writeln('[');
 
-  for (int i = 0; i < currList.length; i++) {
-    final Node value = currList[i];
+  for (int i = 0; i < node.entries.length; i++) {
+    final Node value = node.entries[i];
 
     _addTabs(buffer, depth + 2);
     if (value is StringTextNode) {
@@ -385,8 +441,16 @@ void _generateList(
             '${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\',');
       }
     } else if (value is ListNode) {
-      _generateList(config, base, locale, buffer, queue, className,
-          value.entries, depth + 1);
+      _generateList(
+        config: config,
+        base: base,
+        locale: locale,
+        buffer: buffer,
+        queue: queue,
+        className: className,
+        node: value,
+        depth: depth + 1,
+      );
     } else if (value is ObjectNode) {
       final String key = depth.toString() + 'i' + i.toString();
       final String childClassNoLocale =
@@ -394,13 +458,24 @@ void _generateList(
 
       if (value.isMap) {
         // inline map
-        _generateMap(config, base, locale, buffer, queue, childClassNoLocale,
-            value.entries, depth + 1);
+        _generateMap(
+          config: config,
+          base: base,
+          locale: locale,
+          buffer: buffer,
+          queue: queue,
+          className: childClassNoLocale,
+          node: value,
+          depth: depth + 1,
+        );
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
-        String childClassWithLocale =
-            getClassName(parentName: className, childName: key, locale: locale);
+        String childClassWithLocale = getClassName(
+          parentName: className,
+          childName: key,
+          locale: locale,
+        );
         buffer.writeln('$childClassWithLocale._(_root),');
       }
     } else if (value is PluralNode) {
@@ -435,6 +510,9 @@ void _generateList(
 /// returns the parameter list
 /// e.g. ({required Object name, required Object age})
 String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
+  if (params.isEmpty) {
+    return '()';
+  }
   StringBuffer buffer = StringBuffer();
   buffer.write('({');
   bool first = true;
@@ -448,12 +526,31 @@ String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
   return buffer.toString();
 }
 
+/// returns a map containing all parameters
+/// e.g. {'name': name, 'age': age}
+String _toParameterMap(Set<String> params) {
+  StringBuffer buffer = StringBuffer();
+  buffer.write('{');
+  bool first = true;
+  for (final param in params) {
+    if (!first) buffer.write(', ');
+    buffer.write('\'');
+    buffer.write(param);
+    buffer.write('\': ');
+    buffer.write(param);
+    first = false;
+  }
+  buffer.write('}');
+  return buffer.toString();
+}
+
 void _addPluralizationCall({
   required StringBuffer buffer,
   required GenerateConfig config,
   required String language,
   required PluralNode node,
   required int depth,
+  bool forceSemicolon = false,
 }) {
   final textNodeList = node.quantities.values.toList();
 
@@ -477,8 +574,14 @@ void _addPluralizationCall({
 
   // custom resolver has precedence
   final prefix = node.pluralType.name;
+  final translationOverrides = config.translationOverrides
+      ? 'TranslationOverrides.plural(_root.\$meta, \'${node.path}\', ${_toParameterMap({
+              ...params,
+              node.paramName,
+            })}) ?? '
+      : '';
   buffer.writeln(
-      '}) => (_root._${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'))(${node.paramName},');
+      '}) => $translationOverrides(_root.\$meta.${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'))(${node.paramName},');
 
   for (final quantity in node.quantities.entries) {
     _addTabs(buffer, depth + 2);
@@ -489,7 +592,7 @@ void _addPluralizationCall({
   _addTabs(buffer, depth + 1);
   buffer.write(')');
 
-  if (depth == 0) {
+  if (depth == 0 || forceSemicolon) {
     buffer.writeln(';');
   } else {
     buffer.writeln(',');
@@ -498,9 +601,11 @@ void _addPluralizationCall({
 
 void _addRichTextCall({
   required StringBuffer buffer,
+  required GenerateConfig config,
   required RichTextNode node,
   required bool includeArrowIfNoParams,
   required int depth,
+  bool forceSemicolon = false,
 }) {
   if (node.params.isNotEmpty) {
     buffer.write(_toParameterList(node.params, node.paramTypeMap));
@@ -510,6 +615,11 @@ void _addRichTextCall({
     buffer.write(' => ');
   }
 
+  if (config.translationOverrides) {
+    buffer.write(
+        'TranslationOverridesFlutter.rich(_root.\$meta, \'${node.path}\', ${_toParameterMap(node.params)}) ?? ');
+  }
+
   buffer.writeln('TextSpan(children: [');
   for (final span in node.spans) {
     _addTabs(buffer, depth + 2);
@@ -517,7 +627,7 @@ void _addRichTextCall({
     buffer.writeln(',');
   }
   _addTabs(buffer, depth + 1);
-  if (depth == 0) {
+  if (depth == 0 || forceSemicolon) {
     buffer.writeln(']);');
   } else {
     buffer.writeln(']),');
@@ -529,6 +639,7 @@ void _addContextCall({
   required GenerateConfig config,
   required ContextNode node,
   required int depth,
+  bool forceSemicolon = false,
 }) {
   final textNodeList = node.entries.values.toList();
 
@@ -547,6 +658,24 @@ void _addContextCall({
   }
   buffer.writeln('}) {');
 
+  if (config.translationOverrides) {
+    _addTabs(buffer, depth + 2);
+    buffer.writeln(
+        'final override = TranslationOverrides.context(_root.\$meta, \'${node.path}\', ${_toParameterMap({
+          ...params,
+          node.paramName,
+        })});');
+
+    _addTabs(buffer, depth + 2);
+    buffer.writeln('if (override != null) {');
+
+    _addTabs(buffer, depth + 3);
+    buffer.writeln('return override;');
+
+    _addTabs(buffer, depth + 2);
+    buffer.writeln('}');
+  }
+
   _addTabs(buffer, depth + 2);
   buffer.writeln('switch (${node.paramName}) {');
 
@@ -562,7 +691,9 @@ void _addContextCall({
   _addTabs(buffer, depth + 1);
   buffer.write('}');
 
-  if (depth != 0) {
+  if (forceSemicolon) {
+    buffer.writeln(';');
+  } else if (depth != 0) {
     buffer.writeln(',');
   } else {
     buffer.writeln();

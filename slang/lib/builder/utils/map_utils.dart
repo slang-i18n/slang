@@ -1,4 +1,20 @@
 class MapUtils {
+  /// converts Map<dynamic, dynamic> to Map<String, dynamic> for all children
+  /// forcing all keys to be strings
+  static Map<String, dynamic> deepCast(Map<dynamic, dynamic> source) {
+    return source.map((key, value) {
+      final dynamic castedValue;
+      if (value is Map) {
+        castedValue = deepCast(value);
+      } else if (value is List) {
+        castedValue = _deepCastList(value);
+      } else {
+        castedValue = value;
+      }
+      return MapEntry(key.toString(), castedValue);
+    });
+  }
+
   /// Adds a string (leaf) to the map at the specified path
   static void addStringToMap({
     required Map<String, dynamic> map,
@@ -100,4 +116,17 @@ class MapUtils {
       return false;
     }
   }
+}
+
+/// Helper function for [deepCast] handling lists
+List<dynamic> _deepCastList(List<dynamic> source) {
+  return source.map((item) {
+    if (item is Map) {
+      return MapUtils.deepCast(item);
+    } else if (item is List) {
+      return _deepCastList(item);
+    } else {
+      return item;
+    }
+  }).toList();
 }
