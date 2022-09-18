@@ -30,7 +30,7 @@
     "users": {
       "zero": "Keine Nutzer und @:onboarding.welcome",
       "one": "Ein Nutzer",
-      "other": "{count} Nutzer und @:onboarding.bye"
+      "other": "{n} Nutzer und @:onboarding.bye"
     }
   },
   "end": {

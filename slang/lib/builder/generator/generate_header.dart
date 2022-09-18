@@ -200,6 +200,7 @@ void _generateBuildConfig({
       '\tstringInterpolation: StringInterpolation.${config.stringInterpolation.name},');
   buffer.writeln('\tmaps: [${config.maps.map((m) => "'$m'").join(', ')}],');
   buffer.writeln('\tpluralAuto: PluralAuto.${config.pluralAuto.name},');
+  buffer.writeln('\tpluralParameter: \'${config.pluralParameter}\',');
   buffer.writeln(
       '\tpluralCardinal: [${config.pluralCardinal.map((e) => '\'$e\'').join(', ')}],');
   buffer.writeln(

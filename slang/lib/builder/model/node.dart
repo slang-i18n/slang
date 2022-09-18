@@ -101,8 +101,8 @@ class PluralNode extends Node implements LeafNode {
     required super.comment,
     required this.pluralType,
     required this.quantities,
-    required String? parameterName,
-  }) : this.paramName = parameterName ?? 'count';
+    required this.paramName,
+  });
 
   @override
   String toString() => quantities.toString();

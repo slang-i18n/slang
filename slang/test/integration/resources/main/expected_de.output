@@ -64,9 +64,9 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 		}
 	}
 	@override String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-	@override String welcomeLinkedPlural({required num count, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+	@override String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 	@override String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-	@override String welcomeFullLink({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+	@override String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 }
 
 // Path: group
@@ -76,10 +76,10 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String users({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+	@override String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'Ein Nutzer',
-		other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+		other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 	);
 }
 

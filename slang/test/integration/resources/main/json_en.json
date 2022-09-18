@@ -33,7 +33,7 @@
     "users": {
       "zero": "No Users and @:onboarding.welcome",
       "one": "One User",
-      "other": "{count} Users and @:onboarding.bye"
+      "other": "{n} Users and @:onboarding.bye"
     }
   },
   "end": {

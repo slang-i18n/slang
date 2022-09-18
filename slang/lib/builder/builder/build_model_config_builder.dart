@@ -11,6 +11,7 @@ extension BuildModelConfigBuilder on RawConfig {
       stringInterpolation: stringInterpolation,
       maps: maps,
       pluralAuto: pluralAuto,
+      pluralParameter: pluralParameter,
       pluralCardinal: pluralCardinal,
       pluralOrdinal: pluralOrdinal,
       contexts: contexts,

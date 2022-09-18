@@ -3,6 +3,7 @@
 **Translation Overrides**
 
 - feat: it is now possible to override translations via `LocaleSettings.overrideTranslations` (checkout updated README)
+- **Breaking:** default plural parameter is now `n`; you can revert this by setting `pluralization`/`default_parameter: count`
 
 ## 2.8.0
 

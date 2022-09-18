@@ -13,6 +13,7 @@ class BuildModelConfig {
   final StringInterpolation stringInterpolation;
   final List<String> maps;
   final PluralAuto pluralAuto;
+  final String pluralParameter;
   final List<String> pluralCardinal;
   final List<String> pluralOrdinal;
   final List<ContextType> contexts;
@@ -26,6 +27,7 @@ class BuildModelConfig {
     required this.stringInterpolation,
     required this.maps,
     required this.pluralAuto,
+    required this.pluralParameter,
     required this.pluralCardinal,
     required this.pluralOrdinal,
     required this.contexts,

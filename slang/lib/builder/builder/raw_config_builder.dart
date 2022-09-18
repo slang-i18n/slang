@@ -87,6 +87,7 @@ class RawConfigBuilder {
       maps: map['maps']?.cast<String>() ?? RawConfig.defaultMaps,
       pluralAuto: (map['pluralization']?['auto'] as String?)?.toPluralAuto() ??
           RawConfig.defaultPluralAuto,
+      pluralParameter: (map['pluralization']?['default_parameter'] as String?) ?? RawConfig.defaultPluralParameter,
       pluralCardinal: map['pluralization']?['cardinal']?.cast<String>() ??
           RawConfig.defaultCardinal,
       pluralOrdinal: map['pluralization']?['ordinal']?.cast<String>() ??

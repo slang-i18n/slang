@@ -32,7 +32,7 @@ final t = Translations.of(context); // there is also a static getter without con
 
 String a = t.mainScreen.title;                         // simple use case
 String b = t.game.end.highscore(score: 32.6);          // with parameters
-String c = t.items(count: 2);                          // with pluralization
+String c = t.items(n: 2);                              // with pluralization
 String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
 String e = t.intro.step[4];                            // with index
 String f = t.error.type['WARNING'];                    // with dynamic key
@@ -284,6 +284,7 @@ maps:
   - iconNames
 pluralization:
   auto: cardinal
+  default_parameter: n
   cardinal:
     - someKey.apple
   ordinal:
@@ -349,6 +350,7 @@ targets:
             - iconNames
           pluralization:
             auto: cardinal
+            default_parameter: n
             cardinal:
               - someKey.apple
             ordinal:
@@ -377,38 +379,39 @@ targets:
 
 </details>
 
-| Key                             | Type                               | Usage                                                        | Default       |
-|---------------------------------|------------------------------------|--------------------------------------------------------------|---------------|
-| `base_locale`                   | `String`                           | locale of default json                                       | `en`          |
-| `fallback_strategy`             | `none`, `base_locale`              | handle missing translations [(i)](#-fallback)                | `none`        |
-| `input_directory`               | `String`                           | path to input directory                                      | `null`        |
-| `input_file_pattern`            | `String`                           | input file pattern, must end with .json, .yaml or .csv       | `.i18n.json`  |
-| `output_directory`              | `String`                           | path to output directory                                     | `null`        |
-| `output_file_name`              | `String`                           | output file name                                             | `null`        |
-| `output_format`                 | `single_file`, `multiple_files`    | split output files [(i)](#-output-format)                    | `single_file` |
-| `locale_handling`               | `Boolean`                          | generate locale handling logic [(i)](#-dependency-injection) | `true`        |
-| `flutter_integration`           | `Boolean`                          | generate flutter features [(i)](#-dart-only)                 | `true`        |
-| `namespaces`                    | `Boolean`                          | split input files [(i)](#-namespaces)                        | `false`       |
-| `translate_var`                 | `String`                           | translate variable name                                      | `t`           |
-| `enum_name`                     | `String`                           | enum name                                                    | `AppLocale`   |
-| `translation_class_visibility`  | `private`, `public`                | class visibility                                             | `private`     |
-| `key_case`                      | `null`, `camel`, `pascal`, `snake` | transform keys (optional) [(i)](#-recasing)                  | `null`        |
-| `key_map_case`                  | `null`, `camel`, `pascal`, `snake` | transform keys for maps (optional) [(i)](#-recasing)         | `null`        |
-| `param_case`                    | `null`, `camel`, `pascal`, `snake` | transform parameters (optional) [(i)](#-recasing)            | `null`        |
-| `string_interpolation`          | `dart`, `braces`, `double_braces`  | string interpolation mode [(i)](#-string-interpolation)      | `dart`        |
-| `flat_map`                      | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`        |
-| `translation_overrides`         | `Boolean`                          | enable translation overrides [(i)](#-translation-overrides)  | `false`       |
-| `timestamp`                     | `Boolean`                          | write "Built on" timestamp                                   | `true`        |
-| `maps`                          | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`          |
-| `pluralization`/`auto`          | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`    |
-| `pluralization`/`cardinal`      | `List<String>`                     | entries which have cardinals                                 | `[]`          |
-| `pluralization`/`ordinal`       | `List<String>`                     | entries which have ordinals                                  | `[]`          |
-| `<context>`/`enum`              | `List<String>`                     | context forms [(i)](#-custom-contexts--enums)                | no default    |
-| `<context>`/`paths`             | `List<String>`                     | entries using this context                                   | `[]`          |
-| `<context>`/`default_parameter` | `String`                           | default parameter name                                       | `context`     |
-| `<context>`/`generate_enum`     | `Boolean`                          | generate enum                                                | `true`        |
-| `children of interfaces`        | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
-| `imports`                       | `List<String>`                     | generate import statements                                   | `[]`          |
+| Key                                 | Type                               | Usage                                                        | Default       |
+|-------------------------------------|------------------------------------|--------------------------------------------------------------|---------------|
+| `base_locale`                       | `String`                           | locale of default json                                       | `en`          |
+| `fallback_strategy`                 | `none`, `base_locale`              | handle missing translations [(i)](#-fallback)                | `none`        |
+| `input_directory`                   | `String`                           | path to input directory                                      | `null`        |
+| `input_file_pattern`                | `String`                           | input file pattern, must end with .json, .yaml or .csv       | `.i18n.json`  |
+| `output_directory`                  | `String`                           | path to output directory                                     | `null`        |
+| `output_file_name`                  | `String`                           | output file name                                             | `null`        |
+| `output_format`                     | `single_file`, `multiple_files`    | split output files [(i)](#-output-format)                    | `single_file` |
+| `locale_handling`                   | `Boolean`                          | generate locale handling logic [(i)](#-dependency-injection) | `true`        |
+| `flutter_integration`               | `Boolean`                          | generate flutter features [(i)](#-dart-only)                 | `true`        |
+| `namespaces`                        | `Boolean`                          | split input files [(i)](#-namespaces)                        | `false`       |
+| `translate_var`                     | `String`                           | translate variable name                                      | `t`           |
+| `enum_name`                         | `String`                           | enum name                                                    | `AppLocale`   |
+| `translation_class_visibility`      | `private`, `public`                | class visibility                                             | `private`     |
+| `key_case`                          | `null`, `camel`, `pascal`, `snake` | transform keys (optional) [(i)](#-recasing)                  | `null`        |
+| `key_map_case`                      | `null`, `camel`, `pascal`, `snake` | transform keys for maps (optional) [(i)](#-recasing)         | `null`        |
+| `param_case`                        | `null`, `camel`, `pascal`, `snake` | transform parameters (optional) [(i)](#-recasing)            | `null`        |
+| `string_interpolation`              | `dart`, `braces`, `double_braces`  | string interpolation mode [(i)](#-string-interpolation)      | `dart`        |
+| `flat_map`                          | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`        |
+| `translation_overrides`             | `Boolean`                          | enable translation overrides [(i)](#-translation-overrides)  | `false`       |
+| `timestamp`                         | `Boolean`                          | write "Built on" timestamp                                   | `true`        |
+| `maps`                              | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`          |
+| `pluralization`/`auto`              | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`    |
+| `pluralization`/`default_parameter` | `String`                           | default plural parameter [(i)](#-pluralization)              | `n`           |
+| `pluralization`/`cardinal`          | `List<String>`                     | entries which have cardinals                                 | `[]`          |
+| `pluralization`/`ordinal`           | `List<String>`                     | entries which have ordinals                                  | `[]`          |
+| `<context>`/`enum`                  | `List<String>`                     | context forms [(i)](#-custom-contexts--enums)                | no default    |
+| `<context>`/`paths`                 | `List<String>`                     | entries using this context                                   | `[]`          |
+| `<context>`/`default_parameter`     | `String`                           | default parameter name                                       | `context`     |
+| `<context>`/`generate_enum`         | `Boolean`                          | generate enum                                                | `true`        |
+| `children of interfaces`            | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
+| `imports`                           | `List<String>`                     | generate import statements                                   | `[]`          |
 
 ## Main Features
 
@@ -633,16 +636,16 @@ Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `ma
 {
   "someKey": {
     "apple": {
-      "one": "I have $count apple.",
-      "other": "I have $count apples."
+      "one": "I have $n apple.",
+      "other": "I have $n apples."
     }
   }
 }
 ```
 
 ```dart
-String a = t.someKey.apple(count: 1); // I have 1 apple.
-String b = t.someKey.apple(count: 2); // I have 2 apples.
+String a = t.someKey.apple(n: 1); // I have 1 apple.
+String b = t.someKey.apple(n: 2); // I have 2 apples.
 ```
 
 The detected plurals are **cardinals** by default.
@@ -658,15 +661,15 @@ However, if you have ordinals, then you will need some configurations.
   "someKey": {
     "apple": {
       // cardinal
-      "one": "I have $count apple.",
-      "other": "I have $count apples."
+      "one": "I have $n apple.",
+      "other": "I have $n apples."
     },
     "place": {
       // ordinal (rarely used)
-      "one": "${count}st place.",
-      "two": "${count}nd place.",
-      "few": "${count}rd place.",
-      "other": "${count}th place."
+      "one": "${n}st place.",
+      "two": "${n}nd place.",
+      "few": "${n}rd place.",
+      "other": "${n}th place."
     }
   }
 }
@@ -708,7 +711,7 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
-By default, the parameter name is `count`. You can change that by adding a hint.
+By default, the parameter name is `n`. You can change that by adding a hint.
 
 ```json
 {
@@ -722,8 +725,10 @@ By default, the parameter name is `count`. You can change that by adding a hint.
 ```
 
 ```dart
-String a = t.someKey.apple(appleCount: 2); // notice 'appleCount' instead of 'count'
+String a = t.someKey.apple(appleCount: 2); // notice 'appleCount' instead of 'n'
 ```
+
+You can set the default parameter globally via `pluralization`/`default_parameter`.
 
 ### ➤ Custom Contexts / Enums
 

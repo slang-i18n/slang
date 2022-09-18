@@ -318,7 +318,7 @@ class TranslationModelBuilder {
                   // because detection was correct
                   return MapEntry(key.toQuantity()!, value);
                 }),
-                parameterName: paramNameHint,
+                paramName: paramNameHint ?? config.pluralParameter,
               );
             }
           } else {

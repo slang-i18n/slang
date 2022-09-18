@@ -27,6 +27,7 @@ final _buildConfig = BuildModelConfig(
 	stringInterpolation: StringInterpolation.braces,
 	maps: ['end.pages.0', 'end.pages.1'],
 	pluralAuto: PluralAuto.cardinal,
+	pluralParameter: 'n',
 	pluralCardinal: [],
 	pluralOrdinal: [],
 	contexts: [ContextType(enumName: 'GenderContext', enumValues: ['male', 'female'], paths: [], defaultParameter: 'context', generateEnum: true),],
@@ -238,9 +239,9 @@ class _TranslationsOnboardingEn {
 		}
 	}
 	String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => TranslationOverrides.string(_root.$meta, 'onboarding.greetCombination', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context, 'gender': gender}) ?? '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-	String welcomeLinkedPlural({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'count': count, 'fullName': fullName, 'firstName': firstName}) ?? 'Hello ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+	String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'n': n, 'fullName': fullName, 'firstName': firstName}) ?? 'Hello ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 	String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedContext', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context}) ?? 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-	String welcomeFullLink({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'count': count, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimate ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+	String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'n': n, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimate ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 }
 
 // Path: group
@@ -250,10 +251,10 @@ class _TranslationsGroupEn {
 	final _TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	String users({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'count': count}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+	String users({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'One User',
-		other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
+		other: '${n} Users and ${_root.onboarding.bye(firstName: firstName)}',
 	);
 }
 
@@ -372,9 +373,9 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 		}
 	}
 	@override String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => TranslationOverrides.string(_root.$meta, 'onboarding.greetCombination', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context, 'gender': gender}) ?? '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-	@override String welcomeLinkedPlural({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'count': count, 'fullName': fullName, 'firstName': firstName}) ?? 'Hallo ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+	@override String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'n': n, 'fullName': fullName, 'firstName': firstName}) ?? 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 	@override String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedContext', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context}) ?? 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-	@override String welcomeFullLink({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'count': count, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimative ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+	@override String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'n': n, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 }
 
 // Path: group
@@ -384,10 +385,10 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String users({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'count': count}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+	@override String users({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'Ein Nutzer',
-		other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+		other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 	);
 }
 
@@ -471,13 +472,13 @@ extension on _TranslationsEn {
 				}
 			};
 			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => TranslationOverrides.string(_root.$meta, 'onboarding.greetCombination', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context, 'gender': gender}) ?? '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-			case 'onboarding.welcomeLinkedPlural': return ({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'count': count, 'fullName': fullName, 'firstName': firstName}) ?? 'Hello ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'n': n, 'fullName': fullName, 'firstName': firstName}) ?? 'Hello ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedContext', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context}) ?? 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'onboarding.welcomeFullLink': return ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'count': count, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimate ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'group.users': return ({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'count': count}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'n': n, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimate ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 				zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'One User',
-				other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
+				other: '${n} Users and ${_root.onboarding.bye(firstName: firstName)}',
 			);
 			case 'end.stringPages.0': return TranslationOverrides.string(_root.$meta, 'end.stringPages.0', {}) ?? '1st Page';
 			case 'end.stringPages.1': return TranslationOverrides.string(_root.$meta, 'end.stringPages.1', {}) ?? '2nd Page';
@@ -523,13 +524,13 @@ extension on _TranslationsDe {
 				}
 			};
 			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => TranslationOverrides.string(_root.$meta, 'onboarding.greetCombination', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context, 'gender': gender}) ?? '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-			case 'onboarding.welcomeLinkedPlural': return ({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'count': count, 'fullName': fullName, 'firstName': firstName}) ?? 'Hallo ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'n': n, 'fullName': fullName, 'firstName': firstName}) ?? 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedContext', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context}) ?? 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'onboarding.welcomeFullLink': return ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'count': count, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimative ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'group.users': return ({required num count, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'count': count}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'n': n, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'Ein Nutzer',
-				other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+				other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 			);
 			case 'end.stringPages.0': return TranslationOverrides.string(_root.$meta, 'end.stringPages.0', {}) ?? '1. Seite';
 			case 'end.stringPages.1': return TranslationOverrides.string(_root.$meta, 'end.stringPages.1', {}) ?? '2. Seite';

@@ -29,13 +29,13 @@ extension on _TranslationsEn {
 				}
 			};
 			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-			case 'onboarding.welcomeLinkedPlural': return ({required num count, required Object fullName, required Object firstName}) => 'Hello ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => 'Hello ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'onboarding.welcomeFullLink': return ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'group.users': return ({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 				zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'One User',
-				other: '${count} Users and ${_root.onboarding.bye(firstName: firstName)}',
+				other: '${n} Users and ${_root.onboarding.bye(firstName: firstName)}',
 			);
 			case 'end.stringPages.0': return '1st Page';
 			case 'end.stringPages.1': return '2nd Page';
@@ -73,13 +73,13 @@ extension on _TranslationsDe {
 				}
 			};
 			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-			case 'onboarding.welcomeLinkedPlural': return ({required num count, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(count: count, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'onboarding.welcomeFullLink': return ({required num count, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(count: count, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'group.users': return ({required num count, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'Ein Nutzer',
-				other: '${count} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+				other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 			);
 			case 'end.stringPages.0': return '1. Seite';
 			case 'end.stringPages.1': return '2. Seite';

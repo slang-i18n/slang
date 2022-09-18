@@ -7,7 +7,7 @@ onboarding.pages.0.content,Erster Seiteninhalt
 onboarding.pages.1.title,Zweite Seite
 group.users.zero,Keine Nutzer und @:onboarding.welcome
 group.users.one,Ein Nutzer
-group.users.other,{count} Nutzer und @:onboarding.bye
+group.users.other,{n} Nutzer und @:onboarding.bye
 onboarding.greet.male,Hallo Herr {lastName} und @:onboarding.welcome
 onboarding.greet.female,Hallo Frau {lastName} und @:onboarding.bye
 onboarding.greet2(gender).male,Hallo Herr

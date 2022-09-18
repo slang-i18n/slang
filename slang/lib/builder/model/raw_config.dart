@@ -31,6 +31,7 @@ class RawConfig {
   static const bool defaultRenderTimestamp = true;
   static const List<String> defaultMaps = <String>[];
   static const PluralAuto defaultPluralAuto = PluralAuto.cardinal;
+  static const String defaultPluralParameter = 'n';
   static const List<String> defaultCardinal = <String>[];
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
@@ -60,6 +61,7 @@ class RawConfig {
   final bool renderTimestamp;
   final List<String> maps;
   final PluralAuto pluralAuto;
+  final String pluralParameter;
   final List<String> pluralCardinal;
   final List<String> pluralOrdinal;
   final List<ContextType> contexts;
@@ -89,6 +91,7 @@ class RawConfig {
     required this.renderTimestamp,
     required this.maps,
     required this.pluralAuto,
+    required this.pluralParameter,
     required this.pluralCardinal,
     required this.pluralOrdinal,
     required this.contexts,
@@ -138,6 +141,7 @@ class RawConfig {
       renderTimestamp: renderTimestamp,
       maps: maps,
       pluralAuto: pluralAuto,
+      pluralParameter: pluralParameter,
       pluralCardinal: pluralCardinal,
       pluralOrdinal: pluralOrdinal,
       contexts: contexts,
@@ -175,6 +179,7 @@ class RawConfig {
     print(' -> renderTimestamp: $renderTimestamp');
     print(' -> maps: $maps');
     print(' -> pluralization/auto: ${pluralAuto.name}');
+    print(' -> pluralization/default_parameter: $pluralParameter');
     print(' -> pluralization/cardinal: $pluralCardinal');
     print(' -> pluralization/ordinal: $pluralOrdinal');
     print(' -> contexts: ${contexts.isEmpty ? 'no custom contexts' : ''}');
