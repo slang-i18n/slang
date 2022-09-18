@@ -24,7 +24,6 @@ pluralization:
 2. Update custom plural / context parameter. Custom parameter names now have a prefix `param=`.
 
 ```json5
-
 {
   "apple(param=appleCount)": {
     "one": "I have one apple.",
