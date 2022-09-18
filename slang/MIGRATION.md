@@ -1,5 +1,38 @@
 # Migration Guides
 
+## slang 2.0 to 3.0
+
+1. Update plural parameter to `n`.
+
+```json5
+{
+  "apple": {
+    "one": "I have $n apple.",
+    "other": "I have $n apples."
+  }
+}
+```
+
+Alternative:
+
+```yaml
+# Config
+pluralization:
+  default_parameter: count # revert it back to "count"
+```
+
+2. Update custom plural / context parameter. Custom parameter names now have a prefix `param=`.
+
+```json5
+
+{
+  "apple(param=appleCount)": {
+    "one": "I have one apple.",
+    "other": "I have multiple apples."
+  }
+}
+```
+
 ## fast_i18n to slang
 
 ### Update dependencies

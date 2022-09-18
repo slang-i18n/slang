@@ -55,6 +55,7 @@ String i = page1.title; // type-safe call
   - [Lists](#-lists)
   - [Maps](#-maps)
   - [Dynamic Keys](#-dynamic-keys--flat-map)
+  - [Hints](#-hints)
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
@@ -553,19 +554,19 @@ String d = t.niceList[4]['a map entry']; // "access via key"
 
 You can access each translation via string keys by defining maps.
 
-Define maps in your `slang.yaml` or `build.yaml`.
+Add the `(map)` hint or define maps in your `slang.yaml` or `build.yaml`.
 
 Keep in mind that all nice features like autocompletion are gone.
 
 ```json5
 // File: strings.i18n.json
 {
-  "a": {
+  "a(map)": {
     "hello world": "hello"
   },
   "b": {
     "b0": "hey",
-    "b1": {
+    "b1(map)": {
       "hi there": "hi"
     }
   }
@@ -573,7 +574,7 @@ Keep in mind that all nice features like autocompletion are gone.
 ```
 
 ```yaml
-# Config
+# Config (Alternative, applies to all locales)
 maps:
   - a
   - b.b1
@@ -600,6 +601,33 @@ String a = t['myPath.anotherPath'];
 String b = t['myPath.anotherPath.3']; // with index for arrays
 String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 ```
+
+### ➤ Hints
+
+Hints are flags linked to a translation node.
+
+You can combine multiple hints like this:
+
+```json
+{
+  "apple(plural, param=appleCount, rich)": {
+    "one": "I have $appleCount apple.",
+    "other": "I have $appleCount apples."
+  }
+}
+```
+
+These hints are available:
+
+| Hint                        | Meaning                                       | Applicable for                  |
+|-----------------------------|-----------------------------------------------|---------------------------------|
+| `(rich)`                    | This is a rich text.                          | Leaves, Maps (Plural / Context) |
+| `(map)`                     | This is a map / dictionary (and not a class). | Maps                            |
+| `(plural)`                  | This is a plural (type: cardinal)             | Maps                            |
+| `(cardinal)`                | This is a plural (type: cardinal)             | Maps                            |
+| `(ordinal)`                 | This is a plural (type: ordinal)              | Maps                            |
+| `(context=<Context Type>)` | This is a context of type `<Context Type>`    | Maps                            |
+| `(param=<Param Name>)`     | This has the parameter `<Param Name>`         | Maps (Plural / Context)         |
 
 ## Complex Features
 
@@ -716,7 +744,7 @@ By default, the parameter name is `n`. You can change that by adding a hint.
 ```json
 {
   "someKey": {
-    "apple(appleCount)": {
+    "apple(param=appleCount)": {
       "one": "I have one apple.",
       "other": "I have multiple apples."
     }
@@ -788,7 +816,7 @@ Similarly to plurals, the parameter name is `context` by default. You can change
 
 ```json
 {
-  "greet(gender)": {
+  "greet(param=gender)": {
     "male": "Hello Mr",
     "female": "Hello Ms"
   }

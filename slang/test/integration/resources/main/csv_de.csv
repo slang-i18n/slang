@@ -10,8 +10,8 @@ group.users.one,Ein Nutzer
 group.users.other,{n} Nutzer und @:onboarding.bye
 onboarding.greet.male,Hallo Herr {lastName} und @:onboarding.welcome
 onboarding.greet.female,Hallo Frau {lastName} und @:onboarding.bye
-onboarding.greet2(gender).male,Hallo Herr
-onboarding.greet2(gender).female,Hallo Frau
+onboarding.greet2(param=gender).male,Hallo Herr
+onboarding.greet2(param=gender).female,Hallo Frau
 onboarding.greetCombination,"@:onboarding.greet, @:onboarding.greet2"
 onboarding.welcomeLinkedPlural,Hallo @:group.users
 onboarding.welcomeLinkedContext,Hallo @:onboarding.greet

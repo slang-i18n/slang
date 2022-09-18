@@ -3,7 +3,7 @@
 /// Locales: 2
 /// Strings: 12 (6 per locale)
 ///
-/// Built on 2022-09-18 at 14:17 UTC
+/// Built on 2022-09-18 at 22:29 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -163,9 +163,9 @@ class _StringsMainScreenEn {
 
 	// Translations
 	String get title => 'An English Title';
-	String counter({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
-		one: 'You pressed ${count} time.',
-		other: 'You pressed ${count} times.',
+	String counter({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'You pressed ${n} time.',
+		other: 'You pressed ${n} times.',
 	);
 	String get tapMe => 'Tap me';
 }
@@ -210,9 +210,9 @@ class _StringsMainScreenDe implements _StringsMainScreenEn {
 
 	// Translations
 	@override String get title => 'Ein deutscher Titel';
-	@override String counter({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+	@override String counter({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 		one: 'Du hast einmal gedrückt.',
-		other: 'Du hast ${count} mal gedrückt.',
+		other: 'Du hast ${n} mal gedrückt.',
 	);
 	@override String get tapMe => 'Drück mich';
 }
@@ -224,9 +224,9 @@ extension on _StringsEn {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'mainScreen.title': return 'An English Title';
-			case 'mainScreen.counter': return ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
-				one: 'You pressed ${count} time.',
-				other: 'You pressed ${count} times.',
+			case 'mainScreen.counter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'You pressed ${n} time.',
+				other: 'You pressed ${n} times.',
 			);
 			case 'mainScreen.tapMe': return 'Tap me';
 			case 'locales.en': return 'English';
@@ -240,9 +240,9 @@ extension on _StringsDe {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'mainScreen.title': return 'Ein deutscher Titel';
-			case 'mainScreen.counter': return ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(count,
+			case 'mainScreen.counter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 				one: 'Du hast einmal gedrückt.',
-				other: 'Du hast ${count} mal gedrückt.',
+				other: 'Du hast ${n} mal gedrückt.',
 			);
 			case 'mainScreen.tapMe': return 'Drück mich';
 			case 'locales.en': return 'Englisch';

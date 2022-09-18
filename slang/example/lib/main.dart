@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(t.mainScreen.counter(count: _counter)),
+            Text(t.mainScreen.counter(n: _counter)),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
 
@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               }).toList(),
-            )
+            ),
           ],
         ),
       ),

@@ -53,9 +53,9 @@ class RegexUtils {
   static RegExp genericRegex = RegExp(r'^List<((?:\w| |<|>)+)>$');
 
   /// Matches a parameter hint in a key if it exists
-  /// greet(gender)
-  /// 1 - gender
-  static RegExp paramHintRegex = RegExp(r'^\w+\((\w+)\)$');
+  /// greet(plural, param: gender)
+  /// 1 - plural, param: gender
+  static RegExp hintRegex = RegExp(r'^\w+\((.+)\)$');
 
   static RegExp spaceRegex = RegExp(r'\s+');
 

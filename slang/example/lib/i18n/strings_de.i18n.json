@@ -3,11 +3,11 @@
     "title": "Ein deutscher Titel",
     "counter": {
       "one": "Du hast einmal gedrückt.",
-      "other": "Du hast $count mal gedrückt."
+      "other": "Du hast $n mal gedrückt."
     },
     "tapMe": "Drück mich"
   },
-  "locales": {
+  "locales(map)": {
     "en": "Englisch",
     "de": "Deutsch"
   }

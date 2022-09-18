@@ -1,9 +1,15 @@
 ## 3.0.0
 
-**Translation Overrides**
+**Translation Overrides and Enhanced Hints**
 
 - feat: it is now possible to override translations via `LocaleSettings.overrideTranslations` (checkout updated README)
 - **Breaking:** default plural parameter is now `n`; you can revert this by setting `pluralization`/`default_parameter: count`
+- **Breaking:** plural and context parameter hints must follow the syntax: `myKey(param=appleCount)`
+- feat: there is a new hint syntax which allows for multiple hints e.g. `myKey(plural, rich)`
+
+All breaking changes will result in a compile-time error, so don't worry for "hidden" bugs :)
+
+You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
 
 ## 2.8.0
 

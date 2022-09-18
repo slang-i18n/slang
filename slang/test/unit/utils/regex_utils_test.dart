@@ -145,8 +145,8 @@ void main() {
     });
   });
 
-  group('paramHintRegex', () {
-    RegExp regex = RegexUtils.paramHintRegex;
+  group('hintRegex', () {
+    RegExp regex = RegexUtils.hintRegex;
 
     test('some_key', () {
       RegExpMatch? match = regex.firstMatch('some_key');
@@ -161,6 +161,11 @@ void main() {
     test('myKey(cool_parameter)', () {
       RegExpMatch? match = regex.firstMatch('myKey(cool_parameter)');
       expect(match?.group(1), 'cool_parameter');
+    });
+
+    test('myKey(parameter=name, rich)', () {
+      RegExpMatch? match = regex.firstMatch('myKey(parameter=name, rich)');
+      expect(match?.group(1), 'parameter=name, rich');
     });
 
     test('my key(cool_parameter)', () {

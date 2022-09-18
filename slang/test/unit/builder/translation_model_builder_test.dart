@@ -110,9 +110,9 @@ void main() {
         },
       );
       final textNode = result.root.entries['b'] as StringTextNode;
-      expect(textNode.params, {'p1', 'count'});
-      expect(textNode.paramTypeMap, {'count': 'num'});
-      expect(textNode.content, r'Hello ${_root.a(p1: p1, count: count)}');
+      expect(textNode.params, {'p1', 'n'});
+      expect(textNode.paramTypeMap, {'n': 'num'});
+      expect(textNode.content, r'Hello ${_root.a(p1: p1, n: n)}');
     });
 
     test('linked translation with context', () {

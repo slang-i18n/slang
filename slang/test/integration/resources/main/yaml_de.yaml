@@ -10,7 +10,7 @@ onboarding:
   greet:
     male: Hallo Herr {lastName} und @:onboarding.welcome
     female: Hallo Frau {lastName} und @:onboarding.bye
-  greet2(gender):
+  greet2(param=gender):
     male: Hallo Herr
     female: Hallo Frau
   greetCombination: "@:onboarding.greet, @:onboarding.greet2"
