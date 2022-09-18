@@ -943,10 +943,10 @@ Example:
 LocaleSettings.overrideTranslations(
   locale: AppLocale.en,
   fileType: FileType.yaml,
-  content: r'''{
-    onboarding
-      title: 'Welcome {name}'
-  }'''
+  content: r'''
+onboarding
+  title: 'Welcome {name}'
+  '''
 );
 
 // access
