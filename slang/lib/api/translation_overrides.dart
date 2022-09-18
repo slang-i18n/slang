@@ -5,13 +5,7 @@ import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_interpolation_extensions.dart';
 
-export 'package:slang/builder/model/build_model_config.dart';
-export 'package:slang/builder/model/context_type.dart';
-export 'package:slang/builder/model/enums.dart';
-
-// The generated file should only import this file
-// as all necessary files are exported.
-
+/// Utility class handling overridden translations
 class TranslationOverrides {
   static String? string(
       TranslationMetadata meta, String path, Map<String, Object> param) {

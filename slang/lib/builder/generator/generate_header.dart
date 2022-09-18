@@ -136,7 +136,13 @@ void _generateImports(GenerateConfig config, StringBuffer buffer) {
     ...config.imports,
     'package:slang/builder/model/node.dart',
     if (config.translationOverrides)
-      'package:slang/api/translation_overrides.dart',
+      ...[
+        'package:slang/api/translation_overrides.dart',
+        'package:slang/builder/model/build_model_config.dart',
+        'package:slang/builder/model/enums.dart',
+        if (config.contexts.isNotEmpty)
+          'package:slang/builder/model/context_type.dart',
+      ],
     if (config.flutterIntegration) ...[
       'package:flutter/widgets.dart',
       'package:slang_flutter/slang_flutter.dart',
@@ -148,7 +154,7 @@ void _generateImports(GenerateConfig config, StringBuffer buffer) {
     buffer.writeln('import \'$i\';');
   }
 
-  // add export statements
+  // export statements
   if (config.flutterIntegration) {
     buffer.writeln('export \'package:slang_flutter/slang_flutter.dart\';');
   } else {
