@@ -196,7 +196,7 @@ Map<String, Node> _parseMapNode({
     final originalKey = key;
 
     // transform key if necessary
-    // the part after '(' is considered as the parameter hint for plurals or contexts
+    // the part after '(' is considered as the modifier
     key = key.split('(').first.toCase(keyCase);
     final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
 
@@ -278,11 +278,11 @@ Map<String, Node> _parseMapNode({
           leavesMap: leavesMap,
         );
 
-        final hints = _getHints(originalKey);
+        final modifiers = _getModifiers(originalKey);
 
         Node node;
         _DetectionResult detectedType =
-            _determineNodeType(config, currPath, hints, children);
+            _determineNodeType(config, currPath, modifiers, children);
 
         // notify plural and split by comma if necessary
         if (detectedType.nodeType == _DetectionType.context ||
@@ -314,7 +314,7 @@ Map<String, Node> _parseMapNode({
             }
           }
 
-          final rich = hints.containsKey('rich');
+          final rich = modifiers.containsKey('rich');
           if (rich) {
             // rebuild children as RichText
             digestedMap = _parseMapNode(
@@ -322,7 +322,7 @@ Map<String, Node> _parseMapNode({
               parentPath: currPath,
               curr: {
                 for (final cKey in digestedMap.keys)
-                  cKey._withHint('rich'): value[cKey],
+                  cKey._withModifier('rich'): value[cKey],
               },
               config: config,
               keyCase: config.keyCase,
@@ -337,7 +337,7 @@ Map<String, Node> _parseMapNode({
               comment: comment,
               context: context,
               entries: digestedMap,
-              paramName: hints['param'] ?? context.defaultParameter,
+              paramName: modifiers['param'] ?? context.defaultParameter,
               rich: rich,
             );
           } else {
@@ -352,7 +352,7 @@ Map<String, Node> _parseMapNode({
                 // because detection was correct
                 return MapEntry(key.toQuantity()!, value);
               }),
-              paramName: hints['param'] ?? config.pluralParameter,
+              paramName: modifiers['param'] ?? config.pluralParameter,
               rich: rich,
             );
           }
@@ -384,24 +384,24 @@ void _setParent(Node parent, Iterable<Node> children) {
 _DetectionResult _determineNodeType(
   BuildModelConfig config,
   String nodePath,
-  Map<String, String> hints,
+  Map<String, String> modifiers,
   Map<String, Node> children,
 ) {
-  final hintFlags = hints.keys.toSet();
-  if (hintFlags.contains('map') || config.maps.contains(nodePath)) {
+  final modifierFlags = modifiers.keys.toSet();
+  if (modifierFlags.contains('map') || config.maps.contains(nodePath)) {
     return _DetectionResult(_DetectionType.map);
-  } else if (hintFlags.contains('plural') ||
-      hintFlags.contains('cardinal') ||
+  } else if (modifierFlags.contains('plural') ||
+      modifierFlags.contains('cardinal') ||
       config.pluralCardinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralCardinal);
-  } else if (hintFlags.contains('ordinal') ||
+  } else if (modifierFlags.contains('ordinal') ||
       config.pluralOrdinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralOrdinal);
   } else {
-    if (hintFlags.contains('context')) {
-      final contextHint = hints['contexts'];
+    if (modifierFlags.contains('context')) {
+      final modifier = modifiers['context'];
       final context =
-          config.contexts.firstWhereOrNull((c) => c.enumName == contextHint);
+          config.contexts.firstWhereOrNull((c) => c.enumName == modifier);
       if (context != null) {
         return _DetectionResult(_DetectionType.context, context);
       }
@@ -716,30 +716,30 @@ void _fixEmptyLists({
   });
 }
 
-/// Returns a map containing hints
+/// Returns a map containing modifiers
 /// greet(param: gender, rich)
 /// will result in
 /// {param: gender, rich: rich)
-Map<String, String> _getHints(String originalKey) {
-  final String? paramNameHint =
-      RegexUtils.hintRegex.firstMatch(originalKey)?.group(1);
-  if (paramNameHint == null) {
+Map<String, String> _getModifiers(String originalKey) {
+  final String? modifierSection =
+      RegexUtils.modifierRegex.firstMatch(originalKey)?.group(1);
+  if (modifierSection == null) {
     return {};
   }
 
-  final hints = paramNameHint.split(',');
+  final modifiers = modifierSection.split(',');
   final resultMap = <String, String>{};
-  for (final hint in hints) {
-    if (hint.contains('=')) {
-      final parts = hint.split('=');
+  for (final modifier in modifiers) {
+    if (modifier.contains('=')) {
+      final parts = modifier.split('=');
       if (parts.length != 2) {
         throw 'Hints must be in format "key: value" or "key"';
       }
 
       resultMap[parts[0].trim()] = parts[1].trim();
     } else {
-      final hintDigested = hint.trim();
-      resultMap[hintDigested] = hintDigested;
+      final modifierDigested = modifier.trim();
+      resultMap[modifierDigested] = modifierDigested;
     }
   }
   return resultMap;
@@ -797,16 +797,16 @@ extension on BuildModelConfig {
 }
 
 extension on String {
-  /// Add a hint to a key
-  /// myKey -> myKey(hint)
-  /// myKey(rich) -> myKey(rich,hint)
-  String _withHint(String hintKey, [String? hintValue]) {
-    final hint = '$hintKey${hintValue != null ? '=$hintValue' : ''}';
+  /// Add a modifier to a key
+  /// myKey -> myKey(modifier)
+  /// myKey(rich) -> myKey(rich,modifier)
+  String _withModifier(String mKey, [String? mValue]) {
+    final modifier = '$mKey${mValue != null ? '=$mValue' : ''}';
     if (this.contains('(')) {
       final trimmed = this.trim();
-      return '${trimmed.substring(0, trimmed.length - 1)},$hint)';
+      return '${trimmed.substring(0, trimmed.length - 1)},$modifier)';
     } else {
-      return '$this($hint)';
+      return '$this($modifier)';
     }
   }
 }

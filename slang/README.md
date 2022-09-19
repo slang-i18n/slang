@@ -55,7 +55,7 @@ String i = page1.title; // type-safe call
   - [Lists](#-lists)
   - [Maps](#-maps)
   - [Dynamic Keys](#-dynamic-keys--flat-map)
-  - [Hints](#-hints)
+  - [Modifiers](#-modifiers)
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
@@ -487,7 +487,7 @@ Hello {{name}}
 
 Make part of your text bold or turn it into a different color? Need inline links? `TextSpan` will help!
 
-To do this, please add the `(rich)` hint.
+To do this, please add the `(rich)` modifier.
 
 Parameters are formatted according to `string_interpolation`.
 
@@ -552,11 +552,9 @@ String d = t.niceList[4]['a map entry']; // "access via key"
 
 ### ➤ Maps
 
-You can access each translation via string keys by defining maps.
+You can access each translation via string keys.
 
-Add the `(map)` hint or define maps in your `slang.yaml` or `build.yaml`.
-
-Keep in mind that all nice features like autocompletion are gone.
+Add the `(map)` modifier.
 
 ```json5
 // File: strings.i18n.json
@@ -573,9 +571,11 @@ Keep in mind that all nice features like autocompletion are gone.
 }
 ```
 
+For large projects with lots of locales, it may be better to specify them in the config file.
+
 ```yaml
-# Config (Alternative, applies to all locales)
-maps:
+# Config
+maps: # Applies to all locales!
   - a
   - b.b1
 ```
@@ -602,11 +602,11 @@ String b = t['myPath.anotherPath.3']; // with index for arrays
 String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 ```
 
-### ➤ Hints
+### ➤ Modifiers
 
-Hints are flags linked to a translation node.
+Modifiers are flags or attributes written next to the key.
 
-You can combine multiple hints like this:
+You can combine multiple modifiers like this:
 
 ```json
 {
@@ -617,9 +617,9 @@ You can combine multiple hints like this:
 }
 ```
 
-These hints are available:
+Available Modifiers:
 
-| Hint                       | Meaning                                       | Applicable for                  |
+| Modifier                   | Meaning                                       | Applicable for                  |
 |----------------------------|-----------------------------------------------|---------------------------------|
 | `(rich)`                   | This is a rich text.                          | Leaves, Maps (Plural / Context) |
 | `(map)`                    | This is a map / dictionary (and not a class). | Maps                            |
@@ -678,21 +678,18 @@ String b = t.someKey.apple(n: 2); // I have 2 apples.
 
 The detected plurals are **cardinals** by default.
 
-In general, you will probably use only this variant. Ordinals are rarely used.
-If your project only has cardinals, then you don't need to configure anything! It works out of the box.
-
-However, if you have ordinals, then you will need some configurations.
+To specify ordinals, you need to add the `(ordinal)` modifier.
 
 ```json5
 // File: strings.i18n.json
 {
   "someKey": {
-    "apple": {
+    "apple(cardinal)": {
       // cardinal
       "one": "I have $n apple.",
       "other": "I have $n apples."
     },
-    "place": {
+    "place(ordinal)": {
       // ordinal (rarely used)
       "one": "${n}st place.",
       "two": "${n}nd place.",
@@ -703,9 +700,11 @@ However, if you have ordinals, then you will need some configurations.
 }
 ```
 
+You can also specify all plural forms in the global config.
+
 ```yaml
 # Config
-pluralization:
+pluralization: # Applies to all locales!
   auto: off
   cardinal:
     - someKey.apple
@@ -739,7 +738,7 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
-By default, the parameter name is `n`. You can change that by adding a hint.
+By default, the parameter name is `n`. You can change that by adding a modifier.
 
 ```json
 {
@@ -812,7 +811,7 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 }
 ```
 
-Similarly to plurals, the parameter name is `context` by default. You can change that by adding a hint.
+Similarly to plurals, the parameter name is `context` by default. You can change that by adding a modifier.
 
 ```json
 {

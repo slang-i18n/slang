@@ -32,6 +32,8 @@ pluralization:
 }
 ```
 
+Additional info: There are now `(map)`, `(plural)`, `(cardinal)` and a lot more modifiers.
+
 ## fast_i18n to slang
 
 ### Update dependencies

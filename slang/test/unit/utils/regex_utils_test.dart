@@ -145,8 +145,8 @@ void main() {
     });
   });
 
-  group('hintRegex', () {
-    RegExp regex = RegexUtils.hintRegex;
+  group('modifierRegex', () {
+    RegExp regex = RegexUtils.modifierRegex;
 
     test('some_key', () {
       RegExpMatch? match = regex.firstMatch('some_key');
