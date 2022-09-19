@@ -295,7 +295,8 @@ void _generateClass(
             'late final $childClassWithLocale$optional $key = $childClassWithLocale._(_root);');
       }
     } else if (value is PluralNode) {
-      buffer.write('String$optional $key');
+      final returnType = value.rich ? 'TextSpan' : 'String';
+      buffer.write('$returnType$optional $key');
       _addPluralizationCall(
         buffer: buffer,
         config: config,
@@ -565,8 +566,12 @@ void _addPluralizationCall({
   }
   final params = paramSet.where((p) => p != node.paramName).toList();
 
-  // parameters with count as first number
+  // add plural parameter first
   buffer.write('({required num ${node.paramName}');
+  if (node.rich) {
+    buffer.write(
+        ', required InlineSpan Function(num n) ${node.paramName}Builder');
+  }
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required Object ');
     buffer.write(params[i]);
@@ -574,19 +579,53 @@ void _addPluralizationCall({
 
   // custom resolver has precedence
   final prefix = node.pluralType.name;
-  final translationOverrides = config.translationOverrides
-      ? 'TranslationOverrides.plural(_root.\$meta, \'${node.path}\', ${_toParameterMap({
-              ...params,
-              node.paramName,
-            })}) ?? '
-      : '';
-  buffer.writeln(
-      '}) => $translationOverrides(_root.\$meta.${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'))(${node.paramName},');
+  buffer.write('}) => ');
 
-  for (final quantity in node.quantities.entries) {
+  if (node.rich) {
+    final translationOverrides = config.translationOverrides
+        ? 'TranslationOverridesFlutter.richPlural(_root.\$meta, \'${node.path}\', ${_toParameterMap({
+                ...params,
+                node.paramName,
+                '${node.paramName}Builder',
+              })}) ?? '
+        : '';
+    buffer.writeln('${translationOverrides}RichPluralResolvers.bridge(');
     _addTabs(buffer, depth + 2);
-    buffer
-        .writeln('${quantity.key.paramName()}: \'${quantity.value.content}\',');
+    buffer.writeln('n: n,');
+    _addTabs(buffer, depth + 2);
+    buffer.writeln(
+        'resolver: _root.\$meta.${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'),');
+    for (final quantity in node.quantities.entries) {
+      _addTabs(buffer, depth + 2);
+      buffer.write('${quantity.key.paramName()}: () => ');
+
+      buffer.write('TextSpan(children: [');
+      for (final span in (quantity.value as RichTextNode).spans) {
+        if (span is VariableSpan && span.variableName == node.paramName) {
+          // the 'n' is now a builder, e.g. 'nBuilder'
+          buffer.write('${node.paramName}Builder(${node.paramName})');
+        } else {
+          buffer.write(span.code);
+        }
+        buffer.write(',');
+      }
+      buffer.write('])');
+      buffer.writeln(',');
+    }
+  } else {
+    final translationOverrides = config.translationOverrides
+        ? 'TranslationOverrides.plural(_root.\$meta, \'${node.path}\', ${_toParameterMap({
+                ...params,
+                node.paramName,
+              })}) ?? '
+        : '';
+    buffer.writeln(
+        '$translationOverrides(_root.\$meta.${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'))(${node.paramName},');
+    for (final quantity in node.quantities.entries) {
+      _addTabs(buffer, depth + 2);
+      buffer.writeln(
+          '${quantity.key.paramName()}: \'${(quantity.value as StringTextNode).content}\',');
+    }
   }
 
   _addTabs(buffer, depth + 1);

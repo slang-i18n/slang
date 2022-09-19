@@ -1,5 +1,6 @@
 import 'package:slang/api/translation_overrides.dart';
 import 'package:slang/builder/model/node.dart';
+import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/slang.dart';
 import 'package:flutter/widgets.dart';
 
@@ -156,13 +157,123 @@ class TranslationOverridesFlutter {
   static TextSpan? rich(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
-
-    if (node == null || node is! RichTextNode) {
+    if (node == null) {
+      return null;
+    }
+    if (node is! RichTextNode) {
+      print('Overridden $path is not a RichTextNode but a ${node.runtimeType}.');
       return null;
     }
 
+    return node._buildTextSpan(meta, param);
+  }
+
+  static TextSpan? richPlural(
+      TranslationMetadata meta, String path, Map<String, Object> param) {
+    final node = meta.overrides[path];
+    if (node == null) {
+      return null;
+    }
+    if (node is! PluralNode) {
+      print('Overridden $path is not a PluralNode but a ${node.runtimeType}.');
+      return null;
+    }
+    if (!node.rich) {
+      print('Overridden $path must be rich (RichText).');
+      return null;
+    }
+
+    final PluralResolver resolver;
+    if (node.pluralType == PluralType.cardinal) {
+      resolver = meta.cardinalResolver ??
+          PluralResolvers.cardinal(meta.locale.languageCode);
+    } else {
+      resolver = meta.ordinalResolver ??
+          PluralResolvers.ordinal(meta.locale.languageCode);
+    }
+
+    final quantities = node.quantities.cast<Quantity, RichTextNode>();
+
+    return RichPluralResolvers.bridge(
+      n: param[node.paramName] as num,
+      resolver: resolver,
+      zero: quantities[Quantity.zero] != null
+          ? () => quantities[Quantity.zero]!
+              ._buildTextSpan(meta, param, node.paramName)
+          : null,
+      one: quantities[Quantity.one] != null
+          ? () => quantities[Quantity.one]!
+              ._buildTextSpan(meta, param, node.paramName)
+          : null,
+      two: quantities[Quantity.two] != null
+          ? () => quantities[Quantity.two]!
+              ._buildTextSpan(meta, param, node.paramName)
+          : null,
+      few: quantities[Quantity.few] != null
+          ? () => quantities[Quantity.few]!
+              ._buildTextSpan(meta, param, node.paramName)
+          : null,
+      many: quantities[Quantity.many] != null
+          ? () => quantities[Quantity.many]!
+              ._buildTextSpan(meta, param, node.paramName)
+          : null,
+      other: quantities[Quantity.other] != null
+          ? () => quantities[Quantity.other]!
+              ._buildTextSpan(meta, param, node.paramName)
+          : null,
+    );
+  }
+}
+
+/// Rich plural resolvers
+class RichPluralResolvers {
+  static TextSpan bridge({
+    required num n,
+    required PluralResolver resolver,
+    TextSpan Function()? zero,
+    TextSpan Function()? one,
+    TextSpan Function()? two,
+    TextSpan Function()? few,
+    TextSpan Function()? many,
+    TextSpan Function()? other,
+  }) {
+    final String select = resolver(
+      n,
+      zero: zero != null ? 'zero' : null,
+      one: one != null ? 'one' : null,
+      two: two != null ? 'two' : null,
+      few: few != null ? 'few' : null,
+      many: many != null ? 'many' : null,
+      other: other != null ? 'other' : null,
+    );
+
+    switch (select) {
+      case 'zero':
+        return zero!();
+      case 'one':
+        return one!();
+      case 'two':
+        return two!();
+      case 'few':
+        return few!();
+      case 'many':
+        return many!();
+      case 'other':
+        return other!();
+      default:
+        throw 'This should not happen';
+    }
+  }
+}
+
+extension on RichTextNode {
+  TextSpan _buildTextSpan(
+    TranslationMetadata meta,
+    Map<String, Object> param, [
+    String? pluralParam,
+  ]) {
     return TextSpan(
-      children: node.spans.map((e) {
+      children: spans.map((e) {
         if (e is LiteralSpan) {
           return TextSpan(
             text: e.literal.applyParamsAndLinks(meta, param),
@@ -172,6 +283,10 @@ class TranslationOverridesFlutter {
           return (param[e.functionName] as InlineSpanBuilder)(e.arg);
         }
         if (e is VariableSpan) {
+          if (e.variableName == pluralParam) {
+            return (param['${e.variableName}Builder'] as InlineSpan Function(
+                num))(param[pluralParam] as num);
+          }
           return param[e.variableName] as InlineSpan;
         }
         throw 'This should not happen';

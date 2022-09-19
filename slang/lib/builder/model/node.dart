@@ -93,8 +93,9 @@ enum PluralType {
 
 class PluralNode extends Node implements LeafNode {
   final PluralType pluralType;
-  final Map<Quantity, StringTextNode> quantities;
+  final Map<Quantity, TextNode> quantities;
   final String paramName; // name of the plural parameter
+  final bool rich;
 
   PluralNode({
     required super.path,
@@ -102,6 +103,7 @@ class PluralNode extends Node implements LeafNode {
     required this.pluralType,
     required this.quantities,
     required this.paramName,
+    required this.rich,
   });
 
   @override

@@ -10,7 +10,12 @@ class TranslationOverrides {
   static String? string(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
-    if (node == null || node is! StringTextNode) {
+    if (node == null) {
+      return null;
+    }
+    if (node is! StringTextNode) {
+      print(
+          'Overridden $path is not a StringTextNode but a ${node.runtimeType}.');
       return null;
     }
     return node.content.applyParamsAndLinks(meta, param);
@@ -19,7 +24,11 @@ class TranslationOverrides {
   static String? plural(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
-    if (node == null || node is! PluralNode || param[node.paramName] == null) {
+    if (node == null) {
+      return null;
+    }
+    if (node is! PluralNode) {
+      print('Overridden $path is not a PluralNode but a ${node.runtimeType}.');
       return null;
     }
 
@@ -32,27 +41,28 @@ class TranslationOverrides {
           PluralResolvers.ordinal(meta.locale.languageCode);
     }
 
+    final quantities = node.quantities.cast<Quantity, StringTextNode>();
+
     return resolver(
       param[node.paramName] as num,
-      zero: node.quantities[Quantity.zero]?.content
-          .applyParamsAndLinks(meta, param),
-      one: node.quantities[Quantity.one]?.content
-          .applyParamsAndLinks(meta, param),
-      two: node.quantities[Quantity.two]?.content
-          .applyParamsAndLinks(meta, param),
-      few: node.quantities[Quantity.few]?.content
-          .applyParamsAndLinks(meta, param),
-      many: node.quantities[Quantity.many]?.content
-          .applyParamsAndLinks(meta, param),
-      other: node.quantities[Quantity.other]?.content
-          .applyParamsAndLinks(meta, param),
+      zero: quantities[Quantity.zero]?.content.applyParamsAndLinks(meta, param),
+      one: quantities[Quantity.one]?.content.applyParamsAndLinks(meta, param),
+      two: quantities[Quantity.two]?.content.applyParamsAndLinks(meta, param),
+      few: quantities[Quantity.few]?.content.applyParamsAndLinks(meta, param),
+      many: quantities[Quantity.many]?.content.applyParamsAndLinks(meta, param),
+      other:
+          quantities[Quantity.other]?.content.applyParamsAndLinks(meta, param),
     );
   }
 
   static String? context(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
-    if (node == null || node is! ContextNode) {
+    if (node == null) {
+      return null;
+    }
+    if (node is! ContextNode) {
+      print('Overridden $path is not a ContextNode but a ${node.runtimeType}.');
       return null;
     }
     final context = param[node.paramName];
@@ -65,10 +75,15 @@ class TranslationOverrides {
 
   static Map<String, String>? map(TranslationMetadata meta, String path) {
     final node = meta.overrides[path];
-    if (node == null ||
-        node is! ObjectNode ||
-        !node.isMap ||
-        node.genericType != 'String') {
+    if (node == null) {
+      return null;
+    }
+    if (node is! ObjectNode) {
+      print('Overridden $path is not an ObjectNode but a ${node.runtimeType}.');
+      return null;
+    }
+    if (!node.isMap || node.genericType != 'String') {
+      print('Overridden $path can only be a map containing plain Strings.');
       return null;
     }
 
@@ -80,7 +95,15 @@ class TranslationOverrides {
 
   static List<String>? list(TranslationMetadata meta, String path) {
     final node = meta.overrides[path];
-    if (node == null || node is! ListNode || node.genericType != 'String') {
+    if (node == null) {
+      return null;
+    }
+    if (node is! ListNode) {
+      print('Overridden $path is not a ListNode but a ${node.runtimeType}.');
+      return null;
+    }
+    if (node.genericType != 'String') {
+      print('Overridden $path can only contain plain Strings.');
       return null;
     }
 

@@ -87,10 +87,9 @@ class TranslationModelBuilder {
                 }
               });
             } else if (linkedNode is PluralNode || linkedNode is ContextNode) {
-              final Iterable<StringTextNode> textNodes =
-                  linkedNode is PluralNode
-                      ? linkedNode.quantities.values
-                      : (linkedNode as ContextNode).entries.values;
+              final Iterable<TextNode> textNodes = linkedNode is PluralNode
+                  ? linkedNode.quantities.values
+                  : (linkedNode as ContextNode).entries.values;
               final linkedParamSet = textNodes
                   .map((e) => e.params)
                   .expand((params) => params)
@@ -99,6 +98,11 @@ class TranslationModelBuilder {
               if (linkedNode is PluralNode) {
                 linkedParamSet.add(linkedNode.paramName);
                 paramTypeMap[linkedNode.paramName] = 'num';
+                if (linkedNode.rich) {
+                  linkedParamSet.add('${linkedNode.paramName}Builder');
+                  paramTypeMap[linkedNode.paramName] =
+                      'InlineSpan Function(num)';
+                }
               } else if (linkedNode is ContextNode) {
                 linkedParamSet.add(linkedNode.paramName);
                 paramTypeMap[linkedNode.paramName] =
@@ -282,7 +286,7 @@ Map<String, Node> _parseMapNode({
           }
 
           // split children by comma for plurals and contexts
-          final digestedMap = <String, StringTextNode>{};
+          Map<String, TextNode> digestedMap = <String, StringTextNode>{};
           final entries = children.entries.toList();
           for (final entry in entries) {
             final split = entry.key.split(Node.KEY_DELIMITER);
@@ -304,10 +308,26 @@ Map<String, Node> _parseMapNode({
               path: currPath,
               comment: comment,
               context: context,
-              entries: digestedMap,
+              entries: digestedMap.cast<String, StringTextNode>(),
               paramName: hints['param'] ?? context.defaultParameter,
             );
           } else {
+            final rich = hints.containsKey('rich');
+            if (rich) {
+              // rebuild children as RichText
+              digestedMap = _parseMapNode(
+                localeDebug: localeDebug,
+                parentPath: currPath,
+                curr: {
+                  for (final cKey in value.keys)
+                    (cKey as String)._withHint('rich'): value[cKey],
+                },
+                config: config,
+                keyCase: config.keyCase,
+                leavesMap: leavesMap,
+              ).cast<String, RichTextNode>();
+            }
+
             node = PluralNode(
               path: currPath,
               comment: comment,
@@ -320,6 +340,7 @@ Map<String, Node> _parseMapNode({
                 return MapEntry(key.toQuantity()!, value);
               }),
               paramName: hints['param'] ?? config.pluralParameter,
+              rich: rich,
             );
           }
         } else {
@@ -759,5 +780,20 @@ extension on BuildModelConfig {
       pathInterfaceContainerMap: pathInterfaceContainerMap,
       pathInterfaceNameMap: pathInterfaceNameMap,
     );
+  }
+}
+
+extension on String {
+  /// Add a hint to a key
+  /// myKey -> myKey(hint)
+  /// myKey(rich) -> myKey(rich,hint)
+  String _withHint(String hintKey, [String? hintValue]) {
+    final hint = '$hintKey${hintValue != null ? '=$hintValue' : ''}';
+    if (this.contains('(')) {
+      final trimmed = this.trim();
+      return '${trimmed.substring(0, trimmed.length - 1)},$hint)';
+    } else {
+      return '$this($hint)';
+    }
   }
 }
