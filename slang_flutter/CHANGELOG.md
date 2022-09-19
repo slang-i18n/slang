@@ -1,3 +1,7 @@
+## 3.0.0
+
+- Bump `slang` to `3.0.0`
+
 ## 2.8.0
 
 - fix: `LocaleSettings.useDeviceLocale()` now does not complain of weird locales on Linux
