@@ -1,11 +1,12 @@
 ## 3.0.0
 
-**Translation Overrides and Enhanced Hints**
+**Translation Overrides and Enhanced Flags**
 
 - feat: it is now possible to override translations via `LocaleSettings.overrideTranslations` (checkout updated README)
 - **Breaking:** default plural parameter is now `n`; you can revert this by setting `pluralization`/`default_parameter: count`
-- **Breaking:** plural and context parameter hints must follow the syntax: `myKey(param=appleCount)`
-- feat: there is a new hint syntax which allows for multiple hints e.g. `myKey(plural, rich)`
+- **Breaking:** plural and context parameter flags must follow the syntax: `myKey(param=appleCount)`
+- feat: there is a new flag syntax which allows for multiple flags e.g. `myKey(plural, rich)`
+- feat: improve file scan (now only checks top-level directory for any config files)
 
 All breaking changes will result in a compile-time error, so don't worry for "hidden" bugs :)
 

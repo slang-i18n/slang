@@ -43,12 +43,32 @@ void main(List<String> arguments) async {
     stopwatch.start();
   }
 
-  // get all files recursively (no directories)
-  Iterable<FileSystemEntity> files =
-      (await Directory.current.list(recursive: true).toList())
-          .where((item) => FileSystemEntity.isFileSync(item.path));
+  // config file must be in top-level directory
+  final topLevelFiles =
+      Directory.current.listSync(recursive: false).whereType<File>();
 
-  final config = await getConfig(files, verbose);
+  final config = await getConfig(topLevelFiles.toList(), verbose);
+
+  List<FileSystemEntity> files;
+  if (config.inputDirectory != null) {
+    files = Directory(config.inputDirectory!)
+        .listSync(recursive: true)
+        .whereType<File>()
+        .toList();
+  } else {
+    files = FileUtils.getFilesBreadthFirst(
+      rootDirectory: Directory.current,
+      ignoreTopLevelDirectories: {
+        '.fvm',
+        '.flutter.git',
+        '.dart_tool',
+        'build',
+        'ios',
+        'android',
+        'web',
+      },
+    );
+  }
 
   // filter files according to build config
   files = files.where((file) {
@@ -58,7 +78,7 @@ void main(List<String> arguments) async {
         !file.path.contains(config.inputDirectory!)) return false;
 
     return true;
-  });
+  }).toList();
 
   if (watchMode) {
     await watchTranslations(config: config, files: files);
@@ -74,7 +94,7 @@ void main(List<String> arguments) async {
 }
 
 Future<RawConfig> getConfig(
-  Iterable<FileSystemEntity> files,
+  List<FileSystemEntity> files,
   bool verbose,
 ) async {
   RawConfig? config;
@@ -84,10 +104,12 @@ Future<RawConfig> getConfig(
     if (fileName == 'slang.yaml') {
       final content = await File(file.path).readAsString();
       config = RawConfigBuilder.fromYaml(content, true);
-      if (verbose) {
-        print('Found slang.yaml in ${file.path}');
+      if (config != null) {
+        if (verbose) {
+          print('Found slang.yaml in ${file.path}');
+        }
+        break;
       }
-      break;
     }
 
     if (fileName == 'build.yaml') {
@@ -126,7 +148,7 @@ Future<RawConfig> getConfig(
 
 Future<void> watchTranslations({
   required RawConfig config,
-  required Iterable<FileSystemEntity> files,
+  required List<FileSystemEntity> files,
 }) async {
   final inputDirectoryPath = config.inputDirectory;
   if (inputDirectoryPath == null) {
@@ -148,9 +170,11 @@ Future<void> watchTranslations({
   await for (final event in stream) {
     if (event.path.endsWith(config.inputFilePattern)) {
       stdout.write('\r -> Generating...           ');
-      final newFiles = (await inputDirectory.list().toList()).where((item) =>
-          FileSystemEntity.isFileSync(item.path) &&
-          item.path.endsWith(config.inputFilePattern));
+      final newFiles = inputDirectory
+          .listSync(recursive: true)
+          .where((item) =>
+              item is File && item.path.endsWith(config.inputFilePattern))
+          .toList();
       await generateTranslations(
         rawConfig: config,
         files: newFiles,
@@ -165,7 +189,7 @@ Future<void> watchTranslations({
 /// The [files] are already filtered (only translation files!).
 Future<void> generateTranslations({
   required RawConfig rawConfig,
-  required Iterable<FileSystemEntity> files,
+  required List<FileSystemEntity> files,
   required bool verbose,
   Stopwatch? stopwatch,
   bool statsMode = false,
