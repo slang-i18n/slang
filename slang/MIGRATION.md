@@ -27,7 +27,7 @@ pluralization:
 {
   "apple(param=appleCount)": {
     "one": "I have one apple.",
-    "other": "I have multiple apples."
+    "other": "I have $appleCount apples."
   }
 }
 ```
