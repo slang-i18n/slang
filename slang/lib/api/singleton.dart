@@ -105,6 +105,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
   }) {
     return buildWithOverridesFromMap(
       locale: locale,
+      isFlatMap: false,
       map: BaseDecoder.getDecoderOfFileType(fileType).decode(content),
       cardinalResolver: cardinalResolver,
       ordinalResolver: ordinalResolver,
@@ -114,12 +115,28 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
   /// Creates a translation instance using the given [map].
   T buildWithOverridesFromMap({
     required E locale,
+    required bool isFlatMap,
     required Map map,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
   }) {
     if (buildConfig == null) {
       throw 'BuildConfig is null. Please generate the translations with <translation_overrides: true>';
+    }
+
+    final Map<String, dynamic> digestedMap;
+    if (isFlatMap) {
+      digestedMap = {};
+      for (final entry in map.entries) {
+        MapUtils.addItemToMap(
+          map: digestedMap,
+          destinationPath: entry.key,
+          item:
+              entry.value is Map ? MapUtils.deepCast(entry.value) : entry.value,
+        );
+      }
+    } else {
+      digestedMap = MapUtils.deepCast(map);
     }
 
     final buildResult = TranslationModelBuilder.build(
@@ -267,10 +284,20 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
   /// Overrides existing translations of [locale] with new ones from the [map].
   /// Please do a try-catch to prevent app crashes!
-  void overrideTranslationsFromMap({required E locale, required Map map}) {
+  ///
+  /// If [isFlatMap] is true, then the keys of the map are interpreted as paths.
+  /// E.g. {'myPath.toKey': 'Updated Text'}
+  ///
+  /// If [isFlatMap] is false, then the structure is like a parsed json.
+  void overrideTranslationsFromMap({
+    required E locale,
+    required bool isFlatMap,
+    required Map map,
+  }) {
     final currentMetadata = translationMap[locale]!.$meta;
     translationMap[locale] = utils.buildWithOverridesFromMap(
       locale: locale,
+      isFlatMap: isFlatMap,
       map: map,
       cardinalResolver: currentMetadata.cardinalResolver,
       ordinalResolver: currentMetadata.ordinalResolver,

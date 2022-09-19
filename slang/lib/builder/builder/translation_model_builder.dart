@@ -96,14 +96,26 @@ class TranslationModelBuilder {
                   .toSet();
 
               if (linkedNode is PluralNode) {
+                if (linkedNode.rich) {
+                  final builderParam = '${linkedNode.paramName}Builder';
+                  linkedParamSet.add(builderParam);
+                  paramTypeMap[builderParam] = 'InlineSpan Function(num)';
+                  for (final n in textNodes) {
+                    paramTypeMap.addAll(n.paramTypeMap);
+                  }
+                }
                 linkedParamSet.add(linkedNode.paramName);
                 paramTypeMap[linkedNode.paramName] = 'num';
-                if (linkedNode.rich) {
-                  linkedParamSet.add('${linkedNode.paramName}Builder');
-                  paramTypeMap[linkedNode.paramName] =
-                      'InlineSpan Function(num)';
-                }
               } else if (linkedNode is ContextNode) {
+                if (linkedNode.rich) {
+                  final builderParam = '${linkedNode.paramName}Builder';
+                  linkedParamSet.add(builderParam);
+                  paramTypeMap[builderParam] =
+                      'InlineSpan Function(${linkedNode.context.enumName})';
+                  for (final n in textNodes) {
+                    paramTypeMap.addAll(n.paramTypeMap);
+                  }
+                }
                 linkedParamSet.add(linkedNode.paramName);
                 paramTypeMap[linkedNode.paramName] =
                     linkedNode.context.enumName;
@@ -302,32 +314,33 @@ Map<String, Node> _parseMapNode({
             }
           }
 
+          final rich = hints.containsKey('rich');
+          if (rich) {
+            // rebuild children as RichText
+            digestedMap = _parseMapNode(
+              localeDebug: localeDebug,
+              parentPath: currPath,
+              curr: {
+                for (final cKey in digestedMap.keys)
+                  cKey._withHint('rich'): value[cKey],
+              },
+              config: config,
+              keyCase: config.keyCase,
+              leavesMap: leavesMap,
+            ).cast<String, RichTextNode>();
+          }
+
           if (detectedType.nodeType == _DetectionType.context) {
             final context = detectedType.contextHint!;
             node = ContextNode(
               path: currPath,
               comment: comment,
               context: context,
-              entries: digestedMap.cast<String, StringTextNode>(),
+              entries: digestedMap,
               paramName: hints['param'] ?? context.defaultParameter,
+              rich: rich,
             );
           } else {
-            final rich = hints.containsKey('rich');
-            if (rich) {
-              // rebuild children as RichText
-              digestedMap = _parseMapNode(
-                localeDebug: localeDebug,
-                parentPath: currPath,
-                curr: {
-                  for (final cKey in value.keys)
-                    (cKey as String)._withHint('rich'): value[cKey],
-                },
-                config: config,
-                keyCase: config.keyCase,
-                leavesMap: leavesMap,
-              ).cast<String, RichTextNode>();
-            }
-
             node = PluralNode(
               path: currPath,
               comment: comment,

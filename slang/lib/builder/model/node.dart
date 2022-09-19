@@ -112,8 +112,9 @@ class PluralNode extends Node implements LeafNode {
 
 class ContextNode extends Node implements LeafNode {
   final ContextType context;
-  final Map<String, StringTextNode> entries;
+  final Map<String, TextNode> entries;
   final String paramName; // name of the context parameter
+  final bool rich;
 
   ContextNode({
     required super.path,
@@ -121,6 +122,7 @@ class ContextNode extends Node implements LeafNode {
     required this.context,
     required this.entries,
     required this.paramName,
+    required this.rich,
   });
 
   @override

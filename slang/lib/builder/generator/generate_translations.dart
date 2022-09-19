@@ -305,7 +305,8 @@ void _generateClass(
         depth: 0,
       );
     } else if (value is ContextNode) {
-      buffer.write('String$optional $key');
+      final returnType = value.rich ? 'TextSpan' : 'String';
+      buffer.write('$returnType$optional $key');
       _addContextCall(
         buffer: buffer,
         config: config,
@@ -561,8 +562,10 @@ void _addPluralizationCall({
 
   // parameters are union sets over all plural forms
   final paramSet = <String>{};
+  final paramTypeMap = <String, String>{};
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
+    paramTypeMap.addAll(textNode.paramTypeMap);
   }
   final params = paramSet.where((p) => p != node.paramName).toList();
 
@@ -573,7 +576,7 @@ void _addPluralizationCall({
         ', required InlineSpan Function(num n) ${node.paramName}Builder');
   }
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', required Object ');
+    buffer.write(', required ${paramTypeMap[params[i]] ?? 'Object'} ');
     buffer.write(params[i]);
   }
 
@@ -682,27 +685,38 @@ void _addContextCall({
 }) {
   final textNodeList = node.entries.values.toList();
 
-  // parameters are union sets over all plural forms
+  // parameters are union sets over all context forms
   final paramSet = <String>{};
+  final paramTypeMap = <String, String>{};
   for (final textNode in textNodeList) {
     paramSet.addAll(textNode.params);
+    paramTypeMap.addAll(textNode.paramTypeMap);
   }
   final params = paramSet.where((p) => p != node.paramName).toList();
 
   // parameters with context as first parameter
   buffer.write('({required ${node.context.enumName} ${node.paramName}');
+  if (node.rich) {
+    buffer.write(
+        ', required InlineSpan Function(${node.context.enumName}) ${node.paramName}Builder');
+  }
   for (int i = 0; i < params.length; i++) {
-    buffer.write(', required Object ');
+    buffer.write(', required ${paramTypeMap[params[i]] ?? 'Object'} ');
     buffer.write(params[i]);
   }
   buffer.writeln('}) {');
 
   if (config.translationOverrides) {
+    final functionCall = node.rich
+        ? 'TranslationOverridesFlutter.richContext<${node.context.enumName}>'
+        : 'TranslationOverrides.context';
+
     _addTabs(buffer, depth + 2);
     buffer.writeln(
-        'final override = TranslationOverrides.context(_root.\$meta, \'${node.path}\', ${_toParameterMap({
+        'final override = $functionCall(_root.\$meta, \'${node.path}\', ${_toParameterMap({
           ...params,
           node.paramName,
+          if (node.rich) '${node.paramName}Builder',
         })});');
 
     _addTabs(buffer, depth + 2);
@@ -720,8 +734,22 @@ void _addContextCall({
 
   for (final entry in node.entries.entries) {
     _addTabs(buffer, depth + 3);
-    buffer.writeln(
-        'case ${node.context.enumName}.${entry.key}: return \'${entry.value.content}\';');
+    buffer.write('case ${node.context.enumName}.${entry.key}: return ');
+    if (node.rich) {
+      buffer.write('TextSpan(children: [');
+      for (final span in (entry.value as RichTextNode).spans) {
+        if (span is VariableSpan && span.variableName == node.paramName) {
+          // the 'context' is now a builder, e.g. 'contextBuilder'
+          buffer.write('${node.paramName}Builder(${node.paramName})');
+        } else {
+          buffer.write(span.code);
+        }
+        buffer.write(',');
+      }
+      buffer.writeln(']);');
+    } else {
+      buffer.writeln('\'${(entry.value as StringTextNode).content}\';');
+    }
   }
 
   _addTabs(buffer, depth + 2);

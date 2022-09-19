@@ -46,10 +46,10 @@ Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
   sourceMap.forEach((key, value) {
     if (key.startsWith('@@')) {
       // add without modifications
-      MapUtils.addStringToMap(
+      MapUtils.addItemToMap(
         map: resultMap,
         destinationPath: key,
-        leafContent: value.toString(),
+        item: value.toString(),
       );
       return;
     }
@@ -152,10 +152,10 @@ List<_DetectedContext> _digestEntry(
         final partName =
             isPlural ? _digestPluralKey(part.group(1)!) : part.group(1)!;
         final partContent = part.group(2)!;
-        MapUtils.addStringToMap(
+        MapUtils.addItemToMap(
           map: resultMap,
           destinationPath: '$basePath($variable).$partName',
-          leafContent: _digestLeafText(partContent),
+          item: _digestLeafText(partContent),
         );
         if (enumValues != null) {
           enumValues.add(partName);
@@ -207,19 +207,19 @@ List<_DetectedContext> _digestEntry(
 
   if (!modified) {
     // simple node
-    MapUtils.addStringToMap(
+    MapUtils.addItemToMap(
       map: resultMap,
       destinationPath: basePath,
-      leafContent: _digestLeafText(value),
+      item: _digestLeafText(value),
     );
     return [];
   }
 
   // contains complex nodes
-  MapUtils.addStringToMap(
+  MapUtils.addItemToMap(
     map: resultMap,
     destinationPath: basePath,
-    leafContent: _digestLeafText(result),
+    item: _digestLeafText(result),
   );
 
   return detectedContexts;
@@ -272,10 +272,10 @@ void _digestMeta(
         '${keyParts.sublist(0, keyParts.length - 1).join('.')}.@${keyParts.last}';
   }
 
-  MapUtils.addStringToMap(
+  MapUtils.addItemToMap(
     map: resultMap,
     destinationPath: path,
-    leafContent: description,
+    item: description,
   );
 }
 

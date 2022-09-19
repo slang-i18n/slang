@@ -46,10 +46,10 @@ class CsvDecoder extends BaseDecoder {
           final content = parsed[rowIndex][localeIndex + 1].toString();
           if (locale != null) {
             // normal column
-            MapUtils.addStringToMap(
+            MapUtils.addItemToMap(
               map: result[locale]!,
               destinationPath: path,
-              leafContent: content,
+              item: content,
             );
           } else if (!commentAdded && content.isNotEmpty) {
             // comment column (only parse the first comment column)
@@ -57,10 +57,10 @@ class CsvDecoder extends BaseDecoder {
             for (final localeMap in result.values) {
               final split = path.toString().split('.');
               split[split.length - 1] = '@${split[split.length - 1]}';
-              MapUtils.addStringToMap(
+              MapUtils.addItemToMap(
                 map: localeMap,
                 destinationPath: split.join('.'),
-                leafContent: content,
+                item: content,
               );
             }
             commentAdded = true;
@@ -73,10 +73,10 @@ class CsvDecoder extends BaseDecoder {
 
       final result = <String, dynamic>{};
       for (final row in parsed) {
-        MapUtils.addStringToMap(
+        MapUtils.addItemToMap(
           map: result,
           destinationPath: row[0],
-          leafContent: row[1].toString(),
+          item: row[1].toString(),
         );
       }
       return result;

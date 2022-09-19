@@ -2,6 +2,82 @@ import 'package:slang/builder/utils/map_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('addItemToMap', () {
+    test('add string to empty map', () {
+      final map = <String, dynamic>{};
+      MapUtils.addItemToMap(
+          map: map, destinationPath: 'myPath.mySubPath', item: 'Hello World');
+      expect(map, {
+        'myPath': {
+          'mySubPath': 'Hello World',
+        },
+      });
+    });
+
+    test('add string to populated map', () {
+      final map = <String, dynamic>{
+        'myPath': <String, dynamic>{
+          'myExistingSubPath': ['1', '2', '3'],
+        },
+      };
+      MapUtils.addItemToMap(
+          map: map, destinationPath: 'myPath.mySubPath', item: 'Hello World');
+      expect(map, {
+        'myPath': {
+          'myExistingSubPath': ['1', '2', '3'],
+          'mySubPath': 'Hello World',
+        },
+      });
+    });
+
+    test('add list to populated map', () {
+      final map = <String, dynamic>{
+        'myPath': <String, dynamic>{
+          'myExistingSubPath': ['1', '2', '3'],
+        },
+      };
+      MapUtils.addItemToMap(
+        map: map,
+        destinationPath: 'myPath.mySubPath',
+        item: ['Hello Earth', 'Hello Moon'],
+      );
+      expect(map, {
+        'myPath': {
+          'myExistingSubPath': ['1', '2', '3'],
+          'mySubPath': [
+            'Hello Earth',
+            'Hello Moon',
+          ],
+        },
+      });
+    });
+
+    test('add map to populated map', () {
+      final map = <String, dynamic>{
+        'myPath': <String, dynamic>{
+          'myExistingSubPath': ['1', '2', '3'],
+        },
+      };
+      MapUtils.addItemToMap(
+        map: map,
+        destinationPath: 'myPath.mySubPath',
+        item: {
+          'a': 3,
+          'b': 'c',
+        },
+      );
+      expect(map, {
+        'myPath': {
+          'myExistingSubPath': ['1', '2', '3'],
+          'mySubPath': {
+            'a': 3,
+            'b': 'c',
+          },
+        },
+      });
+    });
+  });
+
   group('addToList', () {
     test('add first item', () {
       final list = [];

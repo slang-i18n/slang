@@ -15,11 +15,11 @@ class MapUtils {
     });
   }
 
-  /// Adds a string (leaf) to the map at the specified path
-  static void addStringToMap({
+  /// Adds a leaf to the map at the specified path
+  static void addItemToMap({
     required Map<String, dynamic> map,
     required String destinationPath,
-    required String leafContent,
+    required dynamic item,
   }) {
     final pathList = destinationPath.split('.');
 
@@ -44,7 +44,7 @@ class MapUtils {
           final added = addToList(
             list: curr,
             index: subPathInt,
-            element: leafContent,
+            element: item,
             overwrite: true,
           );
 
@@ -55,7 +55,7 @@ class MapUtils {
           if (!(curr is Map)) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
           }
-          curr[subPath] = leafContent;
+          curr[subPath] = item;
         }
       } else {
         // make sure that the path to the leaf exists

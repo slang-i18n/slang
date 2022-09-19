@@ -161,7 +161,8 @@ class TranslationOverridesFlutter {
       return null;
     }
     if (node is! RichTextNode) {
-      print('Overridden $path is not a RichTextNode but a ${node.runtimeType}.');
+      print(
+          'Overridden $path is not a RichTextNode but a ${node.runtimeType}.');
       return null;
     }
 
@@ -199,29 +200,49 @@ class TranslationOverridesFlutter {
       resolver: resolver,
       zero: quantities[Quantity.zero] != null
           ? () => quantities[Quantity.zero]!
-              ._buildTextSpan(meta, param, node.paramName)
+              ._buildTextSpan<num>(meta, param, node.paramName)
           : null,
       one: quantities[Quantity.one] != null
           ? () => quantities[Quantity.one]!
-              ._buildTextSpan(meta, param, node.paramName)
+              ._buildTextSpan<num>(meta, param, node.paramName)
           : null,
       two: quantities[Quantity.two] != null
           ? () => quantities[Quantity.two]!
-              ._buildTextSpan(meta, param, node.paramName)
+              ._buildTextSpan<num>(meta, param, node.paramName)
           : null,
       few: quantities[Quantity.few] != null
           ? () => quantities[Quantity.few]!
-              ._buildTextSpan(meta, param, node.paramName)
+              ._buildTextSpan<num>(meta, param, node.paramName)
           : null,
       many: quantities[Quantity.many] != null
           ? () => quantities[Quantity.many]!
-              ._buildTextSpan(meta, param, node.paramName)
+              ._buildTextSpan<num>(meta, param, node.paramName)
           : null,
       other: quantities[Quantity.other] != null
           ? () => quantities[Quantity.other]!
-              ._buildTextSpan(meta, param, node.paramName)
+              ._buildTextSpan<num>(meta, param, node.paramName)
           : null,
     );
+  }
+
+  static TextSpan? richContext<T>(
+      TranslationMetadata meta, String path, Map<String, Object> param) {
+    final node = meta.overrides[path];
+    if (node == null) {
+      return null;
+    }
+    if (node is! ContextNode) {
+      print('Overridden $path is not a ContextNode but a ${node.runtimeType}.');
+      return null;
+    }
+    if (!node.rich) {
+      print('Overridden $path must be rich (RichText).');
+      return null;
+    }
+
+    final context = param[node.paramName]! as Enum;
+    return (node.entries[context.name]! as RichTextNode?)
+        ?._buildTextSpan<T>(meta, param, node.paramName);
   }
 }
 
@@ -267,10 +288,10 @@ class RichPluralResolvers {
 }
 
 extension on RichTextNode {
-  TextSpan _buildTextSpan(
+  TextSpan _buildTextSpan<T>(
     TranslationMetadata meta,
     Map<String, Object> param, [
-    String? pluralParam,
+    String? builderParam,
   ]) {
     return TextSpan(
       children: spans.map((e) {
@@ -283,9 +304,9 @@ extension on RichTextNode {
           return (param[e.functionName] as InlineSpanBuilder)(e.arg);
         }
         if (e is VariableSpan) {
-          if (e.variableName == pluralParam) {
+          if (e.variableName == builderParam) {
             return (param['${e.variableName}Builder'] as InlineSpan Function(
-                num))(param[pluralParam] as num);
+                T))(param[builderParam] as T);
           }
           return param[e.variableName] as InlineSpan;
         }

@@ -438,7 +438,7 @@ void _generateLocaleSettings({
     buffer.writeln(
         '\tstatic void overrideTranslations({required AppLocale locale, required FileType fileType, required String content}) => instance.overrideTranslations(locale: locale, fileType: fileType, content: content);');
     buffer.writeln(
-        '\tstatic void overrideTranslationsFromMap({required AppLocale locale, required Map map}) => instance.overrideTranslationsFromMap(locale: locale, map: map);');
+        '\tstatic void overrideTranslationsFromMap({required AppLocale locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMap(locale: locale, isFlatMap: isFlatMap, map: map);');
   }
 
   buffer.writeln('}');
@@ -477,7 +477,7 @@ void _generateUtil({
     buffer.writeln(
         '\tstatic $baseClassName buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln(
-        '\tstatic $baseClassName buildWithOverridesFromMap({required AppLocale locale, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic $baseClassName buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
   }
 
   buffer.writeln('}');

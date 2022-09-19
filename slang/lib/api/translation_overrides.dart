@@ -70,7 +70,9 @@ class TranslationOverrides {
       return null;
     }
 
-    return node.entries[context.name]?.content.applyParamsAndLinks(meta, param);
+    return (node.entries[context.name] as StringTextNode?)
+        ?.content
+        .applyParamsAndLinks(meta, param);
   }
 
   static Map<String, String>? map(TranslationMetadata meta, String path) {
