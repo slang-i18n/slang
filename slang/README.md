@@ -80,6 +80,8 @@ String i = page1.title; // type-safe call
     - [ARB](#arb)
   - [Statistics](#-statistics)
   - [Auto Rebuild](#-auto-rebuild)
+- [Integrations](#integrations)
+  - [slang X riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 
@@ -1353,6 +1355,24 @@ The watch function from `build_runner` is **NOT** maintained.
 ```sh
 flutter pub run slang:watch
 ```
+
+## Integrations
+
+### ➤ slang X riverpod
+
+**Method A: Use static getter**
+
+Access translation variable `t` directly, use `LocaleSettings.setLocale` to change locales.
+
+Track locale changes with `LocaleSettings.getLocaleStream()`:
+
+```dart
+final localeProvider = StreamProvider((ref) => LocaleSettings.getLocaleStream());
+```
+
+**Method B: Use dependency injection**
+
+Checkout [Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md).
 
 ## FAQ
 

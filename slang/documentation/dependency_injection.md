@@ -27,12 +27,13 @@ If you have plurals, then you can also put your custom resolver into the `build`
 Here is an example using the `riverpod` package.
 
 ```dart
-final english = AppLocale.en.build(cardinalResolver: myEnResolver);
-final german = AppLocale.de.build(cardinalResolver: myDeResolver);
+final english = AppLocale.en.build();
+final german = AppLocale.de.build();
 final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
 
 // access the current instance
 final t = ref.watch(translationProvider);
+AppLocale locale = t.$meta.locale;
 String a = t.welcome.title;
 ```
 
@@ -41,13 +42,12 @@ To make things easier, there are some utility functions in `AppLocaleUtils`.
 ```dart
 // get locale as enum
 final AppLocale deviceLocale = AppLocaleUtils.findDeviceLocale();
-final AppLocale specificLocale = AppLocaleUtils.parse('en_US');
+final AppLocale specificLocale = AppLocaleUtils.parse('en_US'); // handles '-' and '_'
 
 // build instance
-final StringsEn translations;
-switch (specificLocale) { // exhaustive switch
-  case AppLocale.en:
-    translations = AppLocale.en.build(cardinalResolver: myEnResolver);
-    // ...
-}
+final StringsEn translations = specificLocale.build();
+
+// access instance
+AppLocale locale = translations.$meta.locale;
+String a = translations.welcome.title;
 ```
