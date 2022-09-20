@@ -572,8 +572,8 @@ void _addPluralizationCall({
   // add plural parameter first
   buffer.write('({required num ${node.paramName}');
   if (node.rich) {
-    buffer.write(
-        ', required InlineSpan Function(num) ${node.paramName}Builder');
+    buffer
+        .write(', required InlineSpan Function(num) ${node.paramName}Builder');
   }
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required ${paramTypeMap[params[i]] ?? 'Object'} ');
