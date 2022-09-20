@@ -296,6 +296,8 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
   /// E.g. {'myPath.toKey': 'Updated Text'}
   /// If [isFlatMap] is false, then the structure is like a parsed json.
   ///
+  /// Checkout [overrideTranslations] for more documentation.
+  ///
   /// Please do a try-catch to prevent app crashes!
   void overrideTranslationsFromMap({
     required E locale,

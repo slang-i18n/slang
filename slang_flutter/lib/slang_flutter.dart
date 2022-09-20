@@ -21,6 +21,7 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
 }
 
 extension ExtAppLocale on BaseAppLocale {
+  /// Returns the locale type of the flutter framework.
   Locale get flutterLocale {
     return Locale.fromSubtags(
       languageCode: languageCode,
@@ -98,6 +99,8 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
     required this.translations,
   });
 
+  /// Updates the provider state.
+  /// Widgets listening to this provider will rebuild if [translations] differ.
   void updateState({
     required E locale,
     required T translations,
@@ -154,6 +157,9 @@ class InheritedLocaleData<E extends BaseAppLocale<E, T>,
 typedef InlineSpanBuilder = InlineSpan Function(String);
 
 class TranslationOverridesFlutter {
+  /// Handler for overridden rich text.
+  /// Returns a [TextSpan] if the [path] was successfully overridden.
+  /// Returns null otherwise.
   static TextSpan? rich(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
@@ -169,6 +175,9 @@ class TranslationOverridesFlutter {
     return node._buildTextSpan(meta, param);
   }
 
+  /// Handler for overridden rich plural.
+  /// Returns a [TextSpan] if the [path] was successfully overridden.
+  /// Returns null otherwise.
   static TextSpan? richPlural(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
@@ -225,6 +234,9 @@ class TranslationOverridesFlutter {
     );
   }
 
+  /// Handler for overridden rich context.
+  /// Returns a [TextSpan] if the [path] was successfully overridden.
+  /// Returns null otherwise.
   static TextSpan? richContext<T>(
       TranslationMetadata meta, String path, Map<String, Object> param) {
     final node = meta.overrides[path];
@@ -248,6 +260,9 @@ class TranslationOverridesFlutter {
 
 /// Rich plural resolvers
 class RichPluralResolvers {
+  /// The plural resolver for rich text.
+  /// It uses the original [resolver] (which only handles strings)
+  /// to determine which plural form should be used.
   static TextSpan bridge({
     required num n,
     required PluralResolver resolver,
