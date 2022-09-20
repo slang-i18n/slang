@@ -573,7 +573,7 @@ void _addPluralizationCall({
   buffer.write('({required num ${node.paramName}');
   if (node.rich) {
     buffer.write(
-        ', required InlineSpan Function(num n) ${node.paramName}Builder');
+        ', required InlineSpan Function(num) ${node.paramName}Builder');
   }
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required ${paramTypeMap[params[i]] ?? 'Object'} ');
