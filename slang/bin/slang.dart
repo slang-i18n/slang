@@ -124,6 +124,7 @@ Future<RawConfig> getConfig(
     }
   }
 
+  final useDefaultConfig = config == null;
   if (config == null) {
     config = RawConfigBuilder.fromMap({});
     if (verbose) {
@@ -135,7 +136,7 @@ Future<RawConfig> getConfig(
   config = config.withAbsolutePaths();
 
   // show build config
-  if (verbose) {
+  if (verbose && !useDefaultConfig) {
     print('');
     config.printConfig();
     print('');
