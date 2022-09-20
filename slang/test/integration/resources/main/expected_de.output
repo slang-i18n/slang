@@ -28,6 +28,12 @@ class _TranslationsDe implements _TranslationsEn {
 	@override late final _TranslationsOnboardingDe onboarding = _TranslationsOnboardingDe._(_root);
 	@override late final _TranslationsGroupDe group = _TranslationsGroupDe._(_root);
 	@override late final _TranslationsEndDe end = _TranslationsEndDe._(_root);
+	@override TextSpan advancedPlural({required num count, required InlineSpan Function(num n) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+		one: () => TextSpan(children: [const TextSpan(text: 'Eins'),]),
+		other: () => TextSpan(children: [const TextSpan(text: 'Andere '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+	);
 }
 
 // Path: onboarding

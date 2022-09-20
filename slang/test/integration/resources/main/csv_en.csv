@@ -21,3 +21,5 @@ end.stringPages.1,2nd Page
 end.pages.0.unknown,Unknown Error
 end.pages.1.with space,An Error
 end.pages.1.with second space,An 2nd Error
+"advancedPlural(rich, param=count).one",One
+"advancedPlural(rich, param=count).other","Other {count}, @:onboarding.greet2"

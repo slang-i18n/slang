@@ -30,3 +30,6 @@ end:
     - unknown: Unbekannter Fehler
     - with space: Ein Fehler
       with second space: Ein 2. Fehler
+advancedPlural(rich, param=count):
+  one: Eins
+  other: Andere {count}, @:onboarding.greet2

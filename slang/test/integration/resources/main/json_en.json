@@ -50,5 +50,9 @@
         "with second space": "An 2nd Error"
       }
     ]
+  },
+  "advancedPlural(rich, param=count)": {
+    "one": "One",
+    "other": "Other {count}, @:onboarding.greet2"
   }
 }

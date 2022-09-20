@@ -594,7 +594,7 @@ void _addPluralizationCall({
         : '';
     buffer.writeln('${translationOverrides}RichPluralResolvers.bridge(');
     _addTabs(buffer, depth + 2);
-    buffer.writeln('n: n,');
+    buffer.writeln('n: ${node.paramName},');
     _addTabs(buffer, depth + 2);
     buffer.writeln(
         'resolver: _root.\$meta.${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'),');

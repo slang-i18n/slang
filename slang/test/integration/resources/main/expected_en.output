@@ -28,6 +28,12 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
 	late final _TranslationsGroupEn group = _TranslationsGroupEn._(_root);
 	late final _TranslationsEndEn end = _TranslationsEndEn._(_root);
+	TextSpan advancedPlural({required num count, required InlineSpan Function(num n) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
+		one: () => TextSpan(children: [const TextSpan(text: 'One'),]),
+		other: () => TextSpan(children: [const TextSpan(text: 'Other '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+	);
 }
 
 // Path: onboarding

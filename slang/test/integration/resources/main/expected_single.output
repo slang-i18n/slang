@@ -1,7 +1,7 @@
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 44 (22 per locale)
+/// Strings: 48 (24 per locale)
 
 
 // coverage:ignore-file
@@ -169,6 +169,12 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
 	late final _TranslationsGroupEn group = _TranslationsGroupEn._(_root);
 	late final _TranslationsEndEn end = _TranslationsEndEn._(_root);
+	TextSpan advancedPlural({required num count, required InlineSpan Function(num n) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
+		one: () => TextSpan(children: [const TextSpan(text: 'One'),]),
+		other: () => TextSpan(children: [const TextSpan(text: 'Other '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+	);
 }
 
 // Path: onboarding
@@ -295,6 +301,12 @@ class _TranslationsDe implements _TranslationsEn {
 	@override late final _TranslationsOnboardingDe onboarding = _TranslationsOnboardingDe._(_root);
 	@override late final _TranslationsGroupDe group = _TranslationsGroupDe._(_root);
 	@override late final _TranslationsEndDe end = _TranslationsEndDe._(_root);
+	@override TextSpan advancedPlural({required num count, required InlineSpan Function(num n) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+		one: () => TextSpan(children: [const TextSpan(text: 'Eins'),]),
+		other: () => TextSpan(children: [const TextSpan(text: 'Andere '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+	);
 }
 
 // Path: onboarding
@@ -435,6 +447,12 @@ extension on _TranslationsEn {
 			case 'end.pages.0.unknown': return 'Unknown Error';
 			case 'end.pages.1.with space': return 'An Error';
 			case 'end.pages.1.with second space': return 'An 2nd Error';
+			case 'advancedPlural': return ({required num count, required InlineSpan Function(num n) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+				n: count,
+				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
+				one: () => TextSpan(children: [const TextSpan(text: 'One'),]),
+				other: () => TextSpan(children: [const TextSpan(text: 'Other '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+			);
 			default: return null;
 		}
 	}
@@ -479,6 +497,12 @@ extension on _TranslationsDe {
 			case 'end.pages.0.unknown': return 'Unbekannter Fehler';
 			case 'end.pages.1.with space': return 'Ein Fehler';
 			case 'end.pages.1.with second space': return 'Ein 2. Fehler';
+			case 'advancedPlural': return ({required num count, required InlineSpan Function(num n) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+				n: count,
+				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+				one: () => TextSpan(children: [const TextSpan(text: 'Eins'),]),
+				other: () => TextSpan(children: [const TextSpan(text: 'Andere '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+			);
 			default: return null;
 		}
 	}
