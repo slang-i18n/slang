@@ -106,6 +106,26 @@ class PluralNode extends Node implements LeafNode {
     required this.rich,
   });
 
+  Set<AttributeParameter> getParameters() {
+    final paramSet = <String>{};
+    final paramTypeMap = <String, String>{};
+    for (final textNode in quantities.values) {
+      paramSet.addAll(textNode.params);
+      paramTypeMap.addAll(textNode.paramTypeMap);
+    }
+    paramSet.add(paramName);
+    paramTypeMap[paramName] = 'num';
+    if (rich) {
+      final builderParam = '${paramName}Builder';
+      paramSet.add(builderParam);
+      paramTypeMap[builderParam] = 'InlineSpan Function(num)';
+    }
+    return paramSet.map((param) {
+      return AttributeParameter(
+          parameterName: param, type: paramTypeMap[param] ?? 'Object');
+    }).toSet();
+  }
+
   @override
   String toString() => quantities.toString();
 }
@@ -124,6 +144,26 @@ class ContextNode extends Node implements LeafNode {
     required this.paramName,
     required this.rich,
   });
+
+  Set<AttributeParameter> getParameters() {
+    final paramSet = <String>{};
+    final paramTypeMap = <String, String>{};
+    for (final textNode in entries.values) {
+      paramSet.addAll(textNode.params);
+      paramTypeMap.addAll(textNode.paramTypeMap);
+    }
+    paramSet.add(paramName);
+    paramTypeMap[paramName] = context.enumName;
+    if (rich) {
+      final builderParam = '${paramName}Builder';
+      paramSet.add(builderParam);
+      paramTypeMap[builderParam] = 'InlineSpan Function(${context.enumName})';
+    }
+    return paramSet.map((param) {
+      return AttributeParameter(
+          parameterName: param, type: paramTypeMap[param] ?? 'Object');
+    }).toSet();
+  }
 
   @override
   String toString() => entries.toString();

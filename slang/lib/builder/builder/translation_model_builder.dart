@@ -643,8 +643,8 @@ Interface? _determineInterface({
 Set<InterfaceAttribute> _parseAttributes(ObjectNode node) {
   return node.entries.entries.map((entry) {
     final child = entry.value;
-    String returnType;
-    Set<AttributeParameter> parameters;
+    final String returnType;
+    final Set<AttributeParameter> parameters;
     if (child is TextNode) {
       returnType = child is StringTextNode ? 'String' : 'TextSpan';
       parameters = child.params.map((p) {
@@ -660,30 +660,11 @@ Set<InterfaceAttribute> _parseAttributes(ObjectNode node) {
       returnType = 'Map<String, ${child.genericType}>';
       parameters = {}; // objects never have parameters
     } else if (child is PluralNode) {
-      returnType = 'String';
-      parameters = {
-        AttributeParameter(parameterName: child.paramName, type: 'num'),
-        ...child.quantities.values
-            .cast<StringTextNode>()
-            .map((text) => text.params)
-            .expand((param) => param)
-            .where((param) => param != child.paramName)
-            .map((param) =>
-                AttributeParameter(parameterName: param, type: 'Object'))
-      };
+      returnType = child.rich ? 'TextSpan' : 'String';
+      parameters = child.getParameters();
     } else if (child is ContextNode) {
-      returnType = 'String';
-      parameters = {
-        AttributeParameter(
-            parameterName: child.paramName, type: child.context.enumName),
-        ...child.entries.values
-            .cast<StringTextNode>()
-            .map((text) => text.params)
-            .expand((param) => param)
-            .where((param) => param != child.paramName)
-            .map((param) =>
-                AttributeParameter(parameterName: param, type: 'Object'))
-      };
+      returnType = child.rich ? 'TextSpan' : 'String';
+      parameters = child.getParameters();
     } else {
       throw 'This should not happen';
     }
