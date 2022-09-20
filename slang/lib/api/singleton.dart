@@ -214,9 +214,8 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
     return locales.map((locale) => locale.languageTag).toList();
   }
 
-  /// Sets locale, *but* do not change potential TranslationProvider's state
-  /// Useful when you are in a pure Dart environment (without Flutter)
-  /// This will be overwritten when using with flutter.
+  /// Sets locale.
+  /// Returns the locale which has been set.
   E setLocale(E locale) {
     GlobalLocaleState.instance.setLocale(locale);
     updateProviderState(locale, translationMap[locale]!);
@@ -263,6 +262,15 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
   }
 
   /// Overrides existing translations of [locale] with new ones from [content].
+  /// The [content] should be formatted and structured exactly the same way
+  /// as the original files.
+  ///
+  /// Adding new parameters will not cause an error
+  /// but users will see an unparsed ${parameter}.
+  ///
+  /// It is allowed to override only selected keys.
+  /// Calling this method multiple times will delete the old overrides.
+  ///
   /// Please do a try-catch to prevent app crashes!
   void overrideTranslations({
     required E locale,
@@ -283,12 +291,12 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
   }
 
   /// Overrides existing translations of [locale] with new ones from the [map].
-  /// Please do a try-catch to prevent app crashes!
   ///
   /// If [isFlatMap] is true, then the keys of the map are interpreted as paths.
   /// E.g. {'myPath.toKey': 'Updated Text'}
-  ///
   /// If [isFlatMap] is false, then the structure is like a parsed json.
+  ///
+  /// Please do a try-catch to prevent app crashes!
   void overrideTranslationsFromMap({
     required E locale,
     required bool isFlatMap,
