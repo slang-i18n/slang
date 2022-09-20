@@ -604,9 +604,9 @@ String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 
 ### ➤ Modifiers
 
-Modifiers are flags or attributes written next to the key.
+There are multiple modifiers for further adjustments.
 
-You can combine multiple modifiers like this:
+You can combine multiple modifiers with commas like this:
 
 ```json
 {
@@ -952,7 +952,7 @@ final t = AppLocale.en.translations; // get translations of one locale
 
 ### ➤ Translation Overrides
 
-This is useful if you want to update translations dynamically (e.g. via backend server).
+You may want to update translations dynamically (e.g. via backend server over network).
 
 You can only update existing translations.
 
