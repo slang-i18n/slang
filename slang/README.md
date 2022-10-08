@@ -1275,7 +1275,7 @@ flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n]
 
 | Argument         | Usage                                                  |
 |------------------|--------------------------------------------------------|
-| `--split`        | Generate multiple files for each locale                |
+| `--split`        | Generate json for each locale                          |
 | `--flat`         | Generate parent as path to reduce nesting              |
 | `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
 
@@ -1386,7 +1386,7 @@ flutter pub run slang:watch
 
 ## Integrations
 
-### ➤ slang X riverpod
+### ➤ slang x riverpod
 
 **Method A: Use static getter**
 
