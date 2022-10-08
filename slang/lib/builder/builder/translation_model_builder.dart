@@ -43,6 +43,7 @@ class TranslationModelBuilder {
     final resultNodeTree = _parseMapNode(
       localeDebug: localeDebug,
       parentPath: '',
+      parentRawPath: '',
       curr: map,
       config: buildConfig,
       keyCase: buildConfig.keyCase,
@@ -152,6 +153,7 @@ class TranslationModelBuilder {
     // imaginary root node
     final root = ObjectNode(
       path: '',
+      rawPath: '',
       comment: null,
       entries: resultNodeTree,
       isMap: false,
@@ -180,6 +182,7 @@ class TranslationModelBuilder {
 Map<String, Node> _parseMapNode({
   required String localeDebug,
   required String parentPath,
+  required String parentRawPath,
   required Map<String, dynamic> curr,
   required BuildModelConfig config,
   required CaseStyle? keyCase,
@@ -199,6 +202,8 @@ Map<String, Node> _parseMapNode({
     // the part after '(' is considered as the modifier
     key = key.split('(').first.toCase(keyCase);
     final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
+    final currRawPath =
+        parentRawPath.isNotEmpty ? '$parentRawPath.$originalKey' : originalKey;
 
     // parse comment
     final String? comment;
@@ -224,6 +229,7 @@ Map<String, Node> _parseMapNode({
       final textNode = originalKey.endsWith('(rich)')
           ? RichTextNode(
               path: currPath,
+              rawPath: currRawPath,
               raw: value.toString(),
               comment: comment,
               interpolation: config.stringInterpolation,
@@ -231,6 +237,7 @@ Map<String, Node> _parseMapNode({
             )
           : StringTextNode(
               path: currPath,
+              rawPath: currRawPath,
               raw: value.toString(),
               comment: comment,
               interpolation: config.stringInterpolation,
@@ -250,6 +257,7 @@ Map<String, Node> _parseMapNode({
         children = _parseMapNode(
           localeDebug: localeDebug,
           parentPath: currPath,
+          parentRawPath: currRawPath,
           curr: listAsMap,
           config: config,
           keyCase: config.keyCase,
@@ -259,6 +267,7 @@ Map<String, Node> _parseMapNode({
         // finally only take their values, ignoring keys
         final node = ListNode(
           path: currPath,
+          rawPath: currRawPath,
           comment: comment,
           entries: children.values.toList(),
         );
@@ -269,6 +278,7 @@ Map<String, Node> _parseMapNode({
         final children = _parseMapNode(
           localeDebug: localeDebug,
           parentPath: currPath,
+          parentRawPath: currRawPath,
           curr: value,
           config: config,
           keyCase: config.keyCase != config.keyMapCase &&
@@ -320,6 +330,7 @@ Map<String, Node> _parseMapNode({
             digestedMap = _parseMapNode(
               localeDebug: localeDebug,
               parentPath: currPath,
+              parentRawPath: currRawPath,
               curr: {
                 for (final cKey in digestedMap.keys)
                   cKey._withModifier('rich'): value[cKey],
@@ -334,6 +345,7 @@ Map<String, Node> _parseMapNode({
             final context = detectedType.contextHint!;
             node = ContextNode(
               path: currPath,
+              rawPath: currRawPath,
               comment: comment,
               context: context,
               entries: digestedMap,
@@ -343,6 +355,7 @@ Map<String, Node> _parseMapNode({
           } else {
             node = PluralNode(
               path: currPath,
+              rawPath: currRawPath,
               comment: comment,
               pluralType: detectedType.nodeType == _DetectionType.pluralCardinal
                   ? PluralType.cardinal
@@ -359,6 +372,7 @@ Map<String, Node> _parseMapNode({
         } else {
           node = ObjectNode(
             path: currPath,
+            rawPath: currRawPath,
             comment: comment,
             entries: children,
             isMap: detectedType.nodeType == _DetectionType.map,

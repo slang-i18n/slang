@@ -41,6 +41,19 @@ class PathUtils {
       return path.substring(0, index + pathSeparator.length) + newFileName;
     }
   }
+
+  /// converts /some/path to /some/path/my_file.json
+  static String withFileName({
+    required String directoryPath,
+    required String fileName,
+    required String pathSeparator,
+  }) {
+    if (directoryPath.endsWith(pathSeparator)) {
+      return directoryPath + fileName;
+    } else {
+      return directoryPath + pathSeparator + fileName;
+    }
+  }
 }
 
 class BuildResultPaths {

@@ -8,6 +8,7 @@ StringTextNode textNode(
 ]) {
   return StringTextNode(
     path: '',
+    rawPath: '',
     raw: raw,
     comment: null,
     interpolation: interpolation,
@@ -22,6 +23,7 @@ RichTextNode richTextNode(
 ]) {
   return RichTextNode(
     path: '',
+    rawPath: '',
     comment: null,
     raw: raw,
     interpolation: interpolation,

@@ -11,6 +11,7 @@ abstract class Node {
   static const KEY_DELIMITER = ','; // used by plural or context
 
   final String path;
+  final String rawPath; // including modifiers
   final String? comment;
   Node? _parent;
 
@@ -18,6 +19,7 @@ abstract class Node {
 
   Node({
     required this.path,
+    required this.rawPath,
     required this.comment,
   });
 
@@ -40,6 +42,7 @@ abstract class IterableNode extends Node {
 
   IterableNode({
     required super.path,
+    required super.rawPath,
     required super.comment,
     required String genericType,
   }) : _genericType = genericType;
@@ -60,6 +63,7 @@ class ObjectNode extends IterableNode {
 
   ObjectNode({
     required super.path,
+    required super.rawPath,
     required super.comment,
     required this.entries,
     required this.isMap,
@@ -78,6 +82,7 @@ class ListNode extends IterableNode {
 
   ListNode({
     required super.path,
+    required super.rawPath,
     required super.comment,
     required this.entries,
   }) : super(genericType: _determineGenericType(entries));
@@ -99,6 +104,7 @@ class PluralNode extends Node implements LeafNode {
 
   PluralNode({
     required super.path,
+    required super.rawPath,
     required super.comment,
     required this.pluralType,
     required this.quantities,
@@ -138,6 +144,7 @@ class ContextNode extends Node implements LeafNode {
 
   ContextNode({
     required super.path,
+    required super.rawPath,
     required super.comment,
     required this.context,
     required this.entries,
@@ -195,6 +202,7 @@ abstract class TextNode extends Node implements LeafNode {
 
   TextNode({
     required super.path,
+    required super.rawPath,
     required super.comment,
     required this.raw,
     required this.interpolation,
@@ -233,6 +241,7 @@ class StringTextNode extends TextNode {
 
   StringTextNode({
     required super.path,
+    required super.rawPath,
     required super.raw,
     required super.comment,
     required super.interpolation,
@@ -270,6 +279,7 @@ class StringTextNode extends TextNode {
     // build a temporary TextNode to get the updated content
     final temp = StringTextNode(
       path: path,
+      rawPath: rawPath,
       raw: raw,
       comment: comment,
       interpolation: interpolation,
@@ -312,6 +322,7 @@ class RichTextNode extends TextNode {
 
   RichTextNode({
     required super.path,
+    required super.rawPath,
     required super.raw,
     required super.comment,
     required super.interpolation,
@@ -375,6 +386,7 @@ class RichTextNode extends TextNode {
     // build a temporary TextNode to get the updated content
     final temp = RichTextNode(
       path: path,
+      rawPath: rawPath,
       raw: raw,
       comment: comment,
       interpolation: interpolation,

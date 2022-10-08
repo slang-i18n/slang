@@ -76,6 +76,7 @@ String i = page1.title; // type-safe call
   - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
+  - [Missing Translations](#-missing-translations)
   - [Migration](#-migration)
     - [ARB](#arb)
   - [Statistics](#-statistics)
@@ -1262,6 +1263,27 @@ The main command to generate dart files from translation resources.
 
 ```sh
 flutter pub run slang
+```
+
+### ➤ Missing Translations
+
+Find missing translations and print them into a json file using this command:
+
+```sh
+flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n/analyze]
+```
+
+Result file:
+
+```json5
+{
+  "de": {
+    "mainScreen": {
+      "login": "This translation is missing, showing base translation here"
+    }
+  },
+  "fr": {} // everything ok
+}
 ```
 
 ### ➤ Migration

@@ -125,8 +125,8 @@ class TranslationMapBuilder {
     }
 
     if (translationMap
-        .getEntries()
-        .every((locale) => locale.key != rawConfig.baseLocale)) {
+        .getLocales()
+        .every((locale) => locale != rawConfig.baseLocale)) {
       if (verbose) {
         print('');
       }

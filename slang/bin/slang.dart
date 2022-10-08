@@ -6,9 +6,19 @@ import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
-import 'package:slang/builder/stats_facade.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
+
+import 'analyze.dart';
+import 'stats.dart';
+
+/// Determines what the runner will do
+enum RunnerMode {
+  generate, // default
+  watch, // generate on change
+  stats, // print translation stats
+  analyze, // generate missing translations
+}
 
 /// To run this:
 /// -> flutter pub run slang
@@ -16,29 +26,39 @@ import 'package:slang/builder/utils/path_utils.dart';
 /// Scans translation files and builds the dart file.
 /// This is usually faster than the build_runner implementation.
 void main(List<String> arguments) async {
-  final bool watchMode;
-  final bool statsMode;
+  final RunnerMode mode;
   final bool verbose;
   if (arguments.isNotEmpty) {
-    watchMode = arguments[0] == 'watch';
-    statsMode = arguments[0] == 'stats';
-    verbose = !statsMode ||
+    switch (arguments[0]) {
+      case 'watch':
+        mode = RunnerMode.watch;
+        break;
+      case 'stats':
+        mode = RunnerMode.stats;
+        break;
+      case 'analyze':
+        mode = RunnerMode.analyze;
+        break;
+      default:
+        mode = RunnerMode.generate;
+    }
+    verbose = mode == RunnerMode.generate ||
+        mode == RunnerMode.watch ||
         (arguments.length == 2 &&
             (arguments[1] == '-v' || arguments[1] == '--verbose'));
   } else {
-    watchMode = false;
-    statsMode = false;
+    mode = RunnerMode.generate;
     verbose = true;
   }
 
-  if (statsMode) {
-    print('Scanning translations...\n');
-  } else {
+  if (mode == RunnerMode.generate || mode == RunnerMode.watch) {
     print('Generating translations...\n');
+  } else {
+    print('Scanning translations...\n');
   }
 
   final stopwatch = Stopwatch();
-  if (!watchMode) {
+  if (mode != RunnerMode.watch) {
     // only run stopwatch if generating once
     stopwatch.start();
   }
@@ -80,15 +100,16 @@ void main(List<String> arguments) async {
     return true;
   }).toList();
 
-  if (watchMode) {
+  if (mode == RunnerMode.watch) {
     await watchTranslations(config: config, files: files);
   } else {
     await generateTranslations(
+      mode: mode,
       rawConfig: config,
       files: files,
       verbose: verbose,
       stopwatch: stopwatch,
-      statsMode: statsMode,
+      arguments: arguments,
     );
   }
 }
@@ -161,6 +182,7 @@ Future<void> watchTranslations({
   final stream = inputDirectory.watch(events: FileSystemEvent.all);
 
   await generateTranslations(
+    mode: RunnerMode.watch,
     rawConfig: config,
     files: files,
     verbose: false,
@@ -177,6 +199,7 @@ Future<void> watchTranslations({
               item is File && item.path.endsWith(config.inputFilePattern))
           .toList();
       await generateTranslations(
+        mode: RunnerMode.watch,
         rawConfig: config,
         files: newFiles,
         verbose: false,
@@ -189,11 +212,12 @@ Future<void> watchTranslations({
 /// Reads the translations from hard drive and generates the g.dart file
 /// The [files] are already filtered (only translation files!).
 Future<void> generateTranslations({
+  required RunnerMode mode,
   required RawConfig rawConfig,
   required List<FileSystemEntity> files,
   required bool verbose,
   Stopwatch? stopwatch,
-  bool statsMode = false,
+  List<String>? arguments,
 }) async {
   // STEP 1: determine base name and output file name / path
   final String outputFilePath;
@@ -229,15 +253,24 @@ Future<void> generateTranslations({
     verbose: verbose,
   );
 
-  // STATS MODE
-  if (statsMode) {
-    StatsFacade.parse(
+  if (mode == RunnerMode.stats) {
+    getStats(
       rawConfig: rawConfig,
       translationMap: translationMap,
     ).printResult();
     if (stopwatch != null) {
       print('');
       print('Scan done. (${stopwatch.elapsed})');
+    }
+    return; // skip generation
+  } else if (mode == RunnerMode.analyze) {
+    generateMissingTranslations(
+      rawConfig: rawConfig,
+      translationMap: translationMap,
+      arguments: arguments ?? [],
+    );
+    if (stopwatch != null) {
+      print('Analysis done. (${stopwatch.elapsed})');
     }
     return; // skip generation
   }
