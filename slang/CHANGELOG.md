@@ -1,3 +1,7 @@
+## 3.1.0
+
+- feat: add command `flutter pub run slang:analyze` to report missing translations
+
 ## 3.0.0
 
 **Translation Overrides and Enhanced Modifiers**

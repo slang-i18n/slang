@@ -1270,8 +1270,14 @@ flutter pub run slang
 Find missing translations and print them into a json file using this command:
 
 ```sh
-flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n/analyze]
+flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n]
 ```
+
+| Argument         | Usage                                                  |
+|------------------|--------------------------------------------------------|
+| `--split`        | Generate multiple files for each locale                |
+| `--flat`         | Generate parent as path to reduce nesting              |
+| `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
 
 Result file:
 
