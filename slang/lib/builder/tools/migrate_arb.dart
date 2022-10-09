@@ -154,7 +154,7 @@ List<_DetectedContext> _digestEntry(
         final partContent = part.group(2)!;
         MapUtils.addItemToMap(
           map: resultMap,
-          destinationPath: '$basePath($variable).$partName',
+          destinationPath: '$basePath(param=$variable).$partName',
           item: _digestLeafText(partContent),
         );
         if (enumValues != null) {
