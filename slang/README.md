@@ -841,7 +841,7 @@ contexts:
     default_parameter: type # by default: "context"
 ```
 
-You already have existing enums? You can disable enum generation and import them instead:
+You already have an existing enum? Import it instead!
 
 ```yaml
 # Config
@@ -899,7 +899,7 @@ interfaces:
   ChangeData: onboarding.whatsNew.*
 ```
 
-This would create the following mixin:
+The following mixin will be automatically generated for you:
 
 ```dart
 mixin ChangeData {
@@ -908,7 +908,7 @@ mixin ChangeData {
 }
 ```
 
-Now you can access these fields by using polymorphism:
+Now you can access these fields using polymorphism:
 
 ```dart
 // before: without interfaces
@@ -957,8 +957,6 @@ final t = AppLocale.en.translations; // get translations of one locale
 
 You may want to update translations dynamically (e.g. via backend server over network).
 
-You can only update existing translations.
-
 Set the following configuration:
 
 ```yaml
@@ -982,6 +980,13 @@ onboarding
 // access
 String a = t.onboarding.title(name: 'Tom'); // "Welcome Tom"
 ```
+
+A few remarks:
+
+1. New translations will be parsed but have no effect.
+2. New parameters stay unparsed. (i.e. `{name}` stays `{name}`)
+3. Missing translations will use translations **before** the override.
+4. Overriding a second time reverts the last override.
 
 ### ➤ Dependency Injection
 
@@ -1267,7 +1272,9 @@ flutter pub run slang
 
 ### ➤ Missing Translations
 
-Find missing translations and print them into a json file using this command:
+Using `fallback_strategy: base_locale` may result in missing translations.
+
+You print them into a json file via this command:
 
 ```sh
 flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n]
