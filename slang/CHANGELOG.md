@@ -1,3 +1,7 @@
+## next
+
+- fix: handle `isFlatMap` parameter when overriding translations correctly
+
 ## 3.1.0
 
 - feat: add command `flutter pub run slang:analyze` to report missing translations
