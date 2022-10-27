@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -6,14 +5,13 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
-import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 import 'slang.dart' as mainRunner;
+import 'utils.dart' as utils;
 
 const _file_prefix = 'missing_translations';
-const _encoder = JsonEncoder.withIndent('  ');
 final _setEquality = SetEquality();
 
 void main(List<String> arguments) async {
@@ -53,19 +51,20 @@ void generateMissingTranslations({
         fileName: _file_prefix +
             '_' +
             entry.key.languageTag.replaceAll('-', '_') +
-            '.json',
+            '.${rawConfig.fileType.name}',
         pathSeparator: Platform.pathSeparator,
       );
-      FileUtils.writeFile(
+      utils.writeFile(
+        fileType: rawConfig.fileType,
         path: path,
-        content: _encoder.convert({
+        content: {
           ..._getInfoHeader(
             baseLocale: rawConfig.baseLocale,
             currLocale: entry.key,
             isEmpty: entry.value.isEmpty,
           ),
           ...entry.value,
-        }),
+        },
       );
       print(' -> $path');
     }
@@ -73,19 +72,20 @@ void generateMissingTranslations({
     // join to one single file
     final path = PathUtils.withFileName(
       directoryPath: outDir,
-      fileName: '$_file_prefix.json',
+      fileName: '$_file_prefix.${rawConfig.fileType.name}',
       pathSeparator: Platform.pathSeparator,
     );
-    FileUtils.writeFile(
+    utils.writeFile(
+      fileType: rawConfig.fileType,
       path: path,
-      content: _encoder.convert({
+      content: {
         ..._getInfoHeader(
           baseLocale: rawConfig.baseLocale,
           currLocale: null,
           isEmpty: result.values.every((v) => v.isEmpty),
         ),
         for (final entry in result.entries) entry.key.languageTag: entry.value,
-      }),
+      },
     );
     print('Output: $path');
   }
@@ -231,7 +231,7 @@ Map<String, List<String>> _getInfoHeader({
   required bool isEmpty,
 }) {
   return {
-    '@@info': [
+    utils.INFO_KEY: [
       'Here are translations that exist in <${baseLocale.languageTag}> but not in ${currLocale != null ? '<${currLocale.languageTag}>' : 'secondary locales'}.',
       'After editing this file, you can run \'flutter pub run slang:apply\' to quickly apply the newly added translations.',
       if (isEmpty) 'Congratulations! There are no missing translations! :)',

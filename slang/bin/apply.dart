@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -11,8 +10,8 @@ import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 
 import 'slang.dart' as mainRunner;
+import 'utils.dart' as utils;
 
-const _encoder = JsonEncoder.withIndent('  ');
 const _supportedFiles = [FileType.json, FileType.yaml];
 
 void main(List<String> arguments) async {
@@ -90,7 +89,7 @@ Future<void> applyTranslations({
     } else {
       // handle file containing multiple locales
       for (final entry in parsedContent.entries) {
-        if (entry.key.startsWith('@@info')) {
+        if (entry.key.startsWith(utils.INFO_KEY)) {
           continue;
         }
 
@@ -223,7 +222,11 @@ void _applyTranslationsForFile({
     isFlatMap: isFlatMap,
   );
 
-  existingFile.writeAsStringSync(_encoder.convert(parsedContent));
+  utils.writeFile(
+    fileType: fileType,
+    path: existingFile.path,
+    content: parsedContent,
+  );
   _printApplyingDestination(existingFile);
 }
 
