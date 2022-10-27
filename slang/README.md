@@ -489,7 +489,7 @@ Hello {{name}}
 
 ### ➤ RichText
 
-Make part of your text bold or turn it into a different color? Need inline links? `TextSpan` will help!
+You can add multiple styles to one translation.
 
 To do this, please add the `(rich)` modifier.
 
@@ -499,7 +499,7 @@ Default text can be defined via brackets `(...)`, e.g. `underline(here)`.
 
 ```json
 {
-  "myText(rich)": "Welcome $name. Please click ${underline(here)}!"
+  "myText(rich)": "Welcome $name. Please click ${tapHere(here)}!"
 }
 ```
 
@@ -512,7 +512,7 @@ Widget a = Text.rich(t.myText(
   name: TextSpan(text: 'Tom', style: TextStyle(color: Colors.blue)),
   
   // Turn 'here' into a link
-  underline: (text) => TextSpan(
+  tapHere: (text) => TextSpan(
     text: text,
     style: TextStyle(color: Colors.blue),
     recognizer: TapGestureRecognizer()..onTap=(){
@@ -1275,7 +1275,7 @@ flutter pub run slang
 
 Using `fallback_strategy: base_locale` may result in missing translations.
 
-You print them into a json file via this command:
+You print them into a JSON / YAML file via this command:
 
 ```sh
 flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n]
@@ -1305,6 +1305,8 @@ Result file:
 The follow-up command for `flutter pub run slang:analyze`.
 
 It reads the "missing translations" file and adds the translations to the original files.
+
+Currently, only JSON and YAML are supported.
 
 ```sh
 flutter pub run slang:apply [--flat] [--outdir=assets/i18n]
