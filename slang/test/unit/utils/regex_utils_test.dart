@@ -221,4 +221,32 @@ void main() {
       expect(match?.group(2), 'bb {hello} yeah {hi}');
     });
   });
+
+  group('missingTranslationsFileRegex', () {
+    RegExp regex = RegexUtils.missingTranslationsFileRegex;
+
+    test('without locale', () {
+      RegExpMatch? match = regex.firstMatch('missing_translations.json');
+      expect(match?.group(1), null);
+      expect(match?.group(2), 'json');
+    });
+
+    test('with locale', () {
+      RegExpMatch? match = regex.firstMatch('missing_translations_fr-FR.json');
+      expect(match?.group(1), 'fr-FR');
+      expect(match?.group(2), 'json');
+    });
+
+    test('yaml file', () {
+      RegExpMatch? match = regex.firstMatch('missing_translations.yaml');
+      expect(match?.group(1), null);
+      expect(match?.group(2), 'yaml');
+    });
+
+    test('csv file', () {
+      RegExpMatch? match = regex.firstMatch('missing_translations.csv');
+      expect(match?.group(1), null);
+      expect(match?.group(2), 'csv');
+    });
+  });
 }

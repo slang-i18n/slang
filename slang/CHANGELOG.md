@@ -1,5 +1,6 @@
-## next
+## 3.2.0
 
+- feat: add command `flutter pub run slang:apply` to add translations from the `slang:analyze` result
 - fix: handle `isFlatMap` parameter when overriding translations correctly
 - fix: update arb migration tool to respect new modifier syntax
 

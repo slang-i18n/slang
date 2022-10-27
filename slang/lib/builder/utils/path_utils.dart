@@ -15,7 +15,7 @@ class PathUtils {
   /// converts /some/path/file.i18n.json to i18n.json
   static String getFileExtension(String path) {
     final fileName = getFileName(path);
-    final firstDot = fileName.indexOf('.');
+    final firstDot = fileName.lastIndexOf('.');
     return fileName.substring(firstDot + 1);
   }
 

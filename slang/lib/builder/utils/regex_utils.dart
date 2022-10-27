@@ -78,4 +78,12 @@ class RegexUtils {
   /// 2 - His birthday
   static RegExp arbComplexNodeContent =
       RegExp(r'((?:=|\w)+){((?:[^}{]+|{[^}]+})+)}');
+
+  /// Matches any missing translations file
+  /// missing_translations.json, missing_translations_de-DE.json
+  ///
+  /// 1 - de-DE
+  /// 2 - json
+  static RegExp missingTranslationsFileRegex =
+      RegExp(r'^missing_translations(?:_(.*))?\.(json|yaml|csv)$');
 }

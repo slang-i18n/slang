@@ -58,15 +58,19 @@ void generateMissingTranslations({
       );
       FileUtils.writeFile(
         path: path,
-        content: _encoder.convert(entry.value),
+        content: _encoder.convert({
+          ..._getInfoHeader(
+            baseLocale: rawConfig.baseLocale,
+            currLocale: entry.key,
+            isEmpty: entry.value.isEmpty,
+          ),
+          ...entry.value,
+        }),
       );
       print(' -> $path');
     }
   } else {
     // join to one single file
-    final map = {
-      for (final entry in result.entries) entry.key.languageTag: entry.value,
-    };
     final path = PathUtils.withFileName(
       directoryPath: outDir,
       fileName: '$_file_prefix.json',
@@ -74,7 +78,14 @@ void generateMissingTranslations({
     );
     FileUtils.writeFile(
       path: path,
-      content: _encoder.convert(map),
+      content: _encoder.convert({
+        ..._getInfoHeader(
+          baseLocale: rawConfig.baseLocale,
+          currLocale: null,
+          isEmpty: result.values.every((v) => v.isEmpty),
+        ),
+        for (final entry in result.entries) entry.key.languageTag: entry.value,
+      }),
     );
     print('Output: $path');
   }
@@ -212,4 +223,18 @@ bool _checkEquality(Node? a, Node? b) {
   }
 
   return true;
+}
+
+Map<String, List<String>> _getInfoHeader({
+  required I18nLocale baseLocale,
+  required I18nLocale? currLocale,
+  required bool isEmpty,
+}) {
+  return {
+    '@@info': [
+      'Here are translations that exist in <${baseLocale.languageTag}> but not in ${currLocale != null ? '<${currLocale.languageTag}>' : 'secondary locales'}.',
+      'After editing this file, you can run \'flutter pub run slang:apply\' to quickly apply the newly added translations.',
+      if (isEmpty) 'Congratulations! There are no missing translations! :)',
+    ]
+  };
 }

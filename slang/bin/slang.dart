@@ -10,6 +10,7 @@ import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 import 'analyze.dart';
+import 'apply.dart';
 import 'stats.dart';
 
 /// Determines what the runner will do
@@ -18,6 +19,7 @@ enum RunnerMode {
   watch, // generate on change
   stats, // print translation stats
   analyze, // generate missing translations
+  apply, // apply translations from analyze
 }
 
 /// To run this:
@@ -39,6 +41,9 @@ void main(List<String> arguments) async {
       case 'analyze':
         mode = RunnerMode.analyze;
         break;
+      case 'apply':
+        mode = RunnerMode.apply;
+        break;
       default:
         mode = RunnerMode.generate;
     }
@@ -51,10 +56,18 @@ void main(List<String> arguments) async {
     verbose = true;
   }
 
-  if (mode == RunnerMode.generate || mode == RunnerMode.watch) {
-    print('Generating translations...\n');
-  } else {
-    print('Scanning translations...\n');
+  switch (mode) {
+    case RunnerMode.generate:
+    case RunnerMode.watch:
+      print('Generating translations...\n');
+      break;
+    case RunnerMode.stats:
+    case RunnerMode.analyze:
+      print('Scanning translations...\n');
+      break;
+    case RunnerMode.apply:
+      print('Applying translations...\n');
+      break;
   }
 
   final stopwatch = Stopwatch();
@@ -90,27 +103,31 @@ void main(List<String> arguments) async {
     );
   }
 
-  // filter files according to build config
-  files = files.where((file) {
-    if (!file.path.endsWith(config.inputFilePattern)) return false;
+  // filter files according to file pattern
+  files = files
+      .where((file) => file.path.endsWith(config.inputFilePattern))
+      .toList();
 
-    if (config.inputDirectory != null &&
-        !file.path.contains(config.inputDirectory!)) return false;
-
-    return true;
-  }).toList();
-
-  if (mode == RunnerMode.watch) {
-    await watchTranslations(config: config, files: files);
-  } else {
-    await generateTranslations(
-      mode: mode,
-      rawConfig: config,
-      files: files,
-      verbose: verbose,
-      stopwatch: stopwatch,
-      arguments: arguments,
-    );
+  // the actual runner
+  switch (mode) {
+    case RunnerMode.apply:
+      await applyTranslations(rawConfig: config, arguments: arguments);
+      break;
+    case RunnerMode.watch:
+      await watchTranslations(config: config, files: files);
+      break;
+    case RunnerMode.generate:
+    case RunnerMode.stats:
+    case RunnerMode.analyze:
+      await generateTranslations(
+        mode: mode,
+        rawConfig: config,
+        files: files,
+        verbose: verbose,
+        stopwatch: stopwatch,
+        arguments: arguments,
+      );
+      break;
   }
 }
 

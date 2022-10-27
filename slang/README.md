@@ -77,6 +77,7 @@ String i = page1.title; // type-safe call
 - [Tools](#tools)
   - [Main Command](#-main-command)
   - [Missing Translations](#-missing-translations)
+  - [Apply Translations](#-apply-translations)
   - [Migration](#-migration)
     - [ARB](#arb)
   - [Statistics](#-statistics)
@@ -1298,6 +1299,21 @@ Result file:
   "fr": {} // everything ok
 }
 ```
+
+### ➤ Apply Translations
+
+The follow-up command for `flutter pub run slang:analyze`.
+
+It reads the "missing translations" file and adds the translations to the original files.
+
+```sh
+flutter pub run slang:apply [--flat] [--outdir=assets/i18n]
+```
+
+| Argument         | Usage                                                  |
+|------------------|--------------------------------------------------------|
+| `--flat`         | Missing translations file is in flat format            |
+| `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
 
 ### ➤ Migration
 
