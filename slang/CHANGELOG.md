@@ -1,6 +1,7 @@
 ## next
 
 - fix: handle `isFlatMap` parameter when overriding translations correctly
+- fix: update arb migration tool to respect new modifier syntax
 
 ## 3.1.0
 
