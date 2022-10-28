@@ -1303,7 +1303,7 @@ Result file:
 
 ### ➤ Apply Translations
 
-The follow-up command for `flutter pub run slang:analyze`.
+The follow-up command for `flutter pub run slang analyze`.
 
 It reads the `_missing_translations` file and adds the translations to the original files.
 
