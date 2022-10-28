@@ -76,7 +76,7 @@ String i = page1.title; // type-safe call
   - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
-  - [Missing Translations](#-missing-translations)
+  - [Missing and Unused Translations](#-missing-and-unused-translations)
   - [Apply Translations](#-apply-translations)
   - [Migration](#-migration)
     - [ARB](#arb)
@@ -88,8 +88,6 @@ String i = page1.title; // type-safe call
 - [Further Reading](#further-reading)
 
 ## Getting Started
-
-It may be easier if you checkout [tutorials](#tutorials) in your language.
 
 Coming from ARB? There is a [tool](#arb) for that.
 
@@ -111,8 +109,6 @@ dev_dependencies:
 
 Create these files inside your `lib` directory. For example, `lib/i18n`.
 
-YAML and CSV files are also supported (see [File Types](#-file-types)).
-
 Writing translations into assets folder requires extra configuration (see [FAQ](#faq)).
 
 Format:
@@ -120,7 +116,7 @@ Format:
 <namespace>_<locale?>.<extension>
 ```
 
-You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings` or `translations`.
+You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings`.
 
 Example:
 ```text
@@ -1271,11 +1267,11 @@ The main command to generate dart files from translation resources.
 flutter pub run slang
 ```
 
-### ➤ Missing Translations
+### ➤ Missing and Unused Translations
 
-Using `fallback_strategy: base_locale` may result in missing translations.
+You can find missing and unused translations by running a single command.
 
-You print them into a JSON / YAML file via this command:
+Missing translations only occurs when `fallback_strategy: base_locale` is used.
 
 ```sh
 flutter pub run slang analyze [--split] [--flat] [--full] [--outdir=assets/i18n]
@@ -1283,7 +1279,7 @@ flutter pub run slang analyze [--split] [--flat] [--full] [--outdir=assets/i18n]
 
 | Argument         | Usage                                                  |
 |------------------|--------------------------------------------------------|
-| `--split`        | Generate json for each locale                          |
+| `--split`        | Generate for each locale                               |
 | `--flat`         | Generate parent as path to reduce nesting              |
 | `--full`         | Find unused translations in whole source code          |
 | `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
