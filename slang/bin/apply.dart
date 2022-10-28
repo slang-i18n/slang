@@ -315,6 +315,6 @@ void _printApplyingDestination(File file) {
   print('    -> Update ${file.path}');
 }
 
-void _printAdding(String path, String value) {
+void _printAdding(String path, Object value) {
   print('    -> Set [$path] "$value"');
 }
