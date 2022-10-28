@@ -1,24 +1,26 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/utils/map_utils.dart';
+import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 import 'slang.dart' as mainRunner;
 import 'utils.dart' as utils;
 
-const _file_prefix = 'missing_translations';
 final _setEquality = SetEquality();
 
 void main(List<String> arguments) async {
   mainRunner.main(['analyze', ...arguments]);
 }
 
-void generateMissingTranslations({
+void analyzeTranslations({
   required RawConfig rawConfig,
   required TranslationMap translationMap,
   required List<String> arguments,
@@ -35,67 +37,10 @@ void generateMissingTranslations({
       throw 'input_directory or --outdir=<path> must be specified.';
     }
   }
+  final flat = arguments.contains('--flat');
+  final split = arguments.contains('--split');
+  final full = arguments.contains('--full');
 
-  final result = getMissingTranslations(
-    rawConfig: rawConfig,
-    translationMap: translationMap,
-    flat: arguments.contains('--flat'),
-  );
-
-  if (arguments.contains('--split')) {
-    // multiple files (split by locale)
-    print('Output:');
-    for (final entry in result.entries) {
-      final path = PathUtils.withFileName(
-        directoryPath: outDir,
-        fileName: _file_prefix +
-            '_' +
-            entry.key.languageTag.replaceAll('-', '_') +
-            '.${rawConfig.fileType.name}',
-        pathSeparator: Platform.pathSeparator,
-      );
-      utils.writeFile(
-        fileType: rawConfig.fileType,
-        path: path,
-        content: {
-          ..._getInfoHeader(
-            baseLocale: rawConfig.baseLocale,
-            currLocale: entry.key,
-            isEmpty: entry.value.isEmpty,
-          ),
-          ...entry.value,
-        },
-      );
-      print(' -> $path');
-    }
-  } else {
-    // join to one single file
-    final path = PathUtils.withFileName(
-      directoryPath: outDir,
-      fileName: '$_file_prefix.${rawConfig.fileType.name}',
-      pathSeparator: Platform.pathSeparator,
-    );
-    utils.writeFile(
-      fileType: rawConfig.fileType,
-      path: path,
-      content: {
-        ..._getInfoHeader(
-          baseLocale: rawConfig.baseLocale,
-          currLocale: null,
-          isEmpty: result.values.every((v) => v.isEmpty),
-        ),
-        for (final entry in result.entries) entry.key.languageTag: entry.value,
-      },
-    );
-    print('Output: $path');
-  }
-}
-
-Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
-  required RawConfig rawConfig,
-  required TranslationMap translationMap,
-  required bool flat,
-}) {
   // build translation model
   final translationModelList = translationMap.toI18nModel(rawConfig);
   final baseTranslations =
@@ -104,6 +49,65 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
     throw 'There are no base translations. Could not found ${rawConfig.baseLocale.languageTag} in ${translationModelList.map((e) => e.locale.languageTag)}';
   }
 
+  final missingTranslationsResult = _getMissingTranslations(
+    rawConfig: rawConfig,
+    translationModelList: translationModelList,
+    baseTranslations: baseTranslations,
+    flat: flat,
+  );
+
+  _writeMap(
+    outDir: outDir,
+    fileNamePrefix: '_missing_translations',
+    fileType: rawConfig.fileType,
+    split: split,
+    info: (locale, localeMap) {
+      return [
+        'Here are translations that exist in <${rawConfig.baseLocale.languageTag}> but not in ${locale != null ? '<${locale.languageTag}>' : 'secondary locales'}.',
+        'After editing this file, you can run \'flutter pub run slang:apply\' to quickly apply the newly added translations.',
+        if ((locale == null && localeMap.values.every((v) => v.isEmpty)) ||
+            localeMap.isEmpty)
+          'Congratulations! There are no missing translations! :)',
+      ];
+    },
+    result: missingTranslationsResult,
+  );
+
+  final unusedTranslationsResult = _getUnusedTranslations(
+    rawConfig: rawConfig,
+    translationModelList: translationModelList,
+    baseTranslations: baseTranslations,
+    flat: flat,
+    full: full,
+  );
+
+  _writeMap(
+    outDir: outDir,
+    fileNamePrefix: '_unused_translations',
+    fileType: rawConfig.fileType,
+    split: split,
+    info: (locale, localeMap) {
+      return [
+        'Here are translations that exist in ${locale != null ? '<${locale.languageTag}>' : 'secondary locales'} but not in <${rawConfig.baseLocale.languageTag}>.',
+        if (full)
+          'Translations in <${rawConfig.baseLocale.languageTag}> are not used in \'lib/\' with pattern \'${rawConfig.translateVar}.<path>\' (pragmatic approach).'
+        else
+          'You may run \'flutter pub run slang:analyze --full\' to also check translations not used in the source code.',
+        if ((locale == null && localeMap.values.every((v) => v.isEmpty)) ||
+            localeMap.isEmpty)
+          'Congratulations! There are no unused translations! :)',
+      ];
+    },
+    result: unusedTranslationsResult,
+  );
+}
+
+Map<I18nLocale, Map<String, dynamic>> _getMissingTranslations({
+  required RawConfig rawConfig,
+  required List<I18nData> translationModelList,
+  required I18nData baseTranslations,
+  required bool flat,
+}) {
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
   translationModelList.forEach((localeData) {
@@ -112,7 +116,7 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
     }
 
     final resultMap = <String, dynamic>{};
-    _findMissingTranslations(
+    _getMissingTranslationsForOneLocaleRecursive(
       baseNode: baseTranslations.root,
       curr: localeData.root,
       resultMap: resultMap,
@@ -124,9 +128,44 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
   return result;
 }
 
-/// Finds missing translations of one locale
-/// and add them to [resultMap].
-void _findMissingTranslations({
+Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
+  required RawConfig rawConfig,
+  required List<I18nData> translationModelList,
+  required I18nData baseTranslations,
+  required bool flat,
+  required bool full,
+}) {
+  // use translation model and find missing translations
+  Map<I18nLocale, Map<String, dynamic>> result = {};
+  translationModelList.forEach((localeData) {
+    if (localeData.base) {
+      if (full) {
+        // scans the whole source code
+        result[localeData.locale] = _getUnusedTranslationsInSourceCode(
+          translateVar: rawConfig.translateVar,
+          baseModel: localeData,
+          flat: flat,
+        );
+      }
+      return;
+    }
+
+    final resultMap = <String, dynamic>{};
+    _getMissingTranslationsForOneLocaleRecursive(
+      baseNode: localeData.root,
+      curr: baseTranslations.root,
+      resultMap: resultMap,
+      flat: flat,
+    );
+    result[localeData.locale] = resultMap;
+  });
+
+  return result;
+}
+
+/// Finds translations that exist in [baseNode] but not in [curr].
+/// Adds them to [resultMap].
+void _getMissingTranslationsForOneLocaleRecursive({
   required ObjectNode baseNode,
   required ObjectNode curr,
   required Map<String, dynamic> resultMap,
@@ -136,27 +175,14 @@ void _findMissingTranslations({
     final baseChild = baseEntry.value;
     final currChild = curr.entries[baseEntry.key];
     if (!_checkEquality(baseChild, currChild)) {
-      if (flat) {
-        if (baseChild is TextNode) {
-          resultMap[baseChild.rawPath] = baseChild.raw;
-        } else {
-          final childMap = <String, dynamic>{};
-          _addNode(
-            subIndex: baseChild.path.length + 1,
-            node: baseChild,
-            resultMap: childMap,
-          );
-          resultMap[baseChild.rawPath] = childMap;
-        }
-      } else {
-        _addNode(
-          subIndex: 0,
-          node: baseChild,
-          resultMap: resultMap,
-        );
-      }
+      // add whole base node which is expected
+      _addNode(
+        node: baseChild,
+        flat: flat,
+        resultMap: resultMap,
+      );
     } else if (baseChild is ObjectNode && !baseChild.isMap) {
-      _findMissingTranslations(
+      _getMissingTranslationsForOneLocaleRecursive(
         baseNode: baseChild,
         curr: currChild as ObjectNode,
         resultMap: resultMap,
@@ -166,12 +192,41 @@ void _findMissingTranslations({
   }
 }
 
+void _addNode({
+  required Node node,
+  required bool flat,
+  required Map<String, dynamic> resultMap,
+}) {
+  if (flat) {
+    // raw path -> node (raw path is the key)
+    if (node is TextNode) {
+      resultMap[node.rawPath] = node.raw;
+    } else {
+      final childMap = <String, dynamic>{};
+      _addNodeRecursive(
+        subIndex: node.path.length + 1,
+        node: node,
+        resultMap: childMap,
+      );
+      resultMap[node.rawPath] = childMap;
+    }
+  } else {
+    // add base node as is
+    // intermediate map nodes are automatically created
+    _addNodeRecursive(
+      subIndex: 0,
+      node: node,
+      resultMap: resultMap,
+    );
+  }
+}
+
 /// Adds [node] to the [resultMap]
 /// which includes all children of [node].
 ///
 /// When [subIndex] is greater than zero,
 /// then only a part of the path will be considered.
-void _addNode({
+void _addNodeRecursive({
   required int subIndex,
   required Node node,
   required Map<String, dynamic> resultMap,
@@ -190,19 +245,19 @@ void _addNode({
     );
   } else if (node is ListNode) {
     node.entries.forEach((child) {
-      _addNode(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
     });
   } else if (node is ObjectNode) {
     node.entries.values.forEach((child) {
-      _addNode(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
     });
   } else if (node is PluralNode) {
     node.quantities.values.forEach((child) {
-      _addNode(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
     });
   } else if (node is ContextNode) {
     node.entries.values.forEach((child) {
-      _addNode(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
     });
   } else {
     throw 'This should not happen';
@@ -225,16 +280,90 @@ bool _checkEquality(Node? a, Node? b) {
   return true;
 }
 
-Map<String, List<String>> _getInfoHeader({
-  required I18nLocale baseLocale,
-  required I18nLocale? currLocale,
-  required bool isEmpty,
+/// Scans the whole source code and returns all unused translations
+Map<String, dynamic> _getUnusedTranslationsInSourceCode({
+  required String translateVar,
+  required I18nData baseModel,
+  required bool flat,
 }) {
-  return {
-    utils.INFO_KEY: [
-      'Here are translations that exist in <${baseLocale.languageTag}> but not in ${currLocale != null ? '<${currLocale.languageTag}>' : 'secondary locales'}.',
-      'After editing this file, you can run \'flutter pub run slang:apply\' to quickly apply the newly added translations.',
-      if (isEmpty) 'Congratulations! There are no missing translations! :)',
-    ]
-  };
+  final flatMap = baseModel.root.toFlatMap();
+  final sourceCode = _loadSourceCode();
+  final resultMap = <String, dynamic>{};
+  for (final entry in flatMap.entries) {
+    final translationCall = '$translateVar.${entry.key}';
+    if (!sourceCode.contains(translationCall)) {
+      // add whole base node which is expected
+      _addNode(
+        node: entry.value,
+        flat: flat,
+        resultMap: resultMap,
+      );
+    }
+  }
+  return resultMap;
+}
+
+/// Loads all dart files in lib/
+/// and joins them into a single (huge) string.
+String _loadSourceCode() {
+  final files = Directory('lib')
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((f) => f.path.endsWith('.dart'))
+      .toList();
+
+  final buffer = StringBuffer();
+  for (final file in files) {
+    buffer.writeln(file.readAsStringSync());
+  }
+
+  return buffer.toString();
+}
+
+void _writeMap({
+  required String outDir,
+  required String fileNamePrefix,
+  required FileType fileType,
+  required bool split,
+  required List<String> Function(I18nLocale?, Map localeResult) info,
+  required Map<I18nLocale, Map<String, dynamic>> result,
+}) {
+  if (split) {
+    // multiple files (split by locale)
+    for (final entry in result.entries) {
+      final path = PathUtils.withFileName(
+        directoryPath: outDir,
+        fileName: fileNamePrefix +
+            '_' +
+            entry.key.languageTag.replaceAll('-', '_') +
+            '.${fileType.name}',
+        pathSeparator: Platform.pathSeparator,
+      );
+      utils.writeFile(
+        fileType: fileType,
+        path: path,
+        content: {
+          utils.INFO_KEY: info(entry.key, entry.value),
+          ...entry.value,
+        },
+      );
+      print(' -> $path');
+    }
+  } else {
+    // join to one single file
+    final path = PathUtils.withFileName(
+      directoryPath: outDir,
+      fileName: '$fileNamePrefix.${fileType.name}',
+      pathSeparator: Platform.pathSeparator,
+    );
+    utils.writeFile(
+      fileType: fileType,
+      path: path,
+      content: {
+        utils.INFO_KEY: info(null, result),
+        for (final entry in result.entries) entry.key.languageTag: entry.value,
+      },
+    );
+    print(' -> $path');
+  }
 }

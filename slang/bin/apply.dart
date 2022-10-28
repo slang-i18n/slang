@@ -36,6 +36,8 @@ Future<void> applyTranslations({
   }
   final isFlatMap = arguments.contains('--flat');
 
+  print('Looking for missing translations files in $outDir');
+
   final files =
       Directory(outDir).listSync(recursive: true).whereType<File>().toList();
 
@@ -43,6 +45,11 @@ Future<void> applyTranslations({
     final fileName = PathUtils.getFileName(file.path);
     return RegexUtils.missingTranslationsFileRegex.hasMatch(fileName);
   }).toList();
+
+  if (missingTranslationFiles.isEmpty) {
+    print('Could not find a missing translations file.');
+    return;
+  }
 
   final translationFiles = files
       .where((file) => file.path.endsWith(rawConfig.inputFilePattern))
@@ -74,6 +81,7 @@ Future<void> applyTranslations({
     if (locale != null) {
       // handle splitted file
       if (parsedContent.isEmpty) {
+        _printEmpty(locale.languageTag, file);
         continue;
       }
 
@@ -95,6 +103,7 @@ Future<void> applyTranslations({
 
         final translationMap = entry.value as Map;
         if (translationMap.isEmpty) {
+          _printEmpty(entry.key, file);
           continue;
         }
 
@@ -292,6 +301,10 @@ class FileTypeNotSupportedError extends UnsupportedError {
   FileTypeNotSupportedError(File file)
       : super(
             'The file "${file.path}" has an invalid file extension (supported: json, yaml)');
+}
+
+void _printEmpty(String locale, File file) {
+  print(' -> Found empty <$locale> in ${file.path}');
 }
 
 void _printApplying(I18nLocale locale, File file) {

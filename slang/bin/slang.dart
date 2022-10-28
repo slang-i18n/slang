@@ -281,7 +281,7 @@ Future<void> generateTranslations({
     }
     return; // skip generation
   } else if (mode == RunnerMode.analyze) {
-    generateMissingTranslations(
+    analyzeTranslations(
       rawConfig: rawConfig,
       translationMap: translationMap,
       arguments: arguments ?? [],

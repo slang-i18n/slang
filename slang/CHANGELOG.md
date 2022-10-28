@@ -1,3 +1,8 @@
+## 3.3.0
+
+- feat: `flutter pub run slang analyze` now also checks unused translations (on top of missing translations)
+- docs: prefer `slang analyze` over `slang:analyze` (and for all other commands); both styles are supported however
+
 ## 3.2.0
 
 - feat: add command `flutter pub run slang:apply` to add translations from the `slang:analyze` result

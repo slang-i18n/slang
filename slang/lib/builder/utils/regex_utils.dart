@@ -85,5 +85,5 @@ class RegexUtils {
   /// 1 - de-DE
   /// 2 - json
   static RegExp missingTranslationsFileRegex =
-      RegExp(r'^missing_translations(?:_(.*))?\.(json|yaml|csv)$');
+      RegExp(r'^_missing_translations(?:_(.*))?\.(json|yaml|csv)$');
 }

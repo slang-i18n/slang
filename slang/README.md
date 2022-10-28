@@ -1278,13 +1278,14 @@ Using `fallback_strategy: base_locale` may result in missing translations.
 You print them into a JSON / YAML file via this command:
 
 ```sh
-flutter pub run slang:analyze [--split] [--flat] [--outdir=assets/i18n]
+flutter pub run slang analyze [--split] [--flat] [--full] [--outdir=assets/i18n]
 ```
 
 | Argument         | Usage                                                  |
 |------------------|--------------------------------------------------------|
 | `--split`        | Generate json for each locale                          |
 | `--flat`         | Generate parent as path to reduce nesting              |
+| `--full`         | Find unused translations in whole source code          |
 | `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
 
 Result file:
@@ -1304,12 +1305,12 @@ Result file:
 
 The follow-up command for `flutter pub run slang:analyze`.
 
-It reads the "missing translations" file and adds the translations to the original files.
+It reads the `_missing_translations` file and adds the translations to the original files.
 
 Currently, only JSON and YAML are supported.
 
 ```sh
-flutter pub run slang:apply [--flat] [--outdir=assets/i18n]
+flutter pub run slang apply [--flat] [--outdir=assets/i18n]
 ```
 
 | Argument         | Usage                                                  |
@@ -1324,7 +1325,7 @@ There are some tools to make migration from other i18n solutions easier.
 General migration syntax:
 
 ```sh
-flutter pub run slang:migrate <type> <source> <destination>
+flutter pub run slang migrate <type> <source> <destination>
 ```
 
 #### ARB
@@ -1332,7 +1333,7 @@ flutter pub run slang:migrate <type> <source> <destination>
 Transforms ARB files to compatible JSON format. All descriptions are retained.
 
 ```sh
-flutter pub run slang:migrate arb source.arb destination.json
+flutter pub run slang migrate arb source.arb destination.json
 ```
 
 ARB Input
@@ -1387,7 +1388,7 @@ JSON Result
 There is a command to quickly get the number of words, characters, etc.
 
 ```sh
-flutter pub run slang:stats
+flutter pub run slang stats
 ```
 
 Example console output:
@@ -1406,7 +1407,7 @@ You can let the library rebuild automatically for you.
 The watch function from `build_runner` is **NOT** maintained.
 
 ```sh
-flutter pub run slang:watch
+flutter pub run slang watch
 ```
 
 ## Integrations

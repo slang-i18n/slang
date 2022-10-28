@@ -1,8 +1,7 @@
 import 'package:slang/builder/model/node.dart';
 
 extension NodeFlatter on Node {
-  /// Returns a one-dimensional map containing
-  /// all node types except [ObjectNode] having "isMap: false" which is a class.
+  /// Returns a one-dimensional map containing all nodes.
   Map<String, Node> toFlatMap() {
     final result = <String, Node>{};
     final curr = this;
