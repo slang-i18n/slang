@@ -226,25 +226,25 @@ void main() {
     RegExp regex = RegexUtils.missingTranslationsFileRegex;
 
     test('without locale', () {
-      RegExpMatch? match = regex.firstMatch('missing_translations.json');
+      RegExpMatch? match = regex.firstMatch('_missing_translations.json');
       expect(match?.group(1), null);
       expect(match?.group(2), 'json');
     });
 
     test('with locale', () {
-      RegExpMatch? match = regex.firstMatch('missing_translations_fr-FR.json');
+      RegExpMatch? match = regex.firstMatch('_missing_translations_fr-FR.json');
       expect(match?.group(1), 'fr-FR');
       expect(match?.group(2), 'json');
     });
 
     test('yaml file', () {
-      RegExpMatch? match = regex.firstMatch('missing_translations.yaml');
+      RegExpMatch? match = regex.firstMatch('_missing_translations.yaml');
       expect(match?.group(1), null);
       expect(match?.group(2), 'yaml');
     });
 
     test('csv file', () {
-      RegExpMatch? match = regex.firstMatch('missing_translations.csv');
+      RegExpMatch? match = regex.firstMatch('_missing_translations.csv');
       expect(match?.group(1), null);
       expect(match?.group(2), 'csv');
     });
