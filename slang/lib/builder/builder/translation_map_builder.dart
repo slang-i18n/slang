@@ -69,17 +69,10 @@ class TranslationMapBuilder {
           // directory name could be a locale
           I18nLocale? directoryLocale = null;
           if (rawConfig.namespaces) {
-            final directoryName = PathUtils.getParentDirectory(file.path);
-            if (directoryName != null) {
-              final match = RegexUtils.localeRegex.firstMatch(directoryName);
-              if (match != null) {
-                directoryLocale = I18nLocale(
-                  language: match.group(1)!,
-                  script: match.group(2),
-                  country: match.group(3),
-                );
-              }
-            }
+            directoryLocale = PathUtils.findDirectoryLocale(
+              filePath: file.path,
+              inputDirectory: rawConfig.inputDirectory,
+            );
           }
 
           final locale = directoryLocale ?? rawConfig.baseLocale;

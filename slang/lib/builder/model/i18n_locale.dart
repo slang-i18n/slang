@@ -42,6 +42,9 @@ class I18nLocale {
     return language.hashCode * script.hashCode * country.hashCode;
   }
 
+  @override
+  String toString() => 'I18nLocale($languageTag)';
+
   static I18nLocale fromString(String localeRaw) {
     final match = RegexUtils.localeRegex.firstMatch(localeRaw);
     if (match != null) {

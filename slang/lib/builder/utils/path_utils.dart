@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
+import 'package:slang/builder/utils/regex_utils.dart';
 
 /// Operations on paths
 class PathUtils {
@@ -19,13 +21,58 @@ class PathUtils {
     return fileName.substring(firstDot + 1);
   }
 
+  /// converts /a/b/file.json to [a, b, file.json]
+  static List<String> getPathSegments(String path) {
+    return path
+        .replaceAll('\\', '/')
+        .split('/')
+        .where((s) => s.isNotEmpty)
+        .toList();
+  }
+
   /// converts /a/b/file.json to b
   static String? getParentDirectory(String path) {
-    final segments = path.replaceAll('\\', '/').split('/');
+    final segments = getPathSegments(path);
     if (segments.length == 1) {
       return null;
     }
     return segments[segments.length - 2];
+  }
+
+  /// finds locale in directory path
+  /// eg. /en-US/b/file.json will result in en-US
+  static I18nLocale? findDirectoryLocale(
+      {required String filePath, required String? inputDirectory}) {
+    List<String> segments = PathUtils.getPathSegments(filePath);
+
+    // either first directory after inputDirectory, or last directory
+    RegExpMatch? match = null;
+
+    if (inputDirectory != null) {
+      final inputDirectorySegments = PathUtils.getPathSegments(inputDirectory);
+      if (inputDirectorySegments.isNotEmpty &&
+          inputDirectorySegments.firstOrNull == segments.firstOrNull &&
+          segments.length > inputDirectorySegments.length) {
+        match = RegexUtils.localeRegex
+            .firstMatch(segments[inputDirectorySegments.length]);
+      }
+    } else if (segments.length >= 2) {
+      match = RegexUtils.localeRegex.firstMatch(segments.first);
+    }
+
+    if (match == null && segments.length >= 2) {
+      match = RegexUtils.localeRegex.firstMatch(segments[segments.length - 2]);
+    }
+
+    if (match == null) {
+      return null;
+    }
+
+    return I18nLocale(
+      language: match.group(1)!,
+      script: match.group(2),
+      country: match.group(3),
+    );
   }
 
   /// converts /some/path/file.json to /some/path/newFile.json

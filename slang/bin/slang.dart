@@ -236,6 +236,11 @@ Future<void> generateTranslations({
   Stopwatch? stopwatch,
   List<String>? arguments,
 }) async {
+  if (files.isEmpty) {
+    print('No translation file found.');
+    return;
+  }
+
   // STEP 1: determine base name and output file name / path
   final String outputFilePath;
 

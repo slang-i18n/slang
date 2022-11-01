@@ -139,24 +139,18 @@ void _applyTranslationsForOneLocale({
     final fileNameNoExtension = PathUtils.getFileNameNoExtension(file.path);
     final baseFileMatch =
         RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-    I18nLocale? directoryLocale = null;
-    final directoryName = PathUtils.getParentDirectory(file.path);
-    if (directoryName != null) {
-      final match = RegexUtils.localeRegex.firstMatch(directoryName);
-      if (match != null) {
-        directoryLocale = I18nLocale(
-          language: match.group(1)!,
-          script: match.group(2),
-          country: match.group(3),
-        );
-      }
-    }
 
     if (baseFileMatch != null) {
-      // a file without locale (but locale may be in directory name!)
-      if (directoryLocale == applyLocale ||
-          rawConfig.baseLocale == applyLocale) {
-        fileMap[fileNameNoExtension] = file;
+      if (rawConfig.namespaces) {
+        // a file without locale (but locale may be in directory name!)
+        final directoryLocale = PathUtils.findDirectoryLocale(
+          filePath: file.path,
+          inputDirectory: rawConfig.inputDirectory,
+        );
+        if (directoryLocale == applyLocale ||
+            rawConfig.baseLocale == applyLocale) {
+          fileMap[fileNameNoExtension] = file;
+        }
       }
     } else {
       // a file containing a locale

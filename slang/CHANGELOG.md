@@ -1,3 +1,7 @@
+## 3.3.1
+
+- fix: when namespaces are used, consider more directories (not only parent) for locale detection (e.g. `assets/i18n/en-US/pages/home.json`)
+
 ## 3.3.0
 
 - feat: `flutter pub run slang analyze` now also checks unused translations (on top of missing translations)
