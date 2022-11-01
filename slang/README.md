@@ -76,7 +76,7 @@ String i = page1.title; // type-safe call
   - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
-  - [Missing and Unused Translations](#-missing-and-unused-translations)
+  - [Analyze Translations](#-analyze-translations)
   - [Apply Translations](#-apply-translations)
   - [Migration](#-migration)
     - [ARB](#arb)
@@ -604,7 +604,7 @@ String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 
 ### ➤ Modifiers
 
-There are multiple modifiers for further adjustments.
+There are several modifiers for further adjustments.
 
 You can combine multiple modifiers with commas like this:
 
@@ -1267,11 +1267,11 @@ The main command to generate dart files from translation resources.
 flutter pub run slang
 ```
 
-### ➤ Missing and Unused Translations
+### ➤ Analyze Translations
 
-You can find missing and unused translations by running a single command.
+You can use the slang analyzer to find missing and unused translations.
 
-Missing translations only occurs when `fallback_strategy: base_locale` is used.
+Missing translations only occur when `fallback_strategy: base_locale` is used.
 
 ```sh
 flutter pub run slang analyze [--split] [--flat] [--full] [--outdir=assets/i18n]
