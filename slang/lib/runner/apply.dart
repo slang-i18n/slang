@@ -89,7 +89,7 @@ Future<void> runApplyTranslations({
         continue;
       }
 
-      _printApplying(locale, file);
+      _printReading(locale, file);
 
       _applyTranslationsForOneLocale(
         rawConfig: rawConfig,
@@ -104,12 +104,6 @@ Future<void> runApplyTranslations({
           continue;
         }
 
-        final translationMap = entry.value as Map;
-        if (translationMap.isEmpty) {
-          _printEmpty(entry.key, file);
-          continue;
-        }
-
         final locale = I18nLocale.fromString(entry.key);
 
         if (targetLocale != null && locale != targetLocale) {
@@ -117,7 +111,13 @@ Future<void> runApplyTranslations({
           continue;
         }
 
-        _printApplying(locale, file);
+        final translationMap = entry.value as Map;
+        if (translationMap.isEmpty) {
+          _printEmpty(entry.key, file);
+          continue;
+        }
+
+        _printReading(locale, file);
 
         _applyTranslationsForOneLocale(
           rawConfig: rawConfig,
@@ -288,7 +288,7 @@ void _printIgnore(I18nLocale locale, File file) {
   print(' -> Ignore <${locale.languageTag}> in ${file.path}');
 }
 
-void _printApplying(I18nLocale locale, File file) {
+void _printReading(I18nLocale locale, File file) {
   print(' -> Reading <${locale.languageTag}> from ${file.path}');
 }
 
