@@ -10,8 +10,8 @@ void main() {
   late String expectedOutput;
 
   setUp(() {
-    arbInput = loadResource('migration/arb.arb');
-    expectedOutput = loadResource('migration/arb.json');
+    arbInput = loadResource('tools/arb.arb');
+    expectedOutput = loadResource('tools/arb.json');
   });
 
   test('migrate arb', () {
