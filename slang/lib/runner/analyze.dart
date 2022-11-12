@@ -31,7 +31,6 @@ void analyzeTranslations({
       throw 'input_directory or --outdir=<path> must be specified.';
     }
   }
-  final flat = arguments.contains('--flat');
   final split = arguments.contains('--split');
   final full = arguments.contains('--full');
 
@@ -47,7 +46,6 @@ void analyzeTranslations({
     rawConfig: rawConfig,
     translationModelList: translationModelList,
     baseTranslations: baseTranslations,
-    flat: flat,
   );
 
   _writeMap(
@@ -77,7 +75,6 @@ void analyzeTranslations({
     rawConfig: rawConfig,
     translationModelList: translationModelList,
     baseTranslations: baseTranslations,
-    flat: flat,
     full: full,
   );
 
@@ -113,7 +110,6 @@ Map<I18nLocale, Map<String, dynamic>> _getMissingTranslations({
   required RawConfig rawConfig,
   required List<I18nData> translationModelList,
   required I18nData baseTranslations,
-  required bool flat,
 }) {
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
@@ -127,7 +123,6 @@ Map<I18nLocale, Map<String, dynamic>> _getMissingTranslations({
       baseNode: baseTranslations.root,
       curr: localeData.root,
       resultMap: resultMap,
-      flat: flat,
     );
     result[localeData.locale] = resultMap;
   });
@@ -139,7 +134,6 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
   required RawConfig rawConfig,
   required List<I18nData> translationModelList,
   required I18nData baseTranslations,
-  required bool flat,
   required bool full,
 }) {
   // use translation model and find missing translations
@@ -151,7 +145,6 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
         result[localeData.locale] = _getUnusedTranslationsInSourceCode(
           translateVar: rawConfig.translateVar,
           baseModel: localeData,
-          flat: flat,
         );
       }
       return;
@@ -162,7 +155,6 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
       baseNode: localeData.root,
       curr: baseTranslations.root,
       resultMap: resultMap,
-      flat: flat,
     );
     result[localeData.locale] = resultMap;
   });
@@ -176,7 +168,6 @@ void _getMissingTranslationsForOneLocaleRecursive({
   required ObjectNode baseNode,
   required ObjectNode curr,
   required Map<String, dynamic> resultMap,
-  required bool flat,
 }) {
   for (final baseEntry in baseNode.entries.entries) {
     final baseChild = baseEntry.value;
@@ -185,7 +176,6 @@ void _getMissingTranslationsForOneLocaleRecursive({
       // add whole base node which is expected
       _addNode(
         node: baseChild,
-        flat: flat,
         resultMap: resultMap,
       );
     } else if (baseChild is ObjectNode && !baseChild.isMap) {
@@ -193,7 +183,6 @@ void _getMissingTranslationsForOneLocaleRecursive({
         baseNode: baseChild,
         curr: currChild as ObjectNode,
         resultMap: resultMap,
-        flat: flat,
       );
     }
   }
@@ -201,70 +190,49 @@ void _getMissingTranslationsForOneLocaleRecursive({
 
 void _addNode({
   required Node node,
-  required bool flat,
   required Map<String, dynamic> resultMap,
 }) {
-  if (flat) {
-    // raw path -> node (raw path is the key)
-    if (node is TextNode) {
-      resultMap[node.rawPath] = node.raw;
-    } else {
-      final childMap = <String, dynamic>{};
-      _addNodeRecursive(
-        subIndex: node.path.length + 1,
-        node: node,
-        resultMap: childMap,
-      );
-      resultMap[node.rawPath] = childMap;
-    }
-  } else {
-    // add base node as is
-    // intermediate map nodes are automatically created
-    _addNodeRecursive(
-      subIndex: 0,
-      node: node,
-      resultMap: resultMap,
-    );
-  }
+  // add base node as is
+  // intermediate map nodes are automatically created
+  _addNodeRecursive(
+    node: node,
+    resultMap: resultMap,
+  );
 }
 
 /// Adds [node] to the [resultMap]
 /// which includes all children of [node].
-///
-/// When [subIndex] is greater than zero,
-/// then only a part of the path will be considered.
 void _addNodeRecursive({
-  required int subIndex,
   required Node node,
   required Map<String, dynamic> resultMap,
 }) {
   if (node is StringTextNode) {
     MapUtils.addItemToMap(
       map: resultMap,
-      destinationPath: node.rawPath.substring(subIndex),
+      destinationPath: node.rawPath,
       item: node.raw,
     );
   } else if (node is RichTextNode) {
     MapUtils.addItemToMap(
       map: resultMap,
-      destinationPath: node.rawPath.substring(subIndex),
+      destinationPath: node.rawPath,
       item: node.raw,
     );
   } else if (node is ListNode) {
     node.entries.forEach((child) {
-      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(node: child, resultMap: resultMap);
     });
   } else if (node is ObjectNode) {
     node.entries.values.forEach((child) {
-      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(node: child, resultMap: resultMap);
     });
   } else if (node is PluralNode) {
     node.quantities.values.forEach((child) {
-      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(node: child, resultMap: resultMap);
     });
   } else if (node is ContextNode) {
     node.entries.values.forEach((child) {
-      _addNodeRecursive(subIndex: subIndex, node: child, resultMap: resultMap);
+      _addNodeRecursive(node: child, resultMap: resultMap);
     });
   } else {
     throw 'This should not happen';
@@ -291,7 +259,6 @@ bool _checkEquality(Node? a, Node? b) {
 Map<String, dynamic> _getUnusedTranslationsInSourceCode({
   required String translateVar,
   required I18nData baseModel,
-  required bool flat,
 }) {
   final flatMap = baseModel.root.toFlatMap();
   final sourceCode = _loadSourceCode();
@@ -302,7 +269,6 @@ Map<String, dynamic> _getUnusedTranslationsInSourceCode({
       // add whole base node which is expected
       _addNode(
         node: entry.value,
-        flat: flat,
         resultMap: resultMap,
       );
     }

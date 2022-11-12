@@ -31,7 +31,6 @@ Future<void> runApplyTranslations({
       throw 'input_directory or --outdir=<path> must be specified.';
     }
   }
-  final isFlatMap = arguments.contains('--flat');
 
   if (targetLocale != null) {
     print('Target: <${targetLocale.languageTag}>');
@@ -97,7 +96,6 @@ Future<void> runApplyTranslations({
         applyLocale: locale,
         newTranslations: parsedContent..remove(INFO_KEY),
         candidateFiles: translationFiles,
-        isFlatMap: isFlatMap,
       );
     } else {
       // handle file containing multiple locales
@@ -126,7 +124,6 @@ Future<void> runApplyTranslations({
           applyLocale: locale,
           newTranslations: entry.value,
           candidateFiles: translationFiles,
-          isFlatMap: isFlatMap,
         );
       }
     }
@@ -144,7 +141,6 @@ void _applyTranslationsForOneLocale({
   required I18nLocale applyLocale,
   required Map<String, dynamic> newTranslations,
   required List<File> candidateFiles,
-  required bool isFlatMap,
 }) {
   final fileMap = <String, File>{}; // namespace -> file
 
@@ -198,7 +194,6 @@ void _applyTranslationsForOneLocale({
       _applyTranslationsForFile(
         newTranslations: newTranslations[entry.key],
         destinationFile: entry.value,
-        isFlatMap: isFlatMap,
       );
     }
   } else {
@@ -206,7 +201,6 @@ void _applyTranslationsForOneLocale({
     _applyTranslationsForFile(
       newTranslations: newTranslations,
       destinationFile: fileMap.entries.first.value,
-      isFlatMap: isFlatMap,
     );
   }
 }
@@ -214,7 +208,6 @@ void _applyTranslationsForOneLocale({
 void _applyTranslationsForFile({
   required Map<String, dynamic> newTranslations,
   required File destinationFile,
-  required bool isFlatMap,
 }) {
   final existingFile = destinationFile;
   final existingContent = existingFile.readAsStringSync();
@@ -235,7 +228,6 @@ void _applyTranslationsForFile({
   _applyTranslationsForMap(
     newTranslations: newTranslations,
     existingTranslations: parsedContent,
-    isFlatMap: isFlatMap,
   );
 
   FileUtils.writeFileOfType(
@@ -249,34 +241,12 @@ void _applyTranslationsForFile({
 void _applyTranslationsForMap({
   required Map<String, dynamic> newTranslations,
   required Map<String, dynamic> existingTranslations,
-  required bool isFlatMap,
 }) {
-  if (isFlatMap) {
-    // newTranslations is a flat map
-    for (final entry in newTranslations.entries) {
-      if (entry.value is Map) {
-        _applyTranslationsForMapRecursive(
-          path: entry.key,
-          newTranslations: newTranslations,
-          existingTranslations: existingTranslations,
-        );
-        continue;
-      }
-
-      _printAdding(entry.key, entry.value);
-      MapUtils.addItemToMap(
-        map: existingTranslations,
-        destinationPath: entry.key,
-        item: entry.value,
-      );
-    }
-  } else {
-    _applyTranslationsForMapRecursive(
-      path: '',
-      newTranslations: newTranslations,
-      existingTranslations: existingTranslations,
-    );
-  }
+  _applyTranslationsForMapRecursive(
+    path: '',
+    newTranslations: newTranslations,
+    existingTranslations: existingTranslations,
+  );
 }
 
 void _applyTranslationsForMapRecursive({

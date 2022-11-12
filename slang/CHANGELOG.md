@@ -1,6 +1,7 @@
 ## 3.4.0
 
 - feat: add `--locale=<locale>` argument to `flutter pub run slang apply` to only apply a specific locale
+- **BREAKING (TOOL):** `--flat` argument for `flutter pub run slang analyze` and `apply` is no longer available
 
 ## 3.3.1
 

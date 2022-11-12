@@ -38,7 +38,7 @@ class MapUtils {
       if (i == pathList.length - 1) {
         // destination
         if (subPathInt != null) {
-          if (!(curr is List)) {
+          if (curr is! List) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
           }
           final added = addToList(
@@ -61,7 +61,7 @@ class MapUtils {
         // make sure that the path to the leaf exists
         if (subPathInt != null) {
           // list mode
-          if (!(curr is List)) {
+          if (curr is! List) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
           }
 
@@ -79,7 +79,7 @@ class MapUtils {
           curr = curr[subPathInt];
         } else {
           // map mode
-          if (!(curr is Map)) {
+          if (curr is! Map) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
           }
 

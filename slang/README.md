@@ -1274,13 +1274,12 @@ You can use the slang analyzer to find missing and unused translations.
 Missing translations only occur when `fallback_strategy: base_locale` is used.
 
 ```sh
-flutter pub run slang analyze [--split] [--flat] [--full] [--outdir=assets/i18n]
+flutter pub run slang analyze [--split] [--full] [--outdir=assets/i18n]
 ```
 
 | Argument         | Usage                                                  |
 |------------------|--------------------------------------------------------|
 | `--split`        | Generate for each locale                               |
-| `--flat`         | Generate parent as path to reduce nesting              |
 | `--full`         | Find unused translations in whole source code          |
 | `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
 
@@ -1306,13 +1305,12 @@ It reads the `_missing_translations` file and adds the translations to the origi
 Currently, only JSON and YAML are supported.
 
 ```sh
-flutter pub run slang apply [--locale=fr-FR] [--flat] [--outdir=assets/i18n]
+flutter pub run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
 ```
 
 | Argument            | Usage                                                  |
 |---------------------|--------------------------------------------------------|
 | `--locale=<locale>` | Apply only one specific locale                         |
-| `--flat`            | Missing translations file is in flat format            |
 | `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
 
 ### ➤ Migration
