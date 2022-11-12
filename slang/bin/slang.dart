@@ -6,12 +6,11 @@ import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
+import 'package:slang/runner/analyze.dart';
+import 'package:slang/runner/apply.dart';
+import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
-
-import 'analyze.dart';
-import 'apply.dart';
-import 'stats.dart';
 
 /// Determines what the runner will do
 enum RunnerMode {

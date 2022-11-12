@@ -1,4 +1,4 @@
-import 'package:slang/builder/tools/migrate_arb.dart';
+import 'package:slang/runner/migrate_arb.dart';
 
 void main(List<String> arguments) async {
   if (arguments.length != 3) {
