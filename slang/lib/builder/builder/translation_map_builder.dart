@@ -138,11 +138,12 @@ class TranslationMapBuilder {
 const _BASE_STR_LENGTH = 7; // "(base) "
 
 /// Determines the longest debug string used for PadLeft
-int _getPadLeft(
-    {required List<TranslationFile> files,
-    required String baseLocale,
-    required bool namespaces,
-    required String? inputDirectory}) {
+int _getPadLeft({
+  required List<TranslationFile> files,
+  required String baseLocale,
+  required bool namespaces,
+  required String? inputDirectory,
+}) {
   int longest = 0;
   for (final file in files) {
     int currLength;
