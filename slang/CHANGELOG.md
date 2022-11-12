@@ -1,3 +1,7 @@
+## 3.4.0
+
+- feat: add `--locale=<locale>` argument to `flutter pub run slang apply` to only apply a specific locale
+
 ## 3.3.1
 
 - fix: when namespaces are used, consider more directories (not only parent) for locale detection (e.g. `assets/i18n/en-US/pages/home.json`)

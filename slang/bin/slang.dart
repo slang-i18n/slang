@@ -110,7 +110,7 @@ void main(List<String> arguments) async {
   // the actual runner
   switch (mode) {
     case RunnerMode.apply:
-      await applyTranslations(rawConfig: config, arguments: arguments);
+      await runApplyTranslations(rawConfig: config, arguments: arguments);
       break;
     case RunnerMode.watch:
       await watchTranslations(config: config, files: files);

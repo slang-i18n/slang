@@ -58,7 +58,13 @@ void analyzeTranslations({
     info: (locale, localeMap) {
       return [
         'Here are translations that exist in <${rawConfig.baseLocale.languageTag}> but not in ${locale != null ? '<${locale.languageTag}>' : 'secondary locales'}.',
-        'After editing this file, you can run \'flutter pub run slang apply\' to quickly apply the newly added translations.',
+        if (locale != null)
+          'After editing this file, you can run \'flutter pub run slang apply --locale=${locale.languageTag}\' to quickly apply the newly added translations.'
+        else if (localeMap.length > 1)
+          // there are at least 2 secondary locales
+          'After editing this file, you can run \'flutter pub run slang apply --locale=<locale>\' to quickly apply the newly added translations.'
+        else
+          'After editing this file, you can run \'flutter pub run slang apply\' to quickly apply the newly added translations.',
         if ((locale == null && localeMap.values.every((v) => v.isEmpty)) ||
             localeMap.isEmpty)
           'Congratulations! There are no missing translations! :)',

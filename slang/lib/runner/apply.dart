@@ -12,14 +12,17 @@ import 'package:slang/builder/utils/regex_utils.dart';
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
-Future<void> applyTranslations({
+Future<void> runApplyTranslations({
   required RawConfig rawConfig,
   required List<String> arguments,
 }) async {
   String? outDir;
+  I18nLocale? targetLocale; // only this locale will be considered
   for (final a in arguments) {
     if (a.startsWith('--outdir=')) {
       outDir = a.substring(9).toAbsolutePath();
+    } else if (a.startsWith('--locale=')) {
+      targetLocale = I18nLocale.fromString(a.substring(9));
     }
   }
   if (outDir == null) {
@@ -30,6 +33,9 @@ Future<void> applyTranslations({
   }
   final isFlatMap = arguments.contains('--flat');
 
+  if (targetLocale != null) {
+    print('Target: <${targetLocale.languageTag}>');
+  }
   print('Looking for missing translations files in $outDir');
 
   final files =
@@ -74,6 +80,11 @@ Future<void> applyTranslations({
 
     if (locale != null) {
       // handle splitted file
+      if (targetLocale != null && locale != targetLocale) {
+        _printIgnore(locale, file);
+        continue;
+      }
+
       if (parsedContent.isEmpty) {
         _printEmpty(locale.languageTag, file);
         continue;
@@ -84,8 +95,8 @@ Future<void> applyTranslations({
       _applyTranslationsForOneLocale(
         rawConfig: rawConfig,
         applyLocale: locale,
-        newTranslations: parsedContent,
-        files: translationFiles,
+        newTranslations: parsedContent..remove(INFO_KEY),
+        candidateFiles: translationFiles,
         isFlatMap: isFlatMap,
       );
     } else {
@@ -103,13 +114,18 @@ Future<void> applyTranslations({
 
         final locale = I18nLocale.fromString(entry.key);
 
+        if (targetLocale != null && locale != targetLocale) {
+          _printIgnore(locale, file);
+          continue;
+        }
+
         _printApplying(locale, file);
 
         _applyTranslationsForOneLocale(
           rawConfig: rawConfig,
           applyLocale: locale,
           newTranslations: entry.value,
-          files: translationFiles,
+          candidateFiles: translationFiles,
           isFlatMap: isFlatMap,
         );
       }
@@ -120,16 +136,19 @@ Future<void> applyTranslations({
 /// Apply translations only for ONE locale.
 /// Scans existing translations files, loads its content, and finally adds translations.
 /// Throws an error if the file could not be found.
+///
+/// [newTranslations] is a map of "Namespace -> Translations"
+/// [candidateFiles] are files that are applied to; Only a subset may be used
 void _applyTranslationsForOneLocale({
   required RawConfig rawConfig,
   required I18nLocale applyLocale,
   required Map<String, dynamic> newTranslations,
-  required List<File> files,
+  required List<File> candidateFiles,
   required bool isFlatMap,
 }) {
   final fileMap = <String, File>{}; // namespace -> file
 
-  for (final file in files) {
+  for (final file in candidateFiles) {
     final fileNameNoExtension = PathUtils.getFileNameNoExtension(file.path);
     final baseFileMatch =
         RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
@@ -288,11 +307,15 @@ void _applyTranslationsForMapRecursive({
 class FileTypeNotSupportedError extends UnsupportedError {
   FileTypeNotSupportedError(File file)
       : super(
-            'The file "${file.path}" has an invalid file extension (supported: json, yaml)');
+            'The file "${file.path}" has an invalid file extension (supported: ${_supportedFiles.map((e) => e.name)})');
 }
 
 void _printEmpty(String locale, File file) {
   print(' -> Found empty <$locale> in ${file.path}');
+}
+
+void _printIgnore(I18nLocale locale, File file) {
+  print(' -> Ignore <${locale.languageTag}> in ${file.path}');
 }
 
 void _printApplying(I18nLocale locale, File file) {

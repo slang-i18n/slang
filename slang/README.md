@@ -1299,20 +1299,21 @@ Result file:
 
 ### ➤ Apply Translations
 
-The follow-up command for `flutter pub run slang analyze`.
+The follow-up command for `analyze`.
 
 It reads the `_missing_translations` file and adds the translations to the original files.
 
 Currently, only JSON and YAML are supported.
 
 ```sh
-flutter pub run slang apply [--flat] [--outdir=assets/i18n]
+flutter pub run slang apply [--locale=fr-FR] [--flat] [--outdir=assets/i18n]
 ```
 
-| Argument         | Usage                                                  |
-|------------------|--------------------------------------------------------|
-| `--flat`         | Missing translations file is in flat format            |
-| `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
+| Argument            | Usage                                                  |
+|---------------------|--------------------------------------------------------|
+| `--locale=<locale>` | Apply only one specific locale                         |
+| `--flat`            | Missing translations file is in flat format            |
+| `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
 
 ### ➤ Migration
 
@@ -1368,7 +1369,7 @@ JSON Result
   "page": {
     "home": {
       "inbox": {
-        "count(count)": {
+        "count(param=count)": {
           "zero": "You have no new messages",
           "one": "You have 1 new message",
           "other": "You have {count} new messages"
@@ -1502,11 +1503,11 @@ You may use linked translations to solve this problem.
 
 ```json
 {
-  "apples(appleCount)": {
+  "apples(param=appleCount)": {
     "one": "one apple",
     "other": "{appleCount} apples"
   },
-  "bananas(bananaCount)": {
+  "bananas(param=bananaCount)": {
     "one": "one banana",
     "other": "{bananaCount} bananas"
   },
