@@ -83,7 +83,7 @@ String i = page1.title; // type-safe call
   - [Statistics](#-statistics)
   - [Auto Rebuild](#-auto-rebuild)
 - [Integrations](#integrations)
-  - [slang X riverpod](#-slang-x-riverpod)
+  - [slang x riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 
@@ -1228,7 +1228,7 @@ Possible cases are: `camel`, `snake` and `pascal`.
 ```json
 {
   "must_be_camel_case": "The parameter is in {snakeCase}",
-  "my_map": {
+  "my_map(map)": {
     "this_should_be_in_pascal": "hi"
   }
 }
@@ -1239,13 +1239,20 @@ Possible cases are: `camel`, `snake` and `pascal`.
 key_case: camel
 key_map_case: pascal
 param_case: snake
-maps:
-  - myMap # all paths must be cased accordingly
 ```
 
 ```dart
 String a = t.mustBeCamelCase(snake_case: 'nice');
 String b = t.myMap['ThisShouldBeInPascal'];
+```
+
+If you specify paths in the config, please case them correctly:
+
+```yaml
+# Config
+key_case: camel
+maps:
+   - myMap # all paths must be cased accordingly
 ```
 
 ### ➤ Dart Only
