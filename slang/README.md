@@ -1327,7 +1327,7 @@ There are some tools to make migration from other i18n solutions easier.
 General migration syntax:
 
 ```sh
-flutter pub run slang migrate <type> <source> <destination>
+flutter pub run slang:migrate <type> <source> <destination>
 ```
 
 #### ARB
@@ -1335,7 +1335,7 @@ flutter pub run slang migrate <type> <source> <destination>
 Transforms ARB files to compatible JSON format. All descriptions are retained.
 
 ```sh
-flutter pub run slang migrate arb source.arb destination.json
+flutter pub run slang:migrate arb source.arb destination.json
 ```
 
 ARB Input
