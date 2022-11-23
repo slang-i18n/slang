@@ -156,12 +156,6 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
 
 abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> {
-  /// Locale enums sorted alphabetically and base locale first
-  final List<E> locales;
-
-  /// The base locale
-  final E baseLocale;
-
   /// Internal: Manages all translation instances
   /// May be modified when setting a custom plural resolver
   final Map<E, T> translationMap;
@@ -170,10 +164,8 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   final BaseAppLocaleUtils<E, T> utils;
 
   BaseLocaleSettings({
-    required this.locales,
-    required this.baseLocale,
     required this.utils,
-  }) : this.translationMap = _buildMap(locales);
+  }) : this.translationMap = _buildMap(utils.locales);
 
   /// Updates the provider state and therefore triggers a rebuild
   /// on all widgets listening to this provider.
@@ -211,7 +203,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
   /// Gets supported locales in string format.
   List<String> get supportedLocalesRaw {
-    return locales.map((locale) => locale.languageTag).toList();
+    return utils.locales.map((locale) => locale.languageTag).toList();
   }
 
   /// Sets locale.
@@ -246,7 +238,8 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
       targetLocales = [locale];
     } else if (language != null) {
       // map to language
-      targetLocales = locales.where((l) => l.languageCode == language).toList();
+      targetLocales =
+          utils.locales.where((l) => l.languageCode == language).toList();
     } else {
       throw 'Either language or locale must be specified';
     }

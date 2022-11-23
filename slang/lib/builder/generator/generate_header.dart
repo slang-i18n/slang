@@ -403,8 +403,8 @@ void _generateLocaleSettings({
       .writeln('/// Manages all translation instances and the current locale');
   buffer.writeln(
       'class $settingsClass extends $baseClass<$enumName, $baseClassName> {');
-  buffer.writeln(
-      '\t$settingsClass._() : super(locales: $enumName.values, baseLocale: _baseLocale, utils: AppLocaleUtils.instance);');
+  buffer
+      .writeln('\t$settingsClass._() : super(utils: AppLocaleUtils.instance);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $settingsClass._();');
 

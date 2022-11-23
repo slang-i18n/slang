@@ -36,8 +36,6 @@ extension ExtAppLocale on BaseAppLocale {
 class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends BaseLocaleSettings<E, T> {
   BaseFlutterLocaleSettings({
-    required super.locales,
-    required super.baseLocale,
     required super.utils,
   });
 
@@ -61,7 +59,7 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
 
   /// Gets supported locales (as Locale objects) with base locale sorted first.
   List<Locale> get supportedLocales {
-    return locales.map((locale) => locale.flutterLocale).toList();
+    return utils.locales.map((locale) => locale.flutterLocale).toList();
   }
 }
 
