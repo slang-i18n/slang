@@ -13,7 +13,10 @@ import 'package:slang/builder/utils/string_interpolation_extensions.dart';
 
 final _setEquality = SetEquality();
 
-Future<void> migrateArbRunner(String sourcePath, String destinationPath) async {
+Future<void> migrateArbRunner({
+  required String sourcePath,
+  required String destinationPath,
+}) async {
   print('Migrating ARB to JSON...');
 
   final source = await File(sourcePath).readAsString();

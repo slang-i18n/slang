@@ -8,6 +8,7 @@ import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/runner/analyze.dart';
 import 'package:slang/runner/apply.dart';
+import 'package:slang/runner/migrate.dart';
 import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
@@ -19,6 +20,7 @@ enum RunnerMode {
   stats, // print translation stats
   analyze, // generate missing translations
   apply, // apply translations from analyze
+  migrate, // migration tool
 }
 
 /// To run this:
@@ -43,6 +45,9 @@ void main(List<String> arguments) async {
       case 'apply':
         mode = RunnerMode.apply;
         break;
+      case 'migrate':
+        mode = RunnerMode.migrate;
+        break;
       default:
         mode = RunnerMode.generate;
     }
@@ -66,6 +71,8 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.apply:
       print('Applying translations...\n');
+      break;
+    case RunnerMode.migrate:
       break;
   }
 
@@ -127,6 +134,8 @@ void main(List<String> arguments) async {
         arguments: arguments,
       );
       break;
+    case RunnerMode.migrate:
+      await runMigrate(arguments.skip(1).toList());
   }
 }
 
