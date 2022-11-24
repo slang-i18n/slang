@@ -246,8 +246,10 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
     // update translation instances
     for (final curr in targetLocales) {
+      final overrides = translationMap[curr]!.$meta.overrides;
       translationMap[curr] = curr.build(
-        overrides: translationMap[curr]!.$meta.overrides, // keep old overrides
+        // keep old overrides
+        overrides: overrides.isNotEmpty ? overrides : null,
         cardinalResolver: cardinalResolver,
         ordinalResolver: ordinalResolver,
       );

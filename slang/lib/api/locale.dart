@@ -61,7 +61,7 @@ abstract class BaseAppLocale<E extends BaseAppLocale<E, T>,
   TranslationBuilder<E, T> get build;
 
   static final BaseAppLocale undefinedLocale =
-      BasicAppLocale(languageCode: 'und');
+      FakeAppLocale(languageCode: 'und');
 
   String get languageTag => [languageCode, scriptCode, countryCode]
       .where((element) => element != null)
@@ -78,8 +78,7 @@ abstract class BaseAppLocale<E extends BaseAppLocale<E, T>,
       'BaseAppLocale{languageCode: $languageCode, scriptCode: $scriptCode, countryCode: $countryCode}';
 }
 
-class BasicAppLocale
-    extends BaseAppLocale<BasicAppLocale, _DefaultTranslations> {
+class FakeAppLocale extends BaseAppLocale<FakeAppLocale, FakeTranslations> {
   @override
   final String languageCode;
 
@@ -89,32 +88,45 @@ class BasicAppLocale
   @override
   final String? countryCode;
 
-  BasicAppLocale({
+  FakeAppLocale({
     required this.languageCode,
     this.scriptCode,
     this.countryCode,
   });
 
   @override
-  TranslationBuilder<BasicAppLocale, _DefaultTranslations> get build {
-    return ({overrides, cardinalResolver, ordinalResolver}) =>
-        _DefaultTranslations(BasicAppLocale(
-          languageCode: languageCode,
-          scriptCode: scriptCode,
-          countryCode: countryCode,
-        ));
+  TranslationBuilder<FakeAppLocale, FakeTranslations> get build {
+    return ({overrides, cardinalResolver, ordinalResolver}) => FakeTranslations(
+          FakeAppLocale(
+            languageCode: languageCode,
+            scriptCode: scriptCode,
+            countryCode: countryCode,
+          ),
+          overrides: overrides,
+          cardinalResolver: cardinalResolver,
+          ordinalResolver: ordinalResolver,
+        );
   }
 }
 
-class _DefaultTranslations
-    extends BaseTranslations<BasicAppLocale, _DefaultTranslations> {
-  _DefaultTranslations(BasicAppLocale locale)
-      : $meta = TranslationMetadata(
+class FakeTranslations
+    extends BaseTranslations<FakeAppLocale, FakeTranslations> {
+  FakeTranslations(
+    FakeAppLocale locale, {
+    Map<String, Node>? overrides,
+    PluralResolver? cardinalResolver,
+    PluralResolver? ordinalResolver,
+  })  : $meta = TranslationMetadata(
           locale: locale,
-          overrides: {},
-          cardinalResolver: null,
-          ordinalResolver: null,
-        );
+          overrides: overrides ?? {},
+          cardinalResolver: cardinalResolver,
+          ordinalResolver: ordinalResolver,
+        ),
+        providedNullOverrides = overrides == null;
 
-  final TranslationMetadata<BasicAppLocale, _DefaultTranslations> $meta;
+  @override
+  final TranslationMetadata<FakeAppLocale, FakeTranslations> $meta;
+
+  /// Internal: This is only for unit test purposes
+  final bool providedNullOverrides;
 }
