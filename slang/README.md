@@ -445,8 +445,6 @@ welcome:
 
 **CSV Example**
 
-Line terminations must be `CRLF`.
-
 You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
 
 ```csv
@@ -1457,7 +1455,20 @@ output_directory: lib/i18n
 
 **CSV files are not parsed correctly**
 
-Note that line terminations must be `CRLF`.
+Note that translated EOL should be written as `\n`.
+
+CORRECT:
+
+```csv
+my.path,hello\nworld
+```
+
+WRONG:
+
+```csv
+my.path,hello<LF>
+world
+```
 
 **Can I skip translations or use them from base locale?**
 

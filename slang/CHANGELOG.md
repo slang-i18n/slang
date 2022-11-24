@@ -1,3 +1,9 @@
+## 3.5.0
+
+- feat: csv decoding now support both `CRLF` and `LF`, `"` and `'`
+- fix: `LocaleSettings.setPluralResolver` should not throw an assertion error
+- fix: `flutter pub run slang migrate` should also work without `:` in command
+
 ## 3.4.0
 
 - feat: add `--locale=<locale>` argument to `flutter pub run slang apply` to only apply a specific locale
