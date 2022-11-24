@@ -43,7 +43,7 @@
     ],
     "pages": [
       {
-        "unknown": "Unknown Error"
+        "unknown": "Unknown\nError"
       },
       {
         "with space": "An Error",

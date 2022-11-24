@@ -102,7 +102,7 @@ class _TranslationsEndEn with EndData {
 	];
 	@override List<Map<String, String>> get pages => [
 		{
-			'unknown': 'Unknown Error',
+			'unknown': 'Unknown\nError',
 		},
 		{
 			'with space': 'An Error',

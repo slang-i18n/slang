@@ -1,13 +1,23 @@
 import 'package:csv/csv.dart';
+import 'package:csv/csv_settings_autodetection.dart';
 import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/utils/map_utils.dart';
+
+final _csvConverter = CsvToListConverter(
+  // Allow both \r\n and \n
+  // See README of csv package
+  csvSettingsDetector: FirstOccurrenceSettingsDetector(
+    eols: ['\r\n', '\n'],
+    textDelimiters: ['"', "'"],
+  ),
+);
 
 class CsvDecoder extends BaseDecoder {
   // If this csv is a compact csv, then the root keys represents the locale names
   @override
   Map<String, dynamic> decode(String raw) {
     final compactCSV = isCompactCSV(raw);
-    final parsed = const CsvToListConverter().convert(raw);
+    final parsed = _csvConverter.convert(raw);
 
     if (compactCSV) {
       final result = <String, Map<String, dynamic>>{};
@@ -85,7 +95,7 @@ class CsvDecoder extends BaseDecoder {
 
   /// True, if this csv contains at least 3 rows
   static bool isCompactCSV(String raw) {
-    final parsed = const CsvToListConverter().convert(raw);
+    final parsed = _csvConverter.convert(raw);
     return parsed.first.length > 2;
   }
 }

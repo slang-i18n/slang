@@ -27,7 +27,7 @@ end:
     - 1st Page
     - 2nd Page
   pages:
-    - unknown: Unknown Error
+    - unknown: Unknown\nError
     - with space: An Error
       with second space: An 2nd Error
 advancedPlural(rich, param=count):

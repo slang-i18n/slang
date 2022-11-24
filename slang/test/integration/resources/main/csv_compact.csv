@@ -18,7 +18,7 @@ onboarding.welcomeLinkedContext,,Hello @:onboarding.greet,Hallo @:onboarding.gre
 onboarding.welcomeFullLink,,Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext,Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
 end.stringPages.0,,1st Page,1. Seite
 end.stringPages.1,,2nd Page,2. Seite
-end.pages.0.unknown,,Unknown Error,Unbekannter Fehler
+end.pages.0.unknown,,Unknown\nError,Unbekannter\nFehler
 end.pages.1.with space,,An Error,Ein Fehler
 end.pages.1.with second space,,An 2nd Error,Ein 2. Fehler
 "advancedPlural(rich, param=count).one",,One,Eins

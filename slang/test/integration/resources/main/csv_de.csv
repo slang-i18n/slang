@@ -1,4 +1,4 @@
-onboarding.welcome,Willkommen {fullName}
+onboarding.welcome(!!!this file is in LF which is part of the integration test!!!),Willkommen {fullName}
 onboarding.bye,Tschüss {firstName}
 onboarding.@bye,Bye text
 onboarding.hi(rich),Hi {name} und @:onboarding.greet
@@ -18,7 +18,7 @@ onboarding.welcomeLinkedContext,Hallo @:onboarding.greet
 onboarding.welcomeFullLink,Ultimative @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext
 end.stringPages.0,1. Seite
 end.stringPages.1,2. Seite
-end.pages.0.unknown,Unbekannter Fehler
+end.pages.0.unknown,Unbekannter\nFehler
 end.pages.1.with space,Ein Fehler
 end.pages.1.with second space,Ein 2. Fehler
 "advancedPlural(rich, param=count).one",Eins

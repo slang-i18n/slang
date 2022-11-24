@@ -26,5 +26,17 @@ void main() {
         },
       );
     });
+
+    test('allow \\n', () {
+      expect(
+        CsvDecoder().decode('my.path,hi\nmy.path2,hello\\nworld'),
+        {
+          'my': {
+            'path': 'hi',
+            'path2': 'hello\\nworld',
+          },
+        },
+      );
+    });
   });
 }

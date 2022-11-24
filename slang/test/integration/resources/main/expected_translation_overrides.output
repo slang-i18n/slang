@@ -277,7 +277,7 @@ class _TranslationsEndEn with EndData {
 	];
 	@override List<Map<String, String>> get pages => [
 		TranslationOverrides.map(_root.$meta, 'end.pages.0') ?? {
-			'unknown': 'Unknown Error',
+			'unknown': 'Unknown\nError',
 		},
 		TranslationOverrides.map(_root.$meta, 'end.pages.1') ?? {
 			'with space': 'An Error',
@@ -417,7 +417,7 @@ class _TranslationsEndDe with EndData implements _TranslationsEndEn {
 	];
 	@override List<Map<String, String>> get pages => [
 		TranslationOverrides.map(_root.$meta, 'end.pages.0') ?? {
-			'unknown': 'Unbekannter Fehler',
+			'unknown': 'Unbekannter\nFehler',
 		},
 		TranslationOverrides.map(_root.$meta, 'end.pages.1') ?? {
 			'with space': 'Ein Fehler',
@@ -494,7 +494,7 @@ extension on _TranslationsEn {
 			);
 			case 'end.stringPages.0': return TranslationOverrides.string(_root.$meta, 'end.stringPages.0', {}) ?? '1st Page';
 			case 'end.stringPages.1': return TranslationOverrides.string(_root.$meta, 'end.stringPages.1', {}) ?? '2nd Page';
-			case 'end.pages.0.unknown': return TranslationOverrides.string(_root.$meta, 'end.pages.0.unknown', {}) ?? 'Unknown Error';
+			case 'end.pages.0.unknown': return TranslationOverrides.string(_root.$meta, 'end.pages.0.unknown', {}) ?? 'Unknown\nError';
 			case 'end.pages.1.with space': return TranslationOverrides.string(_root.$meta, 'end.pages.1.with space', {}) ?? 'An Error';
 			case 'end.pages.1.with second space': return TranslationOverrides.string(_root.$meta, 'end.pages.1.with second space', {}) ?? 'An 2nd Error';
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => TranslationOverridesFlutter.richPlural(_root.$meta, 'advancedPlural', {'gender': gender, 'count': count, 'countBuilder': countBuilder}) ?? RichPluralResolvers.bridge(
@@ -552,7 +552,7 @@ extension on _TranslationsDe {
 			);
 			case 'end.stringPages.0': return TranslationOverrides.string(_root.$meta, 'end.stringPages.0', {}) ?? '1. Seite';
 			case 'end.stringPages.1': return TranslationOverrides.string(_root.$meta, 'end.stringPages.1', {}) ?? '2. Seite';
-			case 'end.pages.0.unknown': return TranslationOverrides.string(_root.$meta, 'end.pages.0.unknown', {}) ?? 'Unbekannter Fehler';
+			case 'end.pages.0.unknown': return TranslationOverrides.string(_root.$meta, 'end.pages.0.unknown', {}) ?? 'Unbekannter\nFehler';
 			case 'end.pages.1.with space': return TranslationOverrides.string(_root.$meta, 'end.pages.1.with space', {}) ?? 'Ein Fehler';
 			case 'end.pages.1.with second space': return TranslationOverrides.string(_root.$meta, 'end.pages.1.with second space', {}) ?? 'Ein 2. Fehler';
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => TranslationOverridesFlutter.richPlural(_root.$meta, 'advancedPlural', {'gender': gender, 'count': count, 'countBuilder': countBuilder}) ?? RichPluralResolvers.bridge(

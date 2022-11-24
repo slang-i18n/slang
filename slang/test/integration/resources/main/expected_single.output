@@ -243,7 +243,7 @@ class _TranslationsEndEn with EndData {
 	];
 	@override List<Map<String, String>> get pages => [
 		{
-			'unknown': 'Unknown Error',
+			'unknown': 'Unknown\nError',
 		},
 		{
 			'with space': 'An Error',
@@ -375,7 +375,7 @@ class _TranslationsEndDe with EndData implements _TranslationsEndEn {
 	];
 	@override List<Map<String, String>> get pages => [
 		{
-			'unknown': 'Unbekannter Fehler',
+			'unknown': 'Unbekannter\nFehler',
 		},
 		{
 			'with space': 'Ein Fehler',
@@ -444,7 +444,7 @@ extension on _TranslationsEn {
 			);
 			case 'end.stringPages.0': return '1st Page';
 			case 'end.stringPages.1': return '2nd Page';
-			case 'end.pages.0.unknown': return 'Unknown Error';
+			case 'end.pages.0.unknown': return 'Unknown\nError';
 			case 'end.pages.1.with space': return 'An Error';
 			case 'end.pages.1.with second space': return 'An 2nd Error';
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
@@ -494,7 +494,7 @@ extension on _TranslationsDe {
 			);
 			case 'end.stringPages.0': return '1. Seite';
 			case 'end.stringPages.1': return '2. Seite';
-			case 'end.pages.0.unknown': return 'Unbekannter Fehler';
+			case 'end.pages.0.unknown': return 'Unbekannter\nFehler';
 			case 'end.pages.1.with space': return 'Ein Fehler';
 			case 'end.pages.1.with second space': return 'Ein 2. Fehler';
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
