@@ -717,14 +717,14 @@ In case your language is not supported, you must provide a custom pluralization 
 // you don't need to specify both
 LocaleSettings.setPluralResolver(
   locale: AppLocale.en,
-  cardinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+  cardinalResolver: (n, {zero, one, two, few, many, other}) {
     if (n == 0)
       return zero ?? other!;
     if (n == 1)
       return one ?? other!;
     return other!;
   },
-  ordinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
+  ordinalResolver: (n, {zero, one, two, few, many, other}) {
     if (n % 10 == 1 && n % 100 != 11)
       return one ?? other!;
     if (n % 10 == 2 && n % 100 != 12)
