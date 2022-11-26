@@ -716,7 +716,7 @@ In case your language is not supported, you must provide a custom pluralization 
 // add this before you call the pluralization strings. Otherwise an exception will be thrown.
 // you don't need to specify both
 LocaleSettings.setPluralResolver(
-  language: 'en',
+  locale: AppLocale.en,
   cardinalResolver: (num n, {String? zero, String? one, String? two, String? few, String? many, String? other}) {
     if (n == 0)
       return zero ?? other!;
