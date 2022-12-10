@@ -631,7 +631,7 @@ Available Modifiers:
 
 ### ➤ Linked Translations
 
-You can link one translation to another. Add the prefix `@:` followed by the translation key.
+You can link one translation to another. Add the prefix `@:` followed by the **absolute** path of the desired translation.
 
 ```json
 {
@@ -646,6 +646,8 @@ You can link one translation to another. Add the prefix `@:` followed by the tra
 ```dart
 String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and I am 27 years old.
 ```
+
+If namespaces are used, then it has to be specified in the path too.
 
 [RichTexts](#-richtext) can also contain links! But only [RichTexts](#-richtext) can link to [RichTexts](#-richtext).
 
