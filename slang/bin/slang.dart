@@ -12,6 +12,7 @@ import 'package:slang/runner/migrate.dart';
 import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
+import 'package:watcher/watcher.dart';
 
 /// Determines what the runner will do
 enum RunnerMode {
@@ -199,37 +200,74 @@ Future<void> watchTranslations({
 }) async {
   final inputDirectoryPath = config.inputDirectory;
   if (inputDirectoryPath == null) {
-    print('Please set input_directory in build.yaml.');
+    print('Please set input_directory in build.yaml or slang.yaml.');
     return;
   }
 
   final inputDirectory = Directory(inputDirectoryPath);
-  final stream = inputDirectory.watch(events: FileSystemEvent.all);
+  final stream = Watcher(inputDirectoryPath).events;
 
-  await generateTranslations(
-    mode: RunnerMode.watch,
-    rawConfig: config,
-    files: files,
-    verbose: false,
+  print('Listening to changes in $inputDirectoryPath');
+  _generateTranslationsFromWatch(
+    config: config,
+    inputDirectory: inputDirectory,
+    counter: 1,
+    fileName: '',
   );
-
-  print('Listening to changes in $inputDirectoryPath (non-recursive)');
-  stdout.write('\r -> Init at $currentTime.');
+  int counter = 2;
   await for (final event in stream) {
     if (event.path.endsWith(config.inputFilePattern)) {
-      stdout.write('\r -> Generating...           ');
-      final newFiles = inputDirectory
-          .listSync(recursive: true)
-          .where((item) =>
-              item is File && item.path.endsWith(config.inputFilePattern))
-          .toList();
-      await generateTranslations(
-        mode: RunnerMode.watch,
-        rawConfig: config,
-        files: newFiles,
-        verbose: false,
+      _generateTranslationsFromWatch(
+        config: config,
+        inputDirectory: inputDirectory,
+        counter: counter,
+        fileName: event.path.getFileName(),
       );
-      stdout.write('\r -> Last Update at $currentTime.');
+      counter++;
+    }
+  }
+}
+
+Future<void> _generateTranslationsFromWatch({
+  required RawConfig config,
+  required Directory inputDirectory,
+  required int counter,
+  required String fileName,
+}) async {
+  final stopwatch = Stopwatch()..start();
+  _printDynamicLastLine('\r[$currentTime] #$counter Generating...');
+
+  final newFiles = inputDirectory
+      .listSync(recursive: true)
+      .where(
+          (item) => item is File && item.path.endsWith(config.inputFilePattern))
+      .toList();
+
+  bool success = true;
+  try {
+    await generateTranslations(
+      mode: RunnerMode.watch,
+      rawConfig: config,
+      files: newFiles,
+      verbose: false,
+    );
+  } catch (e) {
+    success = false;
+    print('');
+    print(e);
+    _printDynamicLastLine(
+      '\r[$currentTime] #$counter Error (${stopwatch.elapsedMilliseconds} ms)',
+    );
+  }
+
+  if (success) {
+    if (counter == 1) {
+      _printDynamicLastLine(
+          '\r[$currentTime] #1 Init (${stopwatch.elapsedMilliseconds} ms)');
+    } else {
+      _printDynamicLastLine(
+        '\r[$currentTime] #$counter Update $fileName (${stopwatch.elapsedMilliseconds} ms)',
+      );
     }
   }
 }
@@ -300,7 +338,7 @@ Future<void> generateTranslations({
       arguments: arguments ?? [],
     );
     if (stopwatch != null) {
-      print('Analysis done. (${stopwatch.elapsed})');
+      print('Analysis done. (${stopwatch.elapsedMilliseconds} ms)');
     }
     return; // skip generation
   }
@@ -373,7 +411,8 @@ Future<void> generateTranslations({
     }
 
     if (stopwatch != null) {
-      print('Translations generated successfully. (${stopwatch.elapsed})');
+      print(
+          'Translations generated successfully. (${stopwatch.elapsedMilliseconds} ms)');
     }
   }
 }
@@ -394,4 +433,14 @@ extension on String {
   String getFileNameNoExtension() {
     return PathUtils.getFileNameNoExtension(this);
   }
+}
+
+String? _lastPrint;
+void _printDynamicLastLine(String output) {
+  if (_lastPrint == null) {
+    stdout.write('\r$output');
+  } else {
+    stdout.write('\r${output.padRight(_lastPrint!.length, ' ')}');
+  }
+  _lastPrint = output;
 }

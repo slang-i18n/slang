@@ -155,10 +155,16 @@ lib/
 
 Built-in:
 
+Recommended during development. It runs much faster than `build_runner`.
+
 ```text
 flutter pub run slang
 ```
+
 Alternative (requires [slang_build_runner](https://pub.dev/packages/slang_build_runner)):
+
+Useful for CI and initial git checkout.
+
 ```text
 flutter pub run build_runner build --delete-conflicting-outputs
 ```

@@ -72,7 +72,7 @@ class TranslationModelBuilder {
             final currLink = pathQueue.removeFirst();
             final linkedNode = leavesMap[currLink];
             if (linkedNode == null) {
-              throw '"$key" is linked to "$currLink" but "$currLink" is undefined (locale: $localeDebug).';
+              throw '"$key" in <$localeDebug> is linked to "$currLink" but "$currLink" is undefined.';
             }
 
             visitedLinks.add(currLink);

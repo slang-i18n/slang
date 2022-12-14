@@ -1,3 +1,7 @@
+## 3.6.0
+
+- feat: `flutter pub run slang watch` now works recursively and does not crash on error
+
 ## 3.5.0
 
 - feat: csv decoding now support both `CRLF` and `LF`, `"` and `'`
