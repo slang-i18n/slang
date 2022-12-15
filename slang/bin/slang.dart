@@ -235,7 +235,7 @@ Future<void> _generateTranslationsFromWatch({
   required String fileName,
 }) async {
   final stopwatch = Stopwatch()..start();
-  _printDynamicLastLine('\r[$currentTime] #$counter Generating...');
+  _printDynamicLastLine('\r[$currentTime] $_YELLOW#$counter Generating...');
 
   final newFiles = inputDirectory
       .listSync(recursive: true)
@@ -256,17 +256,17 @@ Future<void> _generateTranslationsFromWatch({
     print('');
     print(e);
     _printDynamicLastLine(
-      '\r[$currentTime] #$counter Error (${stopwatch.elapsedMilliseconds} ms)',
+      '\r[$currentTime] $_RED#$counter Error (${stopwatch.elapsedMilliseconds} ms)',
     );
   }
 
   if (success) {
     if (counter == 1) {
       _printDynamicLastLine(
-          '\r[$currentTime] #1 Init (${stopwatch.elapsedMilliseconds} ms)');
+          '\r[$currentTime] $_GREEN#1 Init (${stopwatch.elapsedMilliseconds} ms)');
     } else {
       _printDynamicLastLine(
-        '\r[$currentTime] #$counter Update $fileName (${stopwatch.elapsedMilliseconds} ms)',
+        '\r[$currentTime] $_GREEN#$counter Update $fileName (${stopwatch.elapsedMilliseconds} ms)',
       );
     }
   }
@@ -412,7 +412,7 @@ Future<void> generateTranslations({
 
     if (stopwatch != null) {
       print(
-          'Translations generated successfully. (${stopwatch.elapsedMilliseconds} ms)');
+          '${_GREEN}Translations generated successfully. (${stopwatch.elapsedMilliseconds} ms)$_RESET');
     }
   }
 }
@@ -438,9 +438,14 @@ extension on String {
 String? _lastPrint;
 void _printDynamicLastLine(String output) {
   if (_lastPrint == null) {
-    stdout.write('\r$output');
+    stdout.write('\r$output$_RESET');
   } else {
-    stdout.write('\r${output.padRight(_lastPrint!.length, ' ')}');
+    stdout.write('\r${output.padRight(_lastPrint!.length, ' ')}$_RESET');
   }
   _lastPrint = output;
 }
+
+const _GREEN = '\x1B[32m';
+const _YELLOW = '\x1B[33m';
+const _RED = '\x1B[31m';
+const _RESET = '\x1B[0m';
