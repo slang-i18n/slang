@@ -369,8 +369,19 @@ class RichTextNode extends TextNode {
           paramCase: paramCase,
         );
         final parsedArg = parsed.arg;
-        if (parsedArg != null) return FunctionSpan(parsed.paramName, parsedArg);
-        return VariableSpan(parsed.paramName);
+        if (parsedArg != null) {
+          final parsedLinksResult = _parseLinks(
+            input: parsedArg,
+            linkParamMap: linkParamMap,
+          );
+          _links.addAll(parsedLinksResult.links);
+          return FunctionSpan(
+            parsed.paramName,
+            parsedLinksResult.parsedContent,
+          );
+        } else {
+          return VariableSpan(parsed.paramName);
+        }
       },
     ).toList();
   }

@@ -1,6 +1,7 @@
 ## 3.6.0
 
-- feat: `flutter pub run slang watch` now works recursively and does not crash on error
+- feat: RichText supports links inside default translation
+- feat: `flutter pub run slang watch` works recursively and does not crash on error
 
 ## 3.5.0
 
