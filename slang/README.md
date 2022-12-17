@@ -1034,7 +1034,7 @@ output_directory: lib/i18n # optional
 output_file_name: translations.g.dart # set file name (mandatory)
 ```
 
-Let's create two namespaces called `widgets` and `dialogs`.
+Let's create two namespaces called `widgets` and `errorDialogs`. Please use camel case for multiple words.
 
 ```text
 <namespace>_<locale?>.<extension>
@@ -1044,8 +1044,8 @@ Let's create two namespaces called `widgets` and `dialogs`.
 i18n/
  └── widgets.i18n.json
  └── widgets_fr.i18n.json
- └── dialogs.i18n.json
- └── dialogs_fr.i18n.json
+ └── errorDialogs.i18n.json <-- camel case for multiple words
+ └── errorDialogs_fr.i18n.json
 ```
 
 You can also use different folders. Only file name matters!
@@ -1055,19 +1055,19 @@ i18n/
  └── widgets/
       └── widgets.i18n.json
       └── widgets_fr.i18n.json
- └── dialogs/
-      └── dialogs.i18n.json
-      └── dialogs_fr.i18n.json
+ └── errorDialogs/
+      └── errorDialogs.i18n.json
+      └── errorDialogs_fr.i18n.json
 ```
 
 ```text
 i18n/
  └── en/
       └── widgets.i18n.json
-      └── dialogs.i18n.json
+      └── errorDialogs.i18n.json
  └── fr/
       └── widgets_fr.i18n.json
-      └── dialogs.i18n.json <-- directory locale will be used
+      └── errorDialogs.i18n.json <-- directory locale will be used
 ```
 
 Now access the translations:
@@ -1075,7 +1075,7 @@ Now access the translations:
 ```dart
 // t.<namespace>.<path>
 String a = t.widgets.welcomeCard.title;
-String b = t.dialogs.logout.title;
+String b = t.errorDialogs.login.wrongPassword;
 ```
 
 ### ➤ Output Format
