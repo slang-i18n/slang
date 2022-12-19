@@ -449,3 +449,38 @@ const _GREEN = '\x1B[32m';
 const _YELLOW = '\x1B[33m';
 const _RED = '\x1B[31m';
 const _RESET = '\x1B[0m';
+
+extension on RawConfig {
+  RawConfig withAbsolutePaths() {
+    return RawConfig(
+      baseLocale: baseLocale,
+      fallbackStrategy: fallbackStrategy,
+      inputDirectory: inputDirectory?.toAbsolutePath(),
+      inputFilePattern: inputFilePattern,
+      outputDirectory: outputDirectory?.toAbsolutePath(),
+      outputFileName: outputFileName,
+      outputFormat: outputFormat,
+      localeHandling: localeHandling,
+      flutterIntegration: flutterIntegration,
+      namespaces: namespaces,
+      translateVar: translateVar,
+      enumName: enumName,
+      translationClassVisibility: translationClassVisibility,
+      keyCase: keyCase,
+      keyMapCase: keyMapCase,
+      paramCase: paramCase,
+      stringInterpolation: stringInterpolation,
+      renderFlatMap: renderFlatMap,
+      translationOverrides: translationOverrides,
+      renderTimestamp: renderTimestamp,
+      maps: maps,
+      pluralAuto: pluralAuto,
+      pluralParameter: pluralParameter,
+      pluralCardinal: pluralCardinal,
+      pluralOrdinal: pluralOrdinal,
+      contexts: contexts,
+      interfaces: interfaces,
+      imports: imports,
+    );
+  }
+}

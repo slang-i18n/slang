@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
@@ -134,5 +136,25 @@ class BuildResultPaths {
       newFileName: fileName,
       pathSeparator: pathSeparator,
     );
+  }
+}
+
+extension RawConfigStringExt on String {
+  /// converts to absolute file path
+  String toAbsolutePath() {
+    String result = this
+        .replaceAll('/', Platform.pathSeparator)
+        .replaceAll('\\', Platform.pathSeparator);
+
+    if (result.startsWith(Platform.pathSeparator)) {
+      result = result.substring(Platform.pathSeparator.length);
+    }
+
+    if (result.endsWith(Platform.pathSeparator)) {
+      result =
+          result.substring(0, result.length - Platform.pathSeparator.length);
+    }
+
+    return Directory.current.path + Platform.pathSeparator + result;
   }
 }

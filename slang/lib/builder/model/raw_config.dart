@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -117,39 +115,6 @@ class RawConfig {
     }
   }
 
-  RawConfig withAbsolutePaths() {
-    return RawConfig(
-      baseLocale: baseLocale,
-      fallbackStrategy: fallbackStrategy,
-      inputDirectory: inputDirectory?.toAbsolutePath(),
-      inputFilePattern: inputFilePattern,
-      outputDirectory: outputDirectory?.toAbsolutePath(),
-      outputFileName: outputFileName,
-      outputFormat: outputFormat,
-      localeHandling: localeHandling,
-      flutterIntegration: flutterIntegration,
-      namespaces: namespaces,
-      translateVar: translateVar,
-      enumName: enumName,
-      translationClassVisibility: translationClassVisibility,
-      keyCase: keyCase,
-      keyMapCase: keyMapCase,
-      paramCase: paramCase,
-      stringInterpolation: stringInterpolation,
-      renderFlatMap: renderFlatMap,
-      translationOverrides: translationOverrides,
-      renderTimestamp: renderTimestamp,
-      maps: maps,
-      pluralAuto: pluralAuto,
-      pluralParameter: pluralParameter,
-      pluralCardinal: pluralCardinal,
-      pluralOrdinal: pluralOrdinal,
-      contexts: contexts,
-      interfaces: interfaces,
-      imports: imports,
-    );
-  }
-
   void printConfig() {
     print(' -> fileType: ${fileType.name}');
     print(' -> baseLocale: ${baseLocale.languageTag}');
@@ -203,25 +168,5 @@ class RawConfig {
       }
     }
     print(' -> imports: $imports');
-  }
-}
-
-extension RawConfigStringExt on String {
-  /// converts to absolute file path
-  String toAbsolutePath() {
-    String result = this
-        .replaceAll('/', Platform.pathSeparator)
-        .replaceAll('\\', Platform.pathSeparator);
-
-    if (result.startsWith(Platform.pathSeparator)) {
-      result = result.substring(Platform.pathSeparator.length);
-    }
-
-    if (result.endsWith(Platform.pathSeparator)) {
-      result =
-          result.substring(0, result.length - Platform.pathSeparator.length);
-    }
-
-    return Directory.current.path + Platform.pathSeparator + result;
   }
 }
