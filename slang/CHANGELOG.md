@@ -1,3 +1,7 @@
+## 3.7.0
+
+- feat: official web support
+
 ## 3.6.0
 
 - feat: RichText supports links inside default translation

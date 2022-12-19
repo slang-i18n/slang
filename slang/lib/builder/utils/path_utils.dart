@@ -139,6 +139,7 @@ class BuildResultPaths {
   }
 }
 
+// This file is not exported so we can include dart:io
 extension RawConfigStringExt on String {
   /// converts to absolute file path
   String toAbsolutePath() {

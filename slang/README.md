@@ -321,7 +321,7 @@ imports:
 <details>
   <summary>build.yaml (Click to open example)</summary>
 
-Using `build.yaml` is **necessary** if you use `build_runner`.
+Using `build.yaml` is **necessary** if you use `build_runner`. It has a higher compatibility as `flutter pub run slang` also recognizes this file.
 
 ```yaml
 targets:
