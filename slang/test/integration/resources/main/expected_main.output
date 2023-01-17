@@ -1,7 +1,7 @@
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 48 (24 per locale)
+/// Strings: 54 (27 per locale)
 
 
 // coverage:ignore-file
@@ -134,6 +134,11 @@ enum GenderContext {
 // interfaces generated as mixins
 
 mixin PageData {
+	String get title;
+	String? get content => null;
+}
+
+mixin MPage {
 	String get title;
 	String? get content => null;
 }

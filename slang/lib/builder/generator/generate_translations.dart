@@ -267,6 +267,7 @@ void _generateClass(
         queue: queue,
         className: className,
         node: value,
+        listName: key,
         depth: 0,
       );
     } else if (value is ObjectNode) {
@@ -356,6 +357,7 @@ void _generateMap({
         queue: queue,
         className: className,
         node: value,
+        listName: key,
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
@@ -422,6 +424,7 @@ void _generateList({
   required Queue<ClassTask> queue,
   required String className,
   required ListNode node,
+  required String? listName,
   required int depth,
 }) {
   if (config.translationOverrides && node.genericType == 'String') {
@@ -451,10 +454,16 @@ void _generateList({
         queue: queue,
         className: className,
         node: value,
+        listName: listName,
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      final String key = depth.toString() + 'i' + i.toString();
+      final String key = r'$' +
+          '${listName ?? ''}\$' +
+          depth.toString() +
+          'i' +
+          i.toString() +
+          r'$';
       final String childClassNoLocale =
           getClassName(parentName: className, childName: key);
 

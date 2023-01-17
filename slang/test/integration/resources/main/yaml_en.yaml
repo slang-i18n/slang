@@ -7,6 +7,10 @@ onboarding:
     - title: First Page
       content: First Page Content
     - title: Second Page
+  modifierPages(interface=MPage):
+    - title: First Modifier Page
+      content: First Page Content
+    - title: Second Modifier Page
   greet:
     male: Hello Mr {lastName} and @:onboarding.welcome
     female: Hello Ms {lastName} and @:onboarding.bye

@@ -13,6 +13,15 @@
         "title": "Zweite Seite"
       }
     ],
+    "modifierPages(interface=MPage)": [
+      {
+        "title": "Erste Modifier Seite",
+        "content": "Erster Seiteninhalt"
+      },
+      {
+        "title": "Zweite Modifier Seite"
+      }
+    ],
     "greet": {
       "male": "Hallo Herr {lastName} und @:onboarding.welcome",
       "female": "Hallo Frau {lastName} und @:onboarding.bye"

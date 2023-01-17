@@ -16,6 +16,9 @@ extension on _TranslationsEn {
 			case 'onboarding.pages.0.title': return 'First Page';
 			case 'onboarding.pages.0.content': return 'First Page Content';
 			case 'onboarding.pages.1.title': return 'Second Page';
+			case 'onboarding.modifierPages.0.title': return 'First Modifier Page';
+			case 'onboarding.modifierPages.0.content': return 'First Page Content';
+			case 'onboarding.modifierPages.1.title': return 'Second Modifier Page';
 			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
 					case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
@@ -66,6 +69,9 @@ extension on _TranslationsDe {
 			case 'onboarding.pages.0.title': return 'Erste Seite';
 			case 'onboarding.pages.0.content': return 'Erster Seiteninhalt';
 			case 'onboarding.pages.1.title': return 'Zweite Seite';
+			case 'onboarding.modifierPages.0.title': return 'Erste Modifier Seite';
+			case 'onboarding.modifierPages.0.content': return 'Erster Seiteninhalt';
+			case 'onboarding.modifierPages.1.title': return 'Zweite Modifier Seite';
 			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
 					case GenderContext.male: return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';

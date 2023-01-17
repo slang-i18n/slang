@@ -5,6 +5,9 @@ onboarding.hi(rich),Hi {name} und @:onboarding.greet
 onboarding.pages.0.title,Erste Seite
 onboarding.pages.0.content,Erster Seiteninhalt
 onboarding.pages.1.title,Zweite Seite
+onboarding.modifierPages(interface=MPage).0.title,Erste Modifier Seite
+onboarding.modifierPages(interface=MPage).0.content,Erster Seiteninhalt
+onboarding.modifierPages(interface=MPage).1.title,Zweite Modifier Seite
 group.users.zero,Keine Nutzer und @:onboarding.welcome
 group.users.one,Ein Nutzer
 group.users.other,{n} Nutzer und @:onboarding.bye
