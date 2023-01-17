@@ -55,14 +55,14 @@ String i = page1.title; // type-safe call
   - [Lists](#-lists)
   - [Maps](#-maps)
   - [Dynamic Keys](#-dynamic-keys--flat-map)
-  - [Modifiers](#-modifiers)
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
   - [Custom Contexts / Enums](#-custom-contexts--enums)
-  - [Locale Stream](#-locale-stream)
   - [Interfaces](#-interfaces)
+  - [Modifiers](#-modifiers)
   - [Locale Enum](#-locale-enum)
+  - [Locale Stream](#-locale-stream)
   - [Translation Overrides](#-translation-overrides)
   - [Dependency Injection](#-dependency-injection)
 - [Structuring Features](#structuring-features)
@@ -155,16 +155,18 @@ lib/
 
 Built-in:
 
-```shell
+```text
 # Recommended during development. It runs much faster than build_runner.
+
 flutter pub run slang
 ```
 
 Alternative (requires [slang_build_runner](https://pub.dev/packages/slang_build_runner)):
 
-```shell
+```text
 # Useful for CI and initial git checkout.
-flutter pub run build_runner build --delete-conflicting-outputs
+
+flutter pub run build_runner build -d
 ```
 
 **Step 4: Initialize**
@@ -604,33 +606,6 @@ String b = t['myPath.anotherPath.3']; // with index for arrays
 String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 ```
 
-### ➤ Modifiers
-
-There are several modifiers for further adjustments.
-
-You can combine multiple modifiers with commas like this:
-
-```json
-{
-  "apple(plural, param=appleCount, rich)": {
-    "one": "I have $appleCount apple.",
-    "other": "I have $appleCount apples."
-  }
-}
-```
-
-Available Modifiers:
-
-| Modifier                   | Meaning                                       | Applicable for                  |
-|----------------------------|-----------------------------------------------|---------------------------------|
-| `(rich)`                   | This is a rich text.                          | Leaves, Maps (Plural / Context) |
-| `(map)`                    | This is a map / dictionary (and not a class). | Maps                            |
-| `(plural)`                 | This is a plural (type: cardinal)             | Maps                            |
-| `(cardinal)`               | This is a plural (type: cardinal)             | Maps                            |
-| `(ordinal)`                | This is a plural (type: ordinal)              | Maps                            |
-| `(context=<Context Type>)` | This is a context of type `<Context Type>`    | Maps                            |
-| `(param=<Param Name>)`     | This has the parameter `<Param Name>`         | Maps (Plural / Context)         |
-
 ## Complex Features
 
 ### ➤ Linked Translations
@@ -856,24 +831,16 @@ contexts:
     generate_enum: false # turn off enum generation
 ```
 
-### ➤ Locale Stream
-
-You may want to track locale changes. Please use `LocaleSettings.getLocaleStream`.
-
-```dart
-LocaleSettings.getLocaleStream().listen((event) {
-  print('locale changed: $event');
-});
-```
-
 ### ➤ Interfaces
 
 Often, multiple objects have the same attributes. You can create a common super class for that.
 
+Add the `(interface=<Interface Name>)` to the container node.
+
 ```json
 {
   "onboarding": {
-    "whatsNew": {
+    "whatsNew(interface=ChangeData)": {
       "v2": {
         "title": "New in 2.0",
         "rows": [
@@ -892,7 +859,7 @@ Often, multiple objects have the same attributes. You can create a common super 
 }
 ```
 
-Here we know that all objects inside `whatsNew` have the same attributes. Let's name these objects `ChangeData`.
+Alternatively, you can specify them in the global config:
 
 ```yaml
 # Config
@@ -914,14 +881,12 @@ Now you can access these fields using polymorphism:
 ```dart
 // before: without interfaces
 void myOldFunction(dynamic changes) {
-  String title = changes.title; // not type safe!
-  List<String> rows = changes.rows; // prone to typos
+  List<String> rows = changes.rows as List<String>; // Not type-safe! Prone to typos!
 }
 
 // after: using interfaces
 void myFunction(ChangeData changes) {
-  String title = changes.title;
-  List<String> rows = changes.rows;
+  List<String> rows = changes.rows; // Type-safe! No need to worry!
 }
 
 void main() {
@@ -933,6 +898,35 @@ void main() {
 You can customize the attributes and use different node selectors.
 
 Checkout the [full article](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md).
+
+### ➤ Modifiers
+
+There are several modifiers for further adjustments.
+
+You can combine multiple modifiers with commas like this:
+
+```json
+{
+  "apple(plural, param=appleCount, rich)": {
+    "one": "I have $appleCount apple.",
+    "other": "I have $appleCount apples."
+  }
+}
+```
+
+Available Modifiers:
+
+| Modifier                   | Meaning                                       | Applicable for                  |
+|----------------------------|-----------------------------------------------|---------------------------------|
+| `(rich)`                   | This is a rich text.                          | Leaves, Maps (Plural / Context) |
+| `(map)`                    | This is a map / dictionary (and not a class). | Maps                            |
+| `(plural)`                 | This is a plural (type: cardinal)             | Maps                            |
+| `(cardinal)`               | This is a plural (type: cardinal)             | Maps                            |
+| `(ordinal)`                | This is a plural (type: ordinal)              | Maps                            |
+| `(context=<Context Type>)` | This is a context of type `<Context Type>`    | Maps                            |
+| `(param=<Param Name>)`     | This has the parameter `<Param Name>`         | Maps (Plural / Context)         |
+| `(interface=<I>)`          | Container of interfaces of type `I`           | Map/List containing Maps        |
+| `(singleInterface=<I>)`    | This is an interface of type `I`              | Maps                            |
 
 ### ➤ Locale Enum
 
@@ -952,6 +946,16 @@ enum AppLocale {
 Locale locale = AppLocale.en.flutterLocale; // to native flutter locale
 String tag = AppLocale.en.languageTag; // to string tag (e.g. en-US)
 final t = AppLocale.en.translations; // get translations of one locale
+```
+
+### ➤ Locale Stream
+
+You may want to track locale changes. Please use `LocaleSettings.getLocaleStream`.
+
+```dart
+LocaleSettings.getLocaleStream().listen((event) {
+  print('locale changed: $event');
+});
 ```
 
 ### ➤ Translation Overrides

@@ -9,6 +9,7 @@ void main() {
       path: '',
       rawPath: '',
       comment: null,
+      modifiers: {},
       entries: {},
       isMap: false,
     );

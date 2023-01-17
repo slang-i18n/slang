@@ -10,6 +10,18 @@ import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 
+class _Modifiers {
+  static const rich = 'rich';
+  static const map = 'map';
+  static const plural = 'plural';
+  static const cardinal = 'cardinal';
+  static const ordinal = 'ordinal';
+  static const context = 'context';
+  static const param = 'param';
+  static const interface = 'interface';
+  static const singleInterface = 'singleInterface';
+}
+
 class BuildModelResult {
   final ObjectNode root; // the actual strings
   final List<Interface> interfaces; // detected interfaces
@@ -34,7 +46,7 @@ class TranslationModelBuilder {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
     final Map<String, LeafNode> leavesMap = {};
 
-    // 1st round: Build nodes according to given map
+    // 1st iteration: Build nodes according to given map
     //
     // Linked Translations:
     // They will be tracked but not handled
@@ -50,7 +62,7 @@ class TranslationModelBuilder {
       leavesMap: leavesMap,
     );
 
-    // 2nd round: Handle parameterized linked translations
+    // 2nd iteration: Handle parameterized linked translations
     //
     // TextNodes with parameterized linked translations are rebuilt with correct parameters.
     if (handleLinks) {
@@ -155,24 +167,22 @@ class TranslationModelBuilder {
       path: '',
       rawPath: '',
       comment: null,
+      modifiers: {},
       entries: resultNodeTree,
       isMap: false,
     );
 
-    // 3rd round: Add interfaces
-    final List<Interface> resultInterfaces;
-    if (buildConfig.interfaces.isEmpty) {
-      resultInterfaces = [];
-    } else {
-      resultInterfaces = _applyInterfaceAndGenericsRecursive(
-        curr: root,
-        interfaceCollection: buildConfig.buildInterfaceCollection(),
-      ).toList();
-    }
+    final interfaceCollection = buildConfig.buildInterfaceCollection();
+
+    // 3rd iteration: Add interfaces
+    _applyInterfaceAndGenericsRecursive(
+      curr: root,
+      interfaceCollection: interfaceCollection,
+    );
 
     return BuildModelResult(
       root: root,
-      interfaces: resultInterfaces,
+      interfaces: interfaceCollection.nameInterfaceMap.values.toList(),
     );
   }
 }
@@ -223,10 +233,12 @@ Map<String, Node> _parseMapNode({
       comment = null;
     }
 
+    final modifiers = _getModifiers(originalKey);
+
     if (value is String || value is num) {
       // leaf
       // key: 'value'
-      final textNode = originalKey.endsWith('(rich)')
+      final textNode = modifiers.containsKey(_Modifiers.rich)
           ? RichTextNode(
               path: currPath,
               rawPath: currRawPath,
@@ -269,6 +281,7 @@ Map<String, Node> _parseMapNode({
           path: currPath,
           rawPath: currRawPath,
           comment: comment,
+          modifiers: modifiers,
           entries: children.values.toList(),
         );
         _setParent(node, children.values);
@@ -287,8 +300,6 @@ Map<String, Node> _parseMapNode({
               : config.keyCase,
           leavesMap: leavesMap,
         );
-
-        final modifiers = _getModifiers(originalKey);
 
         Node node;
         _DetectionResult detectedType =
@@ -324,7 +335,7 @@ Map<String, Node> _parseMapNode({
             }
           }
 
-          final rich = modifiers.containsKey('rich');
+          final rich = modifiers.containsKey(_Modifiers.rich);
           if (rich) {
             // rebuild children as RichText
             digestedMap = _parseMapNode(
@@ -333,7 +344,7 @@ Map<String, Node> _parseMapNode({
               parentRawPath: currRawPath,
               curr: {
                 for (final cKey in digestedMap.keys)
-                  cKey._withModifier('rich'): value[cKey],
+                  cKey._withModifier(_Modifiers.rich): value[cKey],
               },
               config: config,
               keyCase: config.keyCase,
@@ -349,7 +360,8 @@ Map<String, Node> _parseMapNode({
               comment: comment,
               context: context,
               entries: digestedMap,
-              paramName: modifiers['param'] ?? context.defaultParameter,
+              paramName:
+                  modifiers[_Modifiers.param] ?? context.defaultParameter,
               rich: rich,
             );
           } else {
@@ -365,7 +377,7 @@ Map<String, Node> _parseMapNode({
                 // because detection was correct
                 return MapEntry(key.toQuantity()!, value);
               }),
-              paramName: modifiers['param'] ?? config.pluralParameter,
+              paramName: modifiers[_Modifiers.param] ?? config.pluralParameter,
               rich: rich,
             );
           }
@@ -374,6 +386,7 @@ Map<String, Node> _parseMapNode({
             path: currPath,
             rawPath: currRawPath,
             comment: comment,
+            modifiers: modifiers,
             entries: children,
             isMap: detectedType.nodeType == _DetectionType.map,
           );
@@ -402,18 +415,19 @@ _DetectionResult _determineNodeType(
   Map<String, Node> children,
 ) {
   final modifierFlags = modifiers.keys.toSet();
-  if (modifierFlags.contains('map') || config.maps.contains(nodePath)) {
+  if (modifierFlags.contains(_Modifiers.map) ||
+      config.maps.contains(nodePath)) {
     return _DetectionResult(_DetectionType.map);
-  } else if (modifierFlags.contains('plural') ||
-      modifierFlags.contains('cardinal') ||
+  } else if (modifierFlags.contains(_Modifiers.plural) ||
+      modifierFlags.contains(_Modifiers.cardinal) ||
       config.pluralCardinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralCardinal);
-  } else if (modifierFlags.contains('ordinal') ||
+  } else if (modifierFlags.contains(_Modifiers.ordinal) ||
       config.pluralOrdinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralOrdinal);
   } else {
-    if (modifierFlags.contains('context')) {
-      final modifier = modifiers['context'];
+    if (modifierFlags.contains(_Modifiers.context)) {
+      final modifier = modifiers[_Modifiers.context];
       final context =
           config.contexts.firstWhereOrNull((c) => c.enumName == modifier);
       if (context != null) {
@@ -468,23 +482,12 @@ _DetectionResult _determineNodeType(
 
 /// Traverses the tree in post order and finds interfaces
 /// Sets interface and genericType for the affected nodes
-/// Returns the resulting interface list
-Iterable<Interface> _applyInterfaceAndGenericsRecursive({
+void _applyInterfaceAndGenericsRecursive({
   required IterableNode curr,
   required InterfaceCollection interfaceCollection,
 }) {
-  final Iterable<Node> children;
-
-  if (curr is ListNode) {
-    children = curr.entries;
-  } else if (curr is ObjectNode) {
-    children = curr.entries.values;
-  } else {
-    throw 'This should not happen';
-  }
-
   // first calculate for children (post order!)
-  children.forEach((child) {
+  curr.values.forEach((child) {
     if (child is IterableNode) {
       _applyInterfaceAndGenericsRecursive(
         curr: child,
@@ -513,7 +516,7 @@ Iterable<Interface> _applyInterfaceAndGenericsRecursive({
   );
   if (containerInterface != null) {
     curr.setGenericType(containerInterface.name);
-    children
+    curr.values
         .cast<ObjectNode>()
         .forEach((child) => child.setInterface(containerInterface));
 
@@ -521,8 +524,6 @@ Iterable<Interface> _applyInterfaceAndGenericsRecursive({
     interfaceCollection.nameInterfaceMap[containerInterface.name] =
         containerInterface;
   }
-
-  return interfaceCollection.nameInterfaceMap.values;
 }
 
 /// Returns the interface of the list or object node.
@@ -531,27 +532,17 @@ Interface? _determineInterfaceForContainer({
   required IterableNode node,
   required InterfaceCollection interfaceCollection,
 }) {
-  final List<ObjectNode> children;
-  if (node is ListNode) {
-    if (node.entries.isNotEmpty &&
-        node.entries.every((child) => child is ObjectNode)) {
-      children = node.entries.cast<ObjectNode>().toList();
-    } else {
-      return null;
-    }
-  } else if (node is ObjectNode) {
-    if (node.entries.isNotEmpty &&
-        node.entries.values.every((child) => child is ObjectNode)) {
-      children = node.entries.values.cast<ObjectNode>().toList();
-    } else {
-      return null;
-    }
-  } else {
-    throw 'this should not happen';
+  if (node.values.isEmpty || node.values.any((child) => child is! ObjectNode)) {
+    // All children must be ObjectNode
+    return null;
   }
 
+  final List<ObjectNode> children = node.values.cast<ObjectNode>().toList();
+
   // first check if the path is specified to be an interface (via build config)
-  final specifiedInterface =
+  // or the modifier
+  // this is executed because we can skip the next complex step
+  final specifiedInterface = node.modifiers[_Modifiers.interface] ??
       interfaceCollection.pathInterfaceContainerMap[node.path];
   if (specifiedInterface != null) {
     final existingInterface =
@@ -567,8 +558,35 @@ Interface? _determineInterfaceForContainer({
     }
   }
 
-  // find minimum attribute set all object nodes have in common
-  // and a super set containing all attributes of all object nodes
+  if (specifiedInterface != null) {
+    // user has specified the path but not the concrete attributes
+    // create the corresponding concrete interface here
+    final attributes = _parseInterfaceContainerAttributes(children);
+    return Interface(
+      name: specifiedInterface,
+      attributes: {...attributes.common, ...attributes.optional},
+    );
+  } else if (interfaceCollection.globalInterfaces.isNotEmpty) {
+    // lets find the first interface that satisfy this hypothetical interface
+    // only one interface is allowed because generics do not allow unions
+    final attributes = _parseInterfaceContainerAttributes(children);
+    final potentialInterface =
+        interfaceCollection.globalInterfaces.firstWhereOrNull(
+      (interface) => Interface.satisfyRequiredSet(
+        requiredSet: interface.attributes,
+        testSet: attributes.common,
+      ),
+    );
+    return potentialInterface;
+  } else {
+    return null;
+  }
+}
+
+/// find minimum attribute set all object nodes have in common
+/// and a super set containing all attributes of all object nodes
+_InterfaceAttributesResult _parseInterfaceContainerAttributes(
+    List<ObjectNode> children) {
   final commonAttributes = _parseAttributes(children.first);
   final allAttributes = {...commonAttributes};
   children.skip(1).forEach((child) {
@@ -587,25 +605,11 @@ Interface? _determineInterfaceForContainer({
           ))
       .toSet();
 
-  if (specifiedInterface != null) {
-    // user has specified the path but not the concrete attributes
-    // create the corresponding concrete interface here
-    return Interface(
-      name: specifiedInterface,
-      attributes: {...commonAttributes, ...optionalAttributes},
-    );
-  } else {
-    // lets find the first interface that satisfy this hypothetical interface
-    // only one interface is allowed because generics do not allow unions
-    final potentialInterface =
-        interfaceCollection.globalInterfaces.cast<Interface?>().firstWhere(
-              (interface) => Interface.satisfyRequiredSet(
-                  requiredSet: interface!.attributes,
-                  testSet: commonAttributes),
-              orElse: () => null,
-            );
-    return potentialInterface;
-  }
+  return _InterfaceAttributesResult(
+    common: commonAttributes,
+    all: allAttributes,
+    optional: optionalAttributes,
+  );
 }
 
 /// Returns the interface of the object node.
@@ -615,7 +619,9 @@ Interface? _determineInterface({
   required InterfaceCollection interfaceCollection,
 }) {
   // first check if the path is specified to be an interface (via build config)
-  final specifiedInterface =
+  // or the modifier
+  // this is executed because we can skip the next complex step
+  final specifiedInterface = node.modifiers[_Modifiers.singleInterface] ??
       interfaceCollection.pathInterfaceNameMap[node.path];
   if (specifiedInterface != null) {
     final existingInterface =
@@ -629,26 +635,27 @@ Interface? _determineInterface({
     }
   }
 
-  // find attributes
-  final attributes = _parseAttributes(node);
-
   if (specifiedInterface != null) {
     // user has specified the path but not the concrete attributes
     // create the corresponding concrete interface here
     return Interface(
       name: specifiedInterface,
-      attributes: attributes,
+      attributes: _parseAttributes(node),
     );
-  } else {
+  } else if (interfaceCollection.globalInterfaces.isNotEmpty) {
     // lets find the first interface that satisfy this hypothetical interface
     // only one interface is allowed because generics do not allow unions
+    final attributes = _parseAttributes(node);
     final potentialInterface =
-        interfaceCollection.globalInterfaces.cast<Interface?>().firstWhere(
-              (interface) => Interface.satisfyRequiredSet(
-                  requiredSet: interface!.attributes, testSet: attributes),
-              orElse: () => null,
-            );
+        interfaceCollection.globalInterfaces.firstWhereOrNull(
+      (interface) => Interface.satisfyRequiredSet(
+        requiredSet: interface.attributes,
+        testSet: attributes,
+      ),
+    );
     return potentialInterface;
+  } else {
+    return null;
   }
 }
 
@@ -753,6 +760,18 @@ class _DetectionResult {
   final ContextType? contextHint;
 
   _DetectionResult(this.nodeType, [this.contextHint]);
+}
+
+class _InterfaceAttributesResult {
+  final Set<InterfaceAttribute> common;
+  final Set<InterfaceAttribute> all;
+  final Set<InterfaceAttribute> optional;
+
+  _InterfaceAttributesResult({
+    required this.common,
+    required this.all,
+    required this.optional,
+  });
 }
 
 extension on BuildModelConfig {

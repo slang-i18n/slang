@@ -4,10 +4,12 @@
 
 Often, multiple maps have the same structure. You can create a common super class for that. This allows you to write cleaner code.
 
+Add the `(interface=<Interface Name>)` to the container node.
+
 ```json
 {
   "onboarding": {
-    "whatsNew": {
+    "whatsNew(interface=ChangeData)": {
       "v2": {
         "title": "New in 2.0",
         "rows": [
@@ -37,7 +39,19 @@ mixin ChangeData {
 
 ## Configuration
 
-### Example (most explicit version)
+### Modifier
+
+The quickest version to get started with interfaces. You don't need to touch the config file at all.
+
+Just add the `(interface=MyInterface)` modifier to target a container of interfaces which is the most common usage. It can be applied to maps and lists.
+
+Alternatively, add `(singleInterface=MyInterface)` to target a single interface. This can only be applied to a map.
+
+Attributes of the desired interface will be determined automatically.
+
+### Config Example (most explicit version)
+
+Another method is to specify the interfaces in the config. You have more options here.
 
 ```yaml
 # Config
@@ -52,12 +66,12 @@ interfaces:
 
 ### Paths
 
-You can either specify one node or all children of one parent.
+You can either specify one node or a container of nodes.
 
 Example|Description
 ---|---
 `onboarding.firstPage`|single node
-`onboarding.pages.*`|all children (non-recursive)
+`onboarding.pages.*`|container (non-recursive)
 
 ```json5
 {

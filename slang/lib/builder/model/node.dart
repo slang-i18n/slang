@@ -35,17 +35,28 @@ abstract class LeafNode {}
 
 /// the super class for list and object nodes
 abstract class IterableNode extends Node {
-  /// If not null, then all its children have a specific interface.
+  /// The generic type of the container, i.e. Map<String, T> or List<T>
   String _genericType;
 
   String get genericType => _genericType;
+
+  /// Modifiers (Modifier key -> Modifier value)
+  Map<String, String> _modifiers;
+
+  Map<String, String> get modifiers => _modifiers;
+
+  /// Child nodes.
+  /// This is just an alias so we can iterate more easily.
+  Iterable<Node> get values;
 
   IterableNode({
     required super.path,
     required super.rawPath,
     required super.comment,
     required String genericType,
-  }) : _genericType = genericType;
+    required Map<String, String> modifiers,
+  })  : _genericType = genericType,
+        _modifiers = modifiers;
 
   void setGenericType(String genericType) {
     _genericType = genericType;
@@ -61,10 +72,14 @@ class ObjectNode extends IterableNode {
 
   Interface? get interface => _interface;
 
+  @override
+  Iterable<Node> get values => entries.values;
+
   ObjectNode({
     required super.path,
     required super.rawPath,
     required super.comment,
+    required super.modifiers,
     required this.entries,
     required this.isMap,
   }) : super(genericType: _determineGenericType(entries.values));
@@ -80,10 +95,14 @@ class ObjectNode extends IterableNode {
 class ListNode extends IterableNode {
   final List<Node> entries;
 
+  @override
+  Iterable<Node> get values => entries;
+
   ListNode({
     required super.path,
     required super.rawPath,
     required super.comment,
+    required super.modifiers,
     required this.entries,
   }) : super(genericType: _determineGenericType(entries));
 
