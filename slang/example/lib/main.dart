@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       locale: TranslationProvider.of(context).flutterLocale,
-      supportedLocales: LocaleSettings.supportedLocales,
+      supportedLocales: AppLocaleUtils.supportedLocales,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       home: MyHomePage(),
     );

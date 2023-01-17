@@ -423,10 +423,10 @@ void _generateLocaleSettings({
     buffer.writeln(
         '\tstatic $enumName useDeviceLocale() => instance.useDeviceLocale();');
     buffer.writeln(
-        '\tstatic List<Locale> get supportedLocales => instance.supportedLocales;');
+        '\t@Deprecated(\'Use [AppLocaleUtils.supportedLocales]\') static List<Locale> get supportedLocales => instance.supportedLocales;');
   }
   buffer.writeln(
-      '\tstatic List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
+      '\t@Deprecated(\'Use [AppLocaleUtils.supportedLocalesRaw]\') static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
   buffer.writeln(
       '\tstatic void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
   buffer.writeln('\t\tlanguage: language,');
@@ -472,7 +472,11 @@ void _generateUtil({
   if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');
+    buffer.writeln(
+        '\tstatic List<Locale> get supportedLocales => instance.supportedLocales;');
   }
+  buffer.writeln(
+      '\tstatic List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
   if (config.translationOverrides) {
     buffer.writeln(
         '\tstatic $baseClassName buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');

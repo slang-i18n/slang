@@ -95,6 +95,11 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
     return selected ?? baseLocale;
   }
 
+  /// Gets supported locales in string format.
+  List<String> get supportedLocalesRaw {
+    return locales.map((locale) => locale.languageTag).toList();
+  }
+
   /// Creates a translation instance with overrides stored in [content].
   T buildWithOverrides({
     required E locale,
@@ -203,7 +208,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
   /// Gets supported locales in string format.
   List<String> get supportedLocalesRaw {
-    return utils.locales.map((locale) => locale.languageTag).toList();
+    return utils.supportedLocalesRaw;
   }
 
   /// Sets locale.

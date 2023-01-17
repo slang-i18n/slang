@@ -227,7 +227,7 @@ void main() {
 ```dart
 MaterialApp(
   locale: TranslationProvider.of(context).flutterLocale, // use provider
-  supportedLocales: LocaleSettings.supportedLocales,
+  supportedLocales: AppLocaleUtils.supportedLocales,
   localizationsDelegates: GlobalMaterialLocalizations.delegates,
   child: YourFirstScreen(),
 )

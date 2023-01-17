@@ -55,7 +55,7 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, _TranslationsEn> {
 	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
 	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
 	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
-	static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
+	@Deprecated('Use [AppLocaleUtils.supportedLocalesRaw]') static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
 	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(
 		language: language,
 		locale: locale,
@@ -73,6 +73,7 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, _TranslationsEn> {
 	// static aliases (checkout base methods for documentation)
 	static AppLocale parse(String rawLocale) => instance.parse(rawLocale);
 	static AppLocale parseLocaleParts({required String languageCode, String? scriptCode, String? countryCode}) => instance.parseLocaleParts(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);
+	static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
 }
 
 // context enums

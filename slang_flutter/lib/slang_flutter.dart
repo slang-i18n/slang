@@ -18,6 +18,11 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
       countryCode: deviceLocale.countryCode,
     );
   }
+
+  /// Gets supported locales (as Locale objects) with base locale sorted first.
+  List<Locale> get supportedLocales {
+    return locales.map((locale) => locale.flutterLocale).toList();
+  }
 }
 
 extension ExtAppLocale on BaseAppLocale {
@@ -59,7 +64,7 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
 
   /// Gets supported locales (as Locale objects) with base locale sorted first.
   List<Locale> get supportedLocales {
-    return utils.locales.map((locale) => locale.flutterLocale).toList();
+    return utils.supportedLocales;
   }
 }
 
