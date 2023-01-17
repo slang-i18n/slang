@@ -38,5 +38,5 @@ LocaleSettings.useDeviceLocale();
 AppLocale locale = AppLocaleUtils.findDeviceLocale();
 
 // get supported locales (handy for MaterialApp)
-List<Locale> locales = LocaleSettings.supportedLocales;
+List<Locale> locales = AppLocaleUtils.supportedLocales;
 ```

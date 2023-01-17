@@ -1,3 +1,10 @@
+## 3.8.0
+
+- feat: add `(interface=<Interface>)` and `(singleInterface=<Interface>)` modifiers, a new approach to configure interfaces without touching the config file
+- feat: add `AppLocaleUtils.supportedLocales` and `AppLocaleUtils.supportedLocalesRaw`, this API works in `locale_handling: false`
+- fix: possible class name conflict for objects inside lists
+- **DEPRECATED:** `LocaleSettings.supportedLocales` and `LocaleSettings.supportedLocalesRaw`
+
 ## 3.7.0
 
 - feat: official web support
