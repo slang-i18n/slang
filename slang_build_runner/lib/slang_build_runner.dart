@@ -57,7 +57,7 @@ class I18nBuilder implements Builder {
         outputFilePath = 'lib/gen/${config.outputFileName}';
       } else {
         final finalOutputDirectory =
-        (assets.first.pathSegments..removeLast()).join('/');
+            (assets.first.pathSegments..removeLast()).join('/');
         outputFilePath = '$finalOutputDirectory/${config.outputFileName}';
       }
     }
