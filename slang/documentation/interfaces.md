@@ -41,46 +41,49 @@ mixin ChangeData {
 
 ### Modifier
 
-The quickest version to get started with interfaces. You don't need to touch the config file at all.
+The quickest method to get started with interfaces. You don't need to touch the config file at all.
 
 Just add the `(interface=MyInterface)` modifier to target a container of interfaces which is the most common usage. It can be applied to maps and lists.
 
 Alternatively, add `(singleInterface=MyInterface)` to target a single interface. This can only be applied to a map.
 
-Attributes of the desired interface will be determined automatically.
+Attributes of the desired interface will be inferred automatically.
 
-### Config Example (most explicit version)
+### Config file
 
-Another method is to specify the interfaces in the config. You have more options here.
+This method allows for a more fine-grained configuration.
+
+#### Example
 
 ```yaml
 # Config
 interfaces:
-  MyInterface:
+  MyInterface: about.changelog.* # shorthand
+  MyOtherInterface: # full config
     paths:
       - onboarding.whatsNew.*
     attributes:
       - String title
-      - String content
+      - String? content
 ```
 
-### Paths
+#### Paths
 
 You can either specify one node or a container of nodes.
 
-Example|Description
----|---
-`onboarding.firstPage`|single node
-`onboarding.pages.*`|container (non-recursive)
+| Example                | Description               |
+|------------------------|---------------------------|
+| `onboarding.firstPage` | single node               |
+| `onboarding.pages.*`   | container (non-recursive) |
 
-```json5
+```json
 {
   "onboarding": {
     "firstPage": {
       "title": "hi",
       "content": "hi"
     },
-    pages: [
+    "pages": [
       {
         "title": "hi",
         "content": "hi"
@@ -98,108 +101,64 @@ Example|Description
 }
 ```
 
-### Attributes
+#### Attributes
 
 Attributes can be specified in multiple ways.
 
-Example|Description
----|---
-`String title`|simple version
-`String greet(firstName, lastName)`|with parameters
-`String? greet(firstName, lastName)`|optional
-`List<Feature> features`|list of another interface
+| Example                              | Description               |
+|--------------------------------------|---------------------------|
+| `String title`                       | simple version            |
+| `String greet(firstName, lastName)`  | with parameters           |
+| `String? greet(firstName, lastName)` | optional                  |
+| `List<Feature> features`             | list of another interface |
 
-## Configuration Modes
+## Attribute inference
 
-### Summary
+Attributes of the interface are inferred in the following cases:
 
-Mode|Description
----|---
-single path|**One** node; `<interface>: <path>`; Attributes will be **detected** automatically
-`paths` only|**Multiple** nodes; Attributes will be **detected** automatically
-`attributes` only|**All** nodes satisfying `attributes` will get the **predefined** interface.
-both|**Multiple** nodes will get the **predefined** interface
-
-### Single Path
-
-Use this, if you want to target one node.
-
-```yaml
-# Config
-interfaces:
-  MyInterface: a.c.* # all children of c (non-recursive)
-```
-
-### Multiple Paths
-
-Use this, if you want to target multiple translations.
-
-All nodes should only have the **same mandatory** parameters. Otherwise unexpected things may occur.
-
-```yaml
-# Config
-interfaces:
-  MyInterface:
-    paths:
-      - a.b # single node
-      - a.c.* # all children of c (non-recursive)
-```
-
-### Attributes Only
-
-Use this, if your selected translations are spread across the file.
-
-```yaml
-# Config
-interfaces:
-  MyInterface:
-    attributes:
-      - String title
-      - String content
-      - List<String>? features
-```
+- usage of modifiers
+- leaving out attributes in config
 
 ```json5
 {
-  "a": { // interface applied (all mandatory attributes specified)
-    "title": "Title A",
-    "content": "Content A"
-  },
-  "b": { // interface applied (unknown attributes are ignored)
-    "title": "Title A",
-    "content": "Content A",
-    "thirdAttribute": "Hi"
-  },
-  "c": { // ignored (content missing)
-    "title": "Title A",
-    "features": [
-      "f1",
-      "f2"
-  },
-  "d": [
-    { // interface applied
-      "title": "Title D1",
-      "content": "Content C1"
+  "first(interface=MyInterface)": {
+    "i": {
+      "a": "",
+      "b": ""
     },
-    { // ignored (content parameter list differs)
-      "title": "Title D1",
-      "content": "Content C1 $param1"
+    "j": {
+      "a": "",
+      "b": "",
+      "c": ""
     }
-  ]
+  },
+  "second(interface=MyInterface)": {
+    "k": {
+      "a": ""
+    },
+    "l": {
+      "a": "",
+      "c": ""
+    }
+  }
 }
 ```
 
-### Paths and Attributes
+In the given example, the first interface will be inferred to `a, b, c?`.
 
-This is the most explicit configuration.
+The second interface will be inferred to `a, c?`.
+
+Because both of them share the same interface name `MyInterface`, these attributes get merged.
+
+The final interface is `a, b?, c?`.
+
+For reference, if you use the following config, you will get the same result:
 
 ```yaml
 # Config
 interfaces:
   MyInterface:
     paths:
-      - onboarding.whatsNew.*
-    attributes:
-      - String title
-      - String content
+      - first.*
+      - second.*
 ```
