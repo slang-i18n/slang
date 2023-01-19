@@ -50,9 +50,16 @@ class I18nBuilder implements Builder {
       outputFilePath = config.outputDirectory! + '/' + config.outputFileName;
     } else {
       // use the directory of the first (random) translation file
-      final finalOutputDirectory =
-          (assets.first.pathSegments..removeLast()).join('/');
-      outputFilePath = '$finalOutputDirectory/${config.outputFileName}';
+      final translationFilePath = assets.first.pathSegments;
+      if (config.flutterIntegration && !translationFilePath.contains('lib')) {
+        // In Flutter environment, only files inside 'lib' matter
+        // Generate to lib/gen/<fileName> by default.
+        outputFilePath = 'lib/gen/${config.outputFileName}';
+      } else {
+        final finalOutputDirectory =
+        (assets.first.pathSegments..removeLast()).join('/');
+        outputFilePath = '$finalOutputDirectory/${config.outputFileName}';
+      }
     }
 
     // STEP 2: scan translations

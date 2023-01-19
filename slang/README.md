@@ -101,15 +101,11 @@ dependencies:
   slang_flutter: <version> # also add this if you use flutter
 
 dev_dependencies:
-  build_runner: <version> # if you use build_runner (1/2)
-  slang_build_runner: <version> # if you use build_runner (2/2)
+  build_runner: <version> # ONLY if you use build_runner (1/2)
+  slang_build_runner: <version> # ONLY if you use build_runner (2/2)
 ```
 
 **Step 2: Create JSON files**
-
-Create these files inside your `lib` directory. For example, `lib/i18n`.
-
-Writing translations into assets folder requires extra configuration (see [FAQ](#faq)).
 
 Format:
 ```text
@@ -117,6 +113,8 @@ Format:
 ```
 
 You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings`.
+
+Most common i18n directories are `assets/i18n` and `lib/i18n`. (see [FAQ](#faq)).
 
 Example:
 ```text
@@ -1453,14 +1451,14 @@ targets:
       slang_build_runner:
         options:
           input_directory: assets/i18n
-          output_directory: lib/i18n
+          output_directory: lib/i18n # defaulting to lib/gen if input is outside of lib/
 ```
 
 ... or in `slang.yaml`:
 
 ```yaml
 input_directory: assets/i18n
-output_directory: lib/i18n
+output_directory: lib/i18n # defaulting to lib/gen if input is outside of lib/
 ```
 
 **CSV files are not parsed correctly**

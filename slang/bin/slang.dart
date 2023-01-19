@@ -297,11 +297,26 @@ Future<void> generateTranslations({
         rawConfig.outputFileName;
   } else {
     // use the directory of the first (random) translation file
-    final fileName = files.first.path.getFileName();
-    outputFilePath =
-        files.first.path.replaceAll("${Platform.pathSeparator}$fileName", '') +
-            Platform.pathSeparator +
-            rawConfig.outputFileName;
+    final translationFilePath = files.first.path;
+    if (rawConfig.flutterIntegration &&
+        !translationFilePath.contains(
+            '${Directory.current.path}${Platform.pathSeparator}lib')) {
+      // In Flutter environment, only files inside 'lib' matter
+      // Generate to lib/gen/<fileName> by default.
+      outputFilePath = Directory.current.path +
+          Platform.pathSeparator +
+          'lib' +
+          Platform.pathSeparator +
+          'gen' +
+          Platform.pathSeparator +
+          rawConfig.outputFileName;
+    } else {
+      outputFilePath = PathUtils.replaceFileName(
+        path: translationFilePath,
+        newFileName: rawConfig.outputFileName,
+        pathSeparator: Platform.pathSeparator,
+      );
+    }
   }
 
   // STEP 2: scan translations
@@ -436,6 +451,7 @@ extension on String {
 }
 
 String? _lastPrint;
+
 void _printDynamicLastLine(String output) {
   if (_lastPrint == null) {
     stdout.write('\r$output$_RESET');

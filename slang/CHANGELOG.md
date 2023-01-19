@@ -1,6 +1,7 @@
 ## 3.9.0
 
-- feat: improve interface attribute deferring
+- feat: improve interface attribute inference algorithm
+- feat: generate to `lib/gen/<filename>` in Flutter environment by default if input is outside of `lib/` and no output directory is given
 
 ## 3.8.0
 
