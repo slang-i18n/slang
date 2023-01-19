@@ -182,7 +182,7 @@ class TranslationModelBuilder {
 
     return BuildModelResult(
       root: root,
-      interfaces: interfaceCollection.nameInterfaceMap.values.toList(),
+      interfaces: interfaceCollection.resultInterfaces.values.toList(),
     );
   }
 }
@@ -506,7 +506,7 @@ void _applyInterfaceAndGenericsRecursive({
       curr.setInterface(interface);
 
       // in case this interface is new
-      interfaceCollection.nameInterfaceMap[interface.name] = interface;
+      interfaceCollection.resultInterfaces[interface.name] = interface;
     }
   }
 
@@ -521,7 +521,7 @@ void _applyInterfaceAndGenericsRecursive({
         .forEach((child) => child.setInterface(containerInterface));
 
     // in case this interface is new
-    interfaceCollection.nameInterfaceMap[containerInterface.name] =
+    interfaceCollection.resultInterfaces[containerInterface.name] =
         containerInterface;
   }
 }
@@ -544,21 +544,31 @@ Interface? _determineInterfaceForContainer({
   // this is executed because we can skip the next complex step
   final specifiedInterface = node.modifiers[_Modifiers.interface] ??
       interfaceCollection.pathInterfaceContainerMap[node.path];
+
   if (specifiedInterface != null) {
-    final existingInterface =
-        interfaceCollection.nameInterfaceMap[specifiedInterface];
+    Interface? existingInterface =
+        interfaceCollection.resultInterfaces[specifiedInterface];
     if (existingInterface != null) {
-      // user has specified path and attributes for this interface
-      if (existingInterface.hasLists) {
-        children.forEach((child) {
-          _fixEmptyLists(node: child, interface: existingInterface);
+      // there is already an interface for this name
+      if (!interfaceCollection.originalInterfaces
+          .containsKey(specifiedInterface)) {
+        // This interface is inferred, extend its attributes if necessary
+        final attributes = _parseInterfaceContainerAttributes(children);
+        existingInterface = existingInterface.extend({
+          ...attributes.common,
+          ...attributes.optional,
         });
+        interfaceCollection.resultInterfaces[specifiedInterface] =
+            existingInterface;
+      }
+      if (existingInterface.hasLists) {
+        for (final child in children) {
+          _fixEmptyLists(node: child, interface: existingInterface);
+        }
       }
       return existingInterface;
     }
-  }
 
-  if (specifiedInterface != null) {
     // user has specified the path but not the concrete attributes
     // create the corresponding concrete interface here
     final attributes = _parseInterfaceContainerAttributes(children);
@@ -571,7 +581,7 @@ Interface? _determineInterfaceForContainer({
     // only one interface is allowed because generics do not allow unions
     final attributes = _parseInterfaceContainerAttributes(children);
     final potentialInterface =
-        interfaceCollection.globalInterfaces.firstWhereOrNull(
+        interfaceCollection.globalInterfaces.values.firstWhereOrNull(
       (interface) => Interface.satisfyRequiredSet(
         requiredSet: interface.attributes,
         testSet: attributes.common,
@@ -623,19 +633,25 @@ Interface? _determineInterface({
   // this is executed because we can skip the next complex step
   final specifiedInterface = node.modifiers[_Modifiers.singleInterface] ??
       interfaceCollection.pathInterfaceNameMap[node.path];
+
   if (specifiedInterface != null) {
-    final existingInterface =
-        interfaceCollection.nameInterfaceMap[specifiedInterface];
+    Interface? existingInterface =
+        interfaceCollection.resultInterfaces[specifiedInterface];
     if (existingInterface != null) {
       // user has specified path and attributes for this interface
+      if (!interfaceCollection.originalInterfaces
+          .containsKey(specifiedInterface)) {
+        // This interface is inferred, extend its attributes if necessary
+        existingInterface = existingInterface.extend(_parseAttributes(node));
+        interfaceCollection.resultInterfaces[specifiedInterface] =
+            existingInterface;
+      }
       if (existingInterface.hasLists) {
         _fixEmptyLists(node: node, interface: existingInterface);
       }
       return existingInterface;
     }
-  }
 
-  if (specifiedInterface != null) {
     // user has specified the path but not the concrete attributes
     // create the corresponding concrete interface here
     return Interface(
@@ -647,7 +663,7 @@ Interface? _determineInterface({
     // only one interface is allowed because generics do not allow unions
     final attributes = _parseAttributes(node);
     final potentialInterface =
-        interfaceCollection.globalInterfaces.firstWhereOrNull(
+        interfaceCollection.globalInterfaces.values.firstWhereOrNull(
       (interface) => Interface.satisfyRequiredSet(
         requiredSet: interface.attributes,
         testSet: attributes,
@@ -776,21 +792,21 @@ class _InterfaceAttributesResult {
 
 extension on BuildModelConfig {
   InterfaceCollection buildInterfaceCollection() {
-    Set<Interface> globalInterfaces = {};
-    Map<String, Interface> nameInterfaceMap = {};
+    Map<String, Interface> originalInterfaces = {};
+    Map<String, Interface> globalInterfaces = {};
     Map<String, String> pathInterfaceContainerMap = {};
     Map<String, String> pathInterfaceNameMap = {};
-    interfaces.forEach((interfaceConfig) {
+    for (final interfaceConfig in interfaces) {
       final Interface? interface;
       if (interfaceConfig.attributes.isNotEmpty) {
         interface = interfaceConfig.toInterface();
-        nameInterfaceMap[interface.name] = interface;
+        originalInterfaces[interface.name] = interface;
       } else {
         interface = null;
       }
 
       if (interfaceConfig.paths.isEmpty && interface != null) {
-        globalInterfaces.add(interface);
+        globalInterfaces[interface.name] = interface;
       } else {
         interfaceConfig.paths.forEach((path) {
           if (path.isContainer) {
@@ -800,10 +816,11 @@ extension on BuildModelConfig {
           }
         });
       }
-    });
+    }
     return InterfaceCollection(
+      originalInterfaces: originalInterfaces,
       globalInterfaces: globalInterfaces,
-      nameInterfaceMap: nameInterfaceMap,
+      resultInterfaces: {...originalInterfaces},
       pathInterfaceContainerMap: pathInterfaceContainerMap,
       pathInterfaceNameMap: pathInterfaceNameMap,
     );

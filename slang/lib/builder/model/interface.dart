@@ -54,6 +54,46 @@ class Interface {
     return '$name [${attributes.join(', ')}]';
   }
 
+  /// Extend this interface with another interface.
+  /// If an attribute only exists one interface, then make it optional.
+  Interface extend(Set<InterfaceAttribute> otherAttributes) {
+    if (equalAttributes(attributes, otherAttributes)) {
+      return this;
+    }
+
+    final Map<String, InterfaceAttribute> extendedAttributes = {};
+    final otherAttributesMap = {
+      for (final attribute in otherAttributes)
+        attribute.attributeName: attribute,
+    };
+    for (final attribute in attributes) {
+      if (!attribute.optional &&
+          (otherAttributesMap[attribute.attributeName]?.optional ?? true)) {
+        // This mandatory attribute does not exist in the other interface
+        // Or the attribute is optional in the other interface
+        // Make it optional.
+        extendedAttributes[attribute.attributeName] =
+            attribute.copyAsOptional();
+      } else {
+        extendedAttributes[attribute.attributeName] = attribute;
+      }
+    }
+    for (final attribute in otherAttributes) {
+      if (!attribute.optional &&
+          (extendedAttributes[attribute.attributeName]?.optional ?? true)) {
+        // Make it optional.
+        extendedAttributes[attribute.attributeName] =
+            attribute.copyAsOptional();
+      } else {
+        extendedAttributes[attribute.attributeName] = attribute;
+      }
+    }
+    return Interface(
+      name: name,
+      attributes: extendedAttributes.values.toSet(),
+    );
+  }
+
   static bool equalAttributes(
     Set<InterfaceAttribute> a,
     Set<InterfaceAttribute> b,
@@ -102,6 +142,16 @@ class InterfaceAttribute {
     required this.parameters,
     required this.optional,
   });
+
+  /// A copy of this attribute but make it optional.
+  InterfaceAttribute copyAsOptional() {
+    return InterfaceAttribute(
+      attributeName: attributeName,
+      returnType: returnType,
+      parameters: parameters,
+      optional: true,
+    );
+  }
 
   @override
   int get hashCode {
@@ -158,17 +208,24 @@ extension InterfaceConfigExt on InterfaceConfig {
 
 /// Interface collection defined in build.yaml + detected in a locale
 class InterfaceCollection {
+  // FINAL
+  // Original interfaces with attributes specified in config
+  // Interface Name -> Interface
+  final Map<String, Interface> originalInterfaces;
+
   // FINAL!
   // Interfaces with no specified path
   // will be applied globally
-  final Set<Interface> globalInterfaces;
+  // Interface Name -> Interface
+  final Map<String, Interface> globalInterfaces;
 
   // MODIFIABLE!
   // Interface Name -> Interface
   // This may be smaller than [pathInterfaceNameMap] because the user may
   // specify an interface without attributes - in this case the interface
   // will be determined (i.e. created afterwards).
-  final Map<String, Interface> nameInterfaceMap;
+  // This is the resulting set of interfaces
+  final Map<String, Interface> resultInterfaces;
 
   // FINAL!
   // Path -> Interface Name (all children of this path)
@@ -179,8 +236,9 @@ class InterfaceCollection {
   final Map<String, String> pathInterfaceNameMap;
 
   InterfaceCollection({
+    required this.originalInterfaces,
     required this.globalInterfaces,
-    required this.nameInterfaceMap,
+    required this.resultInterfaces,
     required this.pathInterfaceContainerMap,
     required this.pathInterfaceNameMap,
   });

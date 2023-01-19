@@ -1,3 +1,7 @@
+## 3.9.0
+
+- feat: improve interface attribute deferring
+
 ## 3.8.0
 
 - feat: add `(interface=<Interface>)` and `(singleInterface=<Interface>)` modifiers, a new approach to configure interfaces without touching the config file
