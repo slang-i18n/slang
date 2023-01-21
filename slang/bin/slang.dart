@@ -256,17 +256,17 @@ Future<void> _generateTranslationsFromWatch({
     print('');
     print(e);
     _printDynamicLastLine(
-      '\r[$currentTime] $_RED#$counter Error (${stopwatch.elapsedMilliseconds} ms)',
+      '\r[$currentTime] $_RED#$counter Error ${stopwatch.elapsedSeconds}',
     );
   }
 
   if (success) {
     if (counter == 1) {
       _printDynamicLastLine(
-          '\r[$currentTime] $_GREEN#1 Init (${stopwatch.elapsedMilliseconds} ms)');
+          '\r[$currentTime] $_GREEN#1 Init ${stopwatch.elapsedSeconds}');
     } else {
       _printDynamicLastLine(
-        '\r[$currentTime] $_GREEN#$counter Update $fileName (${stopwatch.elapsedMilliseconds} ms)',
+        '\r[$currentTime] $_GREEN#$counter Update $fileName ${stopwatch.elapsedSeconds}',
       );
     }
   }
@@ -353,7 +353,7 @@ Future<void> generateTranslations({
       arguments: arguments ?? [],
     );
     if (stopwatch != null) {
-      print('Analysis done. (${stopwatch.elapsedMilliseconds} ms)');
+      print('Analysis done. ${stopwatch.elapsedSeconds}');
     }
     return; // skip generation
   }
@@ -427,7 +427,7 @@ Future<void> generateTranslations({
 
     if (stopwatch != null) {
       print(
-          '${_GREEN}Translations generated successfully. (${stopwatch.elapsedMilliseconds} ms)$_RESET');
+          '${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
     }
   }
 }
@@ -498,5 +498,11 @@ extension on RawConfig {
       interfaces: interfaces,
       imports: imports,
     );
+  }
+}
+
+extension on Stopwatch {
+  String get elapsedSeconds {
+    return '(${elapsed.inMilliseconds / 1000} seconds)';
   }
 }
