@@ -215,25 +215,8 @@ Map<String, Node> _parseMapNode({
     final currRawPath =
         parentRawPath.isNotEmpty ? '$parentRawPath.$originalKey' : originalKey;
 
-    // parse comment
-    final String? comment;
-    final dynamic commentObj = curr['@$key'];
-    if (commentObj != null) {
-      // comment node exists
-      if (commentObj is String) {
-        // parse string directly
-        comment = commentObj;
-      } else if (commentObj is Map<String, dynamic>) {
-        // ARB style
-        comment = commentObj['description']?.toString();
-      } else {
-        comment = null;
-      }
-    } else {
-      comment = null;
-    }
-
-    final modifiers = _getModifiers(originalKey);
+    final comment = _parseCommentNode(curr['@$key']);
+    final modifiers = _parseModifiers(originalKey);
 
     if (value is String || value is num) {
       // leaf
@@ -402,6 +385,22 @@ Map<String, Node> _parseMapNode({
   });
 
   return resultNodeTree;
+}
+
+String? _parseCommentNode(dynamic node) {
+  if (node == null) {
+    return null;
+  }
+
+  if (node is String) {
+    // parse string directly
+    return node;
+  } else if (node is Map<String, dynamic>) {
+    // ARB style
+    return node['description']?.toString();
+  } else {
+    return null;
+  }
 }
 
 void _setParent(Node parent, Iterable<Node> children) {
@@ -738,7 +737,7 @@ void _fixEmptyLists({
 /// greet(param: gender, rich)
 /// will result in
 /// {param: gender, rich: rich)
-Map<String, String> _getModifiers(String originalKey) {
+Map<String, String> _parseModifiers(String originalKey) {
   final String? modifierSection =
       RegexUtils.modifierRegex.firstMatch(originalKey)?.group(1);
   if (modifierSection == null) {
