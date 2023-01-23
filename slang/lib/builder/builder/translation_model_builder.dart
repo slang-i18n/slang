@@ -285,8 +285,8 @@ Map<String, Node> _parseMapNode({
           leavesMap: leavesMap,
         );
 
-        Node node;
-        _DetectionResult detectedType =
+        final Node finalNode;
+        final detectedType =
             _determineNodeType(config, currPath, modifiers, children);
 
         // notify plural and split by comma if necessary
@@ -338,7 +338,7 @@ Map<String, Node> _parseMapNode({
 
           if (detectedType.nodeType == _DetectionType.context) {
             final context = detectedType.contextHint!;
-            node = ContextNode(
+            finalNode = ContextNode(
               path: currPath,
               rawPath: currRawPath,
               comment: comment,
@@ -349,7 +349,7 @@ Map<String, Node> _parseMapNode({
               rich: rich,
             );
           } else {
-            node = PluralNode(
+            finalNode = PluralNode(
               path: currPath,
               rawPath: currRawPath,
               comment: comment,
@@ -366,7 +366,7 @@ Map<String, Node> _parseMapNode({
             );
           }
         } else {
-          node = ObjectNode(
+          finalNode = ObjectNode(
             path: currPath,
             rawPath: currRawPath,
             comment: comment,
@@ -376,10 +376,10 @@ Map<String, Node> _parseMapNode({
           );
         }
 
-        _setParent(node, children.values);
-        resultNodeTree[key] = node;
-        if (node is PluralNode || node is ContextNode) {
-          leavesMap[currPath] = node as LeafNode;
+        _setParent(finalNode, children.values);
+        resultNodeTree[key] = finalNode;
+        if (finalNode is PluralNode || finalNode is ContextNode) {
+          leavesMap[currPath] = finalNode as LeafNode;
         }
       }
     }
