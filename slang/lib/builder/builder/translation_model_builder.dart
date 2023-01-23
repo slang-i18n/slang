@@ -271,14 +271,15 @@ Map<String, Node> _parseMapNode({
         resultNodeTree[key] = node;
       } else {
         // key: { ...value }
-        final children = _parseMapNode(
+        children = _parseMapNode(
           localeDebug: localeDebug,
           parentPath: currPath,
           parentRawPath: currRawPath,
           curr: value,
           config: config,
           keyCase: config.keyCase != config.keyMapCase &&
-                  config.maps.contains(currPath)
+                  (config.maps.contains(currPath) ||
+                      modifiers.containsKey(_Modifiers.map))
               ? config.keyMapCase
               : config.keyCase,
           leavesMap: leavesMap,

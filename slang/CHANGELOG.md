@@ -1,3 +1,7 @@
+## 3.10.0
+
+- fix: `key_map_case` should work with `(map)` modifier
+
 ## 3.9.0
 
 - feat: improve interface attribute inference algorithm
