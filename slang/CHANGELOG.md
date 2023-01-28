@@ -1,5 +1,6 @@
 ## 3.10.0
 
+- feat: there is now a default plural resolver so the app keeps working in production when you forgot to define one, you will only see a warning in the log
 - fix: `key_map_case` should work with `(map)` modifier
 
 ## 3.9.0

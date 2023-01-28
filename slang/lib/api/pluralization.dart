@@ -31,7 +31,9 @@ class PluralResolvers {
   static _Resolvers _getResolvers(String language) {
     final resolvers = _resolverMap[language];
     if (resolvers == null) {
-      throw 'Resolver for <lang = $language> not specified! Please configure it via LocaleSettings.setPluralResolver';
+      print(
+          'Resolver for <lang = $language> not specified! Please configure it via LocaleSettings.setPluralResolver. A fallback is used now.');
+      return _defaultResolver;
     }
     return resolvers;
   }

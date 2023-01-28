@@ -1,5 +1,22 @@
 part of 'pluralization.dart';
 
+/// A very tolerant plural resolver suitable for most languages.
+/// This is used as fallback.
+final _defaultResolver = _Resolvers(
+  cardinal: (n, {zero, one, two, few, many, other}) {
+    if (n == 0) {
+      return zero ?? other ?? n.toString();
+    }
+    if (n == 1) {
+      return one ?? other ?? n.toString();
+    }
+    return other ?? n.toString();
+  },
+  ordinal: (n, {zero, one, two, few, many, other}) {
+    return other ?? n.toString();
+  },
+);
+
 /// Predefined pluralization resolvers
 /// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 /// Sorted by language alphabetically
