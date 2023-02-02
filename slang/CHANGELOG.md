@@ -1,3 +1,7 @@
+## 3.11.0
+
+- feat: add `(ignoreMissing)` and `(ignoreUnused)` modifiers which changes the behaviour of `flutter pub run slang analyze`
+
 ## 3.10.0
 
 - feat: there is now a default plural resolver so the app keeps working in production when you forgot to define one, you will only see a warning in the log

@@ -10,18 +10,6 @@ import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 
-class _Modifiers {
-  static const rich = 'rich';
-  static const map = 'map';
-  static const plural = 'plural';
-  static const cardinal = 'cardinal';
-  static const ordinal = 'ordinal';
-  static const context = 'context';
-  static const param = 'param';
-  static const interface = 'interface';
-  static const singleInterface = 'singleInterface';
-}
-
 class BuildModelResult {
   final ObjectNode root; // the actual strings
   final List<Interface> interfaces; // detected interfaces
@@ -221,10 +209,11 @@ Map<String, Node> _parseMapNode({
     if (value is String || value is num) {
       // leaf
       // key: 'value'
-      final textNode = modifiers.containsKey(_Modifiers.rich)
+      final textNode = modifiers.containsKey(NodeModifiers.rich)
           ? RichTextNode(
               path: currPath,
               rawPath: currRawPath,
+              modifiers: modifiers,
               raw: value.toString(),
               comment: comment,
               interpolation: config.stringInterpolation,
@@ -233,6 +222,7 @@ Map<String, Node> _parseMapNode({
           : StringTextNode(
               path: currPath,
               rawPath: currRawPath,
+              modifiers: modifiers,
               raw: value.toString(),
               comment: comment,
               interpolation: config.stringInterpolation,
@@ -279,7 +269,7 @@ Map<String, Node> _parseMapNode({
           config: config,
           keyCase: config.keyCase != config.keyMapCase &&
                   (config.maps.contains(currPath) ||
-                      modifiers.containsKey(_Modifiers.map))
+                      modifiers.containsKey(NodeModifiers.map))
               ? config.keyMapCase
               : config.keyCase,
           leavesMap: leavesMap,
@@ -319,7 +309,7 @@ Map<String, Node> _parseMapNode({
             }
           }
 
-          final rich = modifiers.containsKey(_Modifiers.rich);
+          final rich = modifiers.containsKey(NodeModifiers.rich);
           if (rich) {
             // rebuild children as RichText
             digestedMap = _parseMapNode(
@@ -328,7 +318,7 @@ Map<String, Node> _parseMapNode({
               parentRawPath: currRawPath,
               curr: {
                 for (final cKey in digestedMap.keys)
-                  cKey._withModifier(_Modifiers.rich): value[cKey],
+                  cKey._withModifier(NodeModifiers.rich): value[cKey],
               },
               config: config,
               keyCase: config.keyCase,
@@ -341,17 +331,19 @@ Map<String, Node> _parseMapNode({
             finalNode = ContextNode(
               path: currPath,
               rawPath: currRawPath,
+              modifiers: modifiers,
               comment: comment,
               context: context,
               entries: digestedMap,
               paramName:
-                  modifiers[_Modifiers.param] ?? context.defaultParameter,
+                  modifiers[NodeModifiers.param] ?? context.defaultParameter,
               rich: rich,
             );
           } else {
             finalNode = PluralNode(
               path: currPath,
               rawPath: currRawPath,
+              modifiers: modifiers,
               comment: comment,
               pluralType: detectedType.nodeType == _DetectionType.pluralCardinal
                   ? PluralType.cardinal
@@ -361,7 +353,8 @@ Map<String, Node> _parseMapNode({
                 // because detection was correct
                 return MapEntry(key.toQuantity()!, value);
               }),
-              paramName: modifiers[_Modifiers.param] ?? config.pluralParameter,
+              paramName:
+                  modifiers[NodeModifiers.param] ?? config.pluralParameter,
               rich: rich,
             );
           }
@@ -415,19 +408,19 @@ _DetectionResult _determineNodeType(
   Map<String, Node> children,
 ) {
   final modifierFlags = modifiers.keys.toSet();
-  if (modifierFlags.contains(_Modifiers.map) ||
+  if (modifierFlags.contains(NodeModifiers.map) ||
       config.maps.contains(nodePath)) {
     return _DetectionResult(_DetectionType.map);
-  } else if (modifierFlags.contains(_Modifiers.plural) ||
-      modifierFlags.contains(_Modifiers.cardinal) ||
+  } else if (modifierFlags.contains(NodeModifiers.plural) ||
+      modifierFlags.contains(NodeModifiers.cardinal) ||
       config.pluralCardinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralCardinal);
-  } else if (modifierFlags.contains(_Modifiers.ordinal) ||
+  } else if (modifierFlags.contains(NodeModifiers.ordinal) ||
       config.pluralOrdinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralOrdinal);
   } else {
-    if (modifierFlags.contains(_Modifiers.context)) {
-      final modifier = modifiers[_Modifiers.context];
+    if (modifierFlags.contains(NodeModifiers.context)) {
+      final modifier = modifiers[NodeModifiers.context];
       final context =
           config.contexts.firstWhereOrNull((c) => c.enumName == modifier);
       if (context != null) {
@@ -542,7 +535,7 @@ Interface? _determineInterfaceForContainer({
   // first check if the path is specified to be an interface (via build config)
   // or the modifier
   // this is executed because we can skip the next complex step
-  final specifiedInterface = node.modifiers[_Modifiers.interface] ??
+  final specifiedInterface = node.modifiers[NodeModifiers.interface] ??
       interfaceCollection.pathInterfaceContainerMap[node.path];
 
   if (specifiedInterface != null) {
@@ -631,7 +624,7 @@ Interface? _determineInterface({
   // first check if the path is specified to be an interface (via build config)
   // or the modifier
   // this is executed because we can skip the next complex step
-  final specifiedInterface = node.modifiers[_Modifiers.singleInterface] ??
+  final specifiedInterface = node.modifiers[NodeModifiers.singleInterface] ??
       interfaceCollection.pathInterfaceNameMap[node.path];
 
   if (specifiedInterface != null) {

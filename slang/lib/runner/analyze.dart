@@ -9,7 +9,6 @@ import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 final _setEquality = SetEquality();
@@ -138,7 +137,7 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
 }) {
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
-  translationModelList.forEach((localeData) {
+  for (final localeData in translationModelList) {
     if (localeData.base) {
       if (full) {
         // scans the whole source code
@@ -147,7 +146,7 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
           baseModel: localeData,
         );
       }
-      return;
+      break;
     }
 
     final resultMap = <String, dynamic>{};
@@ -157,7 +156,7 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
       resultMap: resultMap,
     );
     result[localeData.locale] = resultMap;
-  });
+  }
 
   return result;
 }
@@ -171,6 +170,10 @@ void _getMissingTranslationsForOneLocaleRecursive({
 }) {
   for (final baseEntry in baseNode.entries.entries) {
     final baseChild = baseEntry.value;
+    if (baseChild.modifiers.containsKey(NodeModifiers.ignoreMissing)) {
+      continue;
+    }
+
     final currChild = curr.entries[baseEntry.key];
     if (!_checkEquality(baseChild, currChild)) {
       // add whole base node which is expected
@@ -260,20 +263,46 @@ Map<String, dynamic> _getUnusedTranslationsInSourceCode({
   required String translateVar,
   required I18nData baseModel,
 }) {
-  final flatMap = baseModel.root.toFlatMap();
-  final sourceCode = _loadSourceCode();
   final resultMap = <String, dynamic>{};
-  for (final entry in flatMap.entries) {
-    final translationCall = '$translateVar.${entry.key}';
-    if (!sourceCode.contains(translationCall)) {
-      // add whole base node which is expected
-      _addNode(
-        node: entry.value,
+  _getUnusedTranslationsInSourceCodeRecursive(
+    sourceCode: _loadSourceCode(),
+    translateVar: translateVar,
+    node: baseModel.root,
+    resultMap: resultMap,
+  );
+  return resultMap;
+}
+
+void _getUnusedTranslationsInSourceCodeRecursive({
+  required String sourceCode,
+  required String translateVar,
+  required ObjectNode node,
+  required Map<String, dynamic> resultMap,
+}) {
+  for (final child in node.values) {
+    if (child.modifiers.containsKey(NodeModifiers.ignoreUnused)) {
+      continue;
+    }
+
+    if (child is ObjectNode && !child.isMap) {
+      // recursive
+      _getUnusedTranslationsInSourceCodeRecursive(
+        sourceCode: sourceCode,
+        translateVar: translateVar,
+        node: child,
         resultMap: resultMap,
       );
+    } else {
+      final translationCall = '$translateVar.${child.path}';
+      if (!sourceCode.contains(translationCall)) {
+        // add whole base node which is expected
+        _addNode(
+          node: child,
+          resultMap: resultMap,
+        );
+      }
     }
   }
-  return resultMap;
 }
 
 /// Loads all dart files in lib/

@@ -925,6 +925,8 @@ Available Modifiers:
 | `(param=<Param Name>)`     | This has the parameter `<Param Name>`         | Maps (Plural / Context)         |
 | `(interface=<I>)`          | Container of interfaces of type `I`           | Map/List containing Maps        |
 | `(singleInterface=<I>)`    | This is an interface of type `I`              | Maps                            |
+| `(ignoreMissing)`          | Ignore missing translations during analysis   | All nodes                       |
+| `(ignoreUnused)`           | Ignore unused translations during analysis    | All nodes                       |
 
 ### ➤ Locale Enum
 
@@ -1308,6 +1310,8 @@ Result file:
   "fr": {} // everything ok
 }
 ```
+
+You can ignore a specific node by adding an `(ignoreMissing)` or `(ignoreUnused)` modifier.
 
 ### ➤ Apply Translations
 

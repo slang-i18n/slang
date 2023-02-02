@@ -6,12 +6,27 @@ import 'package:slang/builder/utils/string_extensions.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_interpolation_extensions.dart';
 
+class NodeModifiers {
+  static const rich = 'rich';
+  static const map = 'map';
+  static const plural = 'plural';
+  static const cardinal = 'cardinal';
+  static const ordinal = 'ordinal';
+  static const context = 'context';
+  static const param = 'param';
+  static const interface = 'interface';
+  static const singleInterface = 'singleInterface';
+  static const ignoreMissing = 'ignoreMissing';
+  static const ignoreUnused = 'ignoreUnused';
+}
+
 /// the super class of every node
 abstract class Node {
   static const KEY_DELIMITER = ','; // used by plural or context
 
   final String path;
   final String rawPath; // including modifiers
+  final Map<String, String> modifiers;
   final String? comment;
   Node? _parent;
 
@@ -20,6 +35,7 @@ abstract class Node {
   Node({
     required this.path,
     required this.rawPath,
+    required this.modifiers,
     required this.comment,
   });
 
@@ -40,11 +56,6 @@ abstract class IterableNode extends Node {
 
   String get genericType => _genericType;
 
-  /// Modifiers (Modifier key -> Modifier value)
-  Map<String, String> _modifiers;
-
-  Map<String, String> get modifiers => _modifiers;
-
   /// Child nodes.
   /// This is just an alias so we can iterate more easily.
   Iterable<Node> get values;
@@ -52,11 +63,10 @@ abstract class IterableNode extends Node {
   IterableNode({
     required super.path,
     required super.rawPath,
+    required super.modifiers,
     required super.comment,
     required String genericType,
-    required Map<String, String> modifiers,
-  })  : _genericType = genericType,
-        _modifiers = modifiers;
+  }) : _genericType = genericType;
 
   void setGenericType(String genericType) {
     _genericType = genericType;
@@ -78,8 +88,8 @@ class ObjectNode extends IterableNode {
   ObjectNode({
     required super.path,
     required super.rawPath,
-    required super.comment,
     required super.modifiers,
+    required super.comment,
     required this.entries,
     required this.isMap,
   }) : super(genericType: _determineGenericType(entries.values));
@@ -124,6 +134,7 @@ class PluralNode extends Node implements LeafNode {
   PluralNode({
     required super.path,
     required super.rawPath,
+    required super.modifiers,
     required super.comment,
     required this.pluralType,
     required this.quantities,
@@ -164,6 +175,7 @@ class ContextNode extends Node implements LeafNode {
   ContextNode({
     required super.path,
     required super.rawPath,
+    required super.modifiers,
     required super.comment,
     required this.context,
     required this.entries,
@@ -222,6 +234,7 @@ abstract class TextNode extends Node implements LeafNode {
   TextNode({
     required super.path,
     required super.rawPath,
+    required super.modifiers,
     required super.comment,
     required this.raw,
     required this.interpolation,
@@ -261,6 +274,7 @@ class StringTextNode extends TextNode {
   StringTextNode({
     required super.path,
     required super.rawPath,
+    required super.modifiers,
     required super.raw,
     required super.comment,
     required super.interpolation,
@@ -299,6 +313,7 @@ class StringTextNode extends TextNode {
     final temp = StringTextNode(
       path: path,
       rawPath: rawPath,
+      modifiers: modifiers,
       raw: raw,
       comment: comment,
       interpolation: interpolation,
@@ -342,6 +357,7 @@ class RichTextNode extends TextNode {
   RichTextNode({
     required super.path,
     required super.rawPath,
+    required super.modifiers,
     required super.raw,
     required super.comment,
     required super.interpolation,
@@ -417,6 +433,7 @@ class RichTextNode extends TextNode {
     final temp = RichTextNode(
       path: path,
       rawPath: rawPath,
+      modifiers: modifiers,
       raw: raw,
       comment: comment,
       interpolation: interpolation,
