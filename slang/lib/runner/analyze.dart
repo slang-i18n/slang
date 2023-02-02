@@ -146,7 +146,7 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
           baseModel: localeData,
         );
       }
-      break;
+      continue;
     }
 
     final resultMap = <String, dynamic>{};

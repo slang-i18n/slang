@@ -1,3 +1,7 @@
+## 3.11.1
+
+- fix: missing unused translations in secondary locales
+
 ## 3.11.0
 
 - feat: add `(ignoreMissing)` and `(ignoreUnused)` modifiers which changes the behaviour of `flutter pub run slang analyze`
