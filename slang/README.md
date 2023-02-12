@@ -1292,11 +1292,13 @@ Missing translations only occur when `fallback_strategy: base_locale` is used.
 flutter pub run slang analyze [--split] [--full] [--outdir=assets/i18n]
 ```
 
-| Argument         | Usage                                                  |
-|------------------|--------------------------------------------------------|
-| `--split`        | Generate for each locale                               |
-| `--full`         | Find unused translations in whole source code          |
-| `--outdir=<dir>` | Path of analysis output (`input_directory` by default) |
+| Argument          | Usage                                                  |
+|-------------------|--------------------------------------------------------|
+| `--split`         | Split analysis for each locale                         |
+| `--split-missing` | Split missing translations for each locale             |
+| `--split-unused`  | Split unused translations for each locale              |
+| `--full`          | Find unused translations in whole source code          |
+| `--outdir=<dir>`  | Path of analysis output (`input_directory` by default) |
 
 Result file:
 

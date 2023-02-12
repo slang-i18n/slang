@@ -31,6 +31,8 @@ void analyzeTranslations({
     }
   }
   final split = arguments.contains('--split');
+  final splitMissing = split || arguments.contains('--split-missing');
+  final splitUnused = split || arguments.contains('--split-unused');
   final full = arguments.contains('--full');
 
   // build translation model
@@ -51,7 +53,7 @@ void analyzeTranslations({
     outDir: outDir,
     fileNamePrefix: '_missing_translations',
     fileType: rawConfig.fileType,
-    split: split,
+    split: splitMissing,
     info: (locale, localeMap) {
       return [
         'Here are translations that exist in <${rawConfig.baseLocale.languageTag}> but not in ${locale != null ? '<${locale.languageTag}>' : 'secondary locales'}.',
@@ -81,7 +83,7 @@ void analyzeTranslations({
     outDir: outDir,
     fileNamePrefix: '_unused_translations',
     fileType: rawConfig.fileType,
-    split: split,
+    split: splitUnused,
     info: (locale, localeMap) {
       return [
         if (locale == null) ...[
