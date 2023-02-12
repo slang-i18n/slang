@@ -6,7 +6,6 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 
@@ -54,13 +53,26 @@ Future<void> runApplyTranslations({
       .where((file) => file.path.endsWith(rawConfig.inputFilePattern))
       .toList();
 
+  // We need to read the base translations to determine
+  // the order of the secondary translations
+  final baseTranslationMap = _readBaseTranslations(
+    rawConfig: rawConfig,
+    candidateFiles: translationFiles,
+  );
+
   for (final file in missingTranslationFiles) {
     final fileName = PathUtils.getFileName(file.path);
     final fileNameMatch =
         RegexUtils.missingTranslationsFileRegex.firstMatch(fileName)!;
+
     final locale = fileNameMatch.group(1) != null
         ? I18nLocale.fromString(fileNameMatch.group(1)!)
         : null;
+    if (locale != null && targetLocale != null && locale != targetLocale) {
+      _printIgnore(locale, file);
+      continue;
+    }
+
     final fileType = _supportedFiles
         .firstWhereOrNull((type) => type.name == fileNameMatch.group(2)!);
     if (fileType == null) {
@@ -79,21 +91,12 @@ Future<void> runApplyTranslations({
 
     if (locale != null) {
       // handle splitted file
-      if (targetLocale != null && locale != targetLocale) {
-        _printIgnore(locale, file);
-        continue;
-      }
-
-      if (parsedContent.isEmpty) {
-        _printEmpty(locale.languageTag, file);
-        continue;
-      }
-
       _printReading(locale, file);
 
       _applyTranslationsForOneLocale(
         rawConfig: rawConfig,
         applyLocale: locale,
+        baseTranslations: baseTranslationMap,
         newTranslations: parsedContent..remove(INFO_KEY),
         candidateFiles: translationFiles,
       );
@@ -111,23 +114,78 @@ Future<void> runApplyTranslations({
           continue;
         }
 
-        final translationMap = entry.value as Map;
-        if (translationMap.isEmpty) {
-          _printEmpty(entry.key, file);
-          continue;
-        }
-
         _printReading(locale, file);
 
         _applyTranslationsForOneLocale(
           rawConfig: rawConfig,
           applyLocale: locale,
+          baseTranslations: baseTranslationMap,
           newTranslations: entry.value,
           candidateFiles: translationFiles,
         );
       }
     }
   }
+}
+
+/// Finds the files representing the base translations, reads them and
+/// returns the resulting map containing base translations.
+Map<String, Map<String, dynamic>> _readBaseTranslations({
+  required RawConfig rawConfig,
+  required List<File> candidateFiles,
+}) {
+  final result = <String, Map<String, dynamic>>{}; // namespace -> strings
+
+  for (final file in candidateFiles) {
+    final fileNameNoExtension = PathUtils.getFileNameNoExtension(file.path);
+    final baseFileMatch =
+        RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
+
+    if (baseFileMatch != null) {
+      // directory name could be a locale
+      I18nLocale? directoryLocale = null;
+      if (rawConfig.namespaces) {
+        directoryLocale = PathUtils.findDirectoryLocale(
+          filePath: file.path,
+          inputDirectory: rawConfig.inputDirectory,
+        );
+      }
+
+      final locale = directoryLocale ?? rawConfig.baseLocale;
+      if (locale == rawConfig.baseLocale) {
+        final translations =
+            BaseDecoder.getDecoderOfFileType(rawConfig.fileType)
+                .decode(file.readAsStringSync());
+        result[fileNameNoExtension] = translations;
+      }
+    } else {
+      // a file containing a locale
+      final match =
+          RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
+
+      if (match != null) {
+        final namespace = match.group(1)!;
+        final locale = I18nLocale(
+          language: match.group(2)!,
+          script: match.group(3),
+          country: match.group(4),
+        );
+
+        if (locale == rawConfig.baseLocale) {
+          final translations =
+              BaseDecoder.getDecoderOfFileType(rawConfig.fileType)
+                  .decode(file.readAsStringSync());
+          result[namespace] = translations;
+        }
+      }
+    }
+  }
+
+  if (result.isEmpty) {
+    throw 'Could not find base translations';
+  }
+
+  return result;
 }
 
 /// Apply translations only for ONE locale.
@@ -139,6 +197,7 @@ Future<void> runApplyTranslations({
 void _applyTranslationsForOneLocale({
   required RawConfig rawConfig,
   required I18nLocale applyLocale,
+  required Map<String, Map<String, dynamic>> baseTranslations,
   required Map<String, dynamic> newTranslations,
   required List<File> candidateFiles,
 }) {
@@ -192,6 +251,7 @@ void _applyTranslationsForOneLocale({
         continue;
       }
       _applyTranslationsForFile(
+        baseTranslations: baseTranslations[entry.key] ?? {},
         newTranslations: newTranslations[entry.key],
         destinationFile: entry.value,
       );
@@ -199,13 +259,23 @@ void _applyTranslationsForOneLocale({
   } else {
     // only apply for the first namespace
     _applyTranslationsForFile(
+      baseTranslations: baseTranslations.values.first,
       newTranslations: newTranslations,
-      destinationFile: fileMap.entries.first.value,
+      destinationFile: fileMap.values.first,
     );
   }
 }
 
+/// Reads the [destinationFile]. Applies [newTranslations] to it
+/// while respecting the order of [baseTranslations].
+///
+/// In namespace mode, this function represents ONE namespace.
+/// [baseTranslations] should also only contain the selected namespace.
+///
+/// If the key does not exist in [baseTranslations], then it will be appended
+/// after known keys (i.e. at the end of the file).
 void _applyTranslationsForFile({
+  required Map<String, dynamic> baseTranslations,
   required Map<String, dynamic> newTranslations,
   required File destinationFile,
 }) {
@@ -225,63 +295,95 @@ void _applyTranslationsForFile({
     throw 'File: ${existingFile.path}\n$e';
   }
 
-  _applyTranslationsForMap(
-    newTranslations: newTranslations,
-    existingTranslations: parsedContent,
+  final appliedTranslations = applyMapRecursive(
+    baseMap: baseTranslations,
+    newMap: newTranslations,
+    oldMap: parsedContent,
   );
 
   FileUtils.writeFileOfType(
     fileType: fileType,
     path: existingFile.path,
-    content: parsedContent,
+    content: appliedTranslations,
   );
   _printApplyingDestination(existingFile);
 }
 
-void _applyTranslationsForMap({
-  required Map<String, dynamic> newTranslations,
-  required Map<String, dynamic> existingTranslations,
+/// Adds entries from [newMap] to [oldMap] while respecting the order specified
+/// in [baseMap].
+///
+/// The returned map is a new instance (i.e. no side effects for the given maps)
+Map<String, dynamic> applyMapRecursive({
+  String? path,
+  required Map<String, dynamic> baseMap,
+  required Map<String, dynamic> newMap,
+  required Map<String, dynamic> oldMap,
 }) {
-  _applyTranslationsForMapRecursive(
-    path: '',
-    newTranslations: newTranslations,
-    existingTranslations: existingTranslations,
-  );
-}
-
-void _applyTranslationsForMapRecursive({
-  required String path,
-  required Map<String, dynamic> newTranslations,
-  required Map<String, dynamic> existingTranslations,
-}) {
-  for (final entry in newTranslations.entries) {
-    final currPath = path.isNotEmpty ? '$path.${entry.key}' : entry.key;
-    if (entry.value is Map) {
-      _applyTranslationsForMapRecursive(
-        path: currPath,
-        newTranslations: entry.value,
-        existingTranslations: existingTranslations,
-      );
+  final resultMap = <String, dynamic>{};
+  for (final key in baseMap.keys) {
+    dynamic actualValue = newMap[key] ?? oldMap[key];
+    if (actualValue == null) {
       continue;
     }
+    final currPath = path == null ? key : '$path.$key';
 
-    _printAdding(currPath, entry.value);
-    MapUtils.addItemToMap(
-      map: existingTranslations,
-      destinationPath: currPath,
-      item: entry.value,
-    );
+    if (actualValue is Map) {
+      actualValue = applyMapRecursive(
+        path: currPath,
+        baseMap: baseMap[key] is Map
+            ? baseMap[key]
+            : throw 'In the base translations, "$key" is not a map.',
+        newMap: newMap[key] ?? {},
+        oldMap: oldMap[key] ?? {},
+      );
+    }
+
+    if (newMap[key] != null) {
+      _printAdding(currPath, actualValue);
+    }
+    resultMap[key] = actualValue;
   }
+
+  // Add keys from old map that are unknown in base locale
+  for (final key in oldMap.keys) {
+    if (resultMap.containsKey(key)) {
+      continue;
+    }
+    final currPath = path == null ? key : '$path.$key';
+
+    dynamic actualValue = newMap[key] ?? oldMap[key];
+    if (actualValue is Map) {
+      actualValue = applyMapRecursive(
+        path: currPath,
+        baseMap: {},
+        newMap: newMap[key] ?? {},
+        oldMap: oldMap[key],
+      );
+    }
+
+    if (newMap[key] != null) {
+      _printAdding(currPath, actualValue);
+    }
+    resultMap[key] = actualValue;
+  }
+
+  // Add remaining new keys
+  for (final key in newMap.keys) {
+    if (resultMap.containsKey(key)) {
+      continue;
+    }
+    final currPath = path == null ? key : '$path.$key';
+    _printAdding(currPath, newMap[key]);
+    resultMap[key] = newMap[key];
+  }
+
+  return resultMap;
 }
 
 class FileTypeNotSupportedError extends UnsupportedError {
   FileTypeNotSupportedError(File file)
       : super(
             'The file "${file.path}" has an invalid file extension (supported: ${_supportedFiles.map((e) => e.name)})');
-}
-
-void _printEmpty(String locale, File file) {
-  print(' -> Found empty <$locale> in ${file.path}');
 }
 
 void _printIgnore(I18nLocale locale, File file) {
@@ -297,5 +399,8 @@ void _printApplyingDestination(File file) {
 }
 
 void _printAdding(String path, Object value) {
-  print('    -> Set [$path] "$value"');
+  if (value is Map) {
+    return;
+  }
+  print('    -> Set [$path]: "$value"');
 }
