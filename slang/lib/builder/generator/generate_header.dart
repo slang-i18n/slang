@@ -521,14 +521,14 @@ void _generateInterfaces({
     buffer.writeln();
     buffer.writeln('mixin ${interface.name} {');
     for (final attribute in interface.attributes) {
+      // If this attribute is optional, then these 2 modifications will be added
       final nullable = attribute.optional ? '?' : '';
       final defaultNull = attribute.optional ? ' => null' : '';
+
       if (attribute.parameters.isEmpty) {
-        // simple text nodes or others
         buffer.writeln(
             '\t${attribute.returnType}$nullable get ${attribute.attributeName}$defaultNull;');
       } else {
-        // this should be a text node
         buffer.write(
             '\t${attribute.returnType}$nullable ${attribute.attributeName}({');
         bool first = true;
@@ -540,6 +540,33 @@ void _generateInterfaces({
         buffer.writeln('})$defaultNull;');
       }
     }
+
+    // equals override
+    buffer.writeln();
+    buffer.writeln('\t@override');
+    buffer.write(
+        '\tbool operator ==(Object other) => other is ${interface.name}');
+    for (final attribute in interface.attributes) {
+      buffer.write(
+          ' && ${attribute.attributeName} == other.${attribute.attributeName}');
+    }
+    buffer.writeln(';');
+
+    // hashCode override
+    buffer.writeln();
+    buffer.writeln('\t@override');
+    buffer.write('\tint get hashCode => ');
+    bool multiply = false;
+    for (final attribute in interface.attributes) {
+      if (multiply) {
+        buffer.write(' * ');
+      }
+      buffer.write(attribute.attributeName);
+      buffer.write('.hashCode');
+      multiply = true;
+    }
+    buffer.writeln(';');
+
     buffer.writeln('}');
   }
 }

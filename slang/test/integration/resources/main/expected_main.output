@@ -138,14 +138,32 @@ enum GenderContext {
 mixin PageData {
 	String get title;
 	String? get content => null;
+
+	@override
+	bool operator ==(Object other) => other is PageData && title == other.title && content == other.content;
+
+	@override
+	int get hashCode => title.hashCode * content.hashCode;
 }
 
 mixin MPage {
 	String get title;
 	String? get content => null;
+
+	@override
+	bool operator ==(Object other) => other is MPage && title == other.title && content == other.content;
+
+	@override
+	int get hashCode => title.hashCode * content.hashCode;
 }
 
 mixin EndData {
 	List<String> get stringPages;
 	List<Map<String, String>> get pages;
+
+	@override
+	bool operator ==(Object other) => other is EndData && stringPages == other.stringPages && pages == other.pages;
+
+	@override
+	int get hashCode => stringPages.hashCode * pages.hashCode;
 }
