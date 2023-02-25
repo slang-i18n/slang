@@ -22,10 +22,10 @@ void main() {
     enInput = loadResource('main/json_en.json');
     deInput = loadResource('main/json_de.json');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedMainOutput = loadResource('main/expected_main.output');
-    expectedEnOutput = loadResource('main/expected_en.output');
-    expectedDeOutput = loadResource('main/expected_de.output');
-    expectedFlatMapOutput = loadResource('main/expected_map.output');
+    expectedMainOutput = loadResource('main/_expected_main.output');
+    expectedEnOutput = loadResource('main/_expected_en.output');
+    expectedDeOutput = loadResource('main/_expected_de.output');
+    expectedFlatMapOutput = loadResource('main/_expected_map.output');
   });
 
   test('json', () {

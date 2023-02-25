@@ -15,7 +15,7 @@ void main() {
   setUp(() {
     compactInput = loadResource('main/csv_compact.csv');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/expected_single.output');
+    expectedOutput = loadResource('main/_expected_single.output');
   });
 
   test('compact csv', () {

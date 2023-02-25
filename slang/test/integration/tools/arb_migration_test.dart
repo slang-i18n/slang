@@ -11,7 +11,7 @@ void main() {
 
   setUp(() {
     arbInput = loadResource('tools/arb.arb');
-    expectedOutput = loadResource('tools/arb.json');
+    expectedOutput = loadResource('tools/_expected_arb.json');
   });
 
   test('migrate arb', () {

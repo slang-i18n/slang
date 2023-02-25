@@ -16,7 +16,7 @@ void main() {
   setUp(() {
     input = loadResource('main/json_simple.json');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/expected_no_locale_handling.output');
+    expectedOutput = loadResource('main/_expected_no_locale_handling.output');
   });
 
   test('no locale handling', () {

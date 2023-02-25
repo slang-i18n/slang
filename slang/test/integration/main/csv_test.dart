@@ -17,7 +17,7 @@ void main() {
     enInput = loadResource('main/csv_en.csv');
     deInput = loadResource('main/csv_de.csv');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/expected_single.output');
+    expectedOutput = loadResource('main/_expected_single.output');
   });
 
   test('separated csv', () {

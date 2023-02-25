@@ -16,7 +16,9 @@ void main() {
   setUp(() {
     compactInput = loadResource('main/csv_compact.csv');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/expected_translation_overrides.output');
+    expectedOutput = loadResource(
+      'main/_expected_translation_overrides.output',
+    );
   });
 
   test('translation overrides', () {

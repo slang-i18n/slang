@@ -17,7 +17,7 @@ void main() {
     enInput = loadResource('main/yaml_en.yaml');
     deInput = loadResource('main/yaml_de.yaml');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/expected_single.output');
+    expectedOutput = loadResource('main/_expected_single.output');
   });
 
   test('yaml', () {
