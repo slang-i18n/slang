@@ -30,7 +30,8 @@ class FileUtils {
       }
       encodedContent = json2yaml(content, yamlStyle: YamlStyle.generic);
     } else {
-      encodedContent = JsonEncoder.withIndent('  ').convert(content);
+      // this encoder does not append \n automatically
+      encodedContent = JsonEncoder.withIndent('  ').convert(content) + '\n';
     }
 
     FileUtils.writeFile(
