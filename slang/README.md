@@ -86,6 +86,7 @@ String i = page1.title; // type-safe call
   - [slang x riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
+- [Apps built with slang](#apps-built-with-slang)
 
 ## Getting Started
 
@@ -1571,9 +1572,28 @@ The second one always returns a new instance.
 
 [Medium (English)](https://medium.com/swlh/flutter-i18n-made-easy-1fd9ccd82cb3)
 
+[Хабр (Russian)](https://habr.com/ru/post/718310/)
+
 [Qiita (Japanese)](https://qiita.com/popy1017/items/3495be9fdc028161bef9)
 
+[okaryo (Japanese)](https://blog.okaryo.io/20230104-split-and-manage-arb-files-for-internationalized-flutter-app-in-yaml-format)
+
 [Youtube (Korean)](https://www.youtube.com/watch?v=4OqPlOm7UVo)
+
+Feel free to extend this list :)
+
+## Apps built with slang
+
+Open source:
+
+- [LocalSend (file sharing app)](https://github.com/localsend/localsend)
+- [Saber (notes app)](https://github.com/adil192/saber)
+- [Boorusphere (booru viewer)](https://github.com/nullxception/boorusphere)
+- [Flutter Advanced Boilerplate (boilerplate project)](https://github.com/fikretsengul/flutter_advanced_boilerplate)
+
+Closed source:
+
+- Notan (grade calculator)
 
 Feel free to extend this list :)
 
@@ -1581,7 +1601,7 @@ Feel free to extend this list :)
 
 MIT License
 
-Copyright (c) 2020-2022 Tien Do Nam
+Copyright (c) 2020-2023 Tien Do Nam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
