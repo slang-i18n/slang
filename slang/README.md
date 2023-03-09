@@ -55,6 +55,7 @@ String i = page1.title; // type-safe call
   - [Lists](#-lists)
   - [Maps](#-maps)
   - [Dynamic Keys](#-dynamic-keys--flat-map)
+  - [Changing Locale](#-changing-locale)
 - [Complex Features](#complex-features)
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
@@ -605,6 +606,23 @@ String b = t['myPath.anotherPath.3']; // with index for arrays
 String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 ```
 
+### ➤ Changing Locale
+
+If you use the built-in `LocalSettings` solution, then it is quite easy to change the locale.
+
+| Method                           | Description                           | Platform      |
+|----------------------------------|---------------------------------------|---------------|
+| `LocaleSettings.setLocale`       | Set locale (type-safe)                | Dart, Flutter |
+| `LocaleSettings.setLocaleRaw`    | Set locale (via string)               | Dart, Flutter |
+| `LocaleSettings.useDeviceLocale` | Set to device locale and listen to it | Flutter only  |
+
+The `TranslationProvider` listens to locale changes from the device.
+
+- `LocaleSettings.useDeviceLocale` will enable the listener.
+- `LocaleSettings.setLocale` and `LocaleSettings.setLocaleRaw` will disable the listener by default.
+
+Widgets rebuild only if you use `final t = Translations.of(context)` or `context.t`.
+
 ## Complex Features
 
 ### ➤ Linked Translations
@@ -866,7 +884,7 @@ interfaces:
   ChangeData: onboarding.whatsNew.*
 ```
 
-The following mixin will be automatically generated for you:
+The following mixin will be generated automatically for you:
 
 ```dart
 mixin ChangeData {
@@ -1467,6 +1485,14 @@ targets:
 input_directory: assets/i18n
 output_directory: lib/i18n # defaulting to lib/gen if input is outside of lib/
 ```
+
+**Translations don't update when device locale changes**
+
+By default, this library does not listen to locale changes from device.
+
+To enable this, either use `LocaleSettings.useDeviceLocale` or set `listenToDeviceLocale: true` when changing the locale.
+
+Additionally, wrap your app with `TranslationProvider` and get the translations via `final t = Translations.of(context)`.
 
 **CSV files are not parsed correctly**
 

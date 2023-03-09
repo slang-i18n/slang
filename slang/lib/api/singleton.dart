@@ -168,6 +168,8 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   /// Internal: Reference to utils instance
   final BaseAppLocaleUtils<E, T> utils;
 
+  bool listenToDeviceLocale = false;
+
   BaseLocaleSettings({
     required this.utils,
   }) : this.translationMap = _buildMap(utils.locales);
@@ -177,7 +179,7 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   ///
   /// This is a flutter feature and this method will be overridden
   /// by slang_flutter.
-  void updateProviderState(E locale, T translations) {}
+  void updateProviderState(T translations) {}
 }
 
 // We use extension methods here to have a workaround for static members of the same name
@@ -213,18 +215,29 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
   /// Sets locale.
   /// Returns the locale which has been set.
-  E setLocale(E locale) {
+  ///
+  /// Locale gets changed automatically if [listenToDeviceLocale] is true
+  /// and [TranslationProvider] is used. If null, then the last state is used.
+  /// By default, calling this method disables the listener.
+  E setLocale(E locale, {bool? listenToDeviceLocale = false}) {
     GlobalLocaleState.instance.setLocale(locale);
-    updateProviderState(locale, translationMap[locale]!);
+    updateProviderState(translationMap[locale]!);
+    if (listenToDeviceLocale != null) {
+      this.listenToDeviceLocale = listenToDeviceLocale;
+    }
     return locale;
   }
 
   /// Sets locale using string tag (e.g. en_US, de-DE, fr)
   /// Fallbacks to base locale.
   /// Returns the locale which has been set.
-  E setLocaleRaw(String rawLocale) {
+  ///
+  /// Locale gets changed automatically if [listenToDeviceLocale] is true
+  /// and [TranslationProvider] is used. If null, then the last state is used.
+  /// By default, calling this method disables the listener.
+  E setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) {
     final E locale = utils.parse(rawLocale);
-    return setLocale(locale);
+    return setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);
   }
 
   /// Sets plural resolvers.
@@ -286,7 +299,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
       ordinalResolver: currentMetadata.ordinalResolver,
     );
     if (locale == currentLocale) {
-      updateProviderState(locale, translationMap[locale]!);
+      updateProviderState(translationMap[locale]!);
     }
   }
 
@@ -313,7 +326,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
       ordinalResolver: currentMetadata.ordinalResolver,
     );
     if (locale == currentLocale) {
-      updateProviderState(locale, translationMap[locale]!);
+      updateProviderState(translationMap[locale]!);
     }
   }
 }

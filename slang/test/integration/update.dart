@@ -49,7 +49,7 @@ void generateMainIntegration(RawConfig buildConfig, String en, String de) {
   ).joinAsSingleOutput();
 
   _write(
-    path: 'main/expected_single',
+    path: 'main/_expected_single',
     content: result,
   );
 }
@@ -74,22 +74,22 @@ void generateMainSplitIntegration(
   );
 
   _write(
-    path: 'main/expected_main',
+    path: 'main/_expected_main',
     content: result.header,
   );
 
   _write(
-    path: 'main/expected_en',
+    path: 'main/_expected_en',
     content: result.translations[I18nLocale.fromString('en')]!,
   );
 
   _write(
-    path: 'main/expected_de',
+    path: 'main/_expected_de',
     content: result.translations[I18nLocale.fromString('de')]!,
   );
 
   _write(
-    path: 'main/expected_map',
+    path: 'main/_expected_map',
     content: result.flatMap!,
   );
 }
@@ -106,7 +106,7 @@ void generateNoFlutter(RawConfig buildConfig, String simple) {
   ).joinAsSingleOutput();
 
   _write(
-    path: 'main/expected_no_flutter',
+    path: 'main/_expected_no_flutter',
     content: result,
   );
 }
@@ -123,7 +123,7 @@ void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
   ).joinAsSingleOutput();
 
   _write(
-    path: 'main/expected_no_locale_handling',
+    path: 'main/_expected_no_locale_handling',
     content: result,
   );
 }
@@ -144,7 +144,7 @@ void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
   ).joinAsSingleOutput();
 
   _write(
-    path: 'main/expected_translation_overrides',
+    path: 'main/_expected_translation_overrides',
     content: result,
   );
 }

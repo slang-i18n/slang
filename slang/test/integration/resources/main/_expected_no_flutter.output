@@ -53,8 +53,8 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, _TranslationsEn> {
 	// static aliases (checkout base methods for documentation)
 	static AppLocale get currentLocale => instance.currentLocale;
 	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
-	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
-	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
+	static AppLocale setLocale(AppLocale locale, {bool? listenToDeviceLocale = false}) => instance.setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);
+	static AppLocale setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRaw(rawLocale, listenToDeviceLocale: listenToDeviceLocale);
 	@Deprecated('Use [AppLocaleUtils.supportedLocalesRaw]') static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
 	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(
 		language: language,

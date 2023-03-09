@@ -357,11 +357,8 @@ void _generateTranslationGetter({
     buffer.writeln('/// The provider for method B');
     buffer.writeln(
         'class TranslationProvider extends BaseTranslationProvider<$enumName, $baseClassName> {');
-    buffer.writeln('\tTranslationProvider({required super.child}) : super(');
-    buffer.writeln('\t\tinitLocale: LocaleSettings.instance.currentLocale,');
     buffer.writeln(
-        '\t\tinitTranslations: LocaleSettings.instance.currentTranslations,');
-    buffer.writeln('\t);');
+        '\tTranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);');
     buffer.writeln();
     buffer.writeln(
         '\tstatic InheritedLocaleData<$enumName, $baseClassName> of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context);');
@@ -416,9 +413,9 @@ void _generateLocaleSettings({
   buffer.writeln(
       '\tstatic Stream<$enumName> getLocaleStream() => instance.getLocaleStream();');
   buffer.writeln(
-      '\tstatic $enumName setLocale($enumName locale) => instance.setLocale(locale);');
+      '\tstatic $enumName setLocale($enumName locale, {bool? listenToDeviceLocale = false}) => instance.setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);');
   buffer.writeln(
-      '\tstatic $enumName setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);');
+      '\tstatic $enumName setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRaw(rawLocale, listenToDeviceLocale: listenToDeviceLocale);');
   if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName useDeviceLocale() => instance.useDeviceLocale();');
