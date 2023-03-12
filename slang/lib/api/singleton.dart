@@ -168,6 +168,8 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   /// Internal: Reference to utils instance
   final BaseAppLocaleUtils<E, T> utils;
 
+  /// If true, then [TranslationProvider] will trigger [setLocale] on
+  /// device locale change (e.g. due to user interaction in device settings).
   bool listenToDeviceLocale = false;
 
   BaseLocaleSettings({
@@ -192,6 +194,15 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
   }
 
   /// Gets the broadcast stream to keep track of every locale change.
+  ///
+  /// It fires every time LocaleSettings.setLocale, LocaleSettings.setLocaleRaw,
+  /// or LocaleSettings.useDeviceLocale is called.
+  ///
+  /// To additionally listen to device locale changes, either call
+  /// (1) LocaleSettings.useDeviceLocale
+  /// (2) or set [listenToDeviceLocale] to `true`.
+  /// Both will fire [setLocale] when device locale changes.
+  /// You need to wrap your app with [TranslationProvider].
   ///
   /// Usage:
   /// LocaleSettings.getLocaleStream().listen((locale) {

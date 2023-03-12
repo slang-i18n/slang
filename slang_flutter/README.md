@@ -31,7 +31,7 @@ String b = context.t.myTranslation; // build-in extensions for BuildContext
 Some useful methods provided by this package.
 
 ```dart
-// use current device locale
+// use current device locale, and listen to it when the user changes it in device settings
 LocaleSettings.useDeviceLocale();
 
 // get current device locale
