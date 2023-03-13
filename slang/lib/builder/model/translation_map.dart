@@ -11,6 +11,11 @@ import 'package:slang/builder/model/raw_config.dart';
 class TranslationMap {
   final _internalMap = <I18nLocale, Map<String, Map<String, dynamic>>>{};
 
+  /// Read access
+  Map<String, Map<String, dynamic>>? operator [](I18nLocale key) {
+    return _internalMap[key];
+  }
+
   /// Add a namespace and its translations
   /// Namespace may be ignored if this feature is not used
   void addTranslations({
@@ -33,6 +38,9 @@ class TranslationMap {
 
   /// Combine all namespaces and build the internal model
   /// The locales are sorted (base locale first)
+  ///
+  /// After this method call, information about the namespace is lost.
+  /// It will be just a normal parent.
   List<I18nData> toI18nModel(RawConfig rawConfig) {
     final buildConfig = rawConfig.toBuildModelConfig();
     return _internalMap.entries.map((localeEntry) {

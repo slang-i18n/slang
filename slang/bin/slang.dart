@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
@@ -12,6 +11,7 @@ import 'package:slang/runner/migrate.dart';
 import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
+import 'package:slang/runner/utils.dart';
 import 'package:watcher/watcher.dart';
 
 /// Determines what the runner will do
@@ -83,53 +83,26 @@ void main(List<String> arguments) async {
     stopwatch.start();
   }
 
-  // config file must be in top-level directory
-  final topLevelFiles =
-      Directory.current.listSync(recursive: false).whereType<File>();
-
-  final config = await getConfig(topLevelFiles.toList(), verbose);
-
-  List<FileSystemEntity> files;
-  if (config.inputDirectory != null) {
-    files = Directory(config.inputDirectory!)
-        .listSync(recursive: true)
-        .whereType<File>()
-        .toList();
-  } else {
-    files = FileUtils.getFilesBreadthFirst(
-      rootDirectory: Directory.current,
-      ignoreTopLevelDirectories: {
-        '.fvm',
-        '.flutter.git',
-        '.dart_tool',
-        'build',
-        'ios',
-        'android',
-        'web',
-      },
-    );
-  }
-
-  // filter files according to file pattern
-  files = files
-      .where((file) => file.path.endsWith(config.inputFilePattern))
-      .toList();
+  final fileCollection = await readFileCollection(verbose: verbose);
 
   // the actual runner
   switch (mode) {
     case RunnerMode.apply:
-      await runApplyTranslations(rawConfig: config, arguments: arguments);
+      await runApplyTranslations(
+        fileCollection: fileCollection,
+        arguments: arguments,
+      );
       break;
     case RunnerMode.watch:
-      await watchTranslations(config: config, files: files);
+      await watchTranslations(fileCollection.config);
       break;
     case RunnerMode.generate:
     case RunnerMode.stats:
     case RunnerMode.analyze:
       await generateTranslations(
         mode: mode,
-        rawConfig: config,
-        files: files,
+        rawConfig: fileCollection.config,
+        files: fileCollection.translationFiles,
         verbose: verbose,
         stopwatch: stopwatch,
         arguments: arguments,
@@ -140,64 +113,7 @@ void main(List<String> arguments) async {
   }
 }
 
-Future<RawConfig> getConfig(
-  List<FileSystemEntity> files,
-  bool verbose,
-) async {
-  RawConfig? config;
-  for (final file in files) {
-    final fileName = file.path.getFileName();
-
-    if (fileName == 'slang.yaml') {
-      final content = await File(file.path).readAsString();
-      config = RawConfigBuilder.fromYaml(content, true);
-      if (config != null) {
-        if (verbose) {
-          print('Found slang.yaml in ${file.path}');
-        }
-        break;
-      }
-    }
-
-    if (fileName == 'build.yaml') {
-      final content = await File(file.path).readAsString();
-      config = RawConfigBuilder.fromYaml(content);
-      if (config != null) {
-        if (verbose) {
-          print('Found build.yaml in ${file.path}');
-        }
-        break;
-      }
-    }
-  }
-
-  final useDefaultConfig = config == null;
-  if (config == null) {
-    config = RawConfigBuilder.fromMap({});
-    if (verbose) {
-      print('No build.yaml or slang.yaml, using default settings.');
-    }
-  }
-
-  // convert to absolute paths
-  config = config.withAbsolutePaths();
-
-  // show build config
-  if (verbose && !useDefaultConfig) {
-    print('');
-    config.printConfig();
-    print('');
-  }
-
-  config.validate();
-
-  return config;
-}
-
-Future<void> watchTranslations({
-  required RawConfig config,
-  required List<FileSystemEntity> files,
-}) async {
+Future<void> watchTranslations(RawConfig config) async {
   final inputDirectoryPath = config.inputDirectory;
   if (inputDirectoryPath == null) {
     print('Please set input_directory in build.yaml or slang.yaml.');
@@ -241,6 +157,10 @@ Future<void> _generateTranslationsFromWatch({
       .listSync(recursive: true)
       .where(
           (item) => item is File && item.path.endsWith(config.inputFilePattern))
+      .map((f) => TranslationFile(
+            path: f.path.replaceAll('\\', '/'),
+            read: () => File(f.path).readAsString(),
+          ))
       .toList();
 
   bool success = true;
@@ -277,7 +197,7 @@ Future<void> _generateTranslationsFromWatch({
 Future<void> generateTranslations({
   required RunnerMode mode,
   required RawConfig rawConfig,
-  required List<FileSystemEntity> files,
+  required List<TranslationFile> files,
   required bool verbose,
   Stopwatch? stopwatch,
   List<String>? arguments,
@@ -299,8 +219,8 @@ Future<void> generateTranslations({
     // use the directory of the first (random) translation file
     final translationFilePath = files.first.path;
     if (rawConfig.flutterIntegration &&
-        !translationFilePath.contains(
-            '${Directory.current.path}${Platform.pathSeparator}lib')) {
+        !translationFilePath
+            .contains('${Directory.current.path.replaceAll('\\', '/')}/lib')) {
       // In Flutter environment, only files inside 'lib' matter
       // Generate to lib/gen/<fileName> by default.
       outputFilePath = Directory.current.path +
@@ -314,7 +234,7 @@ Future<void> generateTranslations({
       outputFilePath = PathUtils.replaceFileName(
         path: translationFilePath,
         newFileName: rawConfig.outputFileName,
-        pathSeparator: Platform.pathSeparator,
+        pathSeparator: '/',
       );
     }
   }
@@ -327,12 +247,7 @@ Future<void> generateTranslations({
 
   final translationMap = await TranslationMapBuilder.build(
     rawConfig: rawConfig,
-    files: files
-        .map((f) => TranslationFile(
-              path: f.path.replaceAll('\\', '/'),
-              read: () => File(f.path).readAsString(),
-            ))
-        .toList(),
+    files: files,
     verbose: verbose,
   );
 
@@ -347,7 +262,7 @@ Future<void> generateTranslations({
     }
     return; // skip generation
   } else if (mode == RunnerMode.analyze) {
-    analyzeTranslations(
+    runAnalyzeTranslations(
       rawConfig: rawConfig,
       translationMap: translationMap,
       arguments: arguments ?? [],
@@ -465,41 +380,6 @@ const _GREEN = '\x1B[32m';
 const _YELLOW = '\x1B[33m';
 const _RED = '\x1B[31m';
 const _RESET = '\x1B[0m';
-
-extension on RawConfig {
-  RawConfig withAbsolutePaths() {
-    return RawConfig(
-      baseLocale: baseLocale,
-      fallbackStrategy: fallbackStrategy,
-      inputDirectory: inputDirectory?.toAbsolutePath(),
-      inputFilePattern: inputFilePattern,
-      outputDirectory: outputDirectory?.toAbsolutePath(),
-      outputFileName: outputFileName,
-      outputFormat: outputFormat,
-      localeHandling: localeHandling,
-      flutterIntegration: flutterIntegration,
-      namespaces: namespaces,
-      translateVar: translateVar,
-      enumName: enumName,
-      translationClassVisibility: translationClassVisibility,
-      keyCase: keyCase,
-      keyMapCase: keyMapCase,
-      paramCase: paramCase,
-      stringInterpolation: stringInterpolation,
-      renderFlatMap: renderFlatMap,
-      translationOverrides: translationOverrides,
-      renderTimestamp: renderTimestamp,
-      maps: maps,
-      pluralAuto: pluralAuto,
-      pluralParameter: pluralParameter,
-      pluralCardinal: pluralCardinal,
-      pluralOrdinal: pluralOrdinal,
-      contexts: contexts,
-      interfaces: interfaces,
-      imports: imports,
-    );
-  }
-}
 
 extension on Stopwatch {
   String get elapsedSeconds {

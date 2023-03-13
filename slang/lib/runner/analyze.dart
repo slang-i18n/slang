@@ -13,7 +13,7 @@ import 'package:slang/builder/utils/path_utils.dart';
 
 final _setEquality = SetEquality();
 
-void analyzeTranslations({
+void runAnalyzeTranslations({
   required RawConfig rawConfig,
   required TranslationMap translationMap,
   required List<String> arguments,
@@ -37,16 +37,10 @@ void analyzeTranslations({
 
   // build translation model
   final translationModelList = translationMap.toI18nModel(rawConfig);
-  final baseTranslations =
-      translationModelList.firstWhereOrNull((element) => element.base);
-  if (baseTranslations == null) {
-    throw 'There are no base translations. Could not found ${rawConfig.baseLocale.languageTag} in ${translationModelList.map((e) => e.locale.languageTag)}';
-  }
 
-  final missingTranslationsResult = _getMissingTranslations(
+  final missingTranslationsResult = getMissingTranslations(
     rawConfig: rawConfig,
-    translationModelList: translationModelList,
-    baseTranslations: baseTranslations,
+    translations: translationModelList,
   );
 
   _writeMap(
@@ -74,8 +68,7 @@ void analyzeTranslations({
 
   final unusedTranslationsResult = _getUnusedTranslations(
     rawConfig: rawConfig,
-    translationModelList: translationModelList,
-    baseTranslations: baseTranslations,
+    translations: translationModelList,
     full: full,
   );
 
@@ -107,39 +100,41 @@ void analyzeTranslations({
   );
 }
 
-Map<I18nLocale, Map<String, dynamic>> _getMissingTranslations({
+Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
   required RawConfig rawConfig,
-  required List<I18nData> translationModelList,
-  required I18nData baseTranslations,
+  required List<I18nData> translations,
 }) {
+  final baseTranslations = _findBaseTranslations(rawConfig, translations);
+
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
-  translationModelList.forEach((localeData) {
-    if (localeData.base) {
-      return;
+  for (final currTranslations in translations) {
+    if (currTranslations.base) {
+      continue;
     }
 
     final resultMap = <String, dynamic>{};
     _getMissingTranslationsForOneLocaleRecursive(
       baseNode: baseTranslations.root,
-      curr: localeData.root,
+      curr: currTranslations.root,
       resultMap: resultMap,
     );
-    result[localeData.locale] = resultMap;
-  });
+    result[currTranslations.locale] = resultMap;
+  }
 
   return result;
 }
 
 Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
   required RawConfig rawConfig,
-  required List<I18nData> translationModelList,
-  required I18nData baseTranslations,
+  required List<I18nData> translations,
   required bool full,
 }) {
+  final baseTranslations = _findBaseTranslations(rawConfig, translations);
+
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
-  for (final localeData in translationModelList) {
+  for (final localeData in translations) {
     if (localeData.base) {
       if (full) {
         // scans the whole source code
@@ -322,6 +317,14 @@ String _loadSourceCode() {
   }
 
   return buffer.toString();
+}
+
+I18nData _findBaseTranslations(RawConfig rawConfig, List<I18nData> i18nData) {
+  final baseTranslations = i18nData.firstWhereOrNull((element) => element.base);
+  if (baseTranslations == null) {
+    throw 'There are no base translations. Could not found ${rawConfig.baseLocale.languageTag} in ${i18nData.map((e) => e.locale.languageTag)}';
+  }
+  return baseTranslations;
 }
 
 void _writeMap({

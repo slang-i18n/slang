@@ -9,8 +9,12 @@ import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 
 class TranslationMapBuilder {
-  /// Read all files and build a [TranslationMap]
-  /// containing all locales, their namespaces and their locales
+  /// This method transforms files to an intermediate model [TranslationMap].
+  /// After this step,
+  /// - we ignore the environment (i.e. dart:io, build_runner)
+  /// - we ignore the file type (JSON, YAML, CSV) because everything is a map now
+  ///
+  /// The resulting map is in a unmodified state, so no actual i18n handling (plural, rich text) has been applied.
   static Future<TranslationMap> build({
     required RawConfig rawConfig,
     required List<TranslationFile> files,
