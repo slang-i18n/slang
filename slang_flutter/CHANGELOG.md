@@ -1,3 +1,8 @@
+## 3.14.0
+
+- feat: `LocaleSettings.useDeviceLocale` listens to device locale changes
+- Bump `slang` to `3.14.0`
+
 ## 3.13.0
 
 - Bump `slang` to `3.13.0`
