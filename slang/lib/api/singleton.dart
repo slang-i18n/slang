@@ -70,29 +70,44 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
     String? scriptCode,
     String? countryCode,
   }) {
-    E? selected;
-
     // match exactly
-    selected = locales.firstWhereOrNull((supported) =>
+    final exactMatch = locales.firstWhereOrNull((supported) =>
         supported.languageCode == languageCode &&
         supported.scriptCode == scriptCode &&
         supported.countryCode == countryCode);
 
-    if (selected == null) {
-      // match language
-      selected = locales.firstWhereOrNull((supported) {
-        return supported.languageCode == languageCode;
-      });
+    if (exactMatch != null) {
+      return exactMatch;
     }
 
-    if (selected == null && countryCode != null) {
-      // match country
-      selected = locales.firstWhereOrNull((supported) {
-        return supported.countryCode == countryCode;
-      });
+    final candidates = locales.where((supported) {
+      return supported.languageCode == languageCode;
+    });
+
+    if (candidates.length == 1) {
+      // match language code
+      return candidates.first;
     }
 
-    return selected ?? baseLocale;
+    if (countryCode == null) {
+      // no country code given
+      return candidates.firstOrNull ?? baseLocale;
+    }
+
+    if (candidates.isEmpty) {
+      // match country code
+      return locales.firstWhereOrNull((supported) {
+            return supported.countryCode == countryCode;
+          }) ??
+          baseLocale;
+    } else {
+      // there are multiple locales with same language code
+      // e.g. zh-Hans, zh-Hant-HK, zh-Hant-TW
+      return candidates.firstWhereOrNull((candidate) {
+            return candidate.countryCode == countryCode;
+          }) ??
+          baseLocale;
+    }
   }
 
   /// Gets supported locales in string format.

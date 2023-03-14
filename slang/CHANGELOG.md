@@ -1,3 +1,9 @@
+## 3.14.0
+
+- feat: `LocaleSettings.useDeviceLocale` listens to device locale changes
+- feat: `flutter pub run slang apply` only applies changed locales by default
+- fix: locale selection with script code (e.g. `zh-Hant-TW` uses `zh-TW` instead of `zh-HK`)
+
 ## 3.13.0
 
 - feat: generated files from `analyze` and `apply` have `\n` at the end of the file

@@ -608,7 +608,7 @@ String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 
 ### ➤ Changing Locale
 
-If you use the built-in `LocalSettings` solution, then it is quite easy to change the locale.
+If you use the built-in `LocaleSettings` solution, then it is quite easy to change the locale.
 
 | Method                           | Description                           | Platform      |
 |----------------------------------|---------------------------------------|---------------|
@@ -1071,7 +1071,7 @@ i18n/
  └── errorDialogs_fr.i18n.json
 ```
 
-You can also use different folders. Only file name matters!
+You can also use different folders. The namespace is only dependent on the file name!
 
 ```text
 i18n/
