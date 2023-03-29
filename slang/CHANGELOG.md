@@ -1,3 +1,9 @@
+## 3.15.0
+
+- feat: add `OUTDATED` modifier to flag translations as outdated (`slang analyze` will treat them as missing)
+- feat: run `flutter pub run slang outdated my.key.path` to flag translations as outdated
+- feat: `slang apply` prefers modifiers from base locale over secondary locales
+
 ## 3.14.0
 
 - feat: `LocaleSettings.useDeviceLocale` listens to device locale changes

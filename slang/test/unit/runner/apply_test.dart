@@ -3,27 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('applyMapRecursive', () {
-    test('add string to empty map', () {
-      final result = applyMapRecursive(
-        baseMap: {},
-        newMap: {
-          'a': ['a0', 'a1', 'a2']
-        },
-        oldMap: {},
-      );
-      expect(result, {
-        'a': ['a0', 'a1', 'a2']
-      });
-    });
-
     test('ignore strings in baseMap if not applied', () {
       final result = applyMapRecursive(
         baseMap: {'c': 'C'},
         newMap: {'a': 'A'},
         oldMap: {'b': 'B'},
       );
-      expect(result, {'b': 'B', 'a': 'A'});
-      expect(result.keys.toList(), ['b', 'a']);
+      expect(result, {'b': 'B'});
+      expect(result.keys.toList(), ['b']);
     });
 
     test('handle empty newMap', () {
@@ -54,7 +41,7 @@ void main() {
       expect(result, map);
     });
 
-    test('add new string to populated map at the end', () {
+    test('ignore new strings', () {
       final result = applyMapRecursive(
         baseMap: {},
         newMap: {'d4': 'D'},
@@ -64,9 +51,8 @@ void main() {
         'c1': 'C',
         'a2': 'A',
         'b3': 'B',
-        'd4': 'D',
       });
-      expect(result.keys.toList(), ['c1', 'a2', 'b3', 'd4']);
+      expect(result.keys.toList(), ['c1', 'a2', 'b3']);
     });
 
     test('add string to populated map but respect order from base', () {

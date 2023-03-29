@@ -54,8 +54,9 @@ class RegexUtils {
 
   /// Matches the modifier part in a key if it exists
   /// greet(plural, param=gender)
-  /// 1 - plural, param=gender
-  static RegExp modifierRegex = RegExp(r'^\w+\((.+)\)$');
+  /// 1 - greet
+  /// 2 - plural, param=gender
+  static RegExp modifierRegex = RegExp(r'^(\w+)\((.+)\)$');
 
   static RegExp spaceRegex = RegExp(r'\s+');
 

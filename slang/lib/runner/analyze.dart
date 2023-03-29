@@ -9,6 +9,7 @@ import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
+import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 final _setEquality = SetEquality();
@@ -58,9 +59,6 @@ void runAnalyzeTranslations({
           'After editing this file, you can run \'flutter pub run slang apply --locale=<locale>\' to quickly apply the newly added translations.'
         else
           'After editing this file, you can run \'flutter pub run slang apply\' to quickly apply the newly added translations.',
-        if ((locale == null && localeMap.values.every((v) => v.isEmpty)) ||
-            localeMap.isEmpty)
-          'Congratulations! There are no missing translations! :)',
       ];
     },
     result: missingTranslationsResult,
@@ -91,9 +89,6 @@ void runAnalyzeTranslations({
         ],
         if (!full)
           'You may run \'flutter pub run slang analyze --full\' to also check translations not used in the source code.',
-        if ((locale == null && localeMap.values.every((v) => v.isEmpty)) ||
-            localeMap.isEmpty)
-          'Congratulations! There are no unused translations! :)',
       ];
     },
     result: unusedTranslationsResult,
@@ -118,6 +113,7 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
       baseNode: baseTranslations.root,
       curr: currTranslations.root,
       resultMap: resultMap,
+      handleOutdated: true,
     );
     result[currTranslations.locale] = resultMap;
   }
@@ -151,6 +147,7 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
       baseNode: localeData.root,
       curr: baseTranslations.root,
       resultMap: resultMap,
+      handleOutdated: false,
     );
     result[localeData.locale] = resultMap;
   }
@@ -164,6 +161,7 @@ void _getMissingTranslationsForOneLocaleRecursive({
   required ObjectNode baseNode,
   required ObjectNode curr,
   required Map<String, dynamic> resultMap,
+  required bool handleOutdated,
 }) {
   for (final baseEntry in baseNode.entries.entries) {
     final baseChild = baseEntry.value;
@@ -172,32 +170,27 @@ void _getMissingTranslationsForOneLocaleRecursive({
     }
 
     final currChild = curr.entries[baseEntry.key];
-    if (!_checkEquality(baseChild, currChild)) {
-      // add whole base node which is expected
-      _addNode(
+    final isOutdated = handleOutdated &&
+        currChild?.modifiers.containsKey(NodeModifiers.outdated) == true;
+    if (isOutdated || !_checkEquality(baseChild, currChild)) {
+      // Add whole base node which is expected
+      _addNodeRecursive(
         node: baseChild,
         resultMap: resultMap,
+        addOutdatedModifier: isOutdated,
       );
     } else if (baseChild is ObjectNode && !baseChild.isMap) {
+      // [currChild] passed the previous equality check.
+      // In this case, both [baseChild] and [currChild] are ObjectNodes
+      // Let's check their children.
       _getMissingTranslationsForOneLocaleRecursive(
         baseNode: baseChild,
         curr: currChild as ObjectNode,
         resultMap: resultMap,
+        handleOutdated: handleOutdated,
       );
     }
   }
-}
-
-void _addNode({
-  required Node node,
-  required Map<String, dynamic> resultMap,
-}) {
-  // add base node as is
-  // intermediate map nodes are automatically created
-  _addNodeRecursive(
-    node: node,
-    resultMap: resultMap,
-  );
 }
 
 /// Adds [node] to the [resultMap]
@@ -205,37 +198,70 @@ void _addNode({
 void _addNodeRecursive({
   required Node node,
   required Map<String, dynamic> resultMap,
+  required bool addOutdatedModifier,
 }) {
   if (node is StringTextNode) {
     MapUtils.addItemToMap(
       map: resultMap,
-      destinationPath: node.rawPath,
+      destinationPath: addOutdatedModifier
+          ? node.rawPath.withModifier(NodeModifiers.outdated)
+          : node.rawPath,
       item: node.raw,
     );
   } else if (node is RichTextNode) {
     MapUtils.addItemToMap(
       map: resultMap,
-      destinationPath: node.rawPath,
+      destinationPath: addOutdatedModifier
+          ? node.rawPath.withModifier(NodeModifiers.outdated)
+          : node.rawPath,
       item: node.raw,
     );
-  } else if (node is ListNode) {
-    node.entries.forEach((child) {
-      _addNodeRecursive(node: child, resultMap: resultMap);
-    });
-  } else if (node is ObjectNode) {
-    node.entries.values.forEach((child) {
-      _addNodeRecursive(node: child, resultMap: resultMap);
-    });
-  } else if (node is PluralNode) {
-    node.quantities.values.forEach((child) {
-      _addNodeRecursive(node: child, resultMap: resultMap);
-    });
-  } else if (node is ContextNode) {
-    node.entries.values.forEach((child) {
-      _addNodeRecursive(node: child, resultMap: resultMap);
-    });
   } else {
-    throw 'This should not happen';
+    if (node is ListNode) {
+      node.entries.forEach((child) {
+        _addNodeRecursive(
+          node: child,
+          resultMap: resultMap,
+          addOutdatedModifier: false,
+        );
+      });
+    } else if (node is ObjectNode) {
+      node.entries.values.forEach((child) {
+        _addNodeRecursive(
+          node: child,
+          resultMap: resultMap,
+          addOutdatedModifier: false,
+        );
+      });
+    } else if (node is PluralNode) {
+      node.quantities.values.forEach((child) {
+        _addNodeRecursive(
+          node: child,
+          resultMap: resultMap,
+          addOutdatedModifier: false,
+        );
+      });
+    } else if (node is ContextNode) {
+      node.entries.values.forEach((child) {
+        _addNodeRecursive(
+          node: child,
+          resultMap: resultMap,
+          addOutdatedModifier: false,
+        );
+      });
+    } else {
+      throw 'This should not happen';
+    }
+
+    if (addOutdatedModifier) {
+      MapUtils.updateEntry(
+        map: resultMap,
+        path: node.path,
+        update: (key, value) {
+          return MapEntry(key.withModifier(NodeModifiers.outdated), value);
+        },
+      );
+    }
   }
 }
 
@@ -293,9 +319,10 @@ void _getUnusedTranslationsInSourceCodeRecursive({
       final translationCall = '$translateVar.${child.path}';
       if (!sourceCode.contains(translationCall)) {
         // add whole base node which is expected
-        _addNode(
+        _addNodeRecursive(
           node: child,
           resultMap: resultMap,
+          addOutdatedModifier: false,
         );
       }
     }

@@ -8,7 +8,10 @@ import 'package:slang/builder/utils/path_utils.dart';
 
 /// This collection contains all relevant files to process.
 class SlangFileCollection {
+  /// Config specified in build.yaml, slang.yaml
   final RawConfig config;
+
+  /// Files containing translations
   final List<File> files;
 
   SlangFileCollection({

@@ -79,6 +79,7 @@ String i = page1.title; // type-safe call
   - [Main Command](#-main-command)
   - [Analyze Translations](#-analyze-translations)
   - [Apply Translations](#-apply-translations)
+  - [Outdated Translations](#-outdated-translations)
   - [Migration](#-migration)
     - [ARB](#arb)
   - [Statistics](#-statistics)
@@ -944,8 +945,14 @@ Available Modifiers:
 | `(param=<Param Name>)`     | This has the parameter `<Param Name>`         | Maps (Plural / Context)         |
 | `(interface=<I>)`          | Container of interfaces of type `I`           | Map/List containing Maps        |
 | `(singleInterface=<I>)`    | This is an interface of type `I`              | Maps                            |
-| `(ignoreMissing)`          | Ignore missing translations during analysis   | All nodes                       |
-| `(ignoreUnused)`           | Ignore unused translations during analysis    | All nodes                       |
+
+Analysis Modifiers (only used for the analysis tool):
+
+| Modifier          | Meaning                                     | Applicable for |
+|-------------------|---------------------------------------------|----------------|
+| `(ignoreMissing)` | Ignore missing translations during analysis | All nodes      |
+| `(ignoreUnused)`  | Ignore unused translations during analysis  | All nodes      |
+| `(OUTDATED)`      | Flagged as outdated for secondary locales   | All nodes      |
 
 ### ➤ Locale Enum
 
@@ -1350,6 +1357,30 @@ flutter pub run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
 |---------------------|--------------------------------------------------------|
 | `--locale=<locale>` | Apply only one specific locale                         |
 | `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
+
+### ➤ Outdated Translations
+
+You want to update an existing string, but you want to keep the old translations for other locales?
+
+Here, you can run a simple command to flag translations as `OUTDATED`. They will show up in `_missing_translations` when running `analyze`.
+
+```sh
+flutter pub run slang outdated a.b.c
+```
+
+This will add an `(OUTDATED)` modifier to all secondary locales.
+
+```json5
+{
+  "a": {
+    "b": {
+      "c(OUTDATED)": "This translation is outdated"
+    }
+  }
+}
+```
+
+You can also add these flags manually!
 
 ### ➤ Migration
 

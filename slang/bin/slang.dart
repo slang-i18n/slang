@@ -8,6 +8,7 @@ import 'package:slang/builder/model/translation_file.dart';
 import 'package:slang/runner/analyze.dart';
 import 'package:slang/runner/apply.dart';
 import 'package:slang/runner/migrate.dart';
+import 'package:slang/runner/outdated.dart';
 import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
@@ -22,6 +23,7 @@ enum RunnerMode {
   analyze, // generate missing translations
   apply, // apply translations from analyze
   migrate, // migration tool
+  outdated, // add 'OUTDATED' modifier to secondary locales
 }
 
 /// To run this:
@@ -49,6 +51,9 @@ void main(List<String> arguments) async {
       case 'migrate':
         mode = RunnerMode.migrate;
         break;
+      case 'outdated':
+        mode = RunnerMode.outdated;
+        break;
       default:
         mode = RunnerMode.generate;
     }
@@ -75,6 +80,9 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.migrate:
       break;
+    case RunnerMode.outdated:
+      print('Adding "OUTDATED" flag...');
+      break;
   }
 
   final stopwatch = Stopwatch();
@@ -86,11 +94,12 @@ void main(List<String> arguments) async {
   final fileCollection = await readFileCollection(verbose: verbose);
 
   // the actual runner
+  final filteredArguments = arguments.skip(1).toList();
   switch (mode) {
     case RunnerMode.apply:
       await runApplyTranslations(
         fileCollection: fileCollection,
-        arguments: arguments,
+        arguments: filteredArguments,
       );
       break;
     case RunnerMode.watch:
@@ -105,11 +114,18 @@ void main(List<String> arguments) async {
         files: fileCollection.translationFiles,
         verbose: verbose,
         stopwatch: stopwatch,
-        arguments: arguments,
+        arguments: filteredArguments,
       );
       break;
     case RunnerMode.migrate:
-      await runMigrate(arguments.skip(1).toList());
+      await runMigrate(filteredArguments);
+      break;
+    case RunnerMode.outdated:
+      await runOutdated(
+        fileCollection: fileCollection,
+        arguments: filteredArguments,
+      );
+      break;
   }
 }
 

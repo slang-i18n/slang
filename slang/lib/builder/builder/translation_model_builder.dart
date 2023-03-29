@@ -7,6 +7,7 @@ import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
+import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 
@@ -196,15 +197,13 @@ Map<String, Node> _parseMapNode({
 
     final originalKey = key;
 
-    // transform key if necessary
-    // the part after '(' is considered as the modifier
-    key = key.split('(').first.toCase(keyCase);
+    final nodePathInfo = NodeUtils.parseModifiers(originalKey);
+    key = nodePathInfo.path.toCase(keyCase);
+    final modifiers = nodePathInfo.modifiers;
     final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
     final currRawPath =
         parentRawPath.isNotEmpty ? '$parentRawPath.$originalKey' : originalKey;
-
     final comment = _parseCommentNode(curr['@$key']);
-    final modifiers = _parseModifiers(originalKey);
 
     if (value is String || value is num) {
       // leaf
@@ -318,7 +317,7 @@ Map<String, Node> _parseMapNode({
               parentRawPath: currRawPath,
               curr: {
                 for (final cKey in digestedMap.keys)
-                  cKey._withModifier(NodeModifiers.rich): value[cKey],
+                  cKey.withModifier(NodeModifiers.rich): value[cKey],
               },
               config: config,
               keyCase: config.keyCase,
@@ -727,35 +726,6 @@ void _fixEmptyLists({
   });
 }
 
-/// Returns a map containing modifiers
-/// greet(param: gender, rich)
-/// will result in
-/// {param: gender, rich: rich)
-Map<String, String> _parseModifiers(String originalKey) {
-  final String? modifierSection =
-      RegexUtils.modifierRegex.firstMatch(originalKey)?.group(1);
-  if (modifierSection == null) {
-    return {};
-  }
-
-  final modifiers = modifierSection.split(',');
-  final resultMap = <String, String>{};
-  for (final modifier in modifiers) {
-    if (modifier.contains('=')) {
-      final parts = modifier.split('=');
-      if (parts.length != 2) {
-        throw 'Hints must be in format "key: value" or "key"';
-      }
-
-      resultMap[parts[0].trim()] = parts[1].trim();
-    } else {
-      final modifierDigested = modifier.trim();
-      resultMap[modifierDigested] = modifierDigested;
-    }
-  }
-  return resultMap;
-}
-
 enum _DetectionType {
   classType,
   map,
@@ -817,20 +787,5 @@ extension on BuildModelConfig {
       pathInterfaceContainerMap: pathInterfaceContainerMap,
       pathInterfaceNameMap: pathInterfaceNameMap,
     );
-  }
-}
-
-extension on String {
-  /// Add a modifier to a key
-  /// myKey -> myKey(modifier)
-  /// myKey(rich) -> myKey(rich,modifier)
-  String _withModifier(String mKey, [String? mValue]) {
-    final modifier = '$mKey${mValue != null ? '=$mValue' : ''}';
-    if (this.contains('(')) {
-      final trimmed = this.trim();
-      return '${trimmed.substring(0, trimmed.length - 1)},$modifier)';
-    } else {
-      return '$this($modifier)';
-    }
   }
 }

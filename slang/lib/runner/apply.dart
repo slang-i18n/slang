@@ -5,8 +5,10 @@ import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
+import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/utils/file_utils.dart';
+import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/runner/analyze.dart';
@@ -311,6 +313,10 @@ void _applyTranslationsForFile({
 /// Adds entries from [newMap] to [oldMap] while respecting the order specified
 /// in [baseMap].
 ///
+/// Modifiers of [baseMap] are applied.
+///
+/// Entries in [oldMap] get removed when they get replaced and have the "OUTDATED" modifier.
+///
 /// The returned map is a new instance (i.e. no side effects for the given maps)
 Map<String, dynamic> applyMapRecursive({
   String? path,
@@ -319,8 +325,18 @@ Map<String, dynamic> applyMapRecursive({
   required Map<String, dynamic> oldMap,
 }) {
   final resultMap = <String, dynamic>{};
+  final Set<String> overwrittenKeys = {}; // keys without modifiers
+
+  // [newMap] but without modifiers
+  newMap = {
+    for (final entry in newMap.entries) entry.key.withoutModifiers: entry.value
+  };
+
+  // Add keys according to the order in base map.
+  // Prefer new map over old map.
   for (final key in baseMap.keys) {
-    dynamic actualValue = newMap[key] ?? oldMap[key];
+    final newEntry = newMap[key.withoutModifiers];
+    dynamic actualValue = newEntry ?? oldMap[key];
     if (actualValue == null) {
       continue;
     }
@@ -332,48 +348,51 @@ Map<String, dynamic> applyMapRecursive({
         baseMap: baseMap[key] is Map
             ? baseMap[key]
             : throw 'In the base translations, "$key" is not a map.',
-        newMap: newMap[key] ?? {},
+        newMap: newEntry ?? {},
         oldMap: oldMap[key] ?? {},
       );
     }
 
-    if (newMap[key] != null) {
+    if (newEntry != null) {
+      final split = key.split('(');
+      overwrittenKeys.add(split.first);
       _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;
   }
 
-  // Add keys from old map that are unknown in base locale
+  // Add keys from old map that are unknown in base locale.
+  // It may contain the OUTDATED modifier.
   for (final key in oldMap.keys) {
     if (resultMap.containsKey(key)) {
       continue;
     }
+
+    // Check if the key is outdated and overwritten.
+    final info = NodeUtils.parseModifiers(key);
+    if (info.modifiers.containsKey(NodeModifiers.outdated) &&
+        overwrittenKeys.contains(info.path)) {
+      // This key is outdated and should not be added.
+      continue;
+    }
+
     final currPath = path == null ? key : '$path.$key';
 
-    dynamic actualValue = newMap[key] ?? oldMap[key];
+    final newEntry = newMap[key];
+    dynamic actualValue = newEntry ?? oldMap[key];
     if (actualValue is Map) {
       actualValue = applyMapRecursive(
         path: currPath,
         baseMap: {},
-        newMap: newMap[key] ?? {},
+        newMap: newEntry ?? {},
         oldMap: oldMap[key],
       );
     }
 
-    if (newMap[key] != null) {
+    if (newEntry != null) {
       _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;
-  }
-
-  // Add remaining new keys
-  for (final key in newMap.keys) {
-    if (resultMap.containsKey(key)) {
-      continue;
-    }
-    final currPath = path == null ? key : '$path.$key';
-    _printAdding(currPath, newMap[key]);
-    resultMap[key] = newMap[key];
   }
 
   return resultMap;

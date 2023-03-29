@@ -18,6 +18,7 @@ class NodeModifiers {
   static const singleInterface = 'singleInterface';
   static const ignoreMissing = 'ignoreMissing';
   static const ignoreUnused = 'ignoreUnused';
+  static const outdated = 'OUTDATED';
 }
 
 /// the super class of every node

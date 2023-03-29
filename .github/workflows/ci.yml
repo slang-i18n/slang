@@ -31,5 +31,5 @@ jobs:
         run: flutter analyze
         working-directory: slang
       - name: Test (core)
-        run: flutter test
+        run: dart test
         working-directory: slang

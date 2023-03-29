@@ -116,6 +116,58 @@ class MapUtils {
       return false;
     }
   }
+
+  /// Updates an existing entry at [path].
+  /// Modifiers are ignored and should be not included in the [path].
+  /// The [update] function is called with the key and value of the entry.
+  /// The return value of the [update] function is used to update the entry.
+  /// It updates the entry in place.
+  static void updateEntry({
+    required Map<String, dynamic> map,
+    required String path,
+    required MapEntry<String, dynamic> Function(String key, Object path) update,
+  }) {
+    final pathList = path.split('.');
+
+    Map<String, dynamic> currMap = map;
+
+    for (int i = 0; i < pathList.length; i++) {
+      final subPath = pathList[i];
+      final entryList = currMap.entries.toList();
+      final entryIndex = entryList.indexWhere((entry) {
+        final key = entry.key;
+        if (key.contains('(')) {
+          return key.substring(0, key.indexOf('(')) == subPath;
+        }
+        return key == subPath;
+      });
+      if (entryIndex == -1) {
+        throw 'The leaf "$path" cannot be updated because it does not exist.';
+      }
+      final MapEntry<String, dynamic> currEntry = entryList[entryIndex];
+
+      if (i == pathList.length - 1) {
+        // destination
+        final updated = update(currEntry.key, currEntry.value);
+
+        if (currEntry.key == updated.key) {
+          // key did not change
+          currMap[currEntry.key] = updated.value;
+        } else {
+          // key changed, we need to reconstruct the map to keep the order
+          currMap.clear();
+          currMap.addEntries(entryList.take(entryIndex));
+          currMap[updated.key] = updated.value;
+          currMap.addEntries(entryList.skip(entryIndex + 1));
+        }
+      } else {
+        if (currEntry.value is! Map<String, dynamic>) {
+          throw 'The leaf "$path" cannot be updated because "$subPath" is not a map.';
+        }
+        currMap = currEntry.value;
+      }
+    }
+  }
 }
 
 /// Helper function for [deepCast] handling lists

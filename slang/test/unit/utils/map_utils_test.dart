@@ -146,4 +146,108 @@ void main() {
       expect(added, false);
     });
   });
+
+  group('updateEntry', () {
+    test('should update the leaf node correctly', () {
+      final map = {
+        'a': {
+          'b': {
+            'c': 42,
+          },
+        },
+      };
+
+      MapUtils.updateEntry(
+        map: map,
+        path: 'a.b.c',
+        update: (key, value) => MapEntry(key, (value as int) * 2),
+      );
+
+      expect(map['a']!['b']!['c'], 84);
+    });
+
+    test('should update the leaf key correctly', () {
+      final map = {
+        'a': {
+          'b': {
+            'c': 42,
+          },
+        },
+      };
+
+      MapUtils.updateEntry(
+        map: map,
+        path: 'a.b.c',
+        update: (key, value) => MapEntry('d', (value as int) * 2),
+      );
+
+      expect(map['a']!['b']!['d'], 84);
+      expect(map['a']!['b']!['c'], null);
+    });
+
+    test('should keep order', () {
+      final map = {
+        'a': {
+          'b': {
+            'c0': 3,
+            'c1': 4,
+            'c2': 5,
+          },
+        },
+      };
+
+      MapUtils.updateEntry(
+        map: map,
+        path: 'a.b.c1',
+        update: (key, value) => MapEntry('d', (value as int) * 2),
+      );
+
+      expect(map['a']!['b']!['d'], 8);
+      expect(map['a']!['b']!.keys, ['c0', 'd', 'c2']);
+    });
+
+    test('should update the leaf key correctly while ignoring modifiers', () {
+      final map = {
+        'a': {
+          'b(rich)': {
+            'c(ignore)': 42,
+          },
+        },
+      };
+
+      MapUtils.updateEntry(
+        map: map,
+        path: 'a.b.c',
+        update: (key, value) => MapEntry('d(nice)', (value as int) * 2),
+      );
+
+      expect(map['a']!['b(rich)']!['d(nice)'], 84);
+      expect(map['a']!['b(rich)']!['c(ignore)'], null);
+    });
+
+    test('should throw an error if the path does not exist', () {
+      final map = {
+        'a': {
+          'b': {
+            'c(rich)': 42,
+          },
+        },
+      };
+
+      expect(
+        () => MapUtils.updateEntry(
+          map: map,
+          path: 'a.b.d',
+          update: (key, value) => MapEntry(key, value),
+        ),
+        throwsA(
+          isA<String>().having(
+            (s) => s,
+            'error message',
+            'The leaf "a.b.d" cannot be updated because it does not exist.',
+          ),
+        ),
+      );
+    });
+  });
 }

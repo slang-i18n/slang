@@ -155,17 +155,20 @@ void main() {
 
     test('some_key(abc)', () {
       RegExpMatch? match = regex.firstMatch('some_key(abc)');
-      expect(match?.group(1), 'abc');
+      expect(match?.group(1), 'some_key');
+      expect(match?.group(2), 'abc');
     });
 
     test('myKey(cool_parameter)', () {
       RegExpMatch? match = regex.firstMatch('myKey(cool_parameter)');
-      expect(match?.group(1), 'cool_parameter');
+      expect(match?.group(1), 'myKey');
+      expect(match?.group(2), 'cool_parameter');
     });
 
     test('myKey(parameter=name, rich)', () {
       RegExpMatch? match = regex.firstMatch('myKey(parameter=name, rich)');
-      expect(match?.group(1), 'parameter=name, rich');
+      expect(match?.group(1), 'myKey');
+      expect(match?.group(2), 'parameter=name, rich');
     });
 
     test('my key(cool_parameter)', () {
