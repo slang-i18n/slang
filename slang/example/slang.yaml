@@ -3,5 +3,6 @@
 # In this example, no configuration is needed.
 #
 # base_locale: en
+# input_directory: lib/i18n
 # maps:
 #   - locales

@@ -1,3 +1,7 @@
+## 3.15.0
+
+- Bump `slang` to `3.15.0`
+
 ## 3.14.0
 
 - feat: `LocaleSettings.useDeviceLocale` listens to device locale changes
