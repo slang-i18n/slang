@@ -1,3 +1,7 @@
+## 3.15.1
+
+- fix: `slang analyze` with `--full` should find invocations written in multiple lines
+
 ## 3.15.0
 
 - feat: add `OUTDATED` modifier to flag translations as outdated (`slang analyze` will treat them as missing)
