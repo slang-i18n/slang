@@ -287,8 +287,15 @@ Map<String, dynamic> _getUnusedTranslationsInSourceCode({
   required I18nData baseModel,
 }) {
   final resultMap = <String, dynamic>{};
+
+  final files = Directory('lib')
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((f) => f.path.endsWith('.dart'))
+      .toList();
+
   _getUnusedTranslationsInSourceCodeRecursive(
-    sourceCode: _loadSourceCode(),
+    sourceCode: loadSourceCode(files),
     translateVar: translateVar,
     node: baseModel.root,
     resultMap: resultMap,
@@ -330,17 +337,12 @@ void _getUnusedTranslationsInSourceCodeRecursive({
 }
 
 /// Loads all dart files in lib/
-/// and joins them into a single (huge) string.
-String _loadSourceCode() {
-  final files = Directory('lib')
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.dart'))
-      .toList();
-
+/// and joins them into a single (huge) string without any spaces.
+String loadSourceCode(List<File> files) {
   final buffer = StringBuffer();
+  final regex = RegExp(r'\s');
   for (final file in files) {
-    buffer.writeln(file.readAsStringSync());
+    buffer.write(file.readAsStringSync().replaceAll(regex, ''));
   }
 
   return buffer.toString();
