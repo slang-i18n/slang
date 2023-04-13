@@ -2,6 +2,7 @@ import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
 
 /// represents a build.yaml
 class RawConfig {
@@ -34,6 +35,8 @@ class RawConfig {
   static const List<String> defaultOrdinal = <String>[];
   static const List<ContextType> defaultContexts = <ContextType>[];
   static const List<InterfaceConfig> defaultInterfaces = <InterfaceConfig>[];
+  static final ObfuscationConfig defaultObfuscationConfig =
+      ObfuscationConfig(enabled: false, secret: '');
   static const List<String> defaultImports = <String>[];
 
   final FileType fileType;
@@ -64,6 +67,7 @@ class RawConfig {
   final List<String> pluralOrdinal;
   final List<ContextType> contexts;
   final List<InterfaceConfig> interfaces;
+  final ObfuscationConfig obfuscation;
   final List<String> imports;
 
   RawConfig({
@@ -94,6 +98,7 @@ class RawConfig {
     required this.pluralOrdinal,
     required this.contexts,
     required this.interfaces,
+    required this.obfuscation,
     required this.imports,
   }) : fileType = _determineFileType(inputFilePattern);
 
@@ -167,6 +172,7 @@ class RawConfig {
             '          - ${path.isContainer ? 'children of: ' : ''}${path.path}');
       }
     }
+    print(' -> obfuscation: ${obfuscation.enabled ? 'enabled' : 'disabled'}');
     print(' -> imports: $imports');
   }
 }

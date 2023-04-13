@@ -3,6 +3,7 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
 
 /// Config for the generation step (generate dart-content from model)
 /// Applies to all locales
@@ -22,6 +23,7 @@ class GenerateConfig {
   final bool renderTimestamp;
   final List<ContextType> contexts;
   final List<Interface> interface; // may include more than in build config
+  final ObfuscationConfig obfuscation;
   final List<String> imports;
 
   GenerateConfig({
@@ -40,6 +42,7 @@ class GenerateConfig {
     required this.renderTimestamp,
     required this.contexts,
     required this.interface,
+    required this.obfuscation,
     required this.imports,
   });
 }

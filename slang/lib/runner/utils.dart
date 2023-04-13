@@ -152,6 +152,7 @@ extension on RawConfig {
       pluralOrdinal: pluralOrdinal,
       contexts: contexts,
       interfaces: interfaces,
+      obfuscation: obfuscation,
       imports: imports,
     );
   }

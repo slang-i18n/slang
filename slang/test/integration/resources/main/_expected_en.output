@@ -31,8 +31,14 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 	TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 		n: count,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
-		one: () => TextSpan(children: [const TextSpan(text: 'One'),]),
-		other: () => TextSpan(children: [const TextSpan(text: 'Other '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+		one: () => TextSpan(children: [
+			const TextSpan(text: 'One'),
+		]),
+		other: () => TextSpan(children: [
+			const TextSpan(text: 'Other '),
+			countBuilder(count),
+			TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+		]),
 	);
 }
 
@@ -63,14 +69,18 @@ class _TranslationsOnboardingEn {
 	];
 	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
-			case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
-			case GenderContext.female: return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
+			case GenderContext.male:
+				return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female:
+				return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 		}
 	}
 	String greet2({required GenderContext gender}) {
 		switch (gender) {
-			case GenderContext.male: return 'Hello Mr';
-			case GenderContext.female: return 'Hello Ms';
+			case GenderContext.male:
+				return 'Hello Mr';
+			case GenderContext.female:
+				return 'Hello Ms';
 		}
 	}
 	String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';

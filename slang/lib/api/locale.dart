@@ -18,6 +18,10 @@ class TranslationMetadata<E extends BaseAppLocale<E, T>,
   final PluralResolver? cardinalResolver;
   final PluralResolver? ordinalResolver;
 
+  /// The secret.
+  /// Used to decrypt obfuscated translation strings.
+  final int s;
+
   dynamic Function(String path)? _flatMapFunction;
 
   TranslationMetadata({
@@ -25,10 +29,24 @@ class TranslationMetadata<E extends BaseAppLocale<E, T>,
     required this.overrides,
     required this.cardinalResolver,
     required this.ordinalResolver,
+    this.s = 0,
   });
 
   void setFlatMapFunction(dynamic Function(String key) func) {
     _flatMapFunction = func;
+  }
+
+  /// Decrypts the given [chars] by XOR-ing them with the secret [s].
+  ///
+  /// Keep in mind that this is not a secure encryption method.
+  /// It only makes static analysis of the compiled binary harder.
+  ///
+  /// You should enable Flutter obfuscation for additional security.
+  String d(List<int> chars) {
+    for (int i = 0; i < chars.length; i++) {
+      chars[i] = chars[i] ^ s;
+    }
+    return String.fromCharCodes(chars);
   }
 }
 

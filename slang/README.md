@@ -74,6 +74,7 @@ String i = page1.title; // type-safe call
   - [Fallback](#-fallback)
   - [Comments](#-comments)
   - [Recasing](#-recasing)
+  - [Obfuscation](#-obfuscation)
   - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
@@ -315,6 +316,9 @@ interfaces:
     attributes:
       - String title
       - String? content
+obfuscation:
+  enabled: false
+  secret: somekey
 imports:
   - 'package:my_package/path_to_enum.dart'
 ```
@@ -381,6 +385,9 @@ targets:
               attributes:
                 - String title
                 - String? content
+          obfuscation:
+            enabled: false
+            secret: somekey
           imports:
             - 'package:my_package/path_to_enum.dart'
 ```
@@ -419,6 +426,8 @@ targets:
 | `<context>`/`default_parameter`     | `String`                           | default parameter name                                       | `context`     |
 | `<context>`/`generate_enum`         | `Boolean`                          | generate enum                                                | `true`        |
 | `children of interfaces`            | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
+| `obfuscation`/`enabled`             | `Boolean`                          | enable obfuscation [(i)](#-obfuscation)                      | `false`       |
+| `obfuscation`/`secret`              | `String`                           | obfuscation secret (random if null) [(i)](#-obfuscation)     | `null`        |
 | `imports`                           | `List<String>`                     | generate import statements                                   | `[]`          |
 
 ## Main Features
@@ -1289,6 +1298,29 @@ maps:
    - myMap # all paths must be cased accordingly
 ```
 
+### ➤ Obfuscation
+
+You can obfuscate the strings to make static analysis harder.
+
+```yaml
+# Config
+obfuscation:
+  enabled: true
+  secret: somekey
+```
+
+Instead of this:
+
+```dart
+String get hello => 'Hello';
+```
+
+The following will be generated:
+
+```dart
+String get hello => _root.$meta.d([104, 69, 76, 76, 79]);
+```
+
 ### ➤ Dart Only
 
 You can use this library without flutter.
@@ -1621,21 +1653,18 @@ The second one always returns a new instance.
 
 ### In Depth
 
-[Interfaces](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md)
-
-[Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md)
+- [Interfaces](https://github.com/Tienisto/slang/blob/master/slang/documentation/interfaces.md)
+- [Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md)
 
 ### Tutorials
 
-[Medium (English)](https://medium.com/swlh/flutter-i18n-made-easy-1fd9ccd82cb3)
-
-[Хабр (Russian)](https://habr.com/ru/post/718310/)
-
-[Qiita (Japanese)](https://qiita.com/popy1017/items/3495be9fdc028161bef9)
-
-[okaryo (Japanese)](https://blog.okaryo.io/20230104-split-and-manage-arb-files-for-internationalized-flutter-app-in-yaml-format)
-
-[Youtube (Korean)](https://www.youtube.com/watch?v=4OqPlOm7UVo)
+- [Medium (English)](https://medium.com/swlh/flutter-i18n-made-easy-1fd9ccd82cb3)
+- [Хабр (Russian)](https://habr.com/ru/post/718310/)
+- [Qiita (Japanese)](https://qiita.com/popy1017/items/3495be9fdc028161bef9)
+- [okaryo (Japanese)](https://blog.okaryo.io/20230104-split-and-manage-arb-files-for-internationalized-flutter-app-in-yaml-format)
+- [zenn (Japanese)](https://zenn.dev/flutteruniv_dev/articles/30cbf9a90442e1)
+- [zenn (Japanese)](https://zenn.dev/flutteruniv_dev/articles/6be509f86c0fd7)
+- [Youtube (Korean)](https://www.youtube.com/watch?v=4OqPlOm7UVo)
 
 Feel free to extend this list :)
 

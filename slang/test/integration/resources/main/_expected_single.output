@@ -194,8 +194,14 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 	TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 		n: count,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
-		one: () => TextSpan(children: [const TextSpan(text: 'One'),]),
-		other: () => TextSpan(children: [const TextSpan(text: 'Other '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+		one: () => TextSpan(children: [
+			const TextSpan(text: 'One'),
+		]),
+		other: () => TextSpan(children: [
+			const TextSpan(text: 'Other '),
+			countBuilder(count),
+			TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+		]),
 	);
 }
 
@@ -226,14 +232,18 @@ class _TranslationsOnboardingEn {
 	];
 	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
-			case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
-			case GenderContext.female: return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
+			case GenderContext.male:
+				return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female:
+				return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 		}
 	}
 	String greet2({required GenderContext gender}) {
 		switch (gender) {
-			case GenderContext.male: return 'Hello Mr';
-			case GenderContext.female: return 'Hello Ms';
+			case GenderContext.male:
+				return 'Hello Mr';
+			case GenderContext.female:
+				return 'Hello Ms';
 		}
 	}
 	String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
@@ -351,8 +361,14 @@ class _TranslationsDe implements _TranslationsEn {
 	@override TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 		n: count,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
-		one: () => TextSpan(children: [const TextSpan(text: 'Eins'),]),
-		other: () => TextSpan(children: [const TextSpan(text: 'Andere '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+		one: () => TextSpan(children: [
+			const TextSpan(text: 'Eins'),
+		]),
+		other: () => TextSpan(children: [
+			const TextSpan(text: 'Andere '),
+			countBuilder(count),
+			TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+		]),
 	);
 }
 
@@ -383,14 +399,18 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 	];
 	@override String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
-			case GenderContext.male: return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
-			case GenderContext.female: return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
+			case GenderContext.male:
+				return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female:
+				return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
 		}
 	}
 	@override String greet2({required GenderContext gender}) {
 		switch (gender) {
-			case GenderContext.male: return 'Hallo Herr';
-			case GenderContext.female: return 'Hallo Frau';
+			case GenderContext.male:
+				return 'Hallo Herr';
+			case GenderContext.female:
+				return 'Hallo Frau';
 		}
 	}
 	@override String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
@@ -498,14 +518,18 @@ extension on _TranslationsEn {
 			case 'onboarding.modifierPages.1.title': return 'Second Modifier Page';
 			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
-					case GenderContext.male: return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
-					case GenderContext.female: return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
+					case GenderContext.male:
+						return 'Hello Mr ${lastName} and ${_root.onboarding.welcome(fullName: fullName)}';
+					case GenderContext.female:
+						return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 				}
 			};
 			case 'onboarding.greet2': return ({required GenderContext gender}) {
 				switch (gender) {
-					case GenderContext.male: return 'Hello Mr';
-					case GenderContext.female: return 'Hello Ms';
+					case GenderContext.male:
+						return 'Hello Mr';
+					case GenderContext.female:
+						return 'Hello Ms';
 				}
 			};
 			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
@@ -525,8 +549,14 @@ extension on _TranslationsEn {
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 				n: count,
 				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
-				one: () => TextSpan(children: [const TextSpan(text: 'One'),]),
-				other: () => TextSpan(children: [const TextSpan(text: 'Other '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+				one: () => TextSpan(children: [
+					const TextSpan(text: 'One'),
+				]),
+				other: () => TextSpan(children: [
+					const TextSpan(text: 'Other '),
+					countBuilder(count),
+					TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+				]),
 			);
 			default: return null;
 		}
@@ -551,14 +581,18 @@ extension on _TranslationsDe {
 			case 'onboarding.modifierPages.1.title': return 'Zweite Modifier Seite';
 			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
-					case GenderContext.male: return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
-					case GenderContext.female: return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
+					case GenderContext.male:
+						return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+					case GenderContext.female:
+						return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
 				}
 			};
 			case 'onboarding.greet2': return ({required GenderContext gender}) {
 				switch (gender) {
-					case GenderContext.male: return 'Hallo Herr';
-					case GenderContext.female: return 'Hallo Frau';
+					case GenderContext.male:
+						return 'Hallo Herr';
+					case GenderContext.female:
+						return 'Hallo Frau';
 				}
 			};
 			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
@@ -578,8 +612,14 @@ extension on _TranslationsDe {
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 				n: count,
 				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
-				one: () => TextSpan(children: [const TextSpan(text: 'Eins'),]),
-				other: () => TextSpan(children: [const TextSpan(text: 'Andere '),countBuilder(count),TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),]),
+				one: () => TextSpan(children: [
+					const TextSpan(text: 'Eins'),
+				]),
+				other: () => TextSpan(children: [
+					const TextSpan(text: 'Andere '),
+					countBuilder(count),
+					TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+				]),
 			);
 			default: return null;
 		}

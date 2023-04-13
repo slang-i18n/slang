@@ -7,6 +7,7 @@ import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
+import 'package:slang/builder/utils/encryption_utils.dart';
 
 part 'generate_translation_map.dart';
 
@@ -133,6 +134,20 @@ void _generateClass(
     buffer.writeln('\t\t    overrides: overrides ?? {},');
     buffer.writeln('\t\t    cardinalResolver: cardinalResolver,');
     buffer.writeln('\t\t    ordinalResolver: ordinalResolver,');
+    if (config.obfuscation.enabled) {
+      final String method;
+      final List<int> parts;
+      if ((config.obfuscation.secret ^ localeData.locale.languageTag.hashCode) %
+              2 ==
+          0) {
+        method = r'$calc0';
+        parts = getParts0(config.obfuscation.secret);
+      } else {
+        method = r'$calc1';
+        parts = getParts1(config.obfuscation.secret);
+      }
+      buffer.writeln('\t\t    s: $method(${parts.join(', ')}),');
+    }
     buffer.write('\t\t  )');
 
     if (callSuperConstructor) {
@@ -236,12 +251,13 @@ void _generateClass(
       final translationOverrides = config.translationOverrides
           ? 'TranslationOverrides.string(_root.\$meta, \'${value.path}\', ${_toParameterMap(value.params)}) ?? '
           : '';
+      final stringLiteral = getStringLiteral(value.content, config.obfuscation);
       if (value.params.isEmpty) {
         buffer.writeln(
-            'String$optional get $key => $translationOverrides\'${value.content}\';');
+            'String$optional get $key => $translationOverrides$stringLiteral;');
       } else {
         buffer.writeln(
-            'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => $translationOverrides\'${value.content}\';');
+            'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => $translationOverrides$stringLiteral;');
       }
     } else if (value is RichTextNode) {
       buffer.write('TextSpan$optional ');
@@ -254,7 +270,9 @@ void _generateClass(
         buffer: buffer,
         config: config,
         node: value,
-        includeArrowIfNoParams: true,
+        includeParameters: true,
+        variableNameResolver: null,
+        forceArrow: true,
         depth: 0,
       );
     } else if (value is ListNode) {
@@ -340,12 +358,17 @@ void _generateMap({
 
   node.entries.forEach((key, value) {
     _addTabs(buffer, depth + 2);
+
+    // Note:
+    // Maps cannot contain rich texts
+    // because there is no way to add the "rich" modifier.
     if (value is StringTextNode) {
+      final stringLiteral = getStringLiteral(value.content, config.obfuscation);
       if (value.params.isEmpty) {
-        buffer.writeln('\'$key\': \'${value.content}\',');
+        buffer.writeln('\'$key\': $stringLiteral,');
       } else {
         buffer.writeln(
-            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\',');
+            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => $stringLiteral,');
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
@@ -438,12 +461,17 @@ void _generateList({
     final Node value = node.entries[i];
 
     _addTabs(buffer, depth + 2);
+
+    // Note:
+    // Lists cannot contain rich texts
+    // because there is no way to add the "rich" modifier.
     if (value is StringTextNode) {
+      final stringLiteral = getStringLiteral(value.content, config.obfuscation);
       if (value.params.isEmpty) {
-        buffer.writeln('\'${value.content}\',');
+        buffer.writeln('$stringLiteral,');
       } else {
         buffer.writeln(
-            '${_toParameterList(value.params, value.paramTypeMap)} => \'${value.content}\',');
+            '${_toParameterList(value.params, value.paramTypeMap)} => $stringLiteral,');
       }
     } else if (value is ListNode) {
       _generateList(
@@ -611,18 +639,16 @@ void _addPluralizationCall({
       _addTabs(buffer, depth + 2);
       buffer.write('${quantity.key.paramName()}: () => ');
 
-      buffer.write('TextSpan(children: [');
-      for (final span in (quantity.value as RichTextNode).spans) {
-        if (span is VariableSpan && span.variableName == node.paramName) {
-          // the 'n' is now a builder, e.g. 'nBuilder'
-          buffer.write('${node.paramName}Builder(${node.paramName})');
-        } else {
-          buffer.write(span.code);
-        }
-        buffer.write(',');
-      }
-      buffer.write('])');
-      buffer.writeln(',');
+      _addRichTextCall(
+        buffer: buffer,
+        config: config,
+        node: quantity.value as RichTextNode,
+        includeParameters: false,
+        variableNameResolver: (name) =>
+            name == node.paramName ? '${node.paramName}Builder($name)' : name,
+        forceArrow: false,
+        depth: depth + 1,
+      );
     }
   } else {
     final translationOverrides = config.translationOverrides
@@ -636,7 +662,7 @@ void _addPluralizationCall({
     for (final quantity in node.quantities.entries) {
       _addTabs(buffer, depth + 2);
       buffer.writeln(
-          '${quantity.key.paramName()}: \'${(quantity.value as StringTextNode).content}\',');
+          '${quantity.key.paramName()}: ${getStringLiteral((quantity.value as StringTextNode).content, config.obfuscation)},');
     }
   }
 
@@ -654,27 +680,46 @@ void _addRichTextCall({
   required StringBuffer buffer,
   required GenerateConfig config,
   required RichTextNode node,
-  required bool includeArrowIfNoParams,
+  required bool includeParameters,
+  required String Function(String variableName)? variableNameResolver,
+  required bool forceArrow,
   required int depth,
   bool forceSemicolon = false,
 }) {
-  if (node.params.isNotEmpty) {
-    buffer.write(_toParameterList(node.params, node.paramTypeMap));
-  }
+  if (includeParameters) {
+    if (node.params.isNotEmpty) {
+      buffer.write(_toParameterList(node.params, node.paramTypeMap));
+    }
 
-  if (node.params.isNotEmpty || includeArrowIfNoParams) {
-    buffer.write(' => ');
-  }
+    if (node.params.isNotEmpty || forceArrow) {
+      buffer.write(' => ');
+    }
 
-  if (config.translationOverrides) {
-    buffer.write(
-        'TranslationOverridesFlutter.rich(_root.\$meta, \'${node.path}\', ${_toParameterMap(node.params)}) ?? ');
+    if (config.translationOverrides) {
+      buffer.write(
+          'TranslationOverridesFlutter.rich(_root.\$meta, \'${node.path}\', ${_toParameterMap(node.params)}) ?? ');
+    }
   }
 
   buffer.writeln('TextSpan(children: [');
   for (final span in node.spans) {
     _addTabs(buffer, depth + 2);
-    buffer.write(span.code);
+
+    if (span is LiteralSpan) {
+      buffer.write(
+        "${!config.obfuscation.enabled && span.isConstant ? 'const ' : ''}TextSpan(text: ${getStringLiteral(span.literal, config.obfuscation)})",
+      );
+    } else if (span is VariableSpan) {
+      if (variableNameResolver != null) {
+        buffer.write(variableNameResolver(span.variableName));
+      } else {
+        buffer.write(span.variableName);
+      }
+    } else if (span is FunctionSpan) {
+      buffer.write(
+        "${span.functionName}(${getStringLiteral(span.arg, config.obfuscation)})",
+      );
+    }
     buffer.writeln(',');
   }
   _addTabs(buffer, depth + 1);
@@ -743,21 +788,25 @@ void _addContextCall({
 
   for (final entry in node.entries.entries) {
     _addTabs(buffer, depth + 3);
-    buffer.write('case ${node.context.enumName}.${entry.key}: return ');
+    buffer.writeln('case ${node.context.enumName}.${entry.key}:');
+    _addTabs(buffer, depth + 4);
+    buffer.write('return ');
     if (node.rich) {
-      buffer.write('TextSpan(children: [');
-      for (final span in (entry.value as RichTextNode).spans) {
-        if (span is VariableSpan && span.variableName == node.paramName) {
-          // the 'context' is now a builder, e.g. 'contextBuilder'
-          buffer.write('${node.paramName}Builder(${node.paramName})');
-        } else {
-          buffer.write(span.code);
-        }
-        buffer.write(',');
-      }
-      buffer.writeln(']);');
+      _addRichTextCall(
+        buffer: buffer,
+        config: config,
+        node: entry.value as RichTextNode,
+        includeParameters: false,
+        variableNameResolver: (name) =>
+            name == node.paramName ? '${node.paramName}Builder($name)' : name,
+        forceArrow: false,
+        depth: depth + 3,
+        forceSemicolon: true,
+      );
     } else {
-      buffer.writeln('\'${(entry.value as StringTextNode).content}\';');
+      buffer.writeln(
+        '${getStringLiteral((entry.value as StringTextNode).content, config.obfuscation)};',
+      );
     }
   }
 

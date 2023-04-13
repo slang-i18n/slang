@@ -50,12 +50,13 @@ _generateTranslationMapRecursive({
     final translationOverrides = config.translationOverrides
         ? 'TranslationOverrides.string(_root.\$meta, \'${curr.path}\', ${_toParameterMap(curr.params)}) ?? '
         : '';
+    final stringLiteral = getStringLiteral(curr.content, config.obfuscation);
     if (curr.params.isEmpty) {
       buffer.writeln(
-          '\t\t\tcase \'${curr.path}\': return $translationOverrides\'${curr.content}\';');
+          '\t\t\tcase \'${curr.path}\': return $translationOverrides$stringLiteral;');
     } else {
       buffer.writeln(
-          '\t\t\tcase \'${curr.path}\': return ${_toParameterList(curr.params, curr.paramTypeMap)} => $translationOverrides\'${curr.content}\';');
+          '\t\t\tcase \'${curr.path}\': return ${_toParameterList(curr.params, curr.paramTypeMap)} => $translationOverrides$stringLiteral;');
     }
   } else if (curr is RichTextNode) {
     buffer.write('\t\t\tcase \'${curr.path}\': return ');
@@ -63,7 +64,9 @@ _generateTranslationMapRecursive({
       buffer: buffer,
       config: config,
       node: curr,
-      includeArrowIfNoParams: false,
+      includeParameters: true,
+      variableNameResolver: null,
+      forceArrow: false,
       depth: 2,
       forceSemicolon: true,
     );

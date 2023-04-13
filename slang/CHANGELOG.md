@@ -1,3 +1,7 @@
+## 3.16.0
+
+- feat: add `obfuscation` config to obfuscate translation strings
+
 ## 3.15.1
 
 - fix: `slang analyze` with `--full` should find invocations written in multiple lines

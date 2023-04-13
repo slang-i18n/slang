@@ -25,6 +25,7 @@ class GenerateConfigBuilder {
       renderTimestamp: config.renderTimestamp,
       contexts: config.contexts,
       interface: interfaces,
+      obfuscation: config.obfuscation,
       imports: config.imports,
     );
   }

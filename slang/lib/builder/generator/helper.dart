@@ -1,5 +1,7 @@
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
+import 'package:slang/builder/utils/encryption_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 
 String getClassNameRoot({
@@ -27,4 +29,12 @@ String getClassName({
     languageTag = '';
   }
   return parentName + childName.toCase(CaseStyle.pascal) + languageTag;
+}
+
+String getStringLiteral(String value, ObfuscationConfig config) {
+  if (config.enabled) {
+    return '_root.\$meta.d([' + value.encrypt(config.secret).join(', ') + '])';
+  } else {
+    return "'$value'";
+  }
 }

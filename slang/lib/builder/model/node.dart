@@ -599,17 +599,13 @@ class _ParamWithArg {
   String toString() => '_ParamWithArg{paramName: $paramName, arg: $arg}';
 }
 
-abstract class BaseSpan {
-  String get code;
-}
+abstract class BaseSpan {}
 
 class LiteralSpan extends BaseSpan {
   final String literal;
   final bool isConstant;
 
   LiteralSpan({required this.literal, required this.isConstant});
-
-  String get code => "${isConstant ? 'const ' : ''}TextSpan(text: '$literal')";
 }
 
 class FunctionSpan extends BaseSpan {
@@ -617,17 +613,12 @@ class FunctionSpan extends BaseSpan {
   final String arg;
 
   FunctionSpan(this.functionName, this.arg);
-
-  String get code => "$functionName('$arg')";
 }
 
 class VariableSpan extends BaseSpan {
   final String variableName;
 
   VariableSpan(this.variableName);
-
-  @override
-  String get code => '$variableName';
 }
 
 String _determineGenericType(Iterable<Node> entries) {

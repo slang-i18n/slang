@@ -1,0 +1,630 @@
+/// Generated file. Do not edit.
+///
+/// Locales: 2
+/// Strings: 54 (27 per locale)
+
+
+// coverage:ignore-file
+// ignore_for_file: type=lint
+
+import 'package:flutter/widgets.dart';
+import 'package:slang/api/secret.dart';
+import 'package:slang/builder/model/node.dart';
+import 'package:slang_flutter/slang_flutter.dart';
+export 'package:slang_flutter/slang_flutter.dart';
+
+const AppLocale _baseLocale = AppLocale.en;
+
+/// Supported locales, see extension methods below.
+///
+/// Usage:
+/// - LocaleSettings.setLocale(AppLocale.en) // set locale
+/// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
+/// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
+enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
+	en(languageCode: 'en', build: _TranslationsEn.build),
+	de(languageCode: 'de', build: _TranslationsDe.build);
+
+	const AppLocale({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element
+
+	@override final String languageCode;
+	@override final String? scriptCode;
+	@override final String? countryCode;
+	@override final TranslationBuilder<AppLocale, _TranslationsEn> build;
+
+	/// Gets current instance managed by [LocaleSettings].
+	_TranslationsEn get translations => LocaleSettings.instance.translationMap[this]!;
+}
+
+/// Method A: Simple
+///
+/// No rebuild after locale change.
+/// Translation happens during initialization of the widget (call of t).
+/// Configurable via 'translate_var'.
+///
+/// Usage:
+/// String a = t.someKey.anotherKey;
+/// String b = t['someKey.anotherKey']; // Only for edge cases!
+_TranslationsEn get t => LocaleSettings.instance.currentTranslations;
+
+/// Method B: Advanced
+///
+/// All widgets using this method will trigger a rebuild when locale changes.
+/// Use this if you have e.g. a settings page where the user can select the locale during runtime.
+///
+/// Step 1:
+/// wrap your App with
+/// TranslationProvider(
+/// 	child: MyApp()
+/// );
+///
+/// Step 2:
+/// final t = Translations.of(context); // Get t variable.
+/// String a = t.someKey.anotherKey; // Use t variable.
+/// String b = t['someKey.anotherKey']; // Only for edge cases!
+class Translations {
+	Translations._(); // no constructor
+
+	static _TranslationsEn of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context).translations;
+}
+
+/// The provider for method B
+class TranslationProvider extends BaseTranslationProvider<AppLocale, _TranslationsEn> {
+	TranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);
+
+	static InheritedLocaleData<AppLocale, _TranslationsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context);
+}
+
+/// Method B shorthand via [BuildContext] extension method.
+/// Configurable via 'translate_var'.
+///
+/// Usage (e.g. in a widget's build method):
+/// context.t.someKey.anotherKey
+extension BuildContextTranslationsExtension on BuildContext {
+	_TranslationsEn get t => TranslationProvider.of(this).translations;
+}
+
+/// Manages all translation instances and the current locale
+class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsEn> {
+	LocaleSettings._() : super(utils: AppLocaleUtils.instance);
+
+	static final instance = LocaleSettings._();
+
+	// static aliases (checkout base methods for documentation)
+	static AppLocale get currentLocale => instance.currentLocale;
+	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
+	static AppLocale setLocale(AppLocale locale, {bool? listenToDeviceLocale = false}) => instance.setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);
+	static AppLocale setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRaw(rawLocale, listenToDeviceLocale: listenToDeviceLocale);
+	static AppLocale useDeviceLocale() => instance.useDeviceLocale();
+	@Deprecated('Use [AppLocaleUtils.supportedLocales]') static List<Locale> get supportedLocales => instance.supportedLocales;
+	@Deprecated('Use [AppLocaleUtils.supportedLocalesRaw]') static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
+	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(
+		language: language,
+		locale: locale,
+		cardinalResolver: cardinalResolver,
+		ordinalResolver: ordinalResolver,
+	);
+}
+
+/// Provides utility functions without any side effects.
+class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, _TranslationsEn> {
+	AppLocaleUtils._() : super(baseLocale: _baseLocale, locales: AppLocale.values);
+
+	static final instance = AppLocaleUtils._();
+
+	// static aliases (checkout base methods for documentation)
+	static AppLocale parse(String rawLocale) => instance.parse(rawLocale);
+	static AppLocale parseLocaleParts({required String languageCode, String? scriptCode, String? countryCode}) => instance.parseLocaleParts(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);
+	static AppLocale findDeviceLocale() => instance.findDeviceLocale();
+	static List<Locale> get supportedLocales => instance.supportedLocales;
+	static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
+}
+
+// context enums
+
+enum GenderContext {
+	male,
+	female,
+}
+
+// interfaces generated as mixins
+
+mixin PageData {
+	String get title;
+	String? get content => null;
+
+	@override
+	bool operator ==(Object other) => other is PageData && title == other.title && content == other.content;
+
+	@override
+	int get hashCode => title.hashCode * content.hashCode;
+}
+
+mixin MPage {
+	String get title;
+	String? get content => null;
+
+	@override
+	bool operator ==(Object other) => other is MPage && title == other.title && content == other.content;
+
+	@override
+	int get hashCode => title.hashCode * content.hashCode;
+}
+
+mixin EndData {
+	List<String> get stringPages;
+	List<Map<String, String>> get pages;
+
+	@override
+	bool operator ==(Object other) => other is EndData && stringPages == other.stringPages && pages == other.pages;
+
+	@override
+	int get hashCode => stringPages.hashCode * pages.hashCode;
+}
+
+// translations
+
+// Path: <root>
+class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
+
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	_TranslationsEn.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.en,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		    s: $calc1(7, 0, 106),
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <en>.
+	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
+
+	/// Access flat map
+	dynamic operator[](String key) => $meta.getTranslation(key);
+
+	late final _TranslationsEn _root = this; // ignore: unused_field
+
+	// Translations
+	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
+	late final _TranslationsGroupEn group = _TranslationsGroupEn._(_root);
+	late final _TranslationsEndEn end = _TranslationsEndEn._(_root);
+	TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
+		one: () => TextSpan(children: [
+			TextSpan(text: _root.$meta.d([20, 53, 62])),
+		]),
+		other: () => TextSpan(children: [
+			TextSpan(text: _root.$meta.d([20, 47, 51, 62, 41, 123])),
+			countBuilder(count),
+			TextSpan(text: _root.$meta.d([119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38])),
+		]),
+	);
+}
+
+// Path: onboarding
+class _TranslationsOnboardingEn {
+	_TranslationsOnboardingEn._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	String welcome({required Object fullName}) => _root.$meta.d([12, 62, 55, 56, 52, 54, 62, 123, 127, 32, 61, 46, 55, 55, 21, 58, 54, 62, 38]);
+
+	/// Bye text
+	String bye({required Object firstName}) => _root.$meta.d([25, 34, 62, 123, 127, 32, 61, 50, 41, 40, 47, 21, 58, 54, 62, 38]);
+
+	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		TextSpan(text: _root.$meta.d([19, 50, 123])),
+		name,
+		TextSpan(text: _root.$meta.d([123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38])),
+	]);
+	List<PageData> get pages => [
+		_TranslationsOnboarding$pages$0i0$En._(_root),
+		_TranslationsOnboarding$pages$0i1$En._(_root),
+	];
+	List<MPage> get modifierPages => [
+		_TranslationsOnboarding$modifierPages$0i0$En._(_root),
+		_TranslationsOnboarding$modifierPages$0i1$En._(_root),
+	];
+	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+		switch (context) {
+			case GenderContext.male:
+				return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 41, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]);
+			case GenderContext.female:
+				return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 40, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+		}
+	}
+	String greet2({required GenderContext gender}) {
+		switch (gender) {
+			case GenderContext.male:
+				return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 41]);
+			case GenderContext.female:
+				return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 40]);
+		}
+	}
+	String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => _root.$meta.d([127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38, 119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38]);
+	String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => _root.$meta.d([19, 62, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 60, 41, 52, 46, 43, 117, 46, 40, 62, 41, 40, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+	String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => _root.$meta.d([19, 62, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+	String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => _root.$meta.d([14, 55, 47, 50, 54, 58, 47, 62, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 11, 55, 46, 41, 58, 55, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 24, 52, 53, 47, 62, 35, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+}
+
+// Path: group
+class _TranslationsGroupEn {
+	_TranslationsGroupEn._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		zero: _root.$meta.d([21, 52, 123, 14, 40, 62, 41, 40, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]),
+		one: _root.$meta.d([20, 53, 62, 123, 14, 40, 62, 41]),
+		other: _root.$meta.d([127, 32, 53, 38, 123, 14, 40, 62, 41, 40, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]),
+	);
+}
+
+// Path: end
+class _TranslationsEndEn with EndData {
+	_TranslationsEndEn._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get stringPages => [
+		_root.$meta.d([106, 40, 47, 123, 11, 58, 60, 62]),
+		_root.$meta.d([105, 53, 63, 123, 11, 58, 60, 62]),
+	];
+	@override List<Map<String, String>> get pages => [
+		{
+			'unknown': _root.$meta.d([14, 53, 48, 53, 52, 44, 53, 7, 53, 30, 41, 41, 52, 41]),
+		},
+		{
+			'with space': _root.$meta.d([26, 53, 123, 30, 41, 41, 52, 41]),
+			'with second space': _root.$meta.d([26, 53, 123, 105, 53, 63, 123, 30, 41, 41, 52, 41]),
+		},
+	];
+}
+
+// Path: onboarding.pages.0
+class _TranslationsOnboarding$pages$0i0$En with PageData {
+	_TranslationsOnboarding$pages$0i0$En._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([29, 50, 41, 40, 47, 123, 11, 58, 60, 62]);
+	@override String get content => _root.$meta.d([29, 50, 41, 40, 47, 123, 11, 58, 60, 62, 123, 24, 52, 53, 47, 62, 53, 47]);
+}
+
+// Path: onboarding.pages.1
+class _TranslationsOnboarding$pages$0i1$En with PageData {
+	_TranslationsOnboarding$pages$0i1$En._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([8, 62, 56, 52, 53, 63, 123, 11, 58, 60, 62]);
+}
+
+// Path: onboarding.modifierPages.0
+class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
+	_TranslationsOnboarding$modifierPages$0i0$En._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([29, 50, 41, 40, 47, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 11, 58, 60, 62]);
+	@override String get content => _root.$meta.d([29, 50, 41, 40, 47, 123, 11, 58, 60, 62, 123, 24, 52, 53, 47, 62, 53, 47]);
+}
+
+// Path: onboarding.modifierPages.1
+class _TranslationsOnboarding$modifierPages$0i1$En with MPage {
+	_TranslationsOnboarding$modifierPages$0i1$En._(this._root);
+
+	final _TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([8, 62, 56, 52, 53, 63, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 11, 58, 60, 62]);
+}
+
+// Path: <root>
+class _TranslationsDe implements _TranslationsEn {
+
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	_TranslationsDe.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.de,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		    s: $calc1(7, 0, 106),
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <de>.
+	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
+
+	/// Access flat map
+	@override dynamic operator[](String key) => $meta.getTranslation(key);
+
+	@override late final _TranslationsDe _root = this; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsOnboardingDe onboarding = _TranslationsOnboardingDe._(_root);
+	@override late final _TranslationsGroupDe group = _TranslationsGroupDe._(_root);
+	@override late final _TranslationsEndDe end = _TranslationsEndDe._(_root);
+	@override TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+		one: () => TextSpan(children: [
+			TextSpan(text: _root.$meta.d([30, 50, 53, 40])),
+		]),
+		other: () => TextSpan(children: [
+			TextSpan(text: _root.$meta.d([26, 53, 63, 62, 41, 62, 123])),
+			countBuilder(count),
+			TextSpan(text: _root.$meta.d([119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38])),
+		]),
+	);
+}
+
+// Path: onboarding
+class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
+	_TranslationsOnboardingDe._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String welcome({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123, 127, 32, 61, 46, 55, 55, 21, 58, 54, 62, 38]);
+
+	/// Bye text
+	@override String bye({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123, 127, 32, 61, 50, 41, 40, 47, 21, 58, 54, 62, 38]);
+
+	@override TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		TextSpan(text: _root.$meta.d([19, 50, 123])),
+		name,
+		TextSpan(text: _root.$meta.d([123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38])),
+	]);
+	@override List<PageData> get pages => [
+		_TranslationsOnboarding$pages$0i0$De._(_root),
+		_TranslationsOnboarding$pages$0i1$De._(_root),
+	];
+	@override List<MPage> get modifierPages => [
+		_TranslationsOnboarding$modifierPages$0i0$De._(_root),
+		_TranslationsOnboarding$modifierPages$0i1$De._(_root),
+	];
+	@override String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+		switch (context) {
+			case GenderContext.male:
+				return _root.$meta.d([19, 58, 55, 55, 52, 123, 19, 62, 41, 41, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]);
+			case GenderContext.female:
+				return _root.$meta.d([19, 58, 55, 55, 52, 123, 29, 41, 58, 46, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+		}
+	}
+	@override String greet2({required GenderContext gender}) {
+		switch (gender) {
+			case GenderContext.male:
+				return _root.$meta.d([19, 58, 55, 55, 52, 123, 19, 62, 41, 41]);
+			case GenderContext.female:
+				return _root.$meta.d([19, 58, 55, 55, 52, 123, 29, 41, 58, 46]);
+		}
+	}
+	@override String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => _root.$meta.d([127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38, 119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38]);
+	@override String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => _root.$meta.d([19, 58, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 60, 41, 52, 46, 43, 117, 46, 40, 62, 41, 40, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+	@override String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => _root.$meta.d([19, 58, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+	@override String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => _root.$meta.d([14, 55, 47, 50, 54, 58, 47, 50, 45, 62, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 11, 55, 46, 41, 58, 55, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 24, 52, 53, 47, 62, 35, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+}
+
+// Path: group
+class _TranslationsGroupDe implements _TranslationsGroupEn {
+	_TranslationsGroupDe._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+		zero: _root.$meta.d([16, 62, 50, 53, 62, 123, 21, 46, 47, 33, 62, 41, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]),
+		one: _root.$meta.d([30, 50, 53, 123, 21, 46, 47, 33, 62, 41]),
+		other: _root.$meta.d([127, 32, 53, 38, 123, 21, 46, 47, 33, 62, 41, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]),
+	);
+}
+
+// Path: end
+class _TranslationsEndDe with EndData implements _TranslationsEndEn {
+	_TranslationsEndDe._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get stringPages => [
+		_root.$meta.d([106, 117, 123, 8, 62, 50, 47, 62]),
+		_root.$meta.d([105, 117, 123, 8, 62, 50, 47, 62]),
+	];
+	@override List<Map<String, String>> get pages => [
+		{
+			'unknown': _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 7, 53, 29, 62, 51, 55, 62, 41]),
+		},
+		{
+			'with space': _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]),
+			'with second space': _root.$meta.d([30, 50, 53, 123, 105, 117, 123, 29, 62, 51, 55, 62, 41]),
+		},
+	];
+}
+
+// Path: onboarding.pages.0
+class _TranslationsOnboarding$pages$0i0$De with PageData implements _TranslationsOnboarding$pages$0i0$En {
+	_TranslationsOnboarding$pages$0i0$De._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([30, 41, 40, 47, 62, 123, 8, 62, 50, 47, 62]);
+	@override String get content => _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
+}
+
+// Path: onboarding.pages.1
+class _TranslationsOnboarding$pages$0i1$De with PageData implements _TranslationsOnboarding$pages$0i1$En {
+	_TranslationsOnboarding$pages$0i1$De._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 8, 62, 50, 47, 62]);
+}
+
+// Path: onboarding.modifierPages.0
+class _TranslationsOnboarding$modifierPages$0i0$De with MPage implements _TranslationsOnboarding$modifierPages$0i0$En {
+	_TranslationsOnboarding$modifierPages$0i0$De._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([30, 41, 40, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
+	@override String get content => _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
+}
+
+// Path: onboarding.modifierPages.1
+class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements _TranslationsOnboarding$modifierPages$0i1$En {
+	_TranslationsOnboarding$modifierPages$0i1$De._(this._root);
+
+	@override final _TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
+}
+
+/// Flat map(s) containing all translations.
+/// Only for edge cases! For simple maps, use the map function of this library.
+
+extension on _TranslationsEn {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'onboarding.welcome': return ({required Object fullName}) => _root.$meta.d([12, 62, 55, 56, 52, 54, 62, 123, 127, 32, 61, 46, 55, 55, 21, 58, 54, 62, 38]);
+			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([25, 34, 62, 123, 127, 32, 61, 50, 41, 40, 47, 21, 58, 54, 62, 38]);
+			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				TextSpan(text: _root.$meta.d([19, 50, 123])),
+				name,
+				TextSpan(text: _root.$meta.d([123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38])),
+			]);
+			case 'onboarding.pages.0.title': return _root.$meta.d([29, 50, 41, 40, 47, 123, 11, 58, 60, 62]);
+			case 'onboarding.pages.0.content': return _root.$meta.d([29, 50, 41, 40, 47, 123, 11, 58, 60, 62, 123, 24, 52, 53, 47, 62, 53, 47]);
+			case 'onboarding.pages.1.title': return _root.$meta.d([8, 62, 56, 52, 53, 63, 123, 11, 58, 60, 62]);
+			case 'onboarding.modifierPages.0.title': return _root.$meta.d([29, 50, 41, 40, 47, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 11, 58, 60, 62]);
+			case 'onboarding.modifierPages.0.content': return _root.$meta.d([29, 50, 41, 40, 47, 123, 11, 58, 60, 62, 123, 24, 52, 53, 47, 62, 53, 47]);
+			case 'onboarding.modifierPages.1.title': return _root.$meta.d([8, 62, 56, 52, 53, 63, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 11, 58, 60, 62]);
+			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+				switch (context) {
+					case GenderContext.male:
+						return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 41, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]);
+					case GenderContext.female:
+						return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 40, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+				}
+			};
+			case 'onboarding.greet2': return ({required GenderContext gender}) {
+				switch (gender) {
+					case GenderContext.male:
+						return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 41]);
+					case GenderContext.female:
+						return _root.$meta.d([19, 62, 55, 55, 52, 123, 22, 40]);
+				}
+			};
+			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => _root.$meta.d([127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38, 119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38]);
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => _root.$meta.d([19, 62, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 60, 41, 52, 46, 43, 117, 46, 40, 62, 41, 40, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => _root.$meta.d([19, 62, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => _root.$meta.d([14, 55, 47, 50, 54, 58, 47, 62, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 11, 55, 46, 41, 58, 55, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 24, 52, 53, 47, 62, 35, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				zero: _root.$meta.d([21, 52, 123, 14, 40, 62, 41, 40, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]),
+				one: _root.$meta.d([20, 53, 62, 123, 14, 40, 62, 41]),
+				other: _root.$meta.d([127, 32, 53, 38, 123, 14, 40, 62, 41, 40, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]),
+			);
+			case 'end.stringPages.0': return _root.$meta.d([106, 40, 47, 123, 11, 58, 60, 62]);
+			case 'end.stringPages.1': return _root.$meta.d([105, 53, 63, 123, 11, 58, 60, 62]);
+			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 48, 53, 52, 44, 53, 7, 53, 30, 41, 41, 52, 41]);
+			case 'end.pages.1.with space': return _root.$meta.d([26, 53, 123, 30, 41, 41, 52, 41]);
+			case 'end.pages.1.with second space': return _root.$meta.d([26, 53, 123, 105, 53, 63, 123, 30, 41, 41, 52, 41]);
+			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+				n: count,
+				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
+				one: () => TextSpan(children: [
+					TextSpan(text: _root.$meta.d([20, 53, 62])),
+				]),
+				other: () => TextSpan(children: [
+					TextSpan(text: _root.$meta.d([20, 47, 51, 62, 41, 123])),
+					countBuilder(count),
+					TextSpan(text: _root.$meta.d([119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38])),
+				]),
+			);
+			default: return null;
+		}
+	}
+}
+
+extension on _TranslationsDe {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'onboarding.welcome': return ({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123, 127, 32, 61, 46, 55, 55, 21, 58, 54, 62, 38]);
+			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123, 127, 32, 61, 50, 41, 40, 47, 21, 58, 54, 62, 38]);
+			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				TextSpan(text: _root.$meta.d([19, 50, 123])),
+				name,
+				TextSpan(text: _root.$meta.d([123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38])),
+			]);
+			case 'onboarding.pages.0.title': return _root.$meta.d([30, 41, 40, 47, 62, 123, 8, 62, 50, 47, 62]);
+			case 'onboarding.pages.0.content': return _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
+			case 'onboarding.pages.1.title': return _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 8, 62, 50, 47, 62]);
+			case 'onboarding.modifierPages.0.title': return _root.$meta.d([30, 41, 40, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
+			case 'onboarding.modifierPages.0.content': return _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
+			case 'onboarding.modifierPages.1.title': return _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
+			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+				switch (context) {
+					case GenderContext.male:
+						return _root.$meta.d([19, 58, 55, 55, 52, 123, 19, 62, 41, 41, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]);
+					case GenderContext.female:
+						return _root.$meta.d([19, 58, 55, 55, 52, 123, 29, 41, 58, 46, 123, 127, 32, 55, 58, 40, 47, 21, 58, 54, 62, 38, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+				}
+			};
+			case 'onboarding.greet2': return ({required GenderContext gender}) {
+				switch (gender) {
+					case GenderContext.male:
+						return _root.$meta.d([19, 58, 55, 55, 52, 123, 19, 62, 41, 41]);
+					case GenderContext.female:
+						return _root.$meta.d([19, 58, 55, 55, 52, 123, 29, 41, 58, 46]);
+				}
+			};
+			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => _root.$meta.d([127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38, 119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38]);
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => _root.$meta.d([19, 58, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 60, 41, 52, 46, 43, 117, 46, 40, 62, 41, 40, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]);
+			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => _root.$meta.d([19, 58, 55, 55, 52, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => _root.$meta.d([14, 55, 47, 50, 54, 58, 47, 50, 45, 62, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 11, 55, 46, 41, 58, 55, 115, 53, 97, 123, 53, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38, 123, 58, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 23, 50, 53, 48, 62, 63, 24, 52, 53, 47, 62, 35, 47, 115, 55, 58, 40, 47, 21, 58, 54, 62, 97, 123, 55, 58, 40, 47, 21, 58, 54, 62, 119, 123, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 119, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 119, 123, 56, 52, 53, 47, 62, 35, 47, 97, 123, 56, 52, 53, 47, 62, 35, 47, 114, 38]);
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+				zero: _root.$meta.d([16, 62, 50, 53, 62, 123, 21, 46, 47, 33, 62, 41, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 44, 62, 55, 56, 52, 54, 62, 115, 61, 46, 55, 55, 21, 58, 54, 62, 97, 123, 61, 46, 55, 55, 21, 58, 54, 62, 114, 38]),
+				one: _root.$meta.d([30, 50, 53, 123, 21, 46, 47, 33, 62, 41]),
+				other: _root.$meta.d([127, 32, 53, 38, 123, 21, 46, 47, 33, 62, 41, 123, 46, 53, 63, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 57, 34, 62, 115, 61, 50, 41, 40, 47, 21, 58, 54, 62, 97, 123, 61, 50, 41, 40, 47, 21, 58, 54, 62, 114, 38]),
+			);
+			case 'end.stringPages.0': return _root.$meta.d([106, 117, 123, 8, 62, 50, 47, 62]);
+			case 'end.stringPages.1': return _root.$meta.d([105, 117, 123, 8, 62, 50, 47, 62]);
+			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 7, 53, 29, 62, 51, 55, 62, 41]);
+			case 'end.pages.1.with space': return _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]);
+			case 'end.pages.1.with second space': return _root.$meta.d([30, 50, 53, 123, 105, 117, 123, 29, 62, 51, 55, 62, 41]);
+			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+				n: count,
+				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+				one: () => TextSpan(children: [
+					TextSpan(text: _root.$meta.d([30, 50, 53, 40])),
+				]),
+				other: () => TextSpan(children: [
+					TextSpan(text: _root.$meta.d([26, 53, 63, 62, 41, 62, 123])),
+					countBuilder(count),
+					TextSpan(text: _root.$meta.d([119, 123, 127, 32, 4, 41, 52, 52, 47, 117, 52, 53, 57, 52, 58, 41, 63, 50, 53, 60, 117, 60, 41, 62, 62, 47, 105, 115, 60, 62, 53, 63, 62, 41, 97, 123, 60, 62, 53, 63, 62, 41, 114, 38])),
+				]),
+			);
+			default: return null;
+		}
+	}
+}

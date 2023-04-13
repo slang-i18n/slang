@@ -1,4 +1,5 @@
 import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -99,6 +100,9 @@ class RawConfigBuilder {
       interfaces:
           (map['interfaces'] as Map<String, dynamic>?)?.toInterfaces() ??
               RawConfig.defaultInterfaces,
+      obfuscation: (map['obfuscation'] as Map<String, dynamic>?)
+              ?.toObfuscationConfig() ??
+          RawConfig.defaultObfuscationConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
     );
   }
@@ -200,5 +204,13 @@ extension on Map<String, dynamic> {
         paths: paths,
       );
     }).toList();
+  }
+
+  /// Parses the 'obfuscation' config
+  ObfuscationConfig toObfuscationConfig() {
+    return ObfuscationConfig(
+      enabled: this['enabled'] ?? ObfuscationConfig.defaultEnabled,
+      secret: this['secret'],
+    );
   }
 }

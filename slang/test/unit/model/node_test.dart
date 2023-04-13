@@ -394,7 +394,8 @@ void main() {
       final test = 'No arguments';
       final node = richTextNode(test, StringInterpolation.dart);
       expect(node.spans.length, 1);
-      expect(node.spans.first.code, 'const TextSpan(text: \'No arguments\')');
+      expect(node.spans.first, isA<LiteralSpan>());
+      expect((node.spans.first as LiteralSpan).literal, 'No arguments');
       expect(node.params, <String>{});
     });
 
@@ -403,9 +404,11 @@ void main() {
         final test = r'Hello $yey!';
         final node = richTextNode(test, StringInterpolation.dart);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey');
-        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as VariableSpan).variableName, 'yey');
+        expect((node.spans[2] as LiteralSpan).literal, '!');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey'});
       });
 
@@ -413,11 +416,15 @@ void main() {
         final test = r'Hello $yey ${underline(hi !>)}!';
         final node = richTextNode(test, StringInterpolation.dart);
         expect(node.spans.length, 5);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey');
-        expect(node.spans[2].code, 'const TextSpan(text: \' \')');
-        expect(node.spans[3].code, 'underline(\'hi !>\')');
-        expect(node.spans[4].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as VariableSpan).variableName, 'yey');
+        expect((node.spans[2] as LiteralSpan).literal, ' ');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
+        expect((node.spans[3] as FunctionSpan).functionName, 'underline');
+        expect((node.spans[3] as FunctionSpan).arg, 'hi !>');
+        expect((node.spans[4] as LiteralSpan).literal, '!');
+        expect((node.spans[4] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey', 'underline'});
         expect(node.paramTypeMap, {
           'yey': 'InlineSpan',
@@ -429,9 +436,11 @@ void main() {
         final test = r'Hello $yey @:myLink!';
         final node = richTextNode(test, StringInterpolation.dart);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey');
-        expect(node.spans[2].code, 'TextSpan(text: \' \${_root.myLink}!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as VariableSpan).variableName, 'yey');
+        expect((node.spans[2] as LiteralSpan).literal, ' \${_root.myLink}!');
+        expect((node.spans[2] as LiteralSpan).isConstant, false);
         expect(node.links, {'myLink'});
         expect(node.params, {'yey'});
       });
@@ -442,9 +451,11 @@ void main() {
         final test = r'Hello {yey}!';
         final node = richTextNode(test, StringInterpolation.braces);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey');
-        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as VariableSpan).variableName, 'yey');
+        expect((node.spans[2] as LiteralSpan).literal, '!');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey'});
       });
 
@@ -452,9 +463,12 @@ void main() {
         final test = r'Hello {yey(my text)}!';
         final node = richTextNode(test, StringInterpolation.braces);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey(\'my text\')');
-        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as FunctionSpan).functionName, 'yey');
+        expect((node.spans[1] as FunctionSpan).arg, 'my text');
+        expect((node.spans[2] as LiteralSpan).literal, '!');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey'});
       });
     });
@@ -464,9 +478,11 @@ void main() {
         final test = r'Hello {{yey}}!';
         final node = richTextNode(test, StringInterpolation.doubleBraces);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey');
-        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as VariableSpan).variableName, 'yey');
+        expect((node.spans[2] as LiteralSpan).literal, '!');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey'});
       });
 
@@ -475,10 +491,13 @@ void main() {
         final node = richTextNode(
             test, StringInterpolation.doubleBraces, CaseStyle.snake);
         expect(node.spans.length, 4);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'my_first_span');
-        expect(node.spans[2].code, 'my_span(\'Default Text\')');
-        expect(node.spans[3].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as VariableSpan).variableName, 'my_first_span');
+        expect((node.spans[2] as FunctionSpan).functionName, 'my_span');
+        expect((node.spans[2] as FunctionSpan).arg, 'Default Text');
+        expect((node.spans[3] as LiteralSpan).literal, '!');
+        expect((node.spans[3] as LiteralSpan).isConstant, true);
         expect(node.params, {'my_first_span', 'my_span'});
       });
 
@@ -486,9 +505,12 @@ void main() {
         final test = r'Hello {{yey(my -Text!>)}}!';
         final node = richTextNode(test, StringInterpolation.doubleBraces);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey(\'my -Text!>\')');
-        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as FunctionSpan).functionName, 'yey');
+        expect((node.spans[1] as FunctionSpan).arg, 'my -Text!>');
+        expect((node.spans[2] as LiteralSpan).literal, '!');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey'});
       });
 
@@ -496,9 +518,15 @@ void main() {
         final test = r'Hello {{yey(hello!@:linked.path)}}!';
         final node = richTextNode(test, StringInterpolation.doubleBraces);
         expect(node.spans.length, 3);
-        expect(node.spans[0].code, 'const TextSpan(text: \'Hello \')');
-        expect(node.spans[1].code, 'yey(\'hello!\${_root.linked.path}\')');
-        expect(node.spans[2].code, 'const TextSpan(text: \'!\')');
+        expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
+        expect((node.spans[0] as LiteralSpan).isConstant, true);
+        expect((node.spans[1] as FunctionSpan).functionName, 'yey');
+        expect(
+          (node.spans[1] as FunctionSpan).arg,
+          'hello!\${_root.linked.path}',
+        );
+        expect((node.spans[2] as LiteralSpan).literal, '!');
+        expect((node.spans[2] as LiteralSpan).isConstant, true);
         expect(node.params, {'yey'});
       });
     });

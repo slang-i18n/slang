@@ -135,6 +135,7 @@ void _generateImports(GenerateConfig config, StringBuffer buffer) {
   final imports = [
     ...config.imports,
     'package:slang/builder/model/node.dart',
+    if (config.obfuscation.enabled) 'package:slang/api/secret.dart',
     if (config.translationOverrides) ...[
       'package:slang/api/translation_overrides.dart',
       'package:slang/builder/model/build_model_config.dart',

@@ -2,6 +2,7 @@ import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
@@ -29,6 +30,7 @@ void main() {
   generateNoFlutter(buildConfig, simple);
   generateNoLocaleHandling(buildConfig, simple);
   generateTranslationOverrides(buildConfig, en, de);
+  generateObfuscation(buildConfig, en, de);
 
   print('');
 }
@@ -145,6 +147,32 @@ void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
 
   _write(
     path: 'main/_expected_translation_overrides',
+    content: result,
+  );
+}
+
+void generateObfuscation(RawConfig buildConfig, String en, String de) {
+  final result = GeneratorFacade.generate(
+    rawConfig: buildConfig.copyWith(
+      obfuscation: ObfuscationConfig(
+        enabled: true,
+        secret: 'abc',
+      ),
+    ),
+    baseName: 'translations',
+    translationMap: TranslationMap()
+      ..addTranslations(
+        locale: I18nLocale.fromString('en'),
+        translations: JsonDecoder().decode(en),
+      )
+      ..addTranslations(
+        locale: I18nLocale.fromString('de'),
+        translations: JsonDecoder().decode(de),
+      ),
+  ).joinAsSingleOutput();
+
+  _write(
+    path: 'main/_expected_obfuscation',
     content: result,
   );
 }

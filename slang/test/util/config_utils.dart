@@ -1,4 +1,5 @@
 import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -34,6 +35,7 @@ final baseConfig = RawConfig(
   pluralOrdinal: RawConfig.defaultOrdinal,
   contexts: RawConfig.defaultContexts,
   interfaces: RawConfig.defaultInterfaces,
+  obfuscation: RawConfig.defaultObfuscationConfig,
   imports: RawConfig.defaultImports,
 );
 
@@ -52,6 +54,7 @@ extension BuildConfigCopy on RawConfig {
     List<String>? pluralOrdinal,
     List<ContextType>? contexts,
     List<InterfaceConfig>? interfaces,
+    ObfuscationConfig? obfuscation,
   }) {
     return RawConfig(
       baseLocale: baseLocale,
@@ -81,6 +84,7 @@ extension BuildConfigCopy on RawConfig {
       pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
       contexts: contexts ?? this.contexts,
       interfaces: interfaces ?? this.interfaces,
+      obfuscation: obfuscation ?? this.obfuscation,
       imports: imports,
     );
   }
