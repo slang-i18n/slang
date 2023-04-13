@@ -1,3 +1,7 @@
+## 3.16.1
+
+- fix: handle interpolation when obfuscation is enabled
+
 ## 3.16.0
 
 - feat: add `obfuscation` config to obfuscate translation strings

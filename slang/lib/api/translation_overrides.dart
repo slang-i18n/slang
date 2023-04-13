@@ -1,5 +1,6 @@
 import 'package:slang/api/locale.dart';
 import 'package:slang/api/pluralization.dart';
+import 'package:slang/builder/generator/helper.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
@@ -132,7 +133,7 @@ extension TranslationOverridesStringExt on String {
   String applyLinks(TranslationMetadata meta, Map<String, Object> param) {
     return replaceDartNormalizedInterpolation(replacer: (match) {
       final nodeParam = match.substring(2, match.length - 1);
-      if (!nodeParam.startsWith('_root.')) {
+      if (!nodeParam.startsWith(characteristicLinkPrefix)) {
         return match;
       }
 

@@ -39,11 +39,15 @@ mixin ChangeData {
 
 ## Configuration
 
+There are two methods to configure interfaces.
+
+Either use the modifier or the config file.
+
 ### Modifier
 
-The quickest method to get started with interfaces. You don't need to touch the config file at all.
+This is the quickest method to get started with interfaces. You don't need to touch the config file at all.
 
-Just add the `(interface=MyInterface)` modifier to target a container of interfaces which is the most common usage. It can be applied to maps and lists.
+Just add the `(interface=MyInterface)` modifier to target a container of interfaces. It can be applied to maps and lists.
 
 Alternatively, add `(singleInterface=MyInterface)` to target a single interface. This can only be applied to a map.
 

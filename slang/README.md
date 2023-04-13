@@ -1300,16 +1300,20 @@ maps:
 
 ### ➤ Obfuscation
 
-You can obfuscate the strings to make static analysis harder.
+Obfuscate the translation strings to make reverse engineering harder.
+
+You should also enable [Flutter obfuscation](https://docs.flutter.dev/deployment/obfuscate) for additional security.
 
 ```yaml
 # Config
 obfuscation:
   enabled: true
-  secret: somekey
+  secret: somekey # set this if you want deterministic obfuscation
 ```
 
-Instead of this:
+That's all. Everything should work like before.
+
+Now, instead of this:
 
 ```dart
 String get hello => 'Hello';
@@ -1320,6 +1324,14 @@ The following will be generated:
 ```dart
 String get hello => _root.$meta.d([104, 69, 76, 76, 79]);
 ```
+
+The secret key itself is hidden in the generated code.
+
+XOR is used for encryption to keep your app (nearly) as fast as before.
+
+Keep in mind that this only prevents simple string searches of the binary.
+
+An experienced reverse engineer can still find the strings given enough time.
 
 ### ➤ Dart Only
 

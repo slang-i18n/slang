@@ -3,6 +3,10 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';
 import 'package:slang/builder/utils/encryption_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
+import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+
+/// Pragmatic way to detect links within interpolations.
+const String characteristicLinkPrefix = '_root.';
 
 String getClassNameRoot({
   required String baseName,
@@ -31,10 +35,59 @@ String getClassName({
   return parentName + childName.toCase(CaseStyle.pascal) + languageTag;
 }
 
+const _NULL_FLAG = '\u0000';
+
+/// Either returns the plain string or the obfuscated one.
+/// Whenever translation strings gets rendered, this method must be called.
 String getStringLiteral(String value, ObfuscationConfig config) {
-  if (config.enabled) {
-    return '_root.\$meta.d([' + value.encrypt(config.secret).join(', ') + '])';
-  } else {
+  if (!config.enabled || value.isEmpty) {
+    // Return the plain version
     return "'$value'";
   }
+
+  // Return the obfuscated version
+
+  final interpolations = <String>[];
+  final links = <bool>[];
+  final digestedString = value.replaceDartNormalizedInterpolation(
+    replacer: (match) {
+      // remove the ${ and }
+      final actualMatch = match.substring(2, match.length - 1).trim();
+
+      interpolations.add(actualMatch);
+      links.add(actualMatch.startsWith(characteristicLinkPrefix));
+      return _NULL_FLAG; // replace interpolation with a null flag
+    },
+  );
+
+  // join the string with the interpolation in between
+  final buffer = StringBuffer();
+  final parts = digestedString.split(_NULL_FLAG);
+  bool needPlus = false;
+  for (int i = 0; i < parts.length; i++) {
+    // add the string part
+    if (parts[i].isNotEmpty) {
+      if (needPlus) {
+        buffer.write(' + ');
+      }
+      buffer.write('_root.\$meta.d([');
+      buffer.write(parts[i].encrypt(config.secret).join(', '));
+      buffer.write('])');
+      needPlus = true;
+    }
+
+    // add the interpolation
+    if (i < interpolations.length) {
+      if (needPlus) {
+        buffer.write(' + ');
+      }
+      buffer.write(interpolations[i]);
+      if (!links[i]) {
+        // toString() is needed for non-links
+        buffer.write('.toString()');
+      }
+      needPlus = true;
+    }
+  }
+  return buffer.toString();
 }

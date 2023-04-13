@@ -134,11 +134,13 @@ class FakeTranslations
     Map<String, Node>? overrides,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
+    int? s,
   })  : $meta = TranslationMetadata(
           locale: locale,
           overrides: overrides ?? {},
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
+          s: s ?? 0,
         ),
         providedNullOverrides = overrides == null;
 
