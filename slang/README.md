@@ -1670,13 +1670,20 @@ The second one always returns a new instance.
 
 ### Tutorials
 
+**Blogs**
+
 - [Medium (English)](https://medium.com/swlh/flutter-i18n-made-easy-1fd9ccd82cb3)
 - [Хабр (Russian)](https://habr.com/ru/post/718310/)
 - [Qiita (Japanese)](https://qiita.com/popy1017/items/3495be9fdc028161bef9)
 - [okaryo (Japanese)](https://blog.okaryo.io/20230104-split-and-manage-arb-files-for-internationalized-flutter-app-in-yaml-format)
 - [zenn (Japanese)](https://zenn.dev/flutteruniv_dev/articles/30cbf9a90442e1)
 - [zenn (Japanese)](https://zenn.dev/flutteruniv_dev/articles/6be509f86c0fd7)
+
+**Videos**
+
 - [Youtube (Korean)](https://www.youtube.com/watch?v=4OqPlOm7UVo)
+- [Youtube (Spanish)](https://www.youtube.com/watch?v=qRb8e-D860o)
+- [Zhihu (Chinese)](https://www.zhihu.com/zvideo/1614731449386598400)
 
 Feel free to extend this list :)
 
