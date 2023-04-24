@@ -30,6 +30,7 @@ void main() {
   generateNoFlutter(buildConfig, simple);
   generateNoLocaleHandling(buildConfig, simple);
   generateTranslationOverrides(buildConfig, en, de);
+  generateFallbackBaseLocale(buildConfig, en, de);
   generateObfuscation(buildConfig, en, de);
 
   print('');
@@ -147,6 +148,29 @@ void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
 
   _write(
     path: 'main/_expected_translation_overrides',
+    content: result,
+  );
+}
+
+void generateFallbackBaseLocale(RawConfig buildConfig, String en, String de) {
+  final result = GeneratorFacade.generate(
+    rawConfig: buildConfig.copyWith(
+      fallbackStrategy: FallbackStrategy.baseLocale,
+    ),
+    baseName: 'translations',
+    translationMap: TranslationMap()
+      ..addTranslations(
+        locale: I18nLocale.fromString('en'),
+        translations: JsonDecoder().decode(en),
+      )
+      ..addTranslations(
+        locale: I18nLocale.fromString('de'),
+        translations: JsonDecoder().decode(de),
+      ),
+  ).joinAsSingleOutput();
+
+  _write(
+    path: 'main/_expected_fallback_base_locale',
     content: result,
   );
 }

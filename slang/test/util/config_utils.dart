@@ -41,6 +41,7 @@ final baseConfig = RawConfig(
 
 extension BuildConfigCopy on RawConfig {
   RawConfig copyWith({
+    FallbackStrategy? fallbackStrategy,
     String? inputFilePattern,
     OutputFormat? outputFormat,
     bool? renderLocaleHandling,
@@ -58,7 +59,7 @@ extension BuildConfigCopy on RawConfig {
   }) {
     return RawConfig(
       baseLocale: baseLocale,
-      fallbackStrategy: fallbackStrategy,
+      fallbackStrategy: fallbackStrategy ?? this.fallbackStrategy,
       inputDirectory: inputDirectory,
       inputFilePattern: inputFilePattern ?? this.inputFilePattern,
       outputDirectory: outputDirectory,

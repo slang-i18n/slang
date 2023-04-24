@@ -1,3 +1,7 @@
+## 3.16.2
+
+- fix: handle dynamic keys when `fallback_strategy: base_locale` is used
+
 ## 3.16.1
 
 - fix: handle interpolation when obfuscation is enabled

@@ -157,6 +157,10 @@ void _generateClass(
 
     if (config.renderFlatMap) {
       buffer.writeln(' {');
+      if (callSuperConstructor) {
+        buffer.writeln(
+            '\t\tsuper.\$meta.setFlatMapFunction(\$meta.getTranslation); // copy base translations to super.\$meta');
+      }
       buffer.writeln('\t\t\$meta.setFlatMapFunction(_flatMapFunction);');
       buffer.writeln('\t}');
     } else {
