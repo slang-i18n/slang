@@ -33,8 +33,16 @@ final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
 
 // access the current instance
 final t = ref.watch(translationProvider);
-AppLocale locale = t.$meta.locale;
-String a = t.welcome.title;
+String a = t.welcome.title; // get translation
+AppLocale locale = t.$meta.locale; // get locale
+
+// initialize MaterialApp
+MaterialApp(
+  locale: ref.watch(translationProvider).$meta.locale.flutterLocale,
+  supportedLocales: AppLocaleUtils.supportedLocales,
+  localizationsDelegates: GlobalMaterialLocalizations.delegates, // from flutter_localizations package
+  // ...
+);
 ```
 
 To make things easier, there are some utility functions in `AppLocaleUtils`.

@@ -1053,7 +1053,8 @@ final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
 
 // access the current instance
 final t = ref.watch(translationProvider);
-String a = t.welcome.title;
+String a = t.welcome.title; // get translation
+AppLocale locale = t.$meta.locale; // get locale
 ```
 
 Checkout the [full article](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md).
