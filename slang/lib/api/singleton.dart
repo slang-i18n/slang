@@ -194,8 +194,8 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   /// Updates the provider state and therefore triggers a rebuild
   /// on all widgets listening to this provider.
   ///
-  /// This is a flutter feature and this method will be overridden
-  /// by slang_flutter.
+  /// This is a flutter feature.
+  /// This method will be overridden by slang_flutter.
   void updateProviderState(BaseAppLocale locale) {}
 }
 
