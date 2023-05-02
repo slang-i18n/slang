@@ -119,10 +119,13 @@ class MapUtils {
 
   /// Updates an existing entry at [path].
   /// Modifiers are ignored and should be not included in the [path].
-  /// The [update] function is called with the key and value of the entry.
-  /// The return value of the [update] function is used to update the entry.
+  ///
+  /// The [update] function uses the key and value of the entry
+  /// and returns the result to update the entry.
+  ///
   /// It updates the entry in place.
-  static void updateEntry({
+  /// Returns true, if the entry was updated.
+  static bool updateEntry({
     required Map<String, dynamic> map,
     required String path,
     required MapEntry<String, dynamic> Function(String key, Object path) update,
@@ -142,7 +145,8 @@ class MapUtils {
         return key == subPath;
       });
       if (entryIndex == -1) {
-        throw 'The leaf "$path" cannot be updated because it does not exist.';
+        // The leaf cannot be updated because it does not exist.
+        return false;
       }
       final MapEntry<String, dynamic> currEntry = entryList[entryIndex];
 
@@ -160,13 +164,19 @@ class MapUtils {
           currMap[updated.key] = updated.value;
           currMap.addEntries(entryList.skip(entryIndex + 1));
         }
+
+        return true;
       } else {
         if (currEntry.value is! Map<String, dynamic>) {
-          throw 'The leaf "$path" cannot be updated because "$subPath" is not a map.';
+          // The leaf cannot be updated because "subPath" is not a map.
+          return false;
         }
         currMap = currEntry.value;
       }
     }
+
+    // This should never be reached.
+    return false;
   }
 }
 
