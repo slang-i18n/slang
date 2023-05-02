@@ -196,7 +196,7 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   ///
   /// This is a flutter feature and this method will be overridden
   /// by slang_flutter.
-  void updateProviderState(T translations) {}
+  void updateProviderState(BaseAppLocale locale) {}
 }
 
 // We use extension methods here to have a workaround for static members of the same name
@@ -247,7 +247,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
   /// By default, calling this method disables the listener.
   E setLocale(E locale, {bool? listenToDeviceLocale = false}) {
     GlobalLocaleState.instance.setLocale(locale);
-    updateProviderState(translationMap[locale]!);
+    updateProviderState(locale);
     if (listenToDeviceLocale != null) {
       this.listenToDeviceLocale = listenToDeviceLocale;
     }
@@ -325,7 +325,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
       ordinalResolver: currentMetadata.ordinalResolver,
     );
     if (locale == currentLocale) {
-      updateProviderState(translationMap[locale]!);
+      updateProviderState(locale);
     }
   }
 
@@ -352,7 +352,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
       ordinalResolver: currentMetadata.ordinalResolver,
     );
     if (locale == currentLocale) {
-      updateProviderState(translationMap[locale]!);
+      updateProviderState(locale);
     }
   }
 }
