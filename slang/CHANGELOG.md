@@ -1,3 +1,7 @@
+## 3.17.0
+
+- fix: setLocale does not work when Locale enum is from two packages (by [@fzyzcjy](https://github.com/fzyzcjy))
+
 ## 3.16.2
 
 - fix: handle dynamic keys when `fallback_strategy: base_locale` is used

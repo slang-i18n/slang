@@ -157,12 +157,13 @@ void main() {
         },
       };
 
-      MapUtils.updateEntry(
+      final result = MapUtils.updateEntry(
         map: map,
         path: 'a.b.c',
         update: (key, value) => MapEntry(key, (value as int) * 2),
       );
 
+      expect(result, true);
       expect(map['a']!['b']!['c'], 84);
     });
 
@@ -175,12 +176,13 @@ void main() {
         },
       };
 
-      MapUtils.updateEntry(
+      final result = MapUtils.updateEntry(
         map: map,
         path: 'a.b.c',
         update: (key, value) => MapEntry('d', (value as int) * 2),
       );
 
+      expect(result, true);
       expect(map['a']!['b']!['d'], 84);
       expect(map['a']!['b']!['c'], null);
     });
@@ -196,12 +198,13 @@ void main() {
         },
       };
 
-      MapUtils.updateEntry(
+      final result = MapUtils.updateEntry(
         map: map,
         path: 'a.b.c1',
         update: (key, value) => MapEntry('d', (value as int) * 2),
       );
 
+      expect(result, true);
       expect(map['a']!['b']!['d'], 8);
       expect(map['a']!['b']!.keys, ['c0', 'd', 'c2']);
     });
@@ -215,17 +218,18 @@ void main() {
         },
       };
 
-      MapUtils.updateEntry(
+      final result = MapUtils.updateEntry(
         map: map,
         path: 'a.b.c',
         update: (key, value) => MapEntry('d(nice)', (value as int) * 2),
       );
 
+      expect(result, true);
       expect(map['a']!['b(rich)']!['d(nice)'], 84);
       expect(map['a']!['b(rich)']!['c(ignore)'], null);
     });
 
-    test('should throw an error if the path does not exist', () {
+    test('should return false if the path does not exist', () {
       final map = {
         'a': {
           'b': {
@@ -234,20 +238,13 @@ void main() {
         },
       };
 
-      expect(
-        () => MapUtils.updateEntry(
-          map: map,
-          path: 'a.b.d',
-          update: (key, value) => MapEntry(key, value),
-        ),
-        throwsA(
-          isA<String>().having(
-            (s) => s,
-            'error message',
-            'The leaf "a.b.d" cannot be updated because it does not exist.',
-          ),
-        ),
+      final result = MapUtils.updateEntry(
+        map: map,
+        path: 'a.b.d',
+        update: (key, value) => MapEntry(key, value),
       );
+
+      expect(result, false);
     });
   });
 }
