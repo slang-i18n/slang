@@ -1,5 +1,6 @@
 ## 3.17.0
 
+- fix: setLocale does not work when Locale enum is from two packages (by [@fzyzcjy](https://github.com/fzyzcjy))
 - Bump `slang` to `3.17.0`
 
 ## 3.16.0
