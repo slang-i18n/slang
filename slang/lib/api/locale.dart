@@ -50,7 +50,7 @@ class TranslationMetadata<E extends BaseAppLocale<E, T>,
   }
 }
 
-/// Returns a new translation instance
+/// Returns a new translation instance.
 typedef TranslationBuilder<E extends BaseAppLocale<E, T>,
         T extends BaseTranslations<E, T>>
     = T Function({
@@ -60,7 +60,8 @@ typedef TranslationBuilder<E extends BaseAppLocale<E, T>,
 });
 
 /// Similar to flutter locale
-/// but available without any flutter dependencies
+/// but available without any flutter dependencies.
+/// Subclasses will be enums.
 abstract class BaseAppLocale<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> {
   String get languageCode;

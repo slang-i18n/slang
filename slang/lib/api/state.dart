@@ -7,15 +7,27 @@ import 'package:slang/api/locale.dart';
 class GlobalLocaleState {
   GlobalLocaleState._();
 
+  /// The singleton instance.
   static GlobalLocaleState instance = GlobalLocaleState._();
 
-  final _controller = StreamController<BaseAppLocale>.broadcast();
+  /// The current locale.
+  ///
+  /// Initialized with [BaseAppLocale.undefinedLocale] which gets converted
+  /// to the actual base locale of an app.
   BaseAppLocale _currLocale = BaseAppLocale.undefinedLocale;
 
+  final _controller = StreamController<BaseAppLocale>.broadcast();
+
+  /// Gets the current locale.
+  ///
+  /// This exposes the "raw" locale.
+  /// [LocaleSettings] will convert this to the actual enum value which is also
+  /// supported by the app.
   BaseAppLocale getLocale() {
     return _currLocale;
   }
 
+  /// Sets the locale and notifies all listeners.
   void setLocale(BaseAppLocale locale) {
     if (locale == _currLocale) {
       return;
@@ -24,6 +36,11 @@ class GlobalLocaleState {
     _controller.add(locale);
   }
 
+  /// Gets the stream of locale changes.
+  ///
+  /// This exposes the "raw" locale.
+  /// [LocaleSettings] will convert this to the actual enum value which is also
+  /// supported by the app.
   Stream<BaseAppLocale> getStream() {
     return _controller.stream;
   }

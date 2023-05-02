@@ -38,8 +38,8 @@ extension ExtAppLocale on BaseAppLocale {
   }
 }
 
-/// Similar to [BaseLocaleSettings] but allows for specific overwrites
-/// e.g. setLocale now also updates the provider
+/// Similar to [BaseLocaleSettings] but actually implements
+/// the [updateProviderState] method.
 class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends BaseLocaleSettings<E, T> {
   BaseFlutterLocaleSettings({
@@ -67,44 +67,34 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
   }
 }
 
+/// The key of the [BaseTranslationProvider] state.
+/// There should be only one instance of the provider.
 final _translationProviderKey = GlobalKey<_TranslationProviderState>();
 
 abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends StatefulWidget {
-  final E initLocale;
   final T initTranslations;
   final BaseFlutterLocaleSettings<E, T> settings;
 
   BaseTranslationProvider({
     required this.settings,
     required this.child,
-  })  : initLocale = settings.currentLocale,
-        initTranslations = settings.currentTranslations,
+  })  : initTranslations = settings.currentTranslations,
         super(key: _translationProviderKey);
 
   final Widget child;
 
   @override
   _TranslationProviderState<E, T> createState() =>
-      _TranslationProviderState<E, T>(
-        locale: initLocale,
-        translations: initTranslations,
-        listenToDeviceLocale: false,
-      );
+      _TranslationProviderState<E, T>(initTranslations);
 }
 
 class _TranslationProviderState<E extends BaseAppLocale<E, T>,
         T extends BaseTranslations<E, T>>
     extends State<BaseTranslationProvider<E, T>> with WidgetsBindingObserver {
-  E locale;
   T translations;
-  bool listenToDeviceLocale;
 
-  _TranslationProviderState({
-    required this.locale,
-    required this.translations,
-    required this.listenToDeviceLocale,
-  });
+  _TranslationProviderState(this.translations);
 
   @override
   void initState() {
@@ -126,6 +116,7 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
       return;
     }
 
+    // [updateState] will be called by these setLocale methods internally.
     if (locales.isEmpty) {
       widget.settings.setLocale(
         widget.settings.utils.baseLocale,
@@ -144,15 +135,13 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
   void updateState(BaseAppLocale locale) {
     final E localeTyped = widget.settings.utils.parseAppLocale(locale);
     setState(() {
-      this.locale = localeTyped;
       this.translations = widget.settings.translationMap[localeTyped]!;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return InheritedLocaleData(
-      locale: locale,
+    return InheritedLocaleData<E, T>(
       translations: translations,
       child: widget.child,
     );
@@ -161,14 +150,16 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
 
 class InheritedLocaleData<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends InheritedWidget {
-  final E locale;
+  /// The current translations.
   final T translations;
 
-  // shortcut
+  /// The current locale of the translations.
+  E get locale => translations.$meta.locale;
+
+  /// The current locale but as flutter locale.
   Locale get flutterLocale => locale.flutterLocale;
 
   InheritedLocaleData({
-    required this.locale,
     required this.translations,
     required super.child,
   });
@@ -186,8 +177,7 @@ class InheritedLocaleData<E extends BaseAppLocale<E, T>,
 
   @override
   bool updateShouldNotify(InheritedLocaleData<E, T> oldWidget) {
-    // we need to check the actual translations
-    // because locale may be the same after overriding translations
+    // only rebuild if translations differ
     return !identical(translations, oldWidget.translations);
   }
 }
