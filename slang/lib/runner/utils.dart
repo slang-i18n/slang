@@ -20,12 +20,16 @@ class SlangFileCollection {
   });
 
   List<TranslationFile> get translationFiles {
-    return files
-        .map((f) => TranslationFile(
-              path: f.path.replaceAll('\\', '/'),
-              read: () => File(f.path).readAsString(),
-            ))
-        .toList();
+    String currentDirectory = Directory.current.path.replaceAll('\\', '/');
+    if (!currentDirectory.endsWith('/')) {
+      currentDirectory += '/';
+    }
+    return files.map((f) {
+      return TranslationFile(
+        path: f.path.replaceAll('\\', '/').replaceAll(currentDirectory, ''),
+        read: () => File(f.path).readAsString(),
+      );
+    }).toList();
   }
 }
 
@@ -81,7 +85,7 @@ Future<RawConfig> getConfig(
       config = RawConfigBuilder.fromYaml(content, true);
       if (config != null) {
         if (verbose) {
-          print('Found slang.yaml in ${file.path}');
+          print('Found slang.yaml!');
         }
         break;
       }
@@ -92,7 +96,7 @@ Future<RawConfig> getConfig(
       config = RawConfigBuilder.fromYaml(content);
       if (config != null) {
         if (verbose) {
-          print('Found build.yaml in ${file.path}');
+          print('Found build.yaml!');
         }
         break;
       }
@@ -107,9 +111,6 @@ Future<RawConfig> getConfig(
     }
   }
 
-  // convert to absolute paths
-  config = config.withAbsolutePaths();
-
   // show build config
   if (verbose && !useDefaultConfig) {
     print('');
@@ -120,42 +121,6 @@ Future<RawConfig> getConfig(
   config.validate();
 
   return config;
-}
-
-extension on RawConfig {
-  RawConfig withAbsolutePaths() {
-    return RawConfig(
-      baseLocale: baseLocale,
-      fallbackStrategy: fallbackStrategy,
-      inputDirectory: inputDirectory?.toAbsolutePath(),
-      inputFilePattern: inputFilePattern,
-      outputDirectory: outputDirectory?.toAbsolutePath(),
-      outputFileName: outputFileName,
-      outputFormat: outputFormat,
-      localeHandling: localeHandling,
-      flutterIntegration: flutterIntegration,
-      namespaces: namespaces,
-      translateVar: translateVar,
-      enumName: enumName,
-      translationClassVisibility: translationClassVisibility,
-      keyCase: keyCase,
-      keyMapCase: keyMapCase,
-      paramCase: paramCase,
-      stringInterpolation: stringInterpolation,
-      renderFlatMap: renderFlatMap,
-      translationOverrides: translationOverrides,
-      renderTimestamp: renderTimestamp,
-      maps: maps,
-      pluralAuto: pluralAuto,
-      pluralParameter: pluralParameter,
-      pluralCardinal: pluralCardinal,
-      pluralOrdinal: pluralOrdinal,
-      contexts: contexts,
-      interfaces: interfaces,
-      obfuscation: obfuscation,
-      imports: imports,
-    );
-  }
 }
 
 extension on String {

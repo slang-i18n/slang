@@ -228,27 +228,19 @@ Future<void> generateTranslations({
 
   if (rawConfig.outputDirectory != null) {
     // output directory specified, use this path instead
-    outputFilePath = rawConfig.outputDirectory! +
-        Platform.pathSeparator +
-        rawConfig.outputFileName;
+    outputFilePath =
+        rawConfig.outputDirectory! + '/' + rawConfig.outputFileName;
   } else {
     // use the directory of the first (random) translation file
-    final translationFilePath = files.first.path;
-    if (rawConfig.flutterIntegration &&
-        !translationFilePath
-            .contains('${Directory.current.path.replaceAll('\\', '/')}/lib')) {
+    final tempPath = files.first.path;
+    if (rawConfig.flutterIntegration && !tempPath.startsWith('lib/')) {
       // In Flutter environment, only files inside 'lib' matter
       // Generate to lib/gen/<fileName> by default.
-      outputFilePath = Directory.current.path +
-          Platform.pathSeparator +
-          'lib' +
-          Platform.pathSeparator +
-          'gen' +
-          Platform.pathSeparator +
-          rawConfig.outputFileName;
+      outputFilePath = 'lib/gen/${rawConfig.outputFileName}';
     } else {
+      // By default, generate to the same directory as the translation file
       outputFilePath = PathUtils.replaceFileName(
-        path: translationFilePath,
+        path: tempPath,
         newFileName: rawConfig.outputFileName,
         pathSeparator: '/',
       );
@@ -317,7 +309,6 @@ Future<void> generateTranslations({
         path: BuildResultPaths.localePath(
           outputPath: outputFilePath,
           locale: locale,
-          pathSeparator: Platform.pathSeparator,
         ),
         content: localeTranslations,
       );
@@ -326,7 +317,6 @@ Future<void> generateTranslations({
       FileUtils.writeFile(
         path: BuildResultPaths.flatMapPath(
           outputPath: outputFilePath,
-          pathSeparator: Platform.pathSeparator,
         ),
         content: result.flatMap!,
       );
@@ -344,13 +334,11 @@ Future<void> generateTranslations({
         print(' -> ${BuildResultPaths.localePath(
           outputPath: outputFilePath,
           locale: locale,
-          pathSeparator: Platform.pathSeparator,
         )}');
       }
       if (result.flatMap != null) {
         print(' -> ${BuildResultPaths.flatMapPath(
           outputPath: outputFilePath,
-          pathSeparator: Platform.pathSeparator,
         )}');
       }
       print('');

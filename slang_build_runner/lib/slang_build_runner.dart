@@ -102,7 +102,6 @@ class I18nBuilder implements Builder {
           path: BuildResultPaths.localePath(
             outputPath: outputFilePath,
             locale: locale,
-            pathSeparator: '/',
           ),
           content: localeTranslations,
         );
@@ -111,7 +110,6 @@ class I18nBuilder implements Builder {
         FileUtils.writeFile(
           path: BuildResultPaths.flatMapPath(
             outputPath: outputFilePath,
-            pathSeparator: '/',
           ),
           content: result.flatMap!,
         );
