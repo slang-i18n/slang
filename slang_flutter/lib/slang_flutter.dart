@@ -1,8 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:slang/api/translation_overrides.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/slang.dart';
-import 'package:flutter/widgets.dart';
 
 export 'package:slang/slang.dart';
 
@@ -47,8 +47,8 @@ class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
   });
 
   @override
-  updateProviderState(T translations) {
-    _translationProviderKey.currentState?.updateState(translations);
+  void updateProviderState(BaseAppLocale locale) {
+    _translationProviderKey.currentState?.updateState(locale);
   }
 }
 
@@ -141,10 +141,11 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
 
   /// Updates the provider state.
   /// Widgets listening to this provider will rebuild if [translations] differ.
-  void updateState(T translations) {
+  void updateState(BaseAppLocale locale) {
+    final E localeTyped = widget.settings.utils.parseAppLocale(locale);
     setState(() {
-      this.locale = translations.$meta.locale;
-      this.translations = translations;
+      this.locale = localeTyped;
+      this.translations = widget.settings.translationMap[localeTyped]!;
     });
   }
 
