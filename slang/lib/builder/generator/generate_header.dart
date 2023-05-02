@@ -170,11 +170,11 @@ void _generateParts({
   buffer.writeln();
   for (final locale in locales) {
     buffer.writeln(
-        'part \'${BuildResultPaths.localePath(outputPath: config.baseName, locale: locale.locale, pathSeparator: 'not needed')}\';');
+        'part \'${BuildResultPaths.localePath(outputPath: config.baseName, locale: locale.locale)}\';');
   }
   if (config.renderFlatMap) {
     buffer.writeln(
-        'part \'${BuildResultPaths.flatMapPath(outputPath: config.baseName, pathSeparator: 'not needed')}\';');
+        'part \'${BuildResultPaths.flatMapPath(outputPath: config.baseName)}\';');
   }
 }
 

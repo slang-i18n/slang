@@ -113,7 +113,6 @@ class BuildResultPaths {
   static String localePath({
     required String outputPath,
     required I18nLocale locale,
-    required String pathSeparator,
   }) {
     final fileNameNoExtension = PathUtils.getFileNameNoExtension(outputPath);
     final localeExt = locale.languageTag.replaceAll('-', '_');
@@ -121,20 +120,19 @@ class BuildResultPaths {
     return PathUtils.replaceFileName(
       path: outputPath,
       newFileName: fileName,
-      pathSeparator: pathSeparator,
+      pathSeparator: '/',
     );
   }
 
   static String flatMapPath({
     required String outputPath,
-    required String pathSeparator,
   }) {
     final fileNameNoExtension = PathUtils.getFileNameNoExtension(outputPath);
     final fileName = '${fileNameNoExtension}_map.g.dart';
     return PathUtils.replaceFileName(
       path: outputPath,
       newFileName: fileName,
-      pathSeparator: pathSeparator,
+      pathSeparator: '/',
     );
   }
 }
