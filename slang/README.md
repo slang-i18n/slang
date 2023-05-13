@@ -160,7 +160,7 @@ Built-in:
 ```text
 # Recommended during development. It runs much faster than build_runner.
 
-flutter pub run slang
+dart run slang
 ```
 
 Alternative (requires [slang_build_runner](https://pub.dev/packages/slang_build_runner)):
@@ -168,7 +168,7 @@ Alternative (requires [slang_build_runner](https://pub.dev/packages/slang_build_
 ```text
 # Useful for CI and initial git checkout.
 
-flutter pub run build_runner build -d
+dart run build_runner build -d
 ```
 
 **Step 4: Initialize**
@@ -328,7 +328,7 @@ imports:
 <details>
   <summary>build.yaml (Click to open example)</summary>
 
-Using `build.yaml` is **necessary** if you use `build_runner`. It has a higher compatibility as `flutter pub run slang` also recognizes this file.
+Using `build.yaml` is **necessary** if you use `build_runner`. It has a higher compatibility as `dart run slang` also recognizes this file.
 
 ```yaml
 targets:
@@ -1350,7 +1350,7 @@ flutter_integration: false # set this
 The main command to generate dart files from translation resources.
 
 ```sh
-flutter pub run slang
+dart run slang
 ```
 
 ### ➤ Analyze Translations
@@ -1360,7 +1360,7 @@ You can use the slang analyzer to find missing and unused translations.
 Missing translations only occur when `fallback_strategy: base_locale` is used.
 
 ```sh
-flutter pub run slang analyze [--split] [--full] [--outdir=assets/i18n]
+dart run slang analyze [--split] [--full] [--outdir=assets/i18n]
 ```
 
 | Argument          | Usage                                                  |
@@ -1395,7 +1395,7 @@ It reads the `_missing_translations` file and adds the translations to the origi
 Currently, only JSON and YAML are supported.
 
 ```sh
-flutter pub run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
+dart run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
 ```
 
 | Argument            | Usage                                                  |
@@ -1410,7 +1410,7 @@ You want to update an existing string, but you want to keep the old translations
 Here, you can run a simple command to flag translations as `OUTDATED`. They will show up in `_missing_translations` when running `analyze`.
 
 ```sh
-flutter pub run slang outdated a.b.c
+dart run slang outdated a.b.c
 ```
 
 This will add an `(OUTDATED)` modifier to all secondary locales.
@@ -1434,7 +1434,7 @@ There are some tools to make migration from other i18n solutions easier.
 General migration syntax:
 
 ```sh
-flutter pub run slang migrate <type> <source> <destination>
+dart run slang migrate <type> <source> <destination>
 ```
 
 #### ARB
@@ -1442,7 +1442,7 @@ flutter pub run slang migrate <type> <source> <destination>
 Transforms ARB files to compatible JSON format. All descriptions are retained.
 
 ```sh
-flutter pub run slang migrate arb source.arb destination.json
+dart run slang migrate arb source.arb destination.json
 ```
 
 ARB Input
@@ -1497,7 +1497,7 @@ JSON Result
 There is a command to quickly get the number of words, characters, etc.
 
 ```sh
-flutter pub run slang stats
+dart run slang stats
 ```
 
 Example console output:
@@ -1516,7 +1516,7 @@ You can let the library rebuild automatically for you.
 The watch function from `build_runner` is **NOT** maintained.
 
 ```sh
-flutter pub run slang watch
+dart run slang watch
 ```
 
 ## Integrations

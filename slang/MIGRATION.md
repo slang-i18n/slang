@@ -77,9 +77,9 @@ translate_var: t
 
 ### Command
 
-If you generate via `flutter pub run fast_i18n`, please make sure to call `slang` instead.
+If you generate via `dart run fast_i18n`, please make sure to call `slang` instead.
 
-`flutter pub run slang`
+`dart run slang`
 
 ## fast_i18n 4.0 to 5.0
 

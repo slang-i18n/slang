@@ -53,12 +53,12 @@ void runAnalyzeTranslations({
       return [
         'Here are translations that exist in <${rawConfig.baseLocale.languageTag}> but not in ${locale != null ? '<${locale.languageTag}>' : 'secondary locales'}.',
         if (locale != null)
-          'After editing this file, you can run \'flutter pub run slang apply --locale=${locale.languageTag}\' to quickly apply the newly added translations.'
+          'After editing this file, you can run \'dart run slang apply --locale=${locale.languageTag}\' to quickly apply the newly added translations.'
         else if (localeMap.length > 1)
           // there are at least 2 secondary locales
-          'After editing this file, you can run \'flutter pub run slang apply --locale=<locale>\' to quickly apply the newly added translations.'
+          'After editing this file, you can run \'dart run slang apply --locale=<locale>\' to quickly apply the newly added translations.'
         else
-          'After editing this file, you can run \'flutter pub run slang apply\' to quickly apply the newly added translations.',
+          'After editing this file, you can run \'dart run slang apply\' to quickly apply the newly added translations.',
       ];
     },
     result: missingTranslationsResult,
@@ -88,7 +88,7 @@ void runAnalyzeTranslations({
             'Here are translations that exist in <${locale.languageTag}> but not in <${rawConfig.baseLocale.languageTag}>.',
         ],
         if (!full)
-          'You may run \'flutter pub run slang analyze --full\' to also check translations not used in the source code.',
+          'You may run \'dart run slang analyze --full\' to also check translations not used in the source code.',
       ];
     },
     result: unusedTranslationsResult,
