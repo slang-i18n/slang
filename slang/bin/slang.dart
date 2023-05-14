@@ -27,7 +27,7 @@ enum RunnerMode {
 }
 
 /// To run this:
-/// -> flutter pub run slang
+/// -> dart run slang
 ///
 /// Scans translation files and builds the dart file.
 /// This is usually faster than the build_runner implementation.
