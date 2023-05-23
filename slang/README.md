@@ -85,6 +85,9 @@ String i = page1.title; // type-safe call
     - [ARB](#arb)
   - [Statistics](#-statistics)
   - [Auto Rebuild](#-auto-rebuild)
+- [More Usages](#more-usages)
+  - [Assets](#-assets)
+  - [Unit Tests](#-unit-tests)
 - [Integrations](#integrations)
   - [slang x riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
@@ -118,7 +121,7 @@ Format:
 
 You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings`.
 
-Most common i18n directories are `assets/i18n` and `lib/i18n`. (see [FAQ](#faq)).
+Most common i18n directories are `assets/i18n` and `lib/i18n`. (see [Assets](#-assets)).
 
 Example:
 ```text
@@ -1519,29 +1522,13 @@ The watch function from `build_runner` is **NOT** maintained.
 dart run slang watch
 ```
 
-## Integrations
+## More Usages
 
-### ➤ slang x riverpod
+### ➤ Assets
 
-**Method A: Use static getter**
+You can write the i18n files wherever you want.
 
-Access translation variable `t` directly, use `LocaleSettings.setLocale` to change locales.
-
-Track locale changes with `LocaleSettings.getLocaleStream()`:
-
-```dart
-final localeProvider = StreamProvider((ref) => LocaleSettings.getLocaleStream());
-```
-
-**Method B: Use dependency injection**
-
-Checkout [Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md).
-
-## FAQ
-
-**Can I write the json files in the asset folder?**
-
-Yes. Specify `input_directory` and `output_directory` in `build.yaml`.
+Specify `input_directory` and `output_directory` in `build.yaml`.
 
 ```yaml
 targets:
@@ -1561,6 +1548,47 @@ targets:
 input_directory: assets/i18n
 output_directory: lib/i18n # defaulting to lib/gen if input is outside of lib/
 ```
+
+### ➤ Unit Tests
+
+It is recommended to add at least one test that accesses the translations to make sure that they are compiled correctly.
+
+Because slang is type-safe, this test is most likely enough to ensure that the translations are working.
+
+```dart
+import 'package:my_app/gen/strings.g.dart';
+import 'package:test/test.dart';
+
+void main() {
+  group('i18n', () {
+    test('should compile', () {
+      // The following test will fail if the i18n file is either not compiled
+      // or there are compile-time errors.
+      expect(AppLocale.en.build().aboutPage.title, 'About');
+    });
+  });
+}
+```
+
+## Integrations
+
+### ➤ slang x riverpod
+
+**Method A: Use static getter**
+
+Access translation variable `t` directly, use `LocaleSettings.setLocale` to change locales.
+
+Track locale changes with `LocaleSettings.getLocaleStream()`:
+
+```dart
+final localeProvider = StreamProvider((ref) => LocaleSettings.getLocaleStream());
+```
+
+**Method B: Use dependency injection**
+
+Checkout [Dependency Injection](https://github.com/Tienisto/slang/blob/master/slang/documentation/dependency_injection.md).
+
+## FAQ
 
 **Translations don't update when device locale changes**
 
@@ -1586,12 +1614,6 @@ WRONG:
 my.path,hello<LF>
 world
 ```
-
-**Can I skip translations or use them from base locale?**
-
-Yes. Please set `fallback_strategy: base_locale` in `build.yaml`.
-
-Now you can leave out translations in secondary languages. Missing translations will fallback to base locale.
 
 **Can I prevent the timestamp `Built on` from updating?**
 
