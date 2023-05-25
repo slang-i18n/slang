@@ -1,9 +1,9 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_file.dart';
-import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
 /// This collection contains all relevant files to process.
@@ -49,16 +49,23 @@ Future<SlangFileCollection> readFileCollection({
         .whereType<File>()
         .toList();
   } else {
-    files = FileUtils.getFilesBreadthFirst(
+    files = _getFilesBreadthFirst(
       rootDirectory: Directory.current,
       ignoreTopLevelDirectories: {
-        '.fvm',
-        '.flutter.git',
-        '.dart_tool',
         'build',
         'ios',
         'android',
         'web',
+        'macos',
+        'linux',
+        'windows',
+        'test',
+      },
+      ignoreDirectories: {
+        '.fvm',
+        '.flutter.git',
+        '.dart_tool',
+        '.symlinks',
       },
     );
   }
@@ -121,6 +128,45 @@ Future<RawConfig> getConfig(
   config.validate();
 
   return config;
+}
+
+/// Returns all files in directory.
+/// Also scans sub directories using the breadth-first approach.
+List<File> _getFilesBreadthFirst({
+  required Directory rootDirectory,
+  required Set<String> ignoreTopLevelDirectories,
+  required Set<String> ignoreDirectories,
+}) {
+  final result = <File>[];
+  final queue = Queue<Directory>();
+  bool topLevel = true;
+  queue.add(rootDirectory);
+
+  do {
+    final dirList = queue.removeFirst().listSync(
+          recursive: false,
+          followLinks: false,
+        );
+    for (final FileSystemEntity entity in dirList) {
+      if (entity is File) {
+        result.add(entity);
+      } else if (entity is Directory) {
+        final fileName = PathUtils.getFileName(entity.path);
+        if (topLevel && ignoreTopLevelDirectories.contains(fileName)) {
+          continue;
+        }
+
+        if (ignoreDirectories.contains(fileName)) {
+          continue;
+        }
+
+        queue.add(entity);
+      }
+    }
+    topLevel = false;
+  } while (queue.isNotEmpty);
+
+  return result;
 }
 
 extension on String {
