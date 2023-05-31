@@ -6,13 +6,12 @@ import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/model/raw_config.dart';
+import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/runner/analyze.dart';
-import 'package:slang/runner/utils.dart';
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -25,7 +24,7 @@ Future<void> runApplyTranslations({
   List<I18nLocale>? targetLocales; // only this locale will be considered
   for (final a in arguments) {
     if (a.startsWith('--outdir=')) {
-      outDir = a.substring(9).toAbsolutePath();
+      outDir = a.substring(9);
     } else if (a.startsWith('--locale=')) {
       targetLocales = [I18nLocale.fromString(a.substring(9))];
     }
@@ -39,8 +38,7 @@ Future<void> runApplyTranslations({
   }
 
   final translationMap = await TranslationMapBuilder.build(
-    rawConfig: rawConfig,
-    files: fileCollection.translationFiles,
+    fileCollection: fileCollection,
     verbose: false,
   );
 
@@ -102,8 +100,6 @@ Future<void> runApplyTranslations({
   print(
       'Applying: ${missingTranslationsMap.keys.map((l) => '<${l.languageTag}>').join(' ')}');
 
-  final translationFiles = fileCollection.files;
-
   // We need to read the base translations to determine
   // the order of the secondary translations
   final baseTranslationMap = translationMap[rawConfig.baseLocale]!;
@@ -114,12 +110,11 @@ Future<void> runApplyTranslations({
     final missingTranslations = entry.value;
 
     print(' -> Apply <${locale.languageTag}>');
-    _applyTranslationsForOneLocale(
-      rawConfig: rawConfig,
+    await _applyTranslationsForOneLocale(
+      fileCollection: fileCollection,
       applyLocale: locale,
       baseTranslations: baseTranslationMap,
       newTranslations: missingTranslations,
-      candidateFiles: translationFiles,
     );
   }
 }
@@ -151,7 +146,7 @@ Map<I18nLocale, Map<String, dynamic>> _readMissingTranslations({
     final fileType = _supportedFiles
         .firstWhereOrNull((type) => type.name == fileNameMatch.group(2)!);
     if (fileType == null) {
-      throw FileTypeNotSupportedError(file);
+      throw FileTypeNotSupportedError(file.path);
     }
     final content = File(file.path).readAsStringSync();
 
@@ -194,50 +189,17 @@ Map<I18nLocale, Map<String, dynamic>> _readMissingTranslations({
 /// Throws an error if the file could not be found.
 ///
 /// [newTranslations] is a map of "Namespace -> Translations"
-/// [candidateFiles] are files that are applied to; Only a subset may be used
-void _applyTranslationsForOneLocale({
-  required RawConfig rawConfig,
+Future<void> _applyTranslationsForOneLocale({
+  required SlangFileCollection fileCollection,
   required I18nLocale applyLocale,
   required Map<String, Map<String, dynamic>> baseTranslations,
   required Map<String, dynamic> newTranslations,
-  required List<File> candidateFiles,
-}) {
-  final fileMap = <String, File>{}; // namespace -> file
+}) async {
+  final fileMap = <String, TranslationFile>{}; // namespace -> file
 
-  for (final file in candidateFiles) {
-    final fileNameNoExtension = PathUtils.getFileNameNoExtension(file.path);
-    final baseFileMatch =
-        RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-
-    if (baseFileMatch != null) {
-      if (rawConfig.namespaces) {
-        // a file without locale (but locale may be in directory name!)
-        final directoryLocale = PathUtils.findDirectoryLocale(
-          filePath: file.path,
-          inputDirectory: rawConfig.inputDirectory,
-        );
-        if (directoryLocale == applyLocale ||
-            rawConfig.baseLocale == applyLocale) {
-          fileMap[fileNameNoExtension] = file;
-        }
-      }
-    } else {
-      // a file containing a locale
-      final match =
-          RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
-
-      if (match != null) {
-        final namespace = match.group(1)!;
-        final locale = I18nLocale(
-          language: match.group(2)!,
-          script: match.group(3),
-          country: match.group(4),
-        );
-
-        if (locale == applyLocale) {
-          fileMap[namespace] = file;
-        }
-      }
+  for (final file in fileCollection.files) {
+    if (file.locale == applyLocale) {
+      fileMap[file.namespace] = file;
     }
   }
 
@@ -245,13 +207,13 @@ void _applyTranslationsForOneLocale({
     throw 'Could not find a file for locale <${applyLocale.languageTag}>';
   }
 
-  if (rawConfig.namespaces) {
+  if (fileCollection.config.namespaces) {
     for (final entry in fileMap.entries) {
       if (!newTranslations.containsKey(entry.key)) {
         // This namespace exists but it is not specified in new translations
         continue;
       }
-      _applyTranslationsForFile(
+      await _applyTranslationsForFile(
         baseTranslations: baseTranslations[entry.key] ?? {},
         newTranslations: newTranslations[entry.key],
         destinationFile: entry.value,
@@ -259,7 +221,7 @@ void _applyTranslationsForOneLocale({
     }
   } else {
     // only apply for the first namespace
-    _applyTranslationsForFile(
+    await _applyTranslationsForFile(
       baseTranslations: baseTranslations.values.first,
       newTranslations: newTranslations,
       destinationFile: fileMap.values.first,
@@ -275,17 +237,17 @@ void _applyTranslationsForOneLocale({
 ///
 /// If the key does not exist in [baseTranslations], then it will be appended
 /// after known keys (i.e. at the end of the file).
-void _applyTranslationsForFile({
+Future<void> _applyTranslationsForFile({
   required Map<String, dynamic> baseTranslations,
   required Map<String, dynamic> newTranslations,
-  required File destinationFile,
-}) {
+  required TranslationFile destinationFile,
+}) async {
   final existingFile = destinationFile;
-  final existingContent = existingFile.readAsStringSync();
+  final existingContent = await existingFile.read();
   final fileType = _supportedFiles.firstWhereOrNull(
       (type) => type.name == PathUtils.getFileExtension(existingFile.path));
   if (fileType == null) {
-    throw FileTypeNotSupportedError(existingFile);
+    throw FileTypeNotSupportedError(existingFile.path);
   }
   final Map<String, dynamic> parsedContent;
   try {
@@ -399,16 +361,16 @@ Map<String, dynamic> applyMapRecursive({
 }
 
 class FileTypeNotSupportedError extends UnsupportedError {
-  FileTypeNotSupportedError(File file)
+  FileTypeNotSupportedError(String filePath)
       : super(
-            'The file "${file.path}" has an invalid file extension (supported: ${_supportedFiles.map((e) => e.name)})');
+            'The file "$filePath" has an invalid file extension (supported: ${_supportedFiles.map((e) => e.name)})');
 }
 
 void _printReading(I18nLocale locale, File file) {
   print(' -> Reading <${locale.languageTag}> from ${file.path}');
 }
 
-void _printApplyingDestination(File file) {
+void _printApplyingDestination(TranslationFile file) {
   print('    -> Update ${file.path}');
 }
 

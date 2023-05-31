@@ -22,7 +22,7 @@ void runAnalyzeTranslations({
   String? outDir;
   for (final a in arguments) {
     if (a.startsWith('--outdir=')) {
-      outDir = a.substring(9).toAbsolutePath();
+      outDir = a.substring(9);
     }
   }
   if (outDir == null) {

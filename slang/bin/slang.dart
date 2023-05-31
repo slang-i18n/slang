@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:slang/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/translation_file.dart';
+import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/runner/analyze.dart';
 import 'package:slang/runner/apply.dart';
 import 'package:slang/runner/migrate.dart';
@@ -12,7 +13,6 @@ import 'package:slang/runner/outdated.dart';
 import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
-import 'package:slang/runner/utils.dart';
 import 'package:watcher/watcher.dart';
 
 /// Determines what the runner will do
@@ -91,7 +91,8 @@ void main(List<String> arguments) async {
     stopwatch.start();
   }
 
-  final fileCollection = await readFileCollection(verbose: verbose);
+  final fileCollection =
+      SlangFileCollectionBuilder.readFromFileSystem(verbose: verbose);
 
   // the actual runner
   final filteredArguments = arguments.skip(1).toList();
@@ -110,8 +111,7 @@ void main(List<String> arguments) async {
     case RunnerMode.analyze:
       await generateTranslations(
         mode: mode,
-        rawConfig: fileCollection.config,
-        files: fileCollection.translationFiles,
+        fileCollection: fileCollection,
         verbose: verbose,
         stopwatch: stopwatch,
         arguments: filteredArguments,
@@ -173,7 +173,7 @@ Future<void> _generateTranslationsFromWatch({
       .listSync(recursive: true)
       .where(
           (item) => item is File && item.path.endsWith(config.inputFilePattern))
-      .map((f) => TranslationFile(
+      .map((f) => PlainTranslationFile(
             path: f.path.replaceAll('\\', '/'),
             read: () => File(f.path).readAsString(),
           ))
@@ -183,8 +183,10 @@ Future<void> _generateTranslationsFromWatch({
   try {
     await generateTranslations(
       mode: RunnerMode.watch,
-      rawConfig: config,
-      files: newFiles,
+      fileCollection: SlangFileCollectionBuilder.fromFileModel(
+        config: config,
+        files: newFiles,
+      ),
       verbose: false,
     );
   } catch (e) {
@@ -212,40 +214,18 @@ Future<void> _generateTranslationsFromWatch({
 /// The [files] are already filtered (only translation files!).
 Future<void> generateTranslations({
   required RunnerMode mode,
-  required RawConfig rawConfig,
-  required List<TranslationFile> files,
+  required SlangFileCollection fileCollection,
   required bool verbose,
   Stopwatch? stopwatch,
   List<String>? arguments,
 }) async {
-  if (files.isEmpty) {
+  if (fileCollection.files.isEmpty) {
     print('No translation file found.');
     return;
   }
 
   // STEP 1: determine base name and output file name / path
-  final String outputFilePath;
-
-  if (rawConfig.outputDirectory != null) {
-    // output directory specified, use this path instead
-    outputFilePath =
-        rawConfig.outputDirectory! + '/' + rawConfig.outputFileName;
-  } else {
-    // use the directory of the first (random) translation file
-    final tempPath = files.first.path;
-    if (rawConfig.flutterIntegration && !tempPath.startsWith('lib/')) {
-      // In Flutter environment, only files inside 'lib' matter
-      // Generate to lib/gen/<fileName> by default.
-      outputFilePath = 'lib/gen/${rawConfig.outputFileName}';
-    } else {
-      // By default, generate to the same directory as the translation file
-      outputFilePath = PathUtils.replaceFileName(
-        path: tempPath,
-        newFileName: rawConfig.outputFileName,
-        pathSeparator: '/',
-      );
-    }
-  }
+  final outputFilePath = fileCollection.determineOutputPath();
 
   // STEP 2: scan translations
   if (verbose) {
@@ -254,14 +234,13 @@ Future<void> generateTranslations({
   }
 
   final translationMap = await TranslationMapBuilder.build(
-    rawConfig: rawConfig,
-    files: files,
+    fileCollection: fileCollection,
     verbose: verbose,
   );
 
   if (mode == RunnerMode.stats) {
     getStats(
-      rawConfig: rawConfig,
+      rawConfig: fileCollection.config,
       translationMap: translationMap,
     ).printResult();
     if (stopwatch != null) {
@@ -271,7 +250,7 @@ Future<void> generateTranslations({
     return; // skip generation
   } else if (mode == RunnerMode.analyze) {
     runAnalyzeTranslations(
-      rawConfig: rawConfig,
+      rawConfig: fileCollection.config,
       translationMap: translationMap,
       arguments: arguments ?? [],
     );
@@ -283,14 +262,14 @@ Future<void> generateTranslations({
 
   // STEP 3: generate .g.dart content
   final result = GeneratorFacade.generate(
-    rawConfig: rawConfig,
-    baseName: rawConfig.outputFileName.getFileNameNoExtension(),
+    rawConfig: fileCollection.config,
+    baseName: fileCollection.config.outputFileName.getFileNameNoExtension(),
     translationMap: translationMap,
   );
 
   // STEP 4: write output to hard drive
   FileUtils.createMissingFolders(filePath: outputFilePath);
-  if (rawConfig.outputFormat == OutputFormat.singleFile) {
+  if (fileCollection.config.outputFormat == OutputFormat.singleFile) {
     // single file
     FileUtils.writeFile(
       path: outputFilePath,
@@ -325,7 +304,7 @@ Future<void> generateTranslations({
 
   if (verbose) {
     print('');
-    if (rawConfig.outputFormat == OutputFormat.singleFile) {
+    if (fileCollection.config.outputFormat == OutputFormat.singleFile) {
       print('Output: $outputFilePath');
     } else {
       print('Output:');

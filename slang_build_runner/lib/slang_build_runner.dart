@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:slang/builder/builder/raw_config_builder.dart';
+import 'package:slang/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/translation_file.dart';
+import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
@@ -42,35 +43,20 @@ class I18nBuilder implements Builder {
     // STEP 1: determine base name and output file name / path
 
     final assets = await buildStep.findAssets(findAssetsPattern).toList();
-    final String outputFilePath;
+    final files = assets.map((f) {
+      return PlainTranslationFile(path: f.path, read: () => buildStep.readAsString(f));
+    }).toList();
 
-    // CAUTION: in build_runner, the path separator seems to be hard coded to /
-    if (config.outputDirectory != null) {
-      // output directory specified, use this path instead
-      outputFilePath = config.outputDirectory! + '/' + config.outputFileName;
-    } else {
-      // use the directory of the first (random) translation file
-      final translationFilePath = assets.first.pathSegments;
-      if (config.flutterIntegration && !translationFilePath.contains('lib')) {
-        // In Flutter environment, only files inside 'lib' matter
-        // Generate to lib/gen/<fileName> by default.
-        outputFilePath = 'lib/gen/${config.outputFileName}';
-      } else {
-        final finalOutputDirectory =
-            (assets.first.pathSegments..removeLast()).join('/');
-        outputFilePath = '$finalOutputDirectory/${config.outputFileName}';
-      }
-    }
+    final fileCollection = SlangFileCollectionBuilder.fromFileModel(
+      config: config,
+      files: files,
+    );
+
+    final outputFilePath = fileCollection.determineOutputPath();
 
     // STEP 2: scan translations
     final translationMap = await TranslationMapBuilder.build(
-      rawConfig: config,
-      files: assets
-          .map((f) => TranslationFile(
-                path: f.path,
-                read: () => buildStep.readAsString(f),
-              ))
-          .toList(),
+      fileCollection: fileCollection,
       verbose: false,
     );
 
@@ -82,7 +68,7 @@ class I18nBuilder implements Builder {
     );
 
     // STEP 4: write output to hard drive
-    FileUtils.createMissingFolders(filePath: outputFilePath.toAbsolutePath());
+    FileUtils.createMissingFolders(filePath: outputFilePath);
     if (config.outputFormat == OutputFormat.singleFile) {
       // single file
       FileUtils.writeFile(

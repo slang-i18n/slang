@@ -1,24 +1,30 @@
 # Contributing
 
-## Pipeline
+## Generator Pipeline
 
-### 1 BuildConfig
+### 1 SlangFileCollection
 
-Read `slang.yaml` or `build.yaml` to build the `BuildConfig` object.
+Build a collection of translation files by (a) reading the file system or (b) reading the build_runner inputs.
 
-### 2 List of TranslationFile
+The collection also includes the `slang.yaml` or `build.yaml` config.
 
-Detect all potential translation files and build `List<TranslationFile>`.
+Every file is represented as `TranslationFile` object. This object contains the file path and the abstracted read operation.
 
-Each `TranslationFile` is just a reference to a file. We do not read its content for now.
+After this step, we have a common model that can be used by the custom runner and by build_runner.
 
-### 3 TranslationMap
+### 2 TranslationMap
 
-Read all files of step 2 and build the `TranslationMap` object.
+Build a map containing content of all translation files.
 
-Now we have all locales, its namespaces and its translations represented as pure maps.
+We use the `TranslationFile` objects from step 1 to read the file content and build a map of all translation strings.
 
-### 4 BuildResult
+After this step,
+
+(1) The path and file type information is lost.
+
+(2) We only have the locale, namespace and translation strings.
+
+### 3 BuildResult
 
 The `GeneratorFacade` class will read the translation maps from previous step and generates the resulting file content.
 

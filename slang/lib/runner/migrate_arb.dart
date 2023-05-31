@@ -6,7 +6,6 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/utils/brackets_utils.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 import 'package:slang/builder/utils/string_interpolation_extensions.dart';
@@ -32,7 +31,7 @@ Future<void> migrateArbRunner({
   print(
       'Please don\'t forget to configure the correct string_interpolation in build.yaml');
   print('');
-  print('File generated: ${destinationPath.toAbsolutePath()}');
+  print('File generated: $destinationPath');
 }
 
 Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
