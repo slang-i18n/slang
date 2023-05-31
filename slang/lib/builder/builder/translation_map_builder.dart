@@ -31,8 +31,8 @@ class TranslationMapBuilder {
       final content = await file.read();
       final Map<String, dynamic> translations;
       try {
-        translations = BaseDecoder.getDecoderOfFileType(rawConfig.fileType)
-            .decode(content);
+        translations =
+            BaseDecoder.decodeWithFileType(rawConfig.fileType, content);
       } on FormatException catch (e) {
         if (verbose) {
           print('');

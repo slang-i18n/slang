@@ -1,3 +1,8 @@
+## 3.18.0
+
+- feat: add `slang edit` to `move` or `delete` translations over all locales
+- fix: avoid infinite loop of symlinks
+
 ## 3.17.0
 
 - fix: setLocale does not work when Locale enum is from two packages (by [@fzyzcjy](https://github.com/fzyzcjy))

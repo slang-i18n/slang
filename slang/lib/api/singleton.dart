@@ -126,7 +126,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
     return buildWithOverridesFromMap(
       locale: locale,
       isFlatMap: false,
-      map: BaseDecoder.getDecoderOfFileType(fileType).decode(content),
+      map: BaseDecoder.decodeWithFileType(fileType, content),
       cardinalResolver: cardinalResolver,
       ordinalResolver: ordinalResolver,
     );

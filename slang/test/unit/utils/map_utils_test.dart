@@ -2,6 +2,31 @@ import 'package:slang/builder/utils/map_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('getValueAtPath', () {
+    test('get string from empty map', () {
+      final item = MapUtils.getValueAtPath(
+        map: {},
+        path: 'myPath.mySubPath.mySubSubPath',
+      );
+      expect(item, null);
+    });
+
+    test('get string from populated map', () {
+      final item = MapUtils.getValueAtPath(
+        map: {
+          'myPath': {
+            'myFirstSubPath': 'Hello',
+            'mySubPath': {
+              'mySubSubPath': 'Hello World',
+            },
+          },
+        },
+        path: 'myPath.mySubPath.mySubSubPath',
+      );
+      expect(item, 'Hello World');
+    });
+  });
+
   group('addItemToMap', () {
     test('add string to empty map', () {
       final map = <String, dynamic>{};
@@ -245,6 +270,42 @@ void main() {
       );
 
       expect(result, false);
+    });
+  });
+
+  group('deleteEntry', () {
+    test('should delete single node correctly', () {
+      final map = {
+        'a': 'b',
+      };
+
+      final result = MapUtils.deleteEntry(
+        map: map,
+        path: 'a',
+      );
+
+      expect(result, true);
+      expect(map.isEmpty, true);
+    });
+
+    test('should delete the leaf node correctly', () {
+      final map = {
+        'a': {
+          'b': {
+            'c': 42,
+            'd': 43,
+          },
+        },
+      };
+
+      final result = MapUtils.deleteEntry(
+        map: map,
+        path: 'a.b.c',
+      );
+
+      expect(result, true);
+      expect(map['a']!['b']!['c'], null);
+      expect(map['a']!['b']!['d'], 43);
     });
   });
 }

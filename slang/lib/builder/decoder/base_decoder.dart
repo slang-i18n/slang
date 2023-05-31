@@ -12,15 +12,23 @@ abstract class BaseDecoder {
   /// No case transformations, etc! Only the raw data represented as a tree.
   Map<String, dynamic> decode(String raw);
 
-  /// Returns the decoder of the specified file type
-  static BaseDecoder getDecoderOfFileType(FileType fileType) {
+  /// Decodes with the specified file type
+  static Map<String, dynamic> decodeWithFileType(
+    FileType fileType,
+    String raw,
+  ) {
+    final BaseDecoder decoder;
     switch (fileType) {
       case FileType.json:
-        return JsonDecoder();
+        decoder = JsonDecoder();
+        break;
       case FileType.yaml:
-        return YamlDecoder();
+        decoder = YamlDecoder();
+        break;
       case FileType.csv:
-        return CsvDecoder();
+        decoder = CsvDecoder();
+        break;
     }
+    return decoder.decode(raw);
   }
 }

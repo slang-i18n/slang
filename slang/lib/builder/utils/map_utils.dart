@@ -15,6 +15,59 @@ class MapUtils {
     });
   }
 
+  /// Returns the value at the specified path
+  /// or null if the path does not exist.
+  static dynamic getValueAtPath({
+    required Map<String, dynamic> map,
+    required String path,
+  }) {
+    final pathList = path.split('.');
+
+    Map<String, dynamic> currMap = map;
+
+    for (int i = 0; i < pathList.length; i++) {
+      String currKey = pathList[i];
+      int currKeyBracketIndex = currKey.indexOf('(');
+      if (currKeyBracketIndex != -1) {
+        currKey = currKey.substring(0, currKeyBracketIndex);
+      }
+
+      Object? currValue;
+      for (final entry in currMap.entries) {
+        final key = entry.key;
+        final bracketIndex = key.indexOf('(');
+        if (bracketIndex != -1) {
+          if (key.substring(0, bracketIndex) == currKey) {
+            currValue = entry.value;
+            break;
+          }
+        } else if (key == currKey) {
+          currValue = entry.value;
+          break;
+        }
+      }
+
+      if (currValue == null) {
+        // does not exist
+        return null;
+      }
+
+      if (i == pathList.length - 1) {
+        // destination
+        return currValue;
+      } else {
+        if (currValue is! Map<String, dynamic>) {
+          // The leaf cannot be updated because "currEntry" is not a map.
+          return false;
+        }
+        currMap = currValue;
+      }
+    }
+
+    // This should never be reached.
+    return null;
+  }
+
   /// Adds a leaf to the map at the specified path
   static void addItemToMap({
     required Map<String, dynamic> map,
@@ -169,6 +222,60 @@ class MapUtils {
       } else {
         if (currEntry.value is! Map<String, dynamic>) {
           // The leaf cannot be updated because "subPath" is not a map.
+          return false;
+        }
+        currMap = currEntry.value;
+      }
+    }
+
+    // This should never be reached.
+    return false;
+  }
+
+  /// Deletes an existing entry at [path].
+  /// Returns true, if the entry was deleted.
+  static bool deleteEntry({
+    required Map<String, dynamic> map,
+    required String path,
+  }) {
+    final pathList = path.split('.');
+
+    Map<String, dynamic> currMap = map;
+
+    for (int i = 0; i < pathList.length; i++) {
+      String currKey = pathList[i];
+      int currKeyBracketIndex = currKey.indexOf('(');
+      if (currKeyBracketIndex != -1) {
+        currKey = currKey.substring(0, currKeyBracketIndex);
+      }
+
+      MapEntry<String, dynamic>? currEntry;
+      for (final entry in currMap.entries) {
+        final key = entry.key;
+        final bracketIndex = key.indexOf('(');
+        if (bracketIndex != -1) {
+          if (key.substring(0, bracketIndex) == currKey) {
+            currEntry = entry;
+            break;
+          }
+        } else if (key == currKey) {
+          currEntry = entry;
+          break;
+        }
+      }
+
+      if (currEntry == null) {
+        // The leaf cannot be deleted because it does not exist.
+        return false;
+      }
+
+      if (i == pathList.length - 1) {
+        // destination
+        currMap.remove(currEntry.key);
+        return true;
+      } else {
+        if (currEntry.value is! Map<String, dynamic>) {
+          // The leaf cannot be updated because "currEntry" is not a map.
           return false;
         }
         currMap = currEntry.value;

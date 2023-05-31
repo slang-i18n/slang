@@ -1,3 +1,5 @@
+import 'package:slang/builder/decoder/base_decoder.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/utils/path_utils.dart';
@@ -34,17 +36,15 @@ class SlangFileCollection {
   }
 }
 
-class TranslationFile {
-  final String path;
+class TranslationFile extends PlainTranslationFile {
   final I18nLocale locale;
   final String namespace;
-  final FileReader read;
 
   TranslationFile({
-    required this.path,
+    required super.path,
     required this.locale,
     required this.namespace,
-    required this.read,
+    required super.read,
   });
 }
 
@@ -57,6 +57,16 @@ class PlainTranslationFile {
     required this.path,
     required this.read,
   });
+
+  Future<Map<String, dynamic>> readAndParse(FileType fileType) async {
+    try {
+      final content = await read();
+      return BaseDecoder.decodeWithFileType(fileType, content);
+    } on FormatException catch (e) {
+      print('');
+      throw 'File: ${path}\n$e';
+    }
+  }
 }
 
 typedef FileReader = Future<String> Function();

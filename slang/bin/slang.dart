@@ -8,8 +8,8 @@ import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/runner/analyze.dart';
 import 'package:slang/runner/apply.dart';
+import 'package:slang/runner/edit.dart';
 import 'package:slang/runner/migrate.dart';
-import 'package:slang/runner/outdated.dart';
 import 'package:slang/runner/stats.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
@@ -23,6 +23,7 @@ enum RunnerMode {
   analyze, // generate missing translations
   apply, // apply translations from analyze
   migrate, // migration tool
+  edit, // edit translations
   outdated, // add 'OUTDATED' modifier to secondary locales
 }
 
@@ -50,6 +51,9 @@ void main(List<String> arguments) async {
         break;
       case 'migrate':
         mode = RunnerMode.migrate;
+        break;
+      case 'edit':
+        mode = RunnerMode.edit;
         break;
       case 'outdated':
         mode = RunnerMode.outdated;
@@ -79,6 +83,8 @@ void main(List<String> arguments) async {
       print('Applying translations...\n');
       break;
     case RunnerMode.migrate:
+      break;
+    case RunnerMode.edit:
       break;
     case RunnerMode.outdated:
       print('Adding "OUTDATED" flag...');
@@ -120,10 +126,16 @@ void main(List<String> arguments) async {
     case RunnerMode.migrate:
       await runMigrate(filteredArguments);
       break;
-    case RunnerMode.outdated:
-      await runOutdated(
+    case RunnerMode.edit:
+      await runEdit(
         fileCollection: fileCollection,
         arguments: filteredArguments,
+      );
+      break;
+    case RunnerMode.outdated:
+      await runEdit(
+        fileCollection: fileCollection,
+        arguments: arguments,
       );
       break;
   }

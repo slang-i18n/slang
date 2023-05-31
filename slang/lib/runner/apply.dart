@@ -152,8 +152,7 @@ Map<I18nLocale, Map<String, dynamic>> _readMissingTranslations({
 
     final Map<String, dynamic> parsedContent;
     try {
-      parsedContent =
-          BaseDecoder.getDecoderOfFileType(fileType).decode(content);
+      parsedContent = BaseDecoder.decodeWithFileType(fileType, content);
     } on FormatException catch (e) {
       print('');
       throw 'File: ${file.path}\n$e';
@@ -243,20 +242,13 @@ Future<void> _applyTranslationsForFile({
   required TranslationFile destinationFile,
 }) async {
   final existingFile = destinationFile;
-  final existingContent = await existingFile.read();
   final fileType = _supportedFiles.firstWhereOrNull(
       (type) => type.name == PathUtils.getFileExtension(existingFile.path));
   if (fileType == null) {
     throw FileTypeNotSupportedError(existingFile.path);
   }
-  final Map<String, dynamic> parsedContent;
-  try {
-    parsedContent =
-        BaseDecoder.getDecoderOfFileType(fileType).decode(existingContent);
-  } on FormatException catch (e) {
-    print('');
-    throw 'File: ${existingFile.path}\n$e';
-  }
+
+  final parsedContent = await existingFile.readAndParse(fileType);
 
   final appliedTranslations = applyMapRecursive(
     baseMap: baseTranslations,

@@ -1406,6 +1406,22 @@ dart run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
 | `--locale=<locale>` | Apply only one specific locale                         |
 | `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
 
+### ➤ Edit Translations
+
+You can use this command to rename or remove translation keys. This is useful when you have many locales.
+
+```sh
+dart run slang edit <type> <param1> <param2?>
+```
+
+| Type        | Meaning              | Example                                        |
+|-------------|----------------------|------------------------------------------------|
+| `move`      | Move a translation   | `dart run slang edit move loginPage authPage`  |
+| `delete`    | Delete a translation | `dart run slang edit delete loginPage.title`   |
+| `outdated`* | Add outdated flag    | `dart run slang edit outdated loginPage.title` |
+
+\* See [Outdated Translations](#-outdated-translations)
+
 ### ➤ Outdated Translations
 
 You want to update an existing string, but you want to keep the old translations for other locales?
@@ -1413,6 +1429,9 @@ You want to update an existing string, but you want to keep the old translations
 Here, you can run a simple command to flag translations as `OUTDATED`. They will show up in `_missing_translations` when running `analyze`.
 
 ```sh
+dart run slang edit outdated a.b.c
+
+# shorthand
 dart run slang outdated a.b.c
 ```
 

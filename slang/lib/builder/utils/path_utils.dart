@@ -57,10 +57,6 @@ class PathUtils {
             .firstMatch(segments[inputDirectorySegments.length]);
       }
     } else if (segments.length >= 2) {
-      match = RegexUtils.localeRegex.firstMatch(segments.first);
-    }
-
-    if (match == null && segments.length >= 2) {
       match = RegexUtils.localeRegex.firstMatch(segments[segments.length - 2]);
     }
 
