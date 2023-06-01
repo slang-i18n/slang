@@ -35,7 +35,7 @@ void main() {
     });
 
     test('locale in first directory', () {
-      expect(f('/de/world/haha/cool.json'), I18nLocale(language: 'de'));
+      expect(f('/de/world/haha/cool.json'), null);
     });
 
     test('locale in last directory', () {

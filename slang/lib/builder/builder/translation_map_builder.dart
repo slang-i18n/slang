@@ -4,7 +4,6 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/model/translation_map.dart';
-import 'package:slang/builder/utils/path_utils.dart';
 
 class TranslationMapBuilder {
   /// This method transforms files to an intermediate model [TranslationMap].
@@ -66,29 +65,18 @@ class TranslationMapBuilder {
       } else {
         // json, yaml or normal csv
 
-        // directory name could be a locale
-        I18nLocale? directoryLocale = null;
-        if (rawConfig.namespaces) {
-          directoryLocale = PathUtils.findDirectoryLocale(
-            filePath: file.path,
-            inputDirectory: rawConfig.inputDirectory,
-          );
-        }
-
-        final locale = directoryLocale ?? rawConfig.baseLocale;
-
         translationMap.addTranslations(
-          locale: locale,
+          locale: file.locale,
           namespace: file.namespace,
           translations: translations,
         );
 
         if (verbose) {
-          final baseLog = locale == rawConfig.baseLocale ? '(base) ' : '';
+          final baseLog = file.locale == rawConfig.baseLocale ? '(base) ' : '';
           final namespaceLog =
               rawConfig.namespaces ? '(${file.namespace}) ' : '';
           print(
-              '${'$baseLog$namespaceLog${locale.languageTag}'.padLeft(padLeft)} -> ${file.path}');
+              '${'$baseLog$namespaceLog${file.locale.languageTag}'.padLeft(padLeft)} -> ${file.path}');
         }
       }
     }

@@ -1,7 +1,11 @@
 name: slang
 description: Localization / Internationalization (i18n) solution. Use JSON, YAML or CSV files to create typesafe translations via source generation.
-version: 3.17.0
+version: 3.18.0
 repository: https://github.com/Tienisto/slang
+topics:
+  - i18n
+  - localization
+  - translation
 
 environment:
   sdk: ">=2.17.0 <4.0.0"
