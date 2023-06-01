@@ -80,6 +80,7 @@ String i = page1.title; // type-safe call
   - [Main Command](#-main-command)
   - [Analyze Translations](#-analyze-translations)
   - [Apply Translations](#-apply-translations)
+  - [Edit Translations](#-edit-translations)
   - [Outdated Translations](#-outdated-translations)
   - [Migration](#-migration)
     - [ARB](#arb)
