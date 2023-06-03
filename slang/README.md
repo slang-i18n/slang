@@ -1,13 +1,8 @@
 ![featured](resources/featured.svg)
 
-# slang
-
-**[s]tructured [lan]guage file [g]enerator**
+![logo](resources/logo.svg)
 
 [![pub package](https://img.shields.io/pub/v/slang.svg)](https://pub.dev/packages/slang)
-<a href="https://github.com/Solido/awesome-flutter">
-   <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true" />
-</a>
 ![ci](https://github.com/Tienisto/slang/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

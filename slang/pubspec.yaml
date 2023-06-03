@@ -6,6 +6,9 @@ topics:
   - i18n
   - localization
   - translation
+screenshots:
+  - description: The slang logo.
+    path: resources/icon.png
 
 environment:
   sdk: ">=2.17.0 <4.0.0"
