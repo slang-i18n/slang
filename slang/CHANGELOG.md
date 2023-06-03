@@ -1,3 +1,7 @@
+## 3.18.1
+
+- chore: add logo
+
 ## 3.18.0
 
 - feat: add `slang edit` to `move` or `delete` translations over all locales
