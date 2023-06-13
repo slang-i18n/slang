@@ -318,8 +318,9 @@ void _generateTranslationGetter({
     buffer.writeln(
         '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   }
+  buffer.writeln('$baseClassName? _$translateVar;');
   buffer.writeln(
-      '$baseClassName get $translateVar => LocaleSettings.instance.currentTranslations;');
+      '$baseClassName get $translateVar => _$translateVar ??= LocaleSettings.instance.currentTranslations;');
 
   // t getter (advanced)
   if (config.flutterIntegration) {
