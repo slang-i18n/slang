@@ -21,13 +21,13 @@ class RegexUtils {
       r'([a-z]{2,3})(?:[_-]([A-Za-z]{4}))?(?:[_-]([A-Z]{2}|[0-9]{3}))?';
 
   /// Finds the parts of the locale. It must start with an underscore.
-  /// groups for strings_zh-Hant-TW:
+  /// groups for strings-zh-Hant-TW:
   /// 1 = strings
   /// 2 = zh (language, non-nullable)
   /// 3 = Hant (script)
   /// 4 = TW (country)
   static RegExp fileWithLocaleRegex =
-      RegExp('^(?:([a-zA-Z0-9]+)_)?$LOCALE_REGEX_RAW\$');
+      RegExp('^(?:([a-zA-Z0-9]+)[_-])?$LOCALE_REGEX_RAW\$');
 
   /// matches locale part only
   /// 1 - language (non-nullable)

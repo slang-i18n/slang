@@ -37,6 +37,14 @@ void main() {
       expect(match?.group(4), 'TW');
     });
 
+    test('strings-zh-Hant-TW', () {
+      RegExpMatch? match = regex.firstMatch('strings-zh-Hant-TW');
+      expect(match?.group(1), 'strings'); // base name
+      expect(match?.group(2), 'zh');
+      expect(match?.group(3), 'Hant');
+      expect(match?.group(4), 'TW');
+    });
+
     test('strings_CN', () {
       RegExpMatch? match = regex.firstMatch('strings_CN');
       expect(match, null);

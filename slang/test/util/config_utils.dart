@@ -41,11 +41,13 @@ final baseConfig = RawConfig(
 
 extension BuildConfigCopy on RawConfig {
   RawConfig copyWith({
+    I18nLocale? baseLocale,
     FallbackStrategy? fallbackStrategy,
     String? inputFilePattern,
     OutputFormat? outputFormat,
     bool? renderLocaleHandling,
     bool? flutterIntegration,
+    bool? namespaces,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
     bool? translationOverrides,
@@ -58,7 +60,7 @@ extension BuildConfigCopy on RawConfig {
     ObfuscationConfig? obfuscation,
   }) {
     return RawConfig(
-      baseLocale: baseLocale,
+      baseLocale: baseLocale ?? this.baseLocale,
       fallbackStrategy: fallbackStrategy ?? this.fallbackStrategy,
       inputDirectory: inputDirectory,
       inputFilePattern: inputFilePattern ?? this.inputFilePattern,
@@ -67,7 +69,7 @@ extension BuildConfigCopy on RawConfig {
       outputFormat: outputFormat ?? this.outputFormat,
       localeHandling: renderLocaleHandling ?? this.localeHandling,
       flutterIntegration: flutterIntegration ?? this.flutterIntegration,
-      namespaces: namespaces,
+      namespaces: namespaces ?? this.namespaces,
       translateVar: translateVar,
       enumName: enumName,
       translationClassVisibility: translationClassVisibility,

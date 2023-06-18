@@ -37,7 +37,11 @@ class SlangFileCollection {
 }
 
 class TranslationFile extends PlainTranslationFile {
+  /// The inferred locale of this file (by file name, directory name, or config)
   final I18nLocale locale;
+
+  /// The inferred namespace of this file (by file name).
+  /// If no namespaces are used, ignore this field.
   final String namespace;
 
   TranslationFile({

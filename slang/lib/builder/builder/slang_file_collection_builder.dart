@@ -71,6 +71,23 @@ class SlangFileCollectionBuilder {
     required RawConfig config,
     required Iterable<PlainTranslationFile> files,
   }) {
+    final includeUnderscore = config.namespaces &&
+        files.any((f) {
+          final fileNameNoExtension = PathUtils.getFileNameNoExtension(f.path);
+          final baseFileMatch =
+              RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
+          if (baseFileMatch == null) {
+            return false;
+          }
+
+          // It is a file without locale but has a directory locale
+          return PathUtils.findDirectoryLocale(
+                filePath: f.path,
+                inputDirectory: config.inputDirectory,
+              ) !=
+              null;
+        });
+
     return SlangFileCollection(
       config: config,
       files: files
@@ -79,11 +96,9 @@ class SlangFileCollectionBuilder {
                 PathUtils.getFileNameNoExtension(f.path);
             final baseFileMatch =
                 RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
-            if (baseFileMatch != null) {
+            if (includeUnderscore || baseFileMatch != null) {
               // base file (file without locale, may be multiples due to namespaces!)
               // could also be a non-base locale when directory name is a locale
-
-              final namespace = baseFileMatch.group(1)!;
 
               // directory name could be a locale
               I18nLocale? directoryLocale = null;
@@ -97,7 +112,7 @@ class SlangFileCollectionBuilder {
               return TranslationFile(
                 path: f.path,
                 locale: directoryLocale ?? config.baseLocale,
-                namespace: namespace,
+                namespace: fileNameNoExtension,
                 read: f.read,
               );
             } else {
