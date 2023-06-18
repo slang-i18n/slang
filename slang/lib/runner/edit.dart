@@ -12,6 +12,7 @@ const _supportedFiles = [FileType.json, FileType.yaml];
 
 enum EditOperation {
   move, // dart run slang edit move loginPage authPage
+  copy, // dart run slang edit copy loginPage authPage
   delete, // dart run slang edit delete loginPage.title
   outdated, // dart run slang edit outdated loginPage.title
 }
@@ -55,6 +56,17 @@ Future<void> runEdit({
         throw 'Missing destination path.';
       }
       await _moveEntry(
+        fileCollection: fileCollection,
+        originPath: originPath,
+        destinationPath: destinationPath,
+      );
+      break;
+    case EditOperation.copy:
+      print('Copying translations...\n');
+      if (destinationPath == null) {
+        throw 'Missing destination path.';
+      }
+      await _copyEntry(
         fileCollection: fileCollection,
         originPath: originPath,
         destinationPath: destinationPath,
@@ -179,6 +191,77 @@ Future<void> _moveEntry({
 
         found = true;
       }
+    }
+  }
+
+  if (!found) {
+    print('No origin values found.');
+  }
+}
+
+Future<void> _copyEntry({
+  required SlangFileCollection fileCollection,
+  required String originPath,
+  required String destinationPath,
+}) async {
+  final config = fileCollection.config;
+  final originPathList = originPath.split('.');
+  final originNamespace = originPathList.first;
+  final destinationPathList = destinationPath.split('.');
+  final destinationNamespace = destinationPathList.first;
+
+  print('Operation: $originPath -> $destinationPath');
+  print('');
+
+  bool found = false;
+  for (final origFile in fileCollection.files) {
+    // Find the origin node
+    if (config.namespaces && origFile.namespace != originNamespace) {
+      // wrong namespace
+      continue;
+    }
+
+    final origMap = await origFile.readAndParse(config.fileType);
+
+    final originValue = MapUtils.getValueAtPath(
+      map: origMap,
+      path: config.namespaces ? originPathList.skip(1).join('.') : originPath,
+    );
+
+    if (originValue == null) {
+      continue;
+    }
+
+    // Find the destination node
+    for (final destFile in fileCollection.files) {
+      if (destFile.locale != origFile.locale) {
+        // wrong locale
+        continue;
+      }
+
+      if (config.namespaces && destFile.namespace != destinationNamespace) {
+        // wrong namespace
+        continue;
+      }
+
+      final destMap = await destFile.readAndParse(config.fileType);
+
+      print('[${destFile.path}] Add "$destinationPath"');
+      MapUtils.addItemToMap(
+        map: destMap,
+        destinationPath: config.namespaces
+            ? destinationPathList.skip(1).join('.')
+            : destinationPath,
+        item: originValue!,
+      );
+
+      FileUtils.writeFileOfType(
+        fileType: config.fileType,
+        path: destFile.path,
+        content: destMap,
+      );
+
+      found = true;
     }
   }
 
