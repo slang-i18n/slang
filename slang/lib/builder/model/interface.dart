@@ -223,7 +223,7 @@ class InterfaceCollection {
   // Interface Name -> Interface
   // This may be smaller than [pathInterfaceNameMap] because the user may
   // specify an interface without attributes - in this case the interface
-  // will be determined (i.e. created afterwards).
+  // will be inferred (i.e. created afterwards).
   // This is the resulting set of interfaces
   final Map<String, Interface> resultInterfaces;
 

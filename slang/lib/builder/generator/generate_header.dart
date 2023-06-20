@@ -208,7 +208,7 @@ void _generateBuildConfig({
   buffer.write('\tcontexts: [');
   for (final context in config.contexts) {
     buffer.write(
-        'ContextType(enumName: \'${context.enumName}\', enumValues: [${context.enumValues.map((e) => '\'$e\'').join(', ')}], paths: [${context.paths.map((p) => '\'$p\'').join(', ')}], defaultParameter: \'${context.defaultParameter}\', generateEnum: ${context.generateEnum}),');
+        'ContextType(enumName: \'${context.enumName}\', enumValues: ${context.enumValues != null ? '[${context.enumValues!.map((e) => '\'$e\'').join(', ')}]' : 'null'}, paths: [${context.paths.map((p) => '\'$p\'').join(', ')}], defaultParameter: \'${context.defaultParameter}\', generateEnum: ${context.generateEnum}),');
   }
   buffer.writeln('],');
   buffer.writeln('\tinterfaces: [], // currently not supported');

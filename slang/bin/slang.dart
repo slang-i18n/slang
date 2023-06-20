@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:slang/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
@@ -338,6 +339,13 @@ Future<void> generateTranslations({
     if (stopwatch != null) {
       print(
           '${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
+    }
+
+    final deprecatedContext = fileCollection.config.contexts
+        .firstWhereOrNull((c) => c.enumValues != null || c.paths.isNotEmpty);
+    if (deprecatedContext != null) {
+      print(
+          '${_YELLOW}[Deprecated] Use explicit context modifiers instead of populating the config: ${deprecatedContext.enumName} (see: https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md#use-context-modifier-since-3190)$_RESET');
     }
   }
 }

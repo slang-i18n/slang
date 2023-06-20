@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:slang/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -37,7 +38,10 @@ void runAnalyzeTranslations({
   final full = arguments.contains('--full');
 
   // build translation model
-  final translationModelList = translationMap.toI18nModel(rawConfig);
+  final translationModelList = TranslationModelListBuilder.build(
+    rawConfig,
+    translationMap,
+  );
 
   final missingTranslationsResult = getMissingTranslations(
     rawConfig: rawConfig,

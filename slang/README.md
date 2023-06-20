@@ -420,8 +420,8 @@ targets:
 | `pluralization`/`default_parameter` | `String`                           | default plural parameter [(i)](#-pluralization)              | `n`           |
 | `pluralization`/`cardinal`          | `List<String>`                     | entries which have cardinals                                 | `[]`          |
 | `pluralization`/`ordinal`           | `List<String>`                     | entries which have ordinals                                  | `[]`          |
-| `<context>`/`enum`                  | `List<String>`                     | context forms [(i)](#-custom-contexts--enums)                | no default    |
-| `<context>`/`paths`                 | `List<String>`                     | entries using this context                                   | `[]`          |
+| `<context>`/`enum`                  | `List<String>`                     | DEPRECATED: context forms [(i)](#-custom-contexts--enums)    | no default    |
+| `<context>`/`paths`                 | `List<String>`                     | DEPRECATED: entries using this context                       | `[]`          |
 | `<context>`/`default_parameter`     | `String`                           | default parameter name                                       | `context`     |
 | `<context>`/`generate_enum`         | `Boolean`                          | generate enum                                                | `true`        |
 | `children of interfaces`            | `Pairs of Alias:Path`              | alias interfaces [(i)](#-interfaces)                         | `null`        |
@@ -769,41 +769,26 @@ You can utilize custom contexts to differentiate between male and female forms (
 ```json5
 // File: strings.i18n.json
 {
-  "greet": {
+  "greet(context=GenderContext)": {
     "male": "Hello Mr $name",
     "female": "Hello Ms $name"
   }
 }
 ```
 
-```yaml
-# Config
-contexts:
-  GenderContext:
-    enum:
-      - male
-      - female
-  UserType:
-    enum:
-      - user
-      - admin
+The following enum will be generated for you:
+
+```dart
+enum GenderContext {
+  male,
+  female,
+}
 ```
+
+So you can use it like this:
 
 ```dart
 String a = t.greet(name: 'Maria', context: GenderContext.female);
-```
-
-Auto detection is on by default. You can disable auto detection. This may speed up build time.
-
-```yaml
-# Config
-contexts:
-  GenderContext:
-    enum:
-      - male
-      - female
-    paths: # only these paths will be considered
-      - my.path.to.greet
 ```
 
 In contrast to pluralization, you **must** provide all forms. Collapse it to save space.
@@ -837,9 +822,6 @@ String a = t.greet(gender: GenderContext.female); // notice 'gender' instead of 
 # Config
 contexts:
   UserType:
-    enum:
-      - user
-      - admin
     default_parameter: type # by default: "context"
 ```
 
@@ -851,9 +833,6 @@ imports:
   - 'package:my_package/path_to_enum.dart' # define where your enum is
 contexts:
   UserType:
-    enum:
-      - user
-      - admin
     generate_enum: false # turn off enum generation
 ```
 
@@ -1103,11 +1082,13 @@ i18n/
 i18n/
  └── en/
       └── widgets.i18n.json
-      └── errorDialogs.i18n.json
+      └── error_dialogs.i18n.json
  └── fr/
-      └── widgets_fr.i18n.json
-      └── errorDialogs.i18n.json <-- directory locale will be used
+      └── widgets-fr.i18n.json
+      └── error_dialogs.i18n.json <-- directory locale will be used
 ```
+
+If you use directory locales, then you may use underscores as namespace.
 
 Now access the translations:
 
@@ -1413,6 +1394,7 @@ dart run slang edit <type> <param1> <param2?>
 | Type        | Meaning              | Example                                        |
 |-------------|----------------------|------------------------------------------------|
 | `move`      | Move a translation   | `dart run slang edit move loginPage authPage`  |
+| `copy`      | Copy a translation   | `dart run slang edit copy loginPage authPage`  |
 | `delete`    | Delete a translation | `dart run slang edit delete loginPage.title`   |
 | `outdated`* | Add outdated flag    | `dart run slang edit outdated loginPage.title` |
 

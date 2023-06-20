@@ -155,7 +155,7 @@ class RawConfig {
     print(' -> contexts: ${contexts.isEmpty ? 'no custom contexts' : ''}');
     for (final contextType in contexts) {
       print(
-          '    - ${contextType.enumName} { ${contextType.enumValues.join(', ')} }');
+          '    - ${contextType.enumName} { ${contextType.enumValues?.join(', ') ?? '(inferred)'} }');
     }
     print(' -> interfaces: ${interfaces.isEmpty ? 'no interfaces' : ''}');
     for (final interface in interfaces) {

@@ -1,5 +1,50 @@
 # Migration Guides
 
+## Use context modifier (since 3.19.0)
+
+Since 3.19, slang supports context enum inference (i.e. you don't need to specify the exact enum values in the config).
+
+Auto detection of contexts are prone to side effects. It is recommended to add an explicit `context` modifier instead:
+
+Before
+
+```json5
+{
+  "greet": {
+    "male": "Hello Mr $name",
+    "female": "Hello Ms $name"
+  }
+}
+```
+
+```yaml
+# Config
+contexts:
+  GenderContext:
+    enum:
+      - male
+      - female
+  UserType:
+    enum:
+      - user
+      - admin
+```
+
+After
+
+```json5
+{
+  "greet(context=GenderContext)": {
+    "male": "Hello Mr $name",
+    "female": "Hello Ms $name"
+  }
+}
+```
+
+```yaml
+# no config needed
+```
+
 ## slang 2.0 to 3.0
 
 1. Update plural parameter to `n`.

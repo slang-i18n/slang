@@ -1,5 +1,7 @@
 import 'package:slang/builder/builder/generate_config_builder.dart';
+import 'package:slang/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/builder/generator/generator.dart';
+import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/build_result.dart';
 import 'package:slang/builder/model/interface.dart';
@@ -13,26 +15,42 @@ class GeneratorFacade {
     required TranslationMap translationMap,
   }) {
     // build translation model
-    final translationModelList = translationMap.toI18nModel(rawConfig);
+    final translationModelList = TranslationModelListBuilder.build(
+      rawConfig,
+      translationMap,
+    );
 
     // prepare model for generation
+
+    // combine all contexts of all locales
+    // if one context appears on more than one locale, then the context of
+    // the base locale will have precedence
+    final contextMap = <String, ContextType>{};
+    for (final locale in translationModelList) {
+      for (final context in locale.contexts) {
+        if (!contextMap.containsKey(context.enumName)) {
+          contextMap[context.enumName] = context;
+        }
+      }
+    }
 
     // combine all interfaces of all locales
     // if one interface appears on more than one locale, then the interface of
     // the base locale will have precedence
     final interfaceMap = <String, Interface>{};
-    translationModelList.forEach((locale) {
-      locale.interfaces.forEach((interface) {
+    for (final locale in translationModelList) {
+      for (final interface in locale.interfaces) {
         if (!interfaceMap.containsKey(interface.name)) {
           interfaceMap[interface.name] = interface;
         }
-      });
-    });
+      }
+    }
 
     // generate config
     final config = GenerateConfigBuilder.build(
       baseName: baseName,
       config: rawConfig,
+      contexts: contextMap.values.toList(),
       interfaces: interfaceMap.values.toList(),
     );
 

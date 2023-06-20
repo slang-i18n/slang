@@ -1,3 +1,4 @@
+import 'package:slang/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';
@@ -9,7 +10,10 @@ StatsResult getStats({
   required TranslationMap translationMap,
 }) {
   // build translation model
-  final translationModelList = translationMap.toI18nModel(rawConfig);
+  final translationModelList = TranslationModelListBuilder.build(
+    rawConfig,
+    translationMap,
+  );
 
   // use translation model and calculate statistics
   Map<I18nLocale, StatsLocaleResult> result = {};

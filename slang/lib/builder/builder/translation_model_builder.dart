@@ -14,8 +14,13 @@ import 'package:slang/builder/utils/string_extensions.dart';
 class BuildModelResult {
   final ObjectNode root; // the actual strings
   final List<Interface> interfaces; // detected interfaces
+  final List<ContextType> contexts; // detected context types
 
-  BuildModelResult({required this.root, required this.interfaces});
+  BuildModelResult({
+    required this.root,
+    required this.interfaces,
+    required this.contexts,
+  });
 }
 
 class TranslationModelBuilder {
@@ -35,6 +40,10 @@ class TranslationModelBuilder {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
     final Map<String, LeafNode> leavesMap = {};
 
+    final contextCollection = {
+      for (final context in buildConfig.contexts) context.enumName: context,
+    };
+
     // 1st iteration: Build nodes according to given map
     //
     // Linked Translations:
@@ -49,6 +58,7 @@ class TranslationModelBuilder {
       config: buildConfig,
       keyCase: buildConfig.keyCase,
       leavesMap: leavesMap,
+      contextCollection: contextCollection,
     );
 
     // 2nd iteration: Handle parameterized linked translations
@@ -172,6 +182,7 @@ class TranslationModelBuilder {
     return BuildModelResult(
       root: root,
       interfaces: interfaceCollection.resultInterfaces.values.toList(),
+      contexts: contextCollection.values.toList(),
     );
   }
 }
@@ -186,6 +197,7 @@ Map<String, Node> _parseMapNode({
   required BuildModelConfig config,
   required CaseStyle? keyCase,
   required Map<String, LeafNode> leavesMap,
+  required Map<String, ContextType> contextCollection,
 }) {
   final Map<String, Node> resultNodeTree = {};
 
@@ -246,6 +258,7 @@ Map<String, Node> _parseMapNode({
           config: config,
           keyCase: config.keyCase,
           leavesMap: leavesMap,
+          contextCollection: contextCollection,
         );
 
         // finally only take their values, ignoring keys
@@ -272,20 +285,21 @@ Map<String, Node> _parseMapNode({
               ? config.keyMapCase
               : config.keyCase,
           leavesMap: leavesMap,
+          contextCollection: contextCollection,
         );
 
         final Node finalNode;
         final detectedType =
             _determineNodeType(config, currPath, modifiers, children);
 
-        // notify plural and split by comma if necessary
+        // split by comma if necessary
         if (detectedType.nodeType == _DetectionType.context ||
             detectedType.nodeType == _DetectionType.pluralCardinal ||
             detectedType.nodeType == _DetectionType.pluralOrdinal) {
           if (children.isEmpty) {
             switch (config.fallbackStrategy) {
               case FallbackStrategy.none:
-                throw '"$currPath" in <$localeDebug> is empty but it is marked for pluralization. Define "fallback_strategy: base_locale" to ignore this node.';
+                throw '"$currPath" in <$localeDebug> is empty but it is marked for pluralization / context. Define "fallback_strategy: base_locale" to ignore this node.';
               case FallbackStrategy.baseLocale:
                 return;
             }
@@ -322,11 +336,26 @@ Map<String, Node> _parseMapNode({
               config: config,
               keyCase: config.keyCase,
               leavesMap: leavesMap,
+              contextCollection: contextCollection,
             ).cast<String, RichTextNode>();
           }
 
           if (detectedType.nodeType == _DetectionType.context) {
-            final context = detectedType.contextHint!;
+            ContextType? context = contextCollection[detectedType.contextHint!];
+            if (context == null || context.enumValues == null) {
+              // infer new context type
+              context = ContextType(
+                enumName: detectedType.contextHint!,
+                enumValues: digestedMap.keys.toList(),
+                paths: context?.paths ?? ContextType.defaultPaths,
+                defaultParameter:
+                    context?.defaultParameter ?? ContextType.DEFAULT_PARAMETER,
+                generateEnum:
+                    context?.generateEnum ?? ContextType.defaultGenerateEnum,
+              );
+              contextCollection[context.enumName] = context;
+            }
+
             finalNode = ContextNode(
               path: currPath,
               rawPath: currRawPath,
@@ -417,16 +446,12 @@ _DetectionResult _determineNodeType(
   } else if (modifierFlags.contains(NodeModifiers.ordinal) ||
       config.pluralOrdinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralOrdinal);
+  } else if (modifierFlags.contains(NodeModifiers.context)) {
+    return _DetectionResult(
+      _DetectionType.context,
+      modifiers[NodeModifiers.context],
+    );
   } else {
-    if (modifierFlags.contains(NodeModifiers.context)) {
-      final modifier = modifiers[NodeModifiers.context];
-      final context =
-          config.contexts.firstWhereOrNull((c) => c.enumName == modifier);
-      if (context != null) {
-        return _DetectionResult(_DetectionType.context, context);
-      }
-    }
-
     final childrenSplitByComma =
         children.keys.expand((key) => key.split(Node.KEY_DELIMITER)).toList();
 
@@ -454,15 +479,15 @@ _DetectionResult _determineNodeType(
 
     for (final contextType in config.contexts) {
       if (contextType.paths.contains(nodePath)) {
-        return _DetectionResult(_DetectionType.context, contextType);
+        return _DetectionResult(_DetectionType.context, contextType.enumName);
       } else if (contextType.paths.isEmpty) {
         // empty paths => auto detection
-        final isContext = childrenSplitByComma.length ==
-                contextType.enumValues.length &&
+        final isContext = contextType.enumValues != null &&
+            childrenSplitByComma.length == contextType.enumValues!.length &&
             childrenSplitByComma
-                .every((key) => contextType.enumValues.any((e) => e == key));
+                .every((key) => contextType.enumValues!.any((e) => e == key));
         if (isContext) {
-          return _DetectionResult(_DetectionType.context, contextType);
+          return _DetectionResult(_DetectionType.context, contextType.enumName);
         }
       }
     }
@@ -736,7 +761,7 @@ enum _DetectionType {
 
 class _DetectionResult {
   final _DetectionType nodeType;
-  final ContextType? contextHint;
+  final String? contextHint;
 
   _DetectionResult(this.nodeType, [this.contextHint]);
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
+import 'package:slang/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -57,7 +58,10 @@ Future<void> runApplyTranslations({
     print('Regenerating analysis...');
     final analysis = getMissingTranslations(
       rawConfig: rawConfig,
-      translations: translationMap.toI18nModel(rawConfig),
+      translations: TranslationModelListBuilder.build(
+        rawConfig,
+        translationMap,
+      ),
     );
 
     final ignoreBecauseMissing = <I18nLocale>[];

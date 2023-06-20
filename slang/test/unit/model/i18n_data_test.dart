@@ -3,42 +3,31 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:test/test.dart';
 
-void main() {
-  group('generationComparator', () {
-    final root = ObjectNode(
+I18nData _i18n(String locale, [bool base = false]) {
+  return I18nData(
+    base: base,
+    locale: I18nLocale.fromString(locale),
+    root: ObjectNode(
       path: '',
       rawPath: '',
       comment: null,
       modifiers: {},
       entries: {},
       isMap: false,
-    );
+    ),
+    contexts: [],
+    interfaces: [],
+  );
+}
+
+void main() {
+  group('generationComparator', () {
     test('without base', () {
       List<I18nData> locales = [
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('ee'),
-          root: root,
-          interfaces: [],
-        ),
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('aa'),
-          root: root,
-          interfaces: [],
-        ),
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('ff'),
-          root: root,
-          interfaces: [],
-        ),
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('gg'),
-          root: root,
-          interfaces: [],
-        ),
+        _i18n('ee'),
+        _i18n('aa'),
+        _i18n('ff'),
+        _i18n('gg'),
       ];
       locales.sort(I18nData.generationComparator);
       expect(locales.map((e) => e.locale.languageTag).toList(),
@@ -47,30 +36,10 @@ void main() {
 
     test('with base', () {
       List<I18nData> locales = [
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('ee'),
-          root: root,
-          interfaces: [],
-        ),
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('aa'),
-          root: root,
-          interfaces: [],
-        ),
-        I18nData(
-          base: true,
-          locale: I18nLocale.fromString('ff'),
-          root: root,
-          interfaces: [],
-        ),
-        I18nData(
-          base: false,
-          locale: I18nLocale.fromString('gg'),
-          root: root,
-          interfaces: [],
-        ),
+        _i18n('ee'),
+        _i18n('aa'),
+        _i18n('ff', true),
+        _i18n('gg'),
       ];
       locales.sort(I18nData.generationComparator);
       expect(locales.map((e) => e.locale.languageTag).toList(),

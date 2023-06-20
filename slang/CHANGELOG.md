@@ -1,3 +1,10 @@
+## 3.19.0
+
+- feat: add enum value inference (no need to specify `enum` in the config anymore)
+- feat: add `slang edit copy` to copy translations
+- feat: namespaces may contain underscores if at least one file of same directory uses locale from directory name
+- **DEPRECATED:** Use explicit `context` modifier instead of relying on the config file (see [migration guide](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md#use-context-modifier-since-3190))
+
 ## 3.18.1
 
 - chore: add logo

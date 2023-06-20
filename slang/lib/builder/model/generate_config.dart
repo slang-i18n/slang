@@ -21,7 +21,7 @@ class GenerateConfig {
   final bool renderFlatMap;
   final bool translationOverrides;
   final bool renderTimestamp;
-  final List<ContextType> contexts;
+  final List<PopulatedContextType> contexts;
   final List<Interface> interface; // may include more than in build config
   final ObfuscationConfig obfuscation;
   final List<String> imports;
