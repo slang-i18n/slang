@@ -44,7 +44,10 @@ class I18nBuilder implements Builder {
 
     final assets = await buildStep.findAssets(findAssetsPattern).toList();
     final files = assets.map((f) {
-      return PlainTranslationFile(path: f.path, read: () => buildStep.readAsString(f));
+      return PlainTranslationFile(
+        path: f.path,
+        read: () => buildStep.readAsString(f),
+      );
     }).toList();
 
     final fileCollection = SlangFileCollectionBuilder.fromFileModel(
