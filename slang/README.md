@@ -795,7 +795,7 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 
 ```json
 {
-  "greet": {
+  "greet(context=GenderContext)": {
     "male,female": "Hello $name"
   }
 }
@@ -805,7 +805,7 @@ Similarly to plurals, the parameter name is `context` by default. You can change
 
 ```json
 {
-  "greet(param=gender)": {
+  "greet(context=GenderContext, param=gender)": {
     "male": "Hello Mr",
     "female": "Hello Ms"
   }
@@ -821,8 +821,8 @@ String a = t.greet(gender: GenderContext.female); // notice 'gender' instead of 
 ```yaml
 # Config
 contexts:
-  UserType:
-    default_parameter: type # by default: "context"
+  GenderContext:
+    default_parameter: gender # by default: "context"
 ```
 
 You already have an existing enum? Import it instead!
