@@ -388,10 +388,9 @@ Future<void> _addEntry({
         await file.readAndParse(config.fileType);
 
     MapUtils.addItemToMap(
-      map: parsedContent,
-      destinationPath: config.namespaces ? pathList.skip(1).join('.') : path,
-      item: value
-    );
+        map: parsedContent,
+        destinationPath: config.namespaces ? pathList.skip(1).join('.') : path,
+        item: value);
 
     FileUtils.writeFileOfType(
       fileType: config.fileType,
