@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/utils/file_utils.dart';
@@ -11,6 +12,7 @@ import 'package:slang/builder/utils/node_utils.dart';
 const _supportedFiles = [FileType.json, FileType.yaml];
 
 enum EditOperation {
+  add, // dart run slang edit add fr greetings.hello "Bonjour"
   move, // dart run slang edit move loginPage authPage
   copy, // dart run slang edit copy loginPage authPage
   delete, // dart run slang edit delete loginPage.title
@@ -82,6 +84,18 @@ Future<void> runEdit({
     case EditOperation.outdated:
       print('Adding outdated flags...\n');
       await _outdatedEntry(fileCollection: fileCollection, path: arguments[1]);
+      break;
+    case EditOperation.add:
+      print('Adding translation...\n');
+      if (arguments.length < 4) {
+        throw 'Missing arguments. Expected: dart run slang add myLocale myNamespace.my.path.to.key "My value"';
+      }
+      await _addEntry(
+        fileCollection: fileCollection,
+        locale: I18nLocale.fromString(arguments[1]),
+        path: arguments[2],
+        value: arguments[3],
+      );
       break;
   }
 }
@@ -337,6 +351,46 @@ Future<void> _outdatedEntry({
         );
       },
     );
+
+    FileUtils.writeFileOfType(
+      fileType: config.fileType,
+      path: file.path,
+      content: parsedContent,
+    );
+  }
+}
+
+Future<void> _addEntry({
+  required SlangFileCollection fileCollection,
+  required I18nLocale locale,
+  required String path,
+  required String value,
+}) async {
+  final pathList = path.split('.');
+  final targetNamespace = pathList.first;
+
+  for (final file in fileCollection.files) {
+    final config = fileCollection.config;
+
+    if (file.locale != locale) {
+      // We only want to add the key to the target locale
+      continue;
+    }
+
+    if (config.namespaces && file.namespace != targetNamespace) {
+      // We only want to add the key to the target namespace
+      continue;
+    }
+
+    print('Adding flag to <${file.locale.languageTag}> in ${file.path}...');
+
+    final Map<String, dynamic> parsedContent =
+        await file.readAndParse(config.fileType);
+
+    MapUtils.addItemToMap(
+        map: parsedContent,
+        destinationPath: config.namespaces ? pathList.skip(1).join('.') : path,
+        item: value);
 
     FileUtils.writeFileOfType(
       fileType: config.fileType,

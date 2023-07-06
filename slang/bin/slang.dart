@@ -26,6 +26,7 @@ enum RunnerMode {
   migrate, // migration tool
   edit, // edit translations
   outdated, // add 'OUTDATED' modifier to secondary locales
+  add, // add a translation
 }
 
 /// To run this:
@@ -59,6 +60,9 @@ void main(List<String> arguments) async {
       case 'outdated':
         mode = RunnerMode.outdated;
         break;
+      case 'add':
+        mode = RunnerMode.add;
+        break;
       default:
         mode = RunnerMode.generate;
     }
@@ -89,6 +93,9 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.outdated:
       print('Adding "OUTDATED" flag...');
+      break;
+    case RunnerMode.add:
+      print('Adding translation...');
       break;
   }
 
@@ -134,6 +141,12 @@ void main(List<String> arguments) async {
       );
       break;
     case RunnerMode.outdated:
+      await runEdit(
+        fileCollection: fileCollection,
+        arguments: arguments,
+      );
+      break;
+    case RunnerMode.add:
       await runEdit(
         fileCollection: fileCollection,
         arguments: arguments,
