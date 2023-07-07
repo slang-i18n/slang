@@ -382,7 +382,8 @@ Future<void> _addEntry({
       continue;
     }
 
-    print('Adding translation to <${file.locale.languageTag}> in ${file.path}...');
+    print(
+        'Adding translation to <${file.locale.languageTag}> in ${file.path}...');
 
     final Map<String, dynamic> parsedContent =
         await file.readAndParse(config.fileType);
