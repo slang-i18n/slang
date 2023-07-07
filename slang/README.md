@@ -18,7 +18,7 @@ The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
 - 📁 Organized, split large files into smaller ones via namespaces.
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
-You can see an example of the generated file [here](https://github.com/slang-i18n/slang/blob/master/slang/example/lib/i18n/strings.g.dart).
+You can see an example of the generated file [here](https://github.com/slang-i18n/slang/blob/main/slang/example/lib/i18n/strings.g.dart).
 
 This is how you access the translations:
 
@@ -660,7 +660,7 @@ If namespaces are used, then it has to be specified in the path too.
 
 This library uses the concept defined [here](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
 
-Some languages have support out of the box. See [here](https://github.com/slang-i18n/slang/blob/master/slang/lib/api/plural_resolver_map.dart).
+Some languages have support out of the box. See [here](https://github.com/slang-i18n/slang/blob/main/slang/lib/api/plural_resolver_map.dart).
 
 Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
 
@@ -902,7 +902,7 @@ void main() {
 
 You can customize the attributes and use different node selectors.
 
-Checkout the [full article](https://github.com/slang-i18n/slang/blob/master/slang/documentation/interfaces.md).
+Checkout the [full article](https://github.com/slang-i18n/slang/blob/main/slang/documentation/interfaces.md).
 
 ### ➤ Modifiers
 
@@ -1035,7 +1035,7 @@ String a = t.welcome.title; // get translation
 AppLocale locale = t.$meta.locale; // get locale
 ```
 
-Checkout the [full article](https://github.com/slang-i18n/slang/blob/master/slang/documentation/dependency_injection.md).
+Checkout the [full article](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md).
 
 ## Structuring Features
 
@@ -1584,7 +1584,7 @@ final localeProvider = StreamProvider((ref) => LocaleSettings.getLocaleStream())
 
 **Method B: Use dependency injection**
 
-Checkout [Dependency Injection](https://github.com/slang-i18n/slang/blob/master/slang/documentation/dependency_injection.md).
+Checkout [Dependency Injection](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md).
 
 ## FAQ
 
@@ -1686,8 +1686,8 @@ The second one always returns a new instance.
 
 ### In Depth
 
-- [Interfaces](https://github.com/slang-i18n/slang/blob/master/slang/documentation/interfaces.md)
-- [Dependency Injection](https://github.com/slang-i18n/slang/blob/master/slang/documentation/dependency_injection.md)
+- [Interfaces](https://github.com/slang-i18n/slang/blob/main/slang/documentation/interfaces.md)
+- [Dependency Injection](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md)
 
 ### Tutorials
 

@@ -358,7 +358,7 @@ Future<void> generateTranslations({
         .firstWhereOrNull((c) => c.enumValues != null || c.paths.isNotEmpty);
     if (deprecatedContext != null) {
       print(
-          '${_YELLOW}[Deprecated] Use explicit context modifiers instead of populating the config: ${deprecatedContext.enumName} (see: https://github.com/slang-i18n/slang/blob/master/slang/MIGRATION.md#use-context-modifier-since-3190)$_RESET');
+          '${_YELLOW}[Deprecated] Use explicit context modifiers instead of populating the config: ${deprecatedContext.enumName} (see: https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md#use-context-modifier-since-3190)$_RESET');
     }
   }
 }
