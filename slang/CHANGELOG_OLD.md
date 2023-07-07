@@ -48,7 +48,7 @@ final t = ref.watch(translationProvider);
 String a = t.welcome.title;
 ```
 
-For more information, checkout the [full article](https://github.com/Tienisto/slang/blob/master/documentation/dependency_injection.md).
+For more information, checkout the [full article](https://github.com/slang-i18n/slang/blob/master/documentation/dependency_injection.md).
 
 ## 5.8.0
 
@@ -176,7 +176,7 @@ MaterialApp(
 - feat: generated file follows lint guidelines
 - feat: add support for linked translations, e.g. `Welcome to @:appName`
 
-You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/master/slang/MIGRATION.md).
 
 ## 4.11.0
 

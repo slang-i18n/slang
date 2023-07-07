@@ -7,7 +7,7 @@
 - feat: add enum value inference (no need to specify `enum` in the config anymore)
 - feat: add `slang edit copy` to copy translations
 - feat: namespaces may contain underscores if at least one file of same directory uses locale from directory name
-- **DEPRECATED:** Use explicit `context` modifier instead of relying on the config file (see [migration guide](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md#use-context-modifier-since-3190))
+- **DEPRECATED:** Use explicit `context` modifier instead of relying on the config file (see [migration guide](https://github.com/slang-i18n/slang/blob/master/slang/MIGRATION.md#use-context-modifier-since-3190))
 
 ## 3.18.1
 
@@ -137,7 +137,7 @@
 
 All breaking changes will result in a compile-time error, so don't worry for "hidden" bugs :)
 
-You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/master/slang/MIGRATION.md).
 
 ## 2.8.0
 
@@ -217,4 +217,4 @@ You can read the detailed migration guide [here](https://github.com/Tienisto/sla
 
 Thanks to [@fzyzcjy](https://github.com/fzyzcjy).
 
-You can read the detailed migration guide [here](https://github.com/Tienisto/slang/blob/master/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/master/slang/MIGRATION.md).
