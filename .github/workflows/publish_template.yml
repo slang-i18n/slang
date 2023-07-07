@@ -1,0 +1,41 @@
+name: Publish to pub.dev (template)
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: directory with-in the repository where the package is located (if not in the repository root)
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+
+jobs:
+  publish:
+    name: 'Publish to pub.dev'
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.7.12'
+          channel: 'stable'
+      - name: Dependencies (core)
+        run: flutter pub get
+        working-directory: ${{ inputs.working-directory }}
+      - name: Create publishing token (flutter action does not do this currently)
+        run: |
+          set -eo pipefail
+          PUB_TOKEN=$(curl --retry 5 --retry-connrefused -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https://pub.dev" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" | jq -r '.value')
+          echo "PUB_TOKEN=${PUB_TOKEN}" >> $GITHUB_ENV
+          export PUB_TOKEN
+          flutter pub token add https://pub.dev --env-var PUB_TOKEN
+      - name: Publish - dry run
+        run: flutter pub publish --dry-run
+        working-directory: ${{ inputs.working-directory }}
+      - name: Publish to pub.dev
+        run: flutter pub publish -f
+        working-directory: ${{ inputs.working-directory }}
