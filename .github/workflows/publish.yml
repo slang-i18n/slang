@@ -1,0 +1,19 @@
+name: Publish to pub.dev
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish_slang:
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: slang
+  publish_slang_flutter:
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: slang_flutter
+  publish_slang_build_runner:
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: slang_build_runner
