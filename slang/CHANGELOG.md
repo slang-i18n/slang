@@ -1,3 +1,7 @@
+## 3.20.0
+
+- feat: add `slang add` to add new translations (by [@adil192](https://github.com/adil192))
+
 ## 3.19.0
 
 - feat: add enum value inference (no need to specify `enum` in the config anymore)
