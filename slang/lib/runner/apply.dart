@@ -173,8 +173,12 @@ Map<I18nLocale, Map<String, dynamic>> _readMissingTranslations({
         }
 
         final locale = I18nLocale.fromString(entry.key);
-
         if (targetLocales != null && !targetLocales.contains(locale)) {
+          continue;
+        }
+
+        if (entry.value == null) {
+          // in yaml, empty maps are parsed as null
           continue;
         }
 
