@@ -359,7 +359,7 @@ void _generateTranslationGetter({
     buffer.writeln(
         'class TranslationProvider extends BaseTranslationProvider<$enumName, $baseClassName> {');
     buffer.writeln(
-        '\tconst TranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);');
+        '\tTranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);');
     buffer.writeln();
     buffer.writeln(
         '\tstatic InheritedLocaleData<$enumName, $baseClassName> of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context);');

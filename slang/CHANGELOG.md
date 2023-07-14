@@ -1,7 +1,3 @@
-## 3.21.0
-
-- feat: add `const` to `TranslationProvider` constructor
-
 ## 3.20.0
 
 - feat: add `slang add` to add new translations (by [@adil192](https://github.com/adil192))

@@ -70,7 +70,7 @@ class Translations {
 
 /// The provider for method B
 class TranslationProvider extends BaseTranslationProvider<AppLocale, _TranslationsEn> {
-	const TranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);
+	TranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);
 
 	static InheritedLocaleData<AppLocale, _TranslationsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context);
 }
