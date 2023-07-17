@@ -1,6 +1,7 @@
 import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
+import 'package:slang/builder/model/build_result.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';
 import 'package:slang/builder/model/raw_config.dart';
@@ -36,8 +37,21 @@ void main() {
   print('');
 }
 
+BuildResult _generate({
+  required RawConfig rawConfig,
+  required String baseName,
+  required TranslationMap translationMap,
+}) {
+  return GeneratorFacade.generate(
+    rawConfig: rawConfig,
+    baseName: 'translations',
+    translationMap: translationMap,
+    inputDirectoryHint: 'fake/path/integration',
+  );
+}
+
 void generateMainIntegration(RawConfig buildConfig, String en, String de) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig,
     baseName: 'translations',
     translationMap: TranslationMap()
@@ -62,7 +76,7 @@ void generateMainSplitIntegration(
   String en,
   String de,
 ) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig.copyWith(outputFormat: OutputFormat.multipleFiles),
     baseName: 'translations',
     translationMap: TranslationMap()
@@ -98,7 +112,7 @@ void generateMainSplitIntegration(
 }
 
 void generateNoFlutter(RawConfig buildConfig, String simple) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig.copyWith(flutterIntegration: false),
     baseName: 'translations',
     translationMap: TranslationMap()
@@ -115,7 +129,7 @@ void generateNoFlutter(RawConfig buildConfig, String simple) {
 }
 
 void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig.copyWith(renderLocaleHandling: false),
     baseName: 'translations',
     translationMap: TranslationMap()
@@ -132,7 +146,7 @@ void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
 }
 
 void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig.copyWith(translationOverrides: true),
     baseName: 'translations',
     translationMap: TranslationMap()
@@ -153,7 +167,7 @@ void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
 }
 
 void generateFallbackBaseLocale(RawConfig buildConfig, String en, String de) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig.copyWith(
       fallbackStrategy: FallbackStrategy.baseLocale,
     ),
@@ -176,7 +190,7 @@ void generateFallbackBaseLocale(RawConfig buildConfig, String en, String de) {
 }
 
 void generateObfuscation(RawConfig buildConfig, String en, String de) {
-  final result = GeneratorFacade.generate(
+  final result = _generate(
     rawConfig: buildConfig.copyWith(
       obfuscation: ObfuscationConfig(
         enabled: true,

@@ -30,6 +30,7 @@ void main() {
           locale: I18nLocale.fromString('en'),
           translations: JsonDecoder().decode(input),
         ),
+      inputDirectoryHint: 'fake/path/integration',
     );
 
     expect(result.joinAsSingleOutput(), expectedOutput);

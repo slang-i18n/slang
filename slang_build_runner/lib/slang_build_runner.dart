@@ -68,6 +68,7 @@ class I18nBuilder implements Builder {
       rawConfig: config,
       baseName: config.outputFileName.getFileNameNoExtension(),
       translationMap: translationMap,
+      inputDirectoryHint: fileCollection.determineInputPath(),
     );
 
     // STEP 4: write output to hard drive

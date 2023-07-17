@@ -1,3 +1,8 @@
+## 3.21.0
+
+- feat: add input directory as comment to generated files
+- fix: handle empty maps in `_missing_translations` in yaml format (by [@adil192](https://github.com/adil192))
+
 ## 3.20.0
 
 - feat: add `slang add` to add new translations (by [@adil192](https://github.com/adil192))

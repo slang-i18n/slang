@@ -33,6 +33,7 @@ void main() {
           locale: I18nLocale.fromString('de'),
           translations: YamlDecoder().decode(deInput),
         ),
+      inputDirectoryHint: 'fake/path/integration',
     );
 
     expect(result.joinAsSingleOutput(), expectedOutput);

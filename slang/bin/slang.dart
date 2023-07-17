@@ -291,6 +291,7 @@ Future<void> generateTranslations({
     rawConfig: fileCollection.config,
     baseName: fileCollection.config.outputFileName.getFileNameNoExtension(),
     translationMap: translationMap,
+    inputDirectoryHint: fileCollection.determineInputPath(),
   );
 
   // STEP 4: write output to hard drive

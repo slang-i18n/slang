@@ -3,16 +3,19 @@ import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/model/slang_file_collection.dart';
 
 class GenerateConfigBuilder {
   static GenerateConfig build({
     required String baseName,
     required RawConfig config,
+    required String inputDirectoryHint,
     required List<ContextType> contexts,
     required List<Interface> interfaces,
   }) {
     return GenerateConfig(
       buildConfig: config.toBuildModelConfig(),
+      inputDirectoryHint: inputDirectoryHint,
       baseName: baseName,
       baseLocale: config.baseLocale,
       fallbackStrategy: config.fallbackStrategy,

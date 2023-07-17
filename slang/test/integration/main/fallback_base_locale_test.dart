@@ -39,6 +39,7 @@ void main() {
           locale: I18nLocale.fromString('de'),
           translations: parsed['de'],
         ),
+      inputDirectoryHint: 'fake/path/integration',
     );
 
     expect(result.joinAsSingleOutput(), expectedOutput);

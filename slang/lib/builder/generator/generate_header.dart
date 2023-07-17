@@ -122,6 +122,9 @@ void _generateHeaderComment({
   buffer.writeln('''
 /// Generated file. Do not edit.
 ///
+/// Original: ${config.inputDirectoryHint}
+/// To regenerate, run: `dart run slang`
+///
 /// Locales: ${translations.length}
 /// Strings: $count$countPerLocale
 $renderTimestamp

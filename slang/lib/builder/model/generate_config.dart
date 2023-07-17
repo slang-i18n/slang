@@ -9,6 +9,7 @@ import 'package:slang/builder/model/obfuscation_config.dart';
 /// Applies to all locales
 class GenerateConfig {
   final BuildModelConfig buildConfig; // for translation overrides
+  final String inputDirectoryHint; // for comment
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
   final FallbackStrategy fallbackStrategy;
@@ -28,6 +29,7 @@ class GenerateConfig {
 
   GenerateConfig({
     required this.buildConfig,
+    required this.inputDirectoryHint,
     required this.baseName,
     required this.baseLocale,
     required this.fallbackStrategy,

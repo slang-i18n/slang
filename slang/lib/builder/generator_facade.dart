@@ -13,6 +13,7 @@ class GeneratorFacade {
     required RawConfig rawConfig,
     required String baseName,
     required TranslationMap translationMap,
+    required String inputDirectoryHint,
   }) {
     // build translation model
     final translationModelList = TranslationModelListBuilder.build(
@@ -50,6 +51,7 @@ class GeneratorFacade {
     final config = GenerateConfigBuilder.build(
       baseName: baseName,
       config: rawConfig,
+      inputDirectoryHint: inputDirectoryHint,
       contexts: contextMap.values.toList(),
       interfaces: interfaceMap.values.toList(),
     );

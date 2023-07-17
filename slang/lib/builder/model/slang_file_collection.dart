@@ -34,6 +34,17 @@ class SlangFileCollection {
       }
     }
   }
+
+  String determineInputPath() {
+    if (config.inputDirectory != null) {
+      // input directory specified, use this path instead
+      return config.inputDirectory!;
+    } else {
+      // use the directory of the first (random) translation file
+      final segments = PathUtils.getPathSegments(files.first.path);
+      return segments.take(segments.length - 1).join('/');
+    }
+  }
 }
 
 class TranslationFile extends PlainTranslationFile {
