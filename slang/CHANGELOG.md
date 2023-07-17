@@ -1,6 +1,7 @@
 ## 3.21.0
 
 - feat: add input directory as comment to generated files
+- fix: migrate away from deprecated `WidgetsBinding.instance.window` in `findDeviceLocale` implementation
 - fix: handle empty maps in `_missing_translations` in yaml format (by [@adil192](https://github.com/adil192))
 
 ## 3.20.0

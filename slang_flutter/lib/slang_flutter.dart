@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:slang/api/translation_overrides.dart';
 import 'package:slang/builder/model/node.dart';
@@ -13,7 +14,7 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
   /// Returns the locale of the device.
   /// Fallbacks to base locale.
   E findDeviceLocale() {
-    final Locale deviceLocale = WidgetsBinding.instance.window.locale;
+    final Locale deviceLocale = PlatformDispatcher.instance.locale;
     return parseLocaleParts(
       languageCode: deviceLocale.languageCode,
       scriptCode: deviceLocale.scriptCode,
