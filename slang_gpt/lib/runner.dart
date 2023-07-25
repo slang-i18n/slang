@@ -18,6 +18,8 @@ import 'package:slang_gpt/prompt/prompt.dart';
 import 'package:slang_gpt/util/locales.dart';
 import 'package:slang_gpt/util/logger.dart';
 
+const _errorKey = '!error';
+
 Future<void> runGpt(List<String> arguments) async {
   print('Running GPT for slang...');
 
@@ -198,7 +200,12 @@ Future<int> _translate({
       prompt: prompt,
     );
 
-    if (verbose) {
+    final hasError = response.jsonMessage.containsKey(_errorKey);
+
+    if (verbose || hasError) {
+      if (hasError) {
+        print(' -> Error while parsing JSON. Writing to log file.');
+      }
       logGptRequest(
         fromLocale: fileCollection.config.baseLocale,
         toLocale: targetLocale,
@@ -211,12 +218,14 @@ Future<int> _translate({
       );
     }
 
-    result = applyMapRecursive(
-      baseMap: originalTranslations,
-      newMap: response.jsonMessage,
-      oldMap: result,
-      verbose: false,
-    );
+    if (!hasError) {
+      result = applyMapRecursive(
+        baseMap: originalTranslations,
+        newMap: response.jsonMessage,
+        oldMap: result,
+        verbose: false,
+      );
+    }
   }
 
   // add existing translations
@@ -272,9 +281,17 @@ Future<GptResponse> _doRequest({
 
       final rawMap = jsonDecode(utf8.decode(response.bodyBytes));
       final rawMessage = rawMap['choices'][0]['message']['content'] as String;
+      Map<String, dynamic> jsonMessage;
+      try {
+        jsonMessage = _jsonFromMessage(rawMessage);
+      } catch (e) {
+        jsonMessage = {
+          _errorKey: 'Error: ${e.toString()}',
+        };
+      }
       return GptResponse(
         rawMessage: rawMessage,
-        jsonMessage: _jsonFromMessage(rawMessage),
+        jsonMessage: jsonMessage,
         promptTokens: rawMap['usage']['prompt_tokens'] as int,
         completionTokens: rawMap['usage']['completion_tokens'] as int,
         totalTokens: rawMap['usage']['total_tokens'] as int,

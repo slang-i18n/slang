@@ -1,3 +1,7 @@
+## 0.4.0
+
+- feat: write errors to log file
+
 ## 0.3.0
 
 - fix: more locale code fixes
