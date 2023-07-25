@@ -89,7 +89,7 @@ String _getSystemPrompt({
   return '''The user wants to internationalize$namespaceHint the app. The user will provide you with a JSON file containing the ${getEnglishName(rawConfig.baseLocale)} strings.
 You will translate it to ${getEnglishName(targetLocale)}.
 Parameters are interpolated with $interpolationHint.
-JSON keys starting with "@" are comments and should not be translated.
+JSON keys starting with the at sign "@" like "@info" are comments and should not be translated.
 Linked translations are denoted with the "@:path0.path1" syntax.
 
 Here is the app description. Respect this context when translating:

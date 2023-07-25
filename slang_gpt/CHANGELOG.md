@@ -1,6 +1,7 @@
 ## 0.4.0
 
 - feat: write errors to log file
+- feat: improve system prompt
 
 ## 0.3.0
 
