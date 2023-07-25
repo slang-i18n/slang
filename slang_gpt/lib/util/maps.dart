@@ -27,26 +27,31 @@ void removeIgnoreMissing({
 /// A new map is returned containing the comments.
 Map<String, dynamic> extractComments({
   required Map<String, dynamic> map,
+  required bool remove,
 }) {
   final comments = <String, dynamic>{};
   final keysToRemove = <String>[];
   for (final entry in map.entries) {
     if (entry.key.startsWith('@')) {
       comments[entry.key] = entry.value;
-      keysToRemove.add(entry.key);
+      if (remove) {
+        keysToRemove.add(entry.key);
+      }
     } else if (entry.value is Map<String, dynamic>) {
-      final childComments = extractComments(map: entry.value);
+      final childComments = extractComments(map: entry.value, remove: remove);
       if (childComments.isNotEmpty) {
         comments[entry.key] = childComments;
       }
-      if (entry.value.isEmpty) {
+      if (remove && entry.value.isEmpty) {
         keysToRemove.add(entry.key);
       }
     }
   }
 
-  for (final key in keysToRemove) {
-    map.remove(key);
+  if (remove) {
+    for (final key in keysToRemove) {
+      map.remove(key);
+    }
   }
 
   return comments;

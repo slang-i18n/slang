@@ -52,7 +52,7 @@ void main() {
         'c': 'd',
       };
 
-      final comments = extractComments(map: map);
+      final comments = extractComments(map: map, remove: true);
 
       expect(map, {
         'c': 'd',
@@ -71,7 +71,7 @@ void main() {
         },
       };
 
-      final comments = extractComments(map: map);
+      final comments = extractComments(map: map, remove: true);
 
       expect(map, {
         'a': {
@@ -96,7 +96,7 @@ void main() {
         },
       };
 
-      final comments = extractComments(map: map);
+      final comments = extractComments(map: map, remove: true);
 
       expect(map, {
         'f': {
@@ -108,6 +108,24 @@ void main() {
         'a': {
           '@b': 'c',
         },
+      });
+    });
+
+    test('Should not remove', () {
+      final map = {
+        '@a': 'b',
+        'c': 'd',
+      };
+
+      final comments = extractComments(map: map, remove: false);
+
+      expect(map, {
+        '@a': 'b',
+        'c': 'd',
+      });
+
+      expect(comments, {
+        '@a': 'b',
       });
     });
   });

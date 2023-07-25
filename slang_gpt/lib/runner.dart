@@ -178,7 +178,13 @@ Future<int> _translate({
   );
 
   removeIgnoreMissing(map: inputTranslations);
-  final comments = extractComments(map: inputTranslations);
+
+  // extract original comments but keep them in the inputTranslations
+  // we will add the original comments later again
+  final comments = extractComments(
+    map: inputTranslations,
+    remove: false,
+  );
 
   if (inputTranslations.isEmpty) {
     print(' -> No new translations');

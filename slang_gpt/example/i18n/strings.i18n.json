@@ -6,6 +6,7 @@
   "highScore": "High Score",
   "playAgain": "Play Again",
   "settings": {
+    "@hello": "Hello",
     "title": "Settings",
     "language": "Language"
   }

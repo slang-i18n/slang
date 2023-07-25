@@ -1,3 +1,8 @@
+## 0.6.0
+
+- feat: add more locale codes
+- feat: add comments to GPT input but replace them after processing
+
 ## 0.5.0
 
 - feat: remove `ignoreMissing` and comments from GPT input
