@@ -15,7 +15,7 @@ void main() {
     });
 
     test('should fallback to language', () {
-      final locale = getEnglishName(I18nLocale.fromString('de-DE'));
+      final locale = getEnglishName(I18nLocale.fromString('de-CN'));
       expect(locale, 'German');
     });
   });
