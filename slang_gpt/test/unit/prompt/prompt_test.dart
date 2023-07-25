@@ -9,8 +9,10 @@ const _expectedSystemPrompt =
     r'''The user wants to internationalize the app. The user will provide you with a JSON file containing the English strings.
 You will translate it to German.
 Parameters are interpolated with ${parameter} or $parameter.
+JSON keys starting with "@" are comments and should not be translated.
+Linked translations are denoted with the "@:path0.path1" syntax.
 
-Here is the app description:
+Here is the app description. Respect this context when translating:
 A simple calculator''';
 
 void main() {
@@ -99,8 +101,10 @@ void main() {
         r'''The user wants to internationalize the "settings" part of the app. The user will provide you with a JSON file containing the English strings.
 You will translate it to German.
 Parameters are interpolated with ${parameter} or $parameter.
+JSON keys starting with "@" are comments and should not be translated.
+Linked translations are denoted with the "@:path0.path1" syntax.
 
-Here is the app description:
+Here is the app description. Respect this context when translating:
 A simple calculator''',
       );
     });

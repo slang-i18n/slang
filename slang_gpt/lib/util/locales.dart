@@ -480,6 +480,7 @@ const _englishLocales = {
   'vi': 'Vietnamese',
   'vi-VN': 'Vietnamese (Vietnam)',
   'zh': 'Chinese',
+  'zh-CN': 'Chinese (China)',
   'zh-Hans': 'Chinese (Simplified)',
   'zh-Hans-HK': 'Chinese (Simplified, Hong Kong SAR China)',
   'zh-Hans-MO': 'Chinese (Simplified, Macau SAR China)',
