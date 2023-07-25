@@ -1,3 +1,7 @@
+## 0.3.0
+
+- fix: more locale code fixes
+
 ## 0.2.0
 
 - fix: locale codes
