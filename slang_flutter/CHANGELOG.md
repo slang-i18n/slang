@@ -1,3 +1,7 @@
+## 3.22.0
+
+- Bump `slang` to `3.22.0`
+
 ## 3.21.0
 
 - fix: migrate away from deprecated `WidgetsBinding.instance.window` in `findDeviceLocale` implementation

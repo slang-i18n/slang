@@ -1,3 +1,7 @@
+## 3.22.0
+
+- feat: announcing [slang_gpt](https://pub.dev/packages/slang_gpt), a new package to generate translations with GPT
+
 ## 3.21.0
 
 - feat: add input directory as comment to generated files
