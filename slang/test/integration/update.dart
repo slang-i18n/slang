@@ -9,7 +9,6 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 
-import '../util/config_utils.dart';
 import '../util/resources_utils.dart';
 
 /// To run this:
@@ -130,7 +129,7 @@ void generateNoFlutter(RawConfig buildConfig, String simple) {
 
 void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
   final result = _generate(
-    rawConfig: buildConfig.copyWith(renderLocaleHandling: false),
+    rawConfig: buildConfig.copyWith(localeHandling: false),
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(

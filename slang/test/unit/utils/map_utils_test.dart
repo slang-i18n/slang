@@ -308,4 +308,68 @@ void main() {
       expect(map['a']!['b']!['d'], 43);
     });
   });
+
+  group('subtract', () {
+    test('Should subtract a single value', () {
+      final result = MapUtils.subtract(
+        target: {'a': 42},
+        other: {'a': 33},
+      );
+
+      expect(result, {});
+    });
+
+    test('Should ignore missing values', () {
+      final result = MapUtils.subtract(
+        target: {'a': 42},
+        other: {'b': 33},
+      );
+
+      expect(result, {'a': 42});
+    });
+
+    test('Should keep whole map', () {
+      final result = MapUtils.subtract(
+        target: {
+          'a': 42,
+          'b': {
+            'a': true,
+          }
+        },
+        other: {
+          'a': 42,
+        },
+      );
+
+      expect(result, {
+        'b': {
+          'a': true,
+        }
+      });
+    });
+
+    test('Should subtract map partially', () {
+      final result = MapUtils.subtract(
+        target: {
+          'a': 42,
+          'b': {
+            'c': true,
+            'd': false,
+          }
+        },
+        other: {
+          'a': 42,
+          'b': {
+            'c': true,
+          },
+        },
+      );
+
+      expect(result, {
+        'b': {
+          'd': false,
+        },
+      });
+    });
+  });
 }

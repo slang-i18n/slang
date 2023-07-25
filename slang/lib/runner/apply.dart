@@ -262,6 +262,7 @@ Future<void> _applyTranslationsForFile({
     baseMap: baseTranslations,
     newMap: newTranslations,
     oldMap: parsedContent,
+    verbose: true,
   );
 
   FileUtils.writeFileOfType(
@@ -285,6 +286,7 @@ Map<String, dynamic> applyMapRecursive({
   required Map<String, dynamic> baseMap,
   required Map<String, dynamic> newMap,
   required Map<String, dynamic> oldMap,
+  required bool verbose,
 }) {
   final resultMap = <String, dynamic>{};
   final Set<String> overwrittenKeys = {}; // keys without modifiers
@@ -312,13 +314,16 @@ Map<String, dynamic> applyMapRecursive({
             : throw 'In the base translations, "$key" is not a map.',
         newMap: newEntry ?? {},
         oldMap: oldMap[key] ?? {},
+        verbose: verbose,
       );
     }
 
     if (newEntry != null) {
       final split = key.split('(');
       overwrittenKeys.add(split.first);
-      _printAdding(currPath, actualValue);
+      if (verbose) {
+        _printAdding(currPath, actualValue);
+      }
     }
     resultMap[key] = actualValue;
   }
@@ -348,10 +353,11 @@ Map<String, dynamic> applyMapRecursive({
         baseMap: {},
         newMap: newEntry ?? {},
         oldMap: oldMap[key],
+        verbose: verbose,
       );
     }
 
-    if (newEntry != null) {
+    if (verbose && newEntry != null) {
       _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;

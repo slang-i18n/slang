@@ -1,3 +1,6 @@
+import 'package:collection/collection.dart';
+import 'package:slang/builder/utils/node_utils.dart';
+
 class MapUtils {
   /// converts Map<dynamic, dynamic> to Map<String, dynamic> for all children
   /// forcing all keys to be strings
@@ -284,6 +287,41 @@ class MapUtils {
 
     // This should never be reached.
     return false;
+  }
+
+  /// Removes all keys from [target] that also exist in [other].
+  static Map<String, dynamic> subtract({
+    required Map<String, dynamic> target,
+    required Map<String, dynamic> other,
+  }) {
+    final resultMap = <String, dynamic>{};
+    for (final entry in target.entries) {
+      final keyWithoutModifier = entry.key.withoutModifiers;
+      if (entry.value is! Map) {
+        // Add the entry if the key does not exist in the other map.
+        if (other.keys.firstWhereOrNull(
+                (k) => k.withoutModifiers == keyWithoutModifier) ==
+            null) {
+          resultMap[entry.key] = entry.value;
+        }
+      } else {
+        // Recursively subtract the map.
+        final otherKey = other.keys
+            .firstWhereOrNull((k) => k.withoutModifiers == keyWithoutModifier);
+        if (otherKey == null) {
+          resultMap[entry.key] = entry.value;
+        } else {
+          final subtracted = subtract(
+            target: entry.value,
+            other: other[otherKey],
+          );
+          if (subtracted.isNotEmpty) {
+            resultMap[entry.key] = subtracted;
+          }
+        }
+      }
+    }
+    return resultMap;
   }
 }
 

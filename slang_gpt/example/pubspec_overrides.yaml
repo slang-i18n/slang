@@ -1,0 +1,5 @@
+dependency_overrides:
+  slang:
+    path: ../../slang
+  slang_gpt:
+    path: ..

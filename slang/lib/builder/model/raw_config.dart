@@ -70,6 +70,9 @@ class RawConfig {
   final ObfuscationConfig obfuscation;
   final List<String> imports;
 
+  /// Used by external tools to access the raw config. (e.g. slang_gpt)
+  final Map<String, dynamic> rawMap;
+
   RawConfig({
     required this.baseLocale,
     required this.fallbackStrategy,
@@ -100,7 +103,61 @@ class RawConfig {
     required this.interfaces,
     required this.obfuscation,
     required this.imports,
+    required this.rawMap,
   }) : fileType = _determineFileType(inputFilePattern);
+
+  RawConfig copyWith({
+    I18nLocale? baseLocale,
+    FallbackStrategy? fallbackStrategy,
+    String? inputFilePattern,
+    OutputFormat? outputFormat,
+    bool? localeHandling,
+    bool? flutterIntegration,
+    bool? namespaces,
+    CaseStyle? keyCase,
+    CaseStyle? keyMapCase,
+    bool? translationOverrides,
+    List<String>? maps,
+    PluralAuto? pluralAuto,
+    List<String>? pluralCardinal,
+    List<String>? pluralOrdinal,
+    List<ContextType>? contexts,
+    List<InterfaceConfig>? interfaces,
+    ObfuscationConfig? obfuscation,
+  }) {
+    return RawConfig(
+      baseLocale: baseLocale ?? this.baseLocale,
+      fallbackStrategy: fallbackStrategy ?? this.fallbackStrategy,
+      inputDirectory: inputDirectory,
+      inputFilePattern: inputFilePattern ?? this.inputFilePattern,
+      outputDirectory: outputDirectory,
+      outputFileName: outputFileName,
+      outputFormat: outputFormat ?? this.outputFormat,
+      localeHandling: localeHandling ?? this.localeHandling,
+      flutterIntegration: flutterIntegration ?? this.flutterIntegration,
+      namespaces: namespaces ?? this.namespaces,
+      translateVar: translateVar,
+      enumName: enumName,
+      translationClassVisibility: translationClassVisibility,
+      keyCase: keyCase ?? this.keyCase,
+      keyMapCase: keyMapCase ?? this.keyMapCase,
+      paramCase: paramCase,
+      stringInterpolation: stringInterpolation,
+      renderFlatMap: renderFlatMap,
+      renderTimestamp: renderTimestamp,
+      translationOverrides: translationOverrides ?? this.translationOverrides,
+      maps: maps ?? this.maps,
+      pluralAuto: pluralAuto ?? this.pluralAuto,
+      pluralParameter: pluralParameter,
+      pluralCardinal: pluralCardinal ?? this.pluralCardinal,
+      pluralOrdinal: pluralOrdinal ?? this.pluralOrdinal,
+      contexts: contexts ?? this.contexts,
+      interfaces: interfaces ?? this.interfaces,
+      obfuscation: obfuscation ?? this.obfuscation,
+      imports: imports,
+      rawMap: rawMap,
+    );
+  }
 
   void validate() {
     if (translationOverrides && !renderFlatMap) {
@@ -175,4 +232,40 @@ class RawConfig {
     print(' -> obfuscation: ${obfuscation.enabled ? 'enabled' : 'disabled'}');
     print(' -> imports: $imports');
   }
+
+  static final defaultLocale =
+      I18nLocale.fromString(RawConfig.defaultBaseLocale);
+
+  static final defaultConfig = RawConfig(
+    baseLocale: defaultLocale,
+    fallbackStrategy: RawConfig.defaultFallbackStrategy,
+    inputDirectory: RawConfig.defaultInputDirectory,
+    inputFilePattern: RawConfig.defaultInputFilePattern,
+    outputDirectory: RawConfig.defaultOutputDirectory,
+    outputFileName: RawConfig.defaultOutputFileName,
+    outputFormat: RawConfig.defaultOutputFormat,
+    localeHandling: RawConfig.defaultLocaleHandling,
+    flutterIntegration: RawConfig.defaultFlutterIntegration,
+    namespaces: RawConfig.defaultNamespaces,
+    translateVar: RawConfig.defaultTranslateVar,
+    enumName: RawConfig.defaultEnumName,
+    translationClassVisibility: RawConfig.defaultTranslationClassVisibility,
+    keyCase: RawConfig.defaultKeyCase,
+    keyMapCase: RawConfig.defaultKeyMapCase,
+    paramCase: RawConfig.defaultParamCase,
+    stringInterpolation: RawConfig.defaultStringInterpolation,
+    renderFlatMap: RawConfig.defaultRenderFlatMap,
+    translationOverrides: RawConfig.defaultTranslationOverrides,
+    renderTimestamp: RawConfig.defaultRenderTimestamp,
+    maps: RawConfig.defaultMaps,
+    pluralAuto: RawConfig.defaultPluralAuto,
+    pluralParameter: RawConfig.defaultPluralParameter,
+    pluralCardinal: RawConfig.defaultCardinal,
+    pluralOrdinal: RawConfig.defaultOrdinal,
+    contexts: RawConfig.defaultContexts,
+    interfaces: RawConfig.defaultInterfaces,
+    obfuscation: RawConfig.defaultObfuscationConfig,
+    imports: RawConfig.defaultImports,
+    rawMap: {},
+  );
 }

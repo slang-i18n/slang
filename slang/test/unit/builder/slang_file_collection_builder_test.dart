@@ -1,9 +1,8 @@
 import 'package:slang/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:test/test.dart';
-
-import '../../util/config_utils.dart';
 
 PlainTranslationFile _file(String path) {
   return PlainTranslationFile(path: path, read: () => Future.value(''));
@@ -13,7 +12,8 @@ void main() {
   group('SlangFileCollectionBuilder.fromFileModel', () {
     test('should find base locale', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
-        config: baseConfig.copyWith(baseLocale: I18nLocale(language: 'de')),
+        config: RawConfig.defaultConfig
+            .copyWith(baseLocale: I18nLocale(language: 'de')),
         files: [
           _file('lib/i18n/strings.i18n.json'),
         ],
@@ -25,7 +25,8 @@ void main() {
 
     test('should find locale in file names', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
-        config: baseConfig.copyWith(baseLocale: I18nLocale(language: 'en')),
+        config: RawConfig.defaultConfig
+            .copyWith(baseLocale: I18nLocale(language: 'en')),
         files: [
           _file('lib/i18n/strings.i18n.json'),
           _file('lib/i18n/strings_de.i18n.json'),
@@ -42,7 +43,7 @@ void main() {
 
     test('should find base locale with namespace', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
-        config: baseConfig.copyWith(
+        config: RawConfig.defaultConfig.copyWith(
           baseLocale: I18nLocale(language: 'fr'),
           namespaces: true,
         ),
@@ -58,7 +59,7 @@ void main() {
 
     test('should find directory locale', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
-        config: baseConfig.copyWith(
+        config: RawConfig.defaultConfig.copyWith(
           baseLocale: I18nLocale(language: 'de'),
           namespaces: true,
         ),
@@ -83,7 +84,7 @@ void main() {
 
     test('should ignore underscore if directory locale is used', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
-        config: baseConfig.copyWith(
+        config: RawConfig.defaultConfig.copyWith(
           baseLocale: I18nLocale(language: 'de'),
           inputFilePattern: '.yaml',
           namespaces: true,

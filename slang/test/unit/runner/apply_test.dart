@@ -8,6 +8,7 @@ void main() {
         baseMap: {'c': 'C'},
         newMap: {'a': 'A'},
         oldMap: {'b': 'B'},
+        verbose: false,
       );
       expect(result, {'b': 'B'});
       expect(result.keys.toList(), ['b']);
@@ -23,6 +24,7 @@ void main() {
         baseMap: map,
         newMap: {},
         oldMap: map,
+        verbose: false,
       );
       expect(result, map);
     });
@@ -37,6 +39,7 @@ void main() {
         baseMap: {},
         newMap: {},
         oldMap: map,
+        verbose: false,
       );
       expect(result, map);
     });
@@ -46,6 +49,7 @@ void main() {
         baseMap: {},
         newMap: {'d4': 'D'},
         oldMap: {'c1': 'C', 'a2': 'A', 'b3': 'B'},
+        verbose: false,
       );
       expect(result, {
         'c1': 'C',
@@ -65,6 +69,7 @@ void main() {
         },
         newMap: {'d4': 'D'},
         oldMap: {'c1': 'C', 'a2': 'A', 'b3': 'B'},
+        verbose: false,
       );
       expect(result, {
         'c1': 'C',
@@ -89,6 +94,7 @@ void main() {
           'd': 'D',
           'a': 'A',
         },
+        verbose: false,
       );
       expect(result, {
         'c': 'C',
@@ -123,6 +129,7 @@ void main() {
           },
           'b': 'B',
         },
+        verbose: false,
       );
       expect(result, {
         'c': 'C',

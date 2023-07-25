@@ -5,7 +5,6 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
-import '../../util/config_utils.dart';
 import '../../util/resources_utils.dart';
 
 void main() {

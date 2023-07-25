@@ -92,7 +92,6 @@ void main(List<String> arguments) async {
     case RunnerMode.edit:
       break;
     case RunnerMode.outdated:
-      print('Adding "OUTDATED" flag...');
       break;
     case RunnerMode.add:
       print('Adding translation...');

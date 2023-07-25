@@ -86,6 +86,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Apply Translations](#-apply-translations)
   - [Edit Translations](#-edit-translations)
   - [Outdated Translations](#-outdated-translations)
+  - [Translate with GPT](#-translate-with-gpt)
   - [Migration](#-migration)
     - [ARB](#arb)
   - [Statistics](#-statistics)
@@ -1436,6 +1437,30 @@ This will add an `(OUTDATED)` modifier to all secondary locales.
 ```
 
 You can also add these flags manually!
+
+### ➤ Translate with GPT
+
+Take advantage of GPT to internationalize your app with context-aware translations.
+
+Import [slang_gpt](https://pub.dev/packages/slang_gpt) to your `dev_dependencies`.
+
+Then add the following configuration:
+
+```yaml
+# existing config
+base_locale: fr
+fallback_strategy: base_locale
+input_directory: lib/i18n
+input_file_pattern: .i18n.json
+output_directory: lib/i18n
+
+# add this
+gpt:
+  model: gpt-3.5-turbo
+  description: |
+    "River Adventure" is a game where you need to cross a river by jumping on stones.
+    The game is over when you either fall into the water or reach the other side.
+```
 
 ### ➤ Migration
 

@@ -4,16 +4,15 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
+import 'package:slang/builder/model/raw_config.dart';
 import 'package:test/test.dart';
-
-import '../../util/config_utils.dart';
 
 void main() {
   group('TranslationModelBuilder.build', () {
     test('1 StringTextNode', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'test': 'a',
         },
@@ -24,12 +23,12 @@ void main() {
 
     test('keyCase=snake and keyMapCase=camel', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.copyWith(
+        buildConfig: RawConfig.defaultConfig.copyWith(
           maps: ['my_map'],
           keyCase: CaseStyle.snake,
           keyMapCase: CaseStyle.camel,
         ).toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'myMap': {'my_value': 'cool'},
         },
@@ -40,11 +39,11 @@ void main() {
 
     test('keyCase=snake and keyMapCase=null', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.copyWith(
+        buildConfig: RawConfig.defaultConfig.copyWith(
           maps: ['my_map'],
           keyCase: CaseStyle.snake,
         ).toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'myMap': {'my_value 3': 'cool'},
         },
@@ -55,8 +54,8 @@ void main() {
 
     test('one link no parameters', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'a': 'A',
           'b': 'Hello @:a',
@@ -69,8 +68,8 @@ void main() {
 
     test('one link 2 parameters straight', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'a': r'A $p1 $p1 $p2',
           'b': 'Hello @:a',
@@ -83,8 +82,8 @@ void main() {
 
     test('linked translations with parameters recursive', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'a': r'A $p1 $p1 $p2 @:b @:c',
           'b': r'Hello $p3 @:a',
@@ -99,8 +98,8 @@ void main() {
 
     test('linked translation with plural', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'a': {
             'one': 'ONE',
@@ -117,7 +116,7 @@ void main() {
 
     test('linked translation with context', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.copyWith(contexts: [
+        buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
           ContextType(
             enumName: 'GenderCon',
             enumValues: ['male', 'female'],
@@ -126,7 +125,7 @@ void main() {
             generateEnum: true,
           ),
         ]).toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'a': {
             'male': 'MALE',
@@ -143,7 +142,7 @@ void main() {
 
     test('empty lists should take generic type of interface', () {
       final result = TranslationModelBuilder.build(
-        buildConfig: baseConfig.copyWith(interfaces: [
+        buildConfig: RawConfig.defaultConfig.copyWith(interfaces: [
           InterfaceConfig(
             name: 'MyInterface',
             paths: [InterfacePath('myEntry')],
@@ -169,7 +168,7 @@ void main() {
             },
           ),
         ]).toBuildModelConfig(),
-        localeDebug: defaultLocale.languageTag,
+        localeDebug: RawConfig.defaultBaseLocale,
         map: {
           'myEntry': {
             'myList': [],

@@ -1,0 +1,24 @@
+{
+  "tokens": {
+    "input": 118,
+    "output": 33,
+    "total": 151
+  },
+  "system": "The user wants to internationalize the app. The user will provide you with a JSON file containing the English strings.\nYou will translate it to French.\nParameters are interpolated with ${parameter} or $parameter.\n\nHere is the app description:\n\"River Adventure\" is a game where you need to cross a river by jumping on stones.\nThe game is over when you either fall into the water or reach the other side.",
+  "user": "{\"startGame\":\"Start Game\",\"gameOver\":\"Game Over\",\"score\":\"Score\",\"reachedBank\":\"Reached Bank\"}",
+  "response": "{\"startGame\":\"Commencer le jeu\",\"gameOver\":\"Partie Terminée\",\"score\":\"Score\",\"reachedBank\":\"Arrivé à la rive\"}",
+  "json": {
+    "input": {
+      "startGame": "Start Game",
+      "gameOver": "Game Over",
+      "score": "Score",
+      "reachedBank": "Reached Bank"
+    },
+    "output": {
+      "startGame": "Commencer le jeu",
+      "gameOver": "Partie Terminée",
+      "score": "Score",
+      "reachedBank": "Arrivé à la rive"
+    }
+  }
+}

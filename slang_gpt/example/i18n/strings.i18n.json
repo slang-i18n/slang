@@ -1,0 +1,12 @@
+{
+  "startGame": "Start Game",
+  "gameOver": "Game Over",
+  "score": "Score",
+  "reachedBank": "Reached Bank",
+  "highScore": "High Score",
+  "playAgain": "Play Again",
+  "settings": {
+    "title": "Settings",
+    "language": "Language"
+  }
+}
