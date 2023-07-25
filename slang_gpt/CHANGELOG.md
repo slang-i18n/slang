@@ -1,3 +1,7 @@
+## 0.5.0
+
+- feat: remove `ignoreMissing` and comments from GPT input
+
 ## 0.4.0
 
 - feat: write errors to log file

@@ -17,6 +17,7 @@ import 'package:slang_gpt/model/gpt_response.dart';
 import 'package:slang_gpt/prompt/prompt.dart';
 import 'package:slang_gpt/util/locales.dart';
 import 'package:slang_gpt/util/logger.dart';
+import 'package:slang_gpt/util/maps.dart';
 
 const _errorKey = '!error';
 
@@ -176,6 +177,9 @@ Future<int> _translate({
     other: existingTranslations,
   );
 
+  removeIgnoreMissing(map: inputTranslations);
+  final comments = extractComments(map: inputTranslations);
+
   if (inputTranslations.isEmpty) {
     print(' -> No new translations');
     return promptCount;
@@ -232,6 +236,14 @@ Future<int> _translate({
   result = applyMapRecursive(
     baseMap: originalTranslations,
     newMap: existingTranslations,
+    oldMap: result,
+    verbose: false,
+  );
+
+  // add comments
+  result = applyMapRecursive(
+    baseMap: originalTranslations,
+    newMap: comments,
     oldMap: result,
     verbose: false,
   );
