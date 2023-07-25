@@ -33,3 +33,16 @@ jobs:
       - name: Test (core)
         run: dart test
         working-directory: slang
+
+      - name: Dependencies (gpt)
+        run: flutter pub get
+        working-directory: slang_gpt
+      - name: Check format (gpt)
+        run: dart format --set-exit-if-changed lib bin test
+        working-directory: slang_gpt
+      - name: Analyze (gpt)
+        run: flutter analyze
+        working-directory: slang_gpt
+      - name: Test (gpt)
+        run: dart test
+        working-directory: slang_gpt
