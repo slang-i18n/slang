@@ -49,7 +49,7 @@ class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
 
   @override
   void updateProviderState(BaseAppLocale locale) {
-    for (final key in GlobalKeyHandler.instance._globalKeys) {
+    for (final key in GlobalKeyHandler.instance._globalKeys.values) {
       (key.currentState as _TranslationProviderState?)?.updateState(locale);
     }
   }
@@ -79,7 +79,11 @@ abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
     required this.settings,
     required this.child,
   })  : initTranslations = settings.currentTranslations,
-        super(key: GlobalKeyHandler.instance.register<E, T>());
+        super(
+          key: GlobalKeyHandler.instance.register<E, T>(
+            baseLocale: settings.utils.baseLocale,
+          ),
+        );
 
   final Widget child;
 
@@ -187,13 +191,28 @@ class GlobalKeyHandler {
   /// Singleton instance
   static final GlobalKeyHandler instance = GlobalKeyHandler._();
 
-  List<GlobalKey> _globalKeys = [];
+  /// We need the global keys to be able to trigger rebuilds.
+  ///
+  /// The [BaseAppLocale] key instance is needed to avoid registering
+  /// the same [TranslationProvider] multiple times.
+  Map<BaseAppLocale, GlobalKey> _globalKeys = {};
 
   /// Registers a new global key for a specific generic type.
   GlobalKey<_TranslationProviderState<E, T>> register<
-      E extends BaseAppLocale<E, T>, T extends BaseTranslations<E, T>>() {
+      E extends BaseAppLocale<E, T>, T extends BaseTranslations<E, T>>({
+    required E baseLocale,
+  }) {
+    final existing = _globalKeys[baseLocale];
+    if (existing != null) {
+      // It seems that the constructor of [TranslationProvider] is called again.
+      // This is why we need to return the existing key.
+      // This happens if the developer constructs the [TranslationProvider]
+      // in the build method of a widget.
+      return existing as GlobalKey<_TranslationProviderState<E, T>>;
+    }
+
     final key = GlobalKey<_TranslationProviderState<E, T>>();
-    _globalKeys.add(key);
+    _globalKeys[baseLocale] = key;
     return key;
   }
 }
