@@ -1,3 +1,9 @@
+## 0.7.0
+
+- feat: add `temperature` config
+- feat: print total costs to console
+- feat: change `--verbose` to `--debug`
+
 ## 0.6.0
 
 - feat: add more locale codes

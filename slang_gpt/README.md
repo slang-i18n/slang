@@ -55,17 +55,18 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 |--------------------|----------|----------------------------------|----------|---------------------|
 | `model`            | `String` | Model name                       | YES      |                     |
 | `max_input_length` | `int`    | Max input characters per request | NO       | (inferred by model) |
+| `temperature`      | `double` | Temperature parameter for GPT    | NO       | (API default)       |
 | `description`      | `String` | App description                  | YES      |                     |
 
 ## Command line arguments
 
-| Argument           | Description              | Required | Default                |
-|--------------------|--------------------------|----------|------------------------|
-| `--target=`        | Target language          | NO       | (all existing locales) |
-| `--api-key=`       | API key                  | YES      |                        |
-| `-f` / `--full`    | Skip partial translation | NO       | (partial translation)  |
-| `-v` / `--verbose` | Write chat to file       | NO       | (not verbose)          |
-| `--outdir=`        | Output directory         | NO*      | (using config)         |
+| Argument         | Description              | Required | Default                |
+|------------------|--------------------------|----------|------------------------|
+| `--target=`      | Target language          | NO       | (all existing locales) |
+| `--api-key=`     | API key                  | YES      |                        |
+| `-f` / `--full`  | Skip partial translation | NO       | (partial translation)  |
+| `-d` / `--debug` | Write chat to file       | NO       | (no chat output)       |
+| `--outdir=`      | Output directory         | NO*      | (using config)         |
 
 ## Models
 

@@ -3,13 +3,27 @@ enum GptProvider {
 }
 
 enum GptModel {
-  gpt3_5_4k('gpt-3.5-turbo', 5320, GptProvider.openai),
-  gpt3_5_16k('gpt-3.5-turbo-16k', 21280, GptProvider.openai),
+  gpt3_5_4k('gpt-3.5-turbo', GptProvider.openai,
+      defaultInputLength: 5320,
+      costPerInputToken: 0.0000015,
+      costPerOutputToken: 0.000002),
+  gpt3_5_16k('gpt-3.5-turbo-16k', GptProvider.openai,
+      defaultInputLength: 21280,
+      costPerInputToken: 0.000003,
+      costPerOutputToken: 0.000004),
   ;
 
-  const GptModel(this.id, this.defaultInputLength, this.provider);
+  const GptModel(
+    this.id,
+    this.provider, {
+    required this.defaultInputLength,
+    required this.costPerInputToken,
+    required this.costPerOutputToken,
+  });
 
   final String id;
+
+  final GptProvider provider;
 
   /// Each model has a limited context until this model starts to "forget".
   ///
@@ -19,5 +33,7 @@ enum GptModel {
   /// Therefore, input_length = 1.33 * model_context
   final int defaultInputLength;
 
-  final GptProvider provider;
+  final double costPerInputToken;
+
+  final double costPerOutputToken;
 }

@@ -6,11 +6,13 @@ class GptConfig {
   final GptModel model;
   final String description;
   final int maxInputLength;
+  final double? temperature;
 
   const GptConfig({
     required this.model,
     required this.description,
     required this.maxInputLength,
+    required this.temperature,
   });
 
   static GptConfig fromMap(Map<String, dynamic> map) {
@@ -34,6 +36,7 @@ class GptConfig {
       model: model,
       description: description,
       maxInputLength: gpt['max_input_length'] ?? model.defaultInputLength,
+      temperature: gpt['temperature']?.toDouble(),
     );
   }
 }

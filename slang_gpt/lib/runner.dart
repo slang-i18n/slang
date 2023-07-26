@@ -27,7 +27,7 @@ Future<void> runGpt(List<String> arguments) async {
   String? apiKey;
   List<I18nLocale>? targetLocales;
   String? outDir;
-  bool verbose = false;
+  bool debug = false;
   bool full = false;
   for (final a in arguments) {
     if (a.startsWith('--api-key=')) {
@@ -44,8 +44,8 @@ Future<void> runGpt(List<String> arguments) async {
       outDir = a.substring(9);
     } else if (a == '-f' || a == '--full') {
       full = true;
-    } else if (a == '-v' || a == '--verbose') {
-      verbose = true;
+    } else if (a == '-d' || a == '--debug') {
+      debug = true;
     }
   }
 
@@ -71,10 +71,12 @@ Future<void> runGpt(List<String> arguments) async {
 
   final gptConfig = GptConfig.fromMap(fileCollection.config.rawMap);
   print(
-    'GPT config: ${gptConfig.model.id} / ${gptConfig.maxInputLength} max input length',
+    'GPT config: ${gptConfig.model.id} / ${gptConfig.maxInputLength} max input length / ${gptConfig.temperature ?? 'default'} temperature',
   );
 
   int promptCount = 0;
+  int inputTokens = 0;
+  int outputTokens = 0;
   for (final file in fileCollection.files) {
     if (file.locale != fileCollection.config.baseLocale) {
       continue;
@@ -95,47 +97,76 @@ Future<void> runGpt(List<String> arguments) async {
         if ((!fileCollection.config.namespaces ||
                 (destFile.namespace == file.namespace)) &&
             destFile.locale != fileCollection.config.baseLocale) {
-          promptCount = await _translate(
+          final metrics = await _translate(
             fileCollection: fileCollection,
             gptConfig: gptConfig,
             targetLocale: destFile.locale,
             outDir: outDir,
             full: full,
-            verbose: verbose,
+            debug: debug,
             file: file,
             originalTranslations: originalTranslations,
             apiKey: apiKey,
             promptCount: promptCount,
           );
+
+          promptCount = metrics.endPromptCount;
+          inputTokens += metrics.inputTokens;
+          outputTokens += metrics.outputTokens;
         }
       }
     } else {
       // translate to specified locales (they may not exist yet)
       for (final targetLocale in targetLocales) {
-        promptCount = await _translate(
+        final metrics = await _translate(
           fileCollection: fileCollection,
           gptConfig: gptConfig,
           targetLocale: targetLocale,
           outDir: outDir,
           full: full,
-          verbose: verbose,
+          debug: debug,
           file: file,
           originalTranslations: originalTranslations,
           apiKey: apiKey,
           promptCount: promptCount,
         );
+
+        promptCount = metrics.endPromptCount;
+        inputTokens += metrics.inputTokens;
+        outputTokens += metrics.outputTokens;
       }
     }
   }
+
+  print('');
+  print('Summary:');
+  print(' -> Total requests: $promptCount');
+  print(' -> Total input tokens: $inputTokens');
+  print(' -> Total output tokens: $outputTokens');
+  print(
+      ' -> Total cost: \$${inputTokens * gptConfig.model.costPerInputToken + outputTokens * gptConfig.model.costPerOutputToken} ($inputTokens x \$${gptConfig.model.costPerInputToken} + $outputTokens x \$${gptConfig.model.costPerOutputToken})');
 }
 
-Future<int> _translate({
+class TranslateMetrics {
+  final int endPromptCount;
+  final int inputTokens;
+  final int outputTokens;
+
+  const TranslateMetrics({
+    required this.endPromptCount,
+    required this.inputTokens,
+    required this.outputTokens,
+  });
+}
+
+/// Translates a file to a target locale.
+Future<TranslateMetrics> _translate({
   required SlangFileCollection fileCollection,
   required GptConfig gptConfig,
   required I18nLocale targetLocale,
   required String outDir,
   required bool full,
-  required bool verbose,
+  required bool debug,
   required TranslationFile file,
   required Map<String, dynamic> originalTranslations,
   required String apiKey,
@@ -188,7 +219,11 @@ Future<int> _translate({
 
   if (inputTranslations.isEmpty) {
     print(' -> No new translations');
-    return promptCount;
+    return TranslateMetrics(
+      endPromptCount: promptCount,
+      inputTokens: 0,
+      outputTokens: 0,
+    );
   }
 
   final prompts = getPrompts(
@@ -200,19 +235,22 @@ Future<int> _translate({
   );
 
   Map<String, dynamic> result = {};
+  int inputTokens = 0;
+  int outputTokens = 0;
   for (final prompt in prompts) {
     promptCount++;
 
     print(' -> Request #$promptCount');
     final response = await _doRequest(
       model: gptConfig.model,
+      temperature: gptConfig.temperature,
       apiKey: apiKey,
       prompt: prompt,
     );
 
     final hasError = response.jsonMessage.containsKey(_errorKey);
 
-    if (verbose || hasError) {
+    if (debug || hasError) {
       if (hasError) {
         print(' -> Error while parsing JSON. Writing to log file.');
       }
@@ -236,6 +274,9 @@ Future<int> _translate({
         verbose: false,
       );
     }
+
+    inputTokens += response.promptTokens;
+    outputTokens += response.completionTokens;
   }
 
   // add existing translations
@@ -261,12 +302,17 @@ Future<int> _translate({
   );
   print(' -> Output: $targetPath');
 
-  return promptCount;
+  return TranslateMetrics(
+    endPromptCount: promptCount,
+    inputTokens: inputTokens,
+    outputTokens: outputTokens,
+  );
 }
 
 /// Sends a prompt to a GPT provider and returns the response.
 Future<GptResponse> _doRequest({
   required GptModel model,
+  required double? temperature,
   required String apiKey,
   required GptPrompt prompt,
 }) async {
@@ -280,6 +326,7 @@ Future<GptResponse> _doRequest({
         },
         body: jsonEncode({
           'model': model.id,
+          if (temperature != null) 'temperature': temperature,
           'messages': [
             {
               'role': 'system',

@@ -24,6 +24,7 @@ void main() {
           model: GptModel.gpt3_5_4k,
           description: 'A simple calculator',
           maxInputLength: 1000,
+          temperature: null,
         ),
         namespace: null,
         translations: {
@@ -51,6 +52,7 @@ void main() {
           model: GptModel.gpt3_5_4k,
           description: 'A simple calculator',
           maxInputLength: 1,
+          temperature: null,
         ),
         namespace: null,
         translations: {
@@ -87,6 +89,7 @@ void main() {
           model: GptModel.gpt3_5_4k,
           description: 'A simple calculator',
           maxInputLength: 1000,
+          temperature: null,
         ),
         namespace: 'settings',
         translations: {

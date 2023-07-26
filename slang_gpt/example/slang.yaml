@@ -1,10 +1,11 @@
 input_directory: i18n
 gpt:
   model: gpt-3.5-turbo
-  description: |
-    "Rob the bank" is a game where you need to rob a financial bank.
-    The game is over when you get detected by a camera.
-
+#   temperature: 0.7
 #  description: |
-#    "River Adventure" is a game where you need to cross a river by jumping on stones.
-#    The game is over when you either fall into the water or reach the other side.
+#    "Rob the bank" is a game where you need to rob a financial bank.
+#    The game is over when you get detected by a camera.
+
+  description: |
+    "River Adventure" is a game where you need to cross a river by jumping on stones.
+    The game is over when you either fall into the water or reach the other side.
