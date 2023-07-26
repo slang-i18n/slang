@@ -49,7 +49,7 @@ class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
 
   @override
   void updateProviderState(BaseAppLocale locale) {
-    for (final key in GlobalKeyHandler.instance._globalKeys.values) {
+    for (final key in _GlobalKeyHandler.instance._globalKeys.values) {
       (key.currentState as _TranslationProviderState?)?.updateState(locale);
     }
   }
@@ -80,7 +80,7 @@ abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
     required this.child,
   })  : initTranslations = settings.currentTranslations,
         super(
-          key: GlobalKeyHandler.instance.register<E, T>(
+          key: _GlobalKeyHandler.instance.register<E, T>(
             baseLocale: settings.utils.baseLocale,
           ),
         );
@@ -185,11 +185,11 @@ class InheritedLocaleData<E extends BaseAppLocale<E, T>,
   }
 }
 
-class GlobalKeyHandler {
-  GlobalKeyHandler._();
+class _GlobalKeyHandler {
+  _GlobalKeyHandler._();
 
   /// Singleton instance
-  static final GlobalKeyHandler instance = GlobalKeyHandler._();
+  static final _GlobalKeyHandler instance = _GlobalKeyHandler._();
 
   /// We need the global keys to be able to trigger rebuilds.
   ///
