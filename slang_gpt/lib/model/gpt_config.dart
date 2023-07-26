@@ -3,9 +3,19 @@ import 'package:slang_gpt/model/gpt_model.dart';
 
 /// Represents the gpt node in build.yaml
 class GptConfig {
+  /// The GPT model that should be used.
   final GptModel model;
+
+  /// The app description that will be part of the "system" prompt.
+  /// Usually, this provides the GPT model with some context for more
+  /// accurate results.
   final String description;
+
+  /// The maximum amount of characters that can be sent to the GPT API
+  /// in one request. Lower values will result in more requests.
   final int maxInputLength;
+
+  /// The temperature parameter for the GPT API (if supported).
   final double? temperature;
 
   const GptConfig({

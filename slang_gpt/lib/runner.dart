@@ -21,6 +21,7 @@ import 'package:slang_gpt/util/maps.dart';
 
 const _errorKey = '!error';
 
+/// Runs the GPT translation script.
 Future<void> runGpt(List<String> arguments) async {
   print('Running GPT for slang...');
 

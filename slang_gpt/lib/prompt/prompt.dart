@@ -7,6 +7,8 @@ import 'package:slang_gpt/model/gpt_config.dart';
 import 'package:slang_gpt/model/gpt_prompt.dart';
 import 'package:slang_gpt/util/locales.dart';
 
+/// Returns the prompts that should be sent to GPT.
+/// There can be multiple prompts if the input is too long.
 List<GptPrompt> getPrompts({
   required RawConfig rawConfig,
   required I18nLocale targetLocale,

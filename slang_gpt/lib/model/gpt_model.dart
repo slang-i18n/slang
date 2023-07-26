@@ -21,8 +21,11 @@ enum GptModel {
     required this.costPerOutputToken,
   });
 
+  /// The id of this model.
+  /// Will be sent to the GPT API.
   final String id;
 
+  /// The provider of this model.
   final GptProvider provider;
 
   /// Each model has a limited context until this model starts to "forget".
@@ -33,7 +36,9 @@ enum GptModel {
   /// Therefore, input_length = 1.33 * model_context
   final int defaultInputLength;
 
+  /// The cost per input token in USD.
   final double costPerInputToken;
 
+  /// The cost per output token in USD.
   final double costPerOutputToken;
 }

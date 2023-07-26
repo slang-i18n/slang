@@ -1,3 +1,4 @@
+/// The prompt that will be sent to the GPT API.
 class GptPrompt {
   /// Contains the general instruction and the app description.
   final String system;
