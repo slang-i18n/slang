@@ -8,7 +8,7 @@ class GlobalLocaleState {
   GlobalLocaleState._();
 
   /// The singleton instance.
-  static GlobalLocaleState instance = GlobalLocaleState._();
+  static final GlobalLocaleState instance = GlobalLocaleState._();
 
   /// The current locale.
   ///

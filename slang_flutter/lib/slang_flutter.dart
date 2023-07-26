@@ -49,7 +49,9 @@ class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
 
   @override
   void updateProviderState(BaseAppLocale locale) {
-    _translationProviderKey.currentState?.updateState(locale);
+    for (final key in GlobalKeyHandler.instance._globalKeys) {
+      (key.currentState as _TranslationProviderState?)?.updateState(locale);
+    }
   }
 }
 
@@ -68,10 +70,6 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
   }
 }
 
-/// The key of the [BaseTranslationProvider] state.
-/// There should be only one instance of the provider.
-final _translationProviderKey = GlobalKey<_TranslationProviderState>();
-
 abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends StatefulWidget {
   final T initTranslations;
@@ -81,7 +79,7 @@ abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
     required this.settings,
     required this.child,
   })  : initTranslations = settings.currentTranslations,
-        super(key: _translationProviderKey);
+        super(key: GlobalKeyHandler.instance.register<E, T>());
 
   final Widget child;
 
@@ -180,5 +178,22 @@ class InheritedLocaleData<E extends BaseAppLocale<E, T>,
   bool updateShouldNotify(InheritedLocaleData<E, T> oldWidget) {
     // only rebuild if translations differ
     return !identical(translations, oldWidget.translations);
+  }
+}
+
+class GlobalKeyHandler {
+  GlobalKeyHandler._();
+
+  /// Singleton instance
+  static final GlobalKeyHandler instance = GlobalKeyHandler._();
+
+  List<GlobalKey> _globalKeys = [];
+
+  /// Registers a new global key for a specific generic type.
+  GlobalKey<_TranslationProviderState<E, T>> register<
+      E extends BaseAppLocale<E, T>, T extends BaseTranslations<E, T>>() {
+    final key = GlobalKey<_TranslationProviderState<E, T>>();
+    _globalKeys.add(key);
+    return key;
   }
 }
