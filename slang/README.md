@@ -1,6 +1,6 @@
-![featured](https://github.com/slang-i18n/slang/blob/main/resources/featured.svg)
+![featured](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/featured.svg)
 
-![logo](https://github.com/slang-i18n/slang/blob/main/resources/logo.svg)
+![logo](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/logo.svg)
 
 [![pub package](https://img.shields.io/pub/v/slang.svg)](https://pub.dev/packages/slang)
 ![ci](https://github.com/slang-i18n/slang/actions/workflows/ci.yml/badge.svg)
