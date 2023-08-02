@@ -171,7 +171,7 @@ final Map<String, _Resolvers> _resolverMap = {
       if (n == 0) {
         return zero ?? other!;
       }
-      if (n == 1) {
+      if (n == 1 || n == -1) {
         return one ?? other!;
       }
       return other!;
