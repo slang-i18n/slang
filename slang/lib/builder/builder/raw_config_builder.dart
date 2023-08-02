@@ -53,11 +53,14 @@ class RawConfigBuilder {
       fallbackStrategy:
           (map['fallback_strategy'] as String?)?.toFallbackStrategy() ??
               RawConfig.defaultFallbackStrategy,
-      inputDirectory: map['input_directory'] ?? RawConfig.defaultInputDirectory,
+      inputDirectory:
+          (map['input_directory'] as String?)?.removeTrailingSlash() ??
+              RawConfig.defaultInputDirectory,
       inputFilePattern:
           map['input_file_pattern'] ?? RawConfig.defaultInputFilePattern,
       outputDirectory:
-          map['output_directory'] ?? RawConfig.defaultOutputDirectory,
+          (map['output_directory'] as String?)?.removeTrailingSlash() ??
+              RawConfig.defaultOutputDirectory,
       outputFileName:
           map['output_file_name'] ?? RawConfig.defaultOutputFileName,
       outputFormat: (map['output_format'] as String?)?.toOutputFormat() ??
@@ -213,5 +216,11 @@ extension on Map<String, dynamic> {
       enabled: this['enabled'] ?? ObfuscationConfig.defaultEnabled,
       secret: this['secret'],
     );
+  }
+}
+
+extension on String {
+  String removeTrailingSlash() {
+    return this.endsWith('/') ? this.substring(0, this.length - 1) : this;
   }
 }

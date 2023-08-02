@@ -80,5 +80,15 @@ void main() {
         'mySecondPath.subPath',
       ]);
     });
+
+    test('Should remove trailing slash', () {
+      final result = RawConfigBuilder.fromMap(
+        {
+          'input_directory': 'lib/abc/',
+        },
+      );
+
+      expect(result.inputDirectory, 'lib/abc');
+    });
   });
 }

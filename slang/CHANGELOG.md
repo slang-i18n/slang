@@ -1,3 +1,7 @@
+## 3.23.0
+
+- fix: trailing slash does not work with `build_runner`
+
 ## 3.22.0
 
 - feat: announcing [slang_gpt](https://pub.dev/packages/slang_gpt), a new package to generate translations with GPT
