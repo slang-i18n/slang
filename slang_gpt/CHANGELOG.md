@@ -1,3 +1,7 @@
+## 0.8.1
+
+- docs: update README
+
 ## 0.8.0
 
 - feat: add `excludes` config

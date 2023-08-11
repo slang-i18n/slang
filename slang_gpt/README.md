@@ -57,6 +57,7 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 | `max_input_length` | `int`    | Max input characters per request | NO       | (inferred by model) |
 | `temperature`      | `double` | Temperature parameter for GPT    | NO       | (API default)       |
 | `description`      | `String` | App description                  | YES      |                     |
+| `excludes`         | `List`   | List of locales to exclude       | NO       | `[]`                |
 
 ## Command line arguments
 
