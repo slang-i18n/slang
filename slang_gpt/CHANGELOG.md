@@ -1,3 +1,7 @@
+## 0.8.0
+
+- feat: add `excludes` config
+
 ## 0.7.0
 
 - feat: add `temperature` config

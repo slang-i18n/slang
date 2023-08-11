@@ -9,3 +9,5 @@ gpt:
   description: |
     "River Adventure" is a game where you need to cross a river by jumping on stones.
     The game is over when you either fall into the water or reach the other side.
+  excludes:
+    - 'fr'

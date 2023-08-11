@@ -25,6 +25,7 @@ void main() {
           description: 'A simple calculator',
           maxInputLength: 1000,
           temperature: null,
+          excludes: [],
         ),
         namespace: null,
         translations: {
@@ -53,6 +54,7 @@ void main() {
           description: 'A simple calculator',
           maxInputLength: 1,
           temperature: null,
+          excludes: [],
         ),
         namespace: null,
         translations: {
@@ -90,6 +92,7 @@ void main() {
           description: 'A simple calculator',
           maxInputLength: 1000,
           temperature: null,
+          excludes: [],
         ),
         namespace: 'settings',
         translations: {

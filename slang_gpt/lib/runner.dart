@@ -75,11 +75,17 @@ Future<void> runGpt(List<String> arguments) async {
     'GPT config: ${gptConfig.model.id} / ${gptConfig.maxInputLength} max input length / ${gptConfig.temperature ?? 'default'} temperature',
   );
 
+  if (gptConfig.excludes.isNotEmpty) {
+    print(
+        'Excludes: ${gptConfig.excludes.map((e) => e.languageTag).join(', ')}');
+  }
+
   int promptCount = 0;
   int inputTokens = 0;
   int outputTokens = 0;
   for (final file in fileCollection.files) {
     if (file.locale != fileCollection.config.baseLocale) {
+      // Only use base locale as source
       continue;
     }
 
@@ -95,26 +101,38 @@ Future<void> runGpt(List<String> arguments) async {
     if (targetLocales == null) {
       // translate to existing locales
       for (final destFile in fileCollection.files) {
-        if ((!fileCollection.config.namespaces ||
-                (destFile.namespace == file.namespace)) &&
-            destFile.locale != fileCollection.config.baseLocale) {
-          final metrics = await _translate(
-            fileCollection: fileCollection,
-            gptConfig: gptConfig,
-            targetLocale: destFile.locale,
-            outDir: outDir,
-            full: full,
-            debug: debug,
-            file: file,
-            originalTranslations: originalTranslations,
-            apiKey: apiKey,
-            promptCount: promptCount,
-          );
-
-          promptCount = metrics.endPromptCount;
-          inputTokens += metrics.inputTokens;
-          outputTokens += metrics.outputTokens;
+        if (gptConfig.excludes.contains(destFile.locale)) {
+          // skip excluded locales
+          continue;
         }
+
+        if (fileCollection.config.namespaces &&
+            destFile.namespace != file.namespace) {
+          // skip files in different namespaces
+          continue;
+        }
+
+        if (destFile.locale == file.locale) {
+          // skip same locale
+          continue;
+        }
+
+        final metrics = await _translate(
+          fileCollection: fileCollection,
+          gptConfig: gptConfig,
+          targetLocale: destFile.locale,
+          outDir: outDir,
+          full: full,
+          debug: debug,
+          file: file,
+          originalTranslations: originalTranslations,
+          apiKey: apiKey,
+          promptCount: promptCount,
+        );
+
+        promptCount = metrics.endPromptCount;
+        inputTokens += metrics.inputTokens;
+        outputTokens += metrics.outputTokens;
       }
     } else {
       // translate to specified locales (they may not exist yet)

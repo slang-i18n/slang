@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang_gpt/model/gpt_model.dart';
 
 /// Represents the gpt node in build.yaml
@@ -18,11 +19,15 @@ class GptConfig {
   /// The temperature parameter for the GPT API (if supported).
   final double? temperature;
 
+  /// List of excluded target locales.
+  final List<I18nLocale> excludes;
+
   const GptConfig({
     required this.model,
     required this.description,
     required this.maxInputLength,
     required this.temperature,
+    required this.excludes,
   });
 
   static GptConfig fromMap(Map<String, dynamic> map) {
@@ -47,6 +52,10 @@ class GptConfig {
       description: description,
       maxInputLength: gpt['max_input_length'] ?? model.defaultInputLength,
       temperature: gpt['temperature']?.toDouble(),
+      excludes: (gpt['excludes'] as List?)
+              ?.map((e) => I18nLocale.fromString(e))
+              .toList() ??
+          [],
     );
   }
 }
