@@ -1,6 +1,8 @@
 ## 3.23.0
 
-- fix: trailing slash does not work with `build_runner`
+- feat: support multiple `TranslationProvider` at the same time when using multiple packages
+- fix: trailing slash in config does not work with `build_runner`
+- i18n: Swedish plural resolver improvement (by [@lohnn](https://github.com/lohnn))
 
 ## 3.22.0
 
