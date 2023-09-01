@@ -33,7 +33,7 @@ final _buildConfig = BuildModelConfig(
 	pluralParameter: 'n',
 	pluralCardinal: [],
 	pluralOrdinal: [],
-	contexts: [ContextType(enumName: 'GenderContext', enumValues: ['male', 'female'], paths: [], defaultParameter: 'context', generateEnum: true),],
+	contexts: [],
 	interfaces: [], // currently not supported
 );
 

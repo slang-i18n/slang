@@ -14,11 +14,6 @@ targets:
           maps:
             - end.pages.0
             - end.pages.1
-          contexts:
-            GenderContext:
-              enum:
-                - male
-                - female
           interfaces:
             PageData: onboarding.pages.*
             EndData: end

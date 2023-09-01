@@ -11,10 +11,10 @@ onboarding.modifierPages(interface=MPage).1.title,Second Modifier Page
 group.users.zero,No Users and @:onboarding.welcome
 group.users.one,One User
 group.users.other,{n} Users and @:onboarding.bye
-onboarding.greet.male,Hello Mr {lastName} and @:onboarding.welcome
-onboarding.greet.female,Hello Ms {lastName} and @:onboarding.bye
-onboarding.greet2(param=gender).male,Hello Mr
-onboarding.greet2(param=gender).female,Hello Ms
+"onboarding.greet(context=GenderContext).male",Hello Mr {lastName} and @:onboarding.welcome
+"onboarding.greet(context=GenderContext).female",Hello Ms {lastName} and @:onboarding.bye
+"onboarding.greet2(context=GenderContext, param=gender).male",Hello Mr
+"onboarding.greet2(context=GenderContext, param=gender).female",Hello Ms
 onboarding.greetCombination,"@:onboarding.greet, @:onboarding.greet2"
 onboarding.welcomeLinkedPlural,Hello @:group.users
 onboarding.welcomeLinkedContext,Hello @:onboarding.greet

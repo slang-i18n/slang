@@ -79,13 +79,6 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, _TranslationsEn> {
 	static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
 }
 
-// context enums
-
-enum GenderContext {
-	male,
-	female,
-}
-
 // translations
 
 // Path: <root>

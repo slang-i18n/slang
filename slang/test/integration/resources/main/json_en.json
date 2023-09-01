@@ -25,11 +25,11 @@
         "title": "Second Modifier Page"
       }
     ],
-    "greet": {
+    "greet(context=GenderContext)": {
       "male": "Hello Mr {lastName} and @:onboarding.welcome",
       "female": "Hello Ms {lastName} and @:onboarding.bye"
     },
-    "greet2(param=gender)": {
+    "greet2(context=GenderContext, param=gender)": {
       "male": "Hello Mr",
       "female": "Hello Ms"
     },

@@ -11,10 +11,10 @@ onboarding:
     - title: Erste Modifier Seite
       content: Erster Seiteninhalt
     - title: Zweite Modifier Seite
-  greet:
+  greet(context=GenderContext):
     male: Hallo Herr {lastName} und @:onboarding.welcome
     female: Hallo Frau {lastName} und @:onboarding.bye
-  greet2(param=gender):
+  greet2(context=GenderContext, param=gender):
     male: Hallo Herr
     female: Hallo Frau
   greetCombination: "@:onboarding.greet, @:onboarding.greet2"
