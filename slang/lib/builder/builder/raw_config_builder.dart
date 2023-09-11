@@ -212,7 +212,7 @@ extension on Map<String, dynamic> {
 
   /// Parses the 'obfuscation' config
   ObfuscationConfig toObfuscationConfig() {
-    return ObfuscationConfig(
+    return ObfuscationConfig.fromSecretString(
       enabled: this['enabled'] ?? ObfuscationConfig.defaultEnabled,
       secret: this['secret'],
     );

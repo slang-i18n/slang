@@ -26,7 +26,7 @@ void main() {
 
     final result = GeneratorFacade.generate(
       rawConfig: RawConfigBuilder.fromYaml(buildYaml)!.copyWith(
-        obfuscation: ObfuscationConfig(
+        obfuscation: ObfuscationConfig.fromSecretString(
           enabled: true,
           secret: 'abc',
         ),

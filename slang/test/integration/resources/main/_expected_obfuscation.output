@@ -284,7 +284,7 @@ class _TranslationsEndEn with EndData {
 	];
 	@override List<Map<String, String>> get pages => [
 		{
-			'unknown': _root.$meta.d([14, 53, 48, 53, 52, 44, 53, 7, 53, 30, 41, 41, 52, 41]),
+			'unknown': _root.$meta.d([14, 53, 48, 53, 52, 44, 53, 81, 30, 41, 41, 52, 41]),
 		},
 		{
 			'with space': _root.$meta.d([26, 53, 123, 30, 41, 41, 52, 41]),
@@ -452,7 +452,7 @@ class _TranslationsEndDe with EndData implements _TranslationsEndEn {
 	];
 	@override List<Map<String, String>> get pages => [
 		{
-			'unknown': _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 7, 53, 29, 62, 51, 55, 62, 41]),
+			'unknown': _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 81, 29, 62, 51, 55, 62, 41]),
 		},
 		{
 			'with space': _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]),
@@ -549,7 +549,7 @@ extension on _TranslationsEn {
 			);
 			case 'end.stringPages.0': return _root.$meta.d([106, 40, 47, 123, 11, 58, 60, 62]);
 			case 'end.stringPages.1': return _root.$meta.d([105, 53, 63, 123, 11, 58, 60, 62]);
-			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 48, 53, 52, 44, 53, 7, 53, 30, 41, 41, 52, 41]);
+			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 48, 53, 52, 44, 53, 81, 30, 41, 41, 52, 41]);
 			case 'end.pages.1.with space': return _root.$meta.d([26, 53, 123, 30, 41, 41, 52, 41]);
 			case 'end.pages.1.with second space': return _root.$meta.d([26, 53, 123, 105, 53, 63, 123, 30, 41, 41, 52, 41]);
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
@@ -612,7 +612,7 @@ extension on _TranslationsDe {
 			);
 			case 'end.stringPages.0': return _root.$meta.d([106, 117, 123, 8, 62, 50, 47, 62]);
 			case 'end.stringPages.1': return _root.$meta.d([105, 117, 123, 8, 62, 50, 47, 62]);
-			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 7, 53, 29, 62, 51, 55, 62, 41]);
+			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 81, 29, 62, 51, 55, 62, 41]);
 			case 'end.pages.1.with space': return _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]);
 			case 'end.pages.1.with second space': return _root.$meta.d([30, 50, 53, 123, 105, 117, 123, 29, 62, 51, 55, 62, 41]);
 			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(

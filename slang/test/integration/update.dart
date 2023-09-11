@@ -191,7 +191,7 @@ void generateFallbackBaseLocale(RawConfig buildConfig, String en, String de) {
 void generateObfuscation(RawConfig buildConfig, String en, String de) {
   final result = _generate(
     rawConfig: buildConfig.copyWith(
-      obfuscation: ObfuscationConfig(
+      obfuscation: ObfuscationConfig.fromSecretString(
         enabled: true,
         secret: 'abc',
       ),

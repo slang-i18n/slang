@@ -36,7 +36,7 @@ class RawConfig {
   static const List<ContextType> defaultContexts = <ContextType>[];
   static const List<InterfaceConfig> defaultInterfaces = <InterfaceConfig>[];
   static final ObfuscationConfig defaultObfuscationConfig =
-      ObfuscationConfig(enabled: false, secret: '');
+      ObfuscationConfig.disabled();
   static const List<String> defaultImports = <String>[];
 
   final FileType fileType;

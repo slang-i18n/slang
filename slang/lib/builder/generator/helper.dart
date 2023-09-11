@@ -71,7 +71,11 @@ String getStringLiteral(String value, ObfuscationConfig config) {
         buffer.write(' + ');
       }
       buffer.write('_root.\$meta.d([');
-      buffer.write(parts[i].encrypt(config.secret).join(', '));
+      buffer.write(parts[i]
+          .replaceAll("\\'", "'")
+          .replaceAll('\\n', '\n')
+          .encrypt(config.secret)
+          .join(', '));
       buffer.write('])');
       needPlus = true;
     }
