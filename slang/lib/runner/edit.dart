@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
@@ -8,6 +9,7 @@ import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/node_utils.dart';
+import 'package:slang/runner/apply.dart';
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -369,9 +371,14 @@ Future<void> _addEntry({
   final pathList = path.split('.');
   final targetNamespace = pathList.first;
 
-  for (final file in fileCollection.files) {
-    final config = fileCollection.config;
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+    verbose: false,
+  );
+  final config = fileCollection.config;
+  final baseTranslationMap = translationMap[config.baseLocale]!['strings']!;
 
+  for (final file in fileCollection.files) {
     if (file.locale != locale) {
       // We only want to add the key to the target locale
       continue;
@@ -385,18 +392,27 @@ Future<void> _addEntry({
     print(
         'Adding translation to <${file.locale.languageTag}> in ${file.path}...');
 
-    final Map<String, dynamic> parsedContent =
+    final Map<String, dynamic> oldMap =
         await file.readAndParse(config.fileType);
 
+    final Map<String, dynamic> newMap = {};
     MapUtils.addItemToMap(
-        map: parsedContent,
-        destinationPath: config.namespaces ? pathList.skip(1).join('.') : path,
-        item: value);
+      map: newMap,
+      destinationPath: config.namespaces ? pathList.skip(1).join('.') : path,
+      item: value,
+    );
+
+    final appliedTranslations = applyMapRecursive(
+      baseMap: baseTranslationMap,
+      newMap: newMap,
+      oldMap: oldMap,
+      verbose: true,
+    );
 
     FileUtils.writeFileOfType(
       fileType: config.fileType,
       path: file.path,
-      content: parsedContent,
+      content: appliedTranslations,
     );
   }
 }
