@@ -1,3 +1,8 @@
+## 0.9.0
+
+- feat: add `gpt-4` model
+- feat: update default `max_input_length` based on empirical results
+
 ## 0.8.1
 
 - docs: update README

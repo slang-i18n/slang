@@ -4,13 +4,17 @@ enum GptProvider {
 
 enum GptModel {
   gpt3_5_4k('gpt-3.5-turbo', GptProvider.openai,
-      defaultInputLength: 5320,
+      defaultInputLength: 2000,
       costPerInputToken: 0.0000015,
       costPerOutputToken: 0.000002),
   gpt3_5_16k('gpt-3.5-turbo-16k', GptProvider.openai,
-      defaultInputLength: 21280,
+      defaultInputLength: 8000,
       costPerInputToken: 0.000003,
       costPerOutputToken: 0.000004),
+  gpt4_8k('gpt-4', GptProvider.openai,
+      defaultInputLength: 4000,
+      costPerInputToken: 0.00003,
+      costPerOutputToken: 0.00006),
   ;
 
   const GptModel(

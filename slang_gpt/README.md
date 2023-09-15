@@ -37,7 +37,7 @@ output_directory: lib/i18n
 
 # add this
 gpt:
-  model: gpt-3.5-turbo
+  model: gpt-4
   description: |
     "River Adventure" is a game where you need to cross a river by jumping on stones.
     The game is over when you either fall into the water or reach the other side.
@@ -75,6 +75,7 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 |---------------------|----------|----------------|-------------------------|-------------------------------|
 | `gpt-3.5-turbo`     | Open AI  | 4096           | $0.0015                 | $0.000001125                  |
 | `gpt-3.5-turbo-16k` | Open AI  | 16384          | $0.003                  | $0.00000225                   | 
+| `gpt-4`             | Open AI  | 8192           | $0.03                   | $0.0000225                    |
 
 ## GPT context length
 
