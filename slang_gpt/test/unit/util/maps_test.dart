@@ -2,13 +2,13 @@ import 'package:slang_gpt/util/maps.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('removeIgnoreMissing', () {
+  group('removeIgnoreGpt', () {
     test('Should remove one entry with ignoreMissing', () {
       final map = {
-        'a(ignoreMissing)': 'b',
+        'a(ignoreGpt)': 'b',
         'c': 'd',
       };
-      removeIgnoreMissing(map: map);
+      removeIgnoreGpt(map: map);
 
       expect(map, {
         'c': 'd',
@@ -18,11 +18,11 @@ void main() {
     test('Should remove nested entry with ignoreMissing', () {
       final map = {
         'a': {
-          'b(ignoreMissing)': 'c',
+          'b(ignoreGpt)': 'c',
           'd': 'e',
         },
       };
-      removeIgnoreMissing(map: map);
+      removeIgnoreGpt(map: map);
 
       expect(map, {
         'a': {
@@ -36,7 +36,7 @@ void main() {
         'a': 'b',
         'c': 'd',
       };
-      removeIgnoreMissing(map: map);
+      removeIgnoreGpt(map: map);
 
       expect(map, {
         'a': 'b',

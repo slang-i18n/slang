@@ -1,19 +1,18 @@
-import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/utils/node_utils.dart';
+
+const ignoreGpt = 'ignoreGpt';
 
 /// Remove all entries from [map] that have the "ignoreMissing" modifier.
 /// This method removes the entries in-place.
-void removeIgnoreMissing({
+void removeIgnoreGpt({
   required Map<String, dynamic> map,
 }) {
   final keysToRemove = <String>[];
   for (final entry in map.entries) {
-    if (NodeUtils.parseModifiers(entry.key)
-        .modifiers
-        .containsKey(NodeModifiers.ignoreMissing)) {
+    if (NodeUtils.parseModifiers(entry.key).modifiers.containsKey(ignoreGpt)) {
       keysToRemove.add(entry.key);
     } else if (entry.value is Map<String, dynamic>) {
-      removeIgnoreMissing(map: entry.value);
+      removeIgnoreGpt(map: entry.value);
     }
   }
 

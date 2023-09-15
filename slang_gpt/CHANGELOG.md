@@ -2,6 +2,7 @@
 
 - feat: add `gpt-4` model
 - feat: update default `max_input_length` based on empirical results
+- **BREAKING**: add `(ignoreGpt)` modifier, use this instead of `(ignoreMissing)`
 
 ## 0.8.1
 

@@ -227,7 +227,8 @@ Future<TranslateMetrics> _translate({
     other: existingTranslations,
   );
 
-  removeIgnoreMissing(map: inputTranslations);
+  // We assume that these translations already exists in the target locale.
+  removeIgnoreGpt(map: inputTranslations);
 
   // extract original comments but keep them in the inputTranslations
   // we will add the original comments later again
@@ -306,7 +307,7 @@ Future<TranslateMetrics> _translate({
     verbose: false,
   );
 
-  // add comments
+  // add comments from base locale to target locale
   result = applyMapRecursive(
     baseMap: originalTranslations,
     newMap: comments,
