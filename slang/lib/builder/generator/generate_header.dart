@@ -466,8 +466,11 @@ void _generateUtil({
   buffer.writeln('/// Provides utility functions without any side effects.');
   buffer.writeln(
       'class $utilClass extends BaseAppLocaleUtils<$enumName, $baseClassName> {');
-  buffer.writeln(
-      '\t$utilClass._() : super(baseLocale: $baseLocaleVar, locales: $enumName.values${config.translationOverrides ? ', buildConfig: _buildConfig' : ''});');
+  buffer.writeln('\t$utilClass._()');
+  buffer.writeln('\t\tsuper(');
+  buffer.writeln('\t\t\tbaseLocale: $baseLocaleVar,');
+  buffer.writeln('\t\t\tlocales: $enumName.values${config.translationOverrides ? ', buildConfig: _buildConfig' : ''},');
+  buffer.writeln('\t\t);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $utilClass._();');
 
