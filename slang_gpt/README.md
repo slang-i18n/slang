@@ -95,6 +95,21 @@ By default, slang_gpt will only translate missing keys to reduce costs.
 
 You may add the `--full` flag to translate all keys.
 
+```bash
+dart run slang_gpt --target=fr --full --api-key=<api-key>
+```
+
+To avoid a specific subset of keys from being translated, you may add the `ignoreGpt` modifier to the key:
+
+```json
+{
+  "key1": "This will be translated",
+  "key2(ignoreGpt)": {
+    "key3": "This will be ignored"
+  }
+}
+```
+
 ## Target language
 
 By default, slang_gpt will translate to all existing locales.
