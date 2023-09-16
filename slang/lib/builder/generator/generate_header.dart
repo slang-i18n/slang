@@ -261,15 +261,16 @@ void _generateEnum({
       locale: locale,
     );
 
-    buffer
-        .write('\t${locale.enumConstant}(languageCode: \'${locale.language}\'');
+    buffer.writeln('\t${locale.enumConstant}(');
+    buffer.writeln('\t\tlanguageCode: \'${locale.language}\',');
     if (locale.script != null) {
-      buffer.write(', scriptCode: \'${locale.script}\'');
+      buffer.writeln('\t\tscriptCode: \'${locale.script}\',');
     }
     if (locale.country != null) {
-      buffer.write(', countryCode: \'${locale.country}\'');
+      buffer.writeln('\t\tcountryCode: \'${locale.country}\',');
     }
-    buffer.write(', build: $className.build)');
+    buffer.writeln('\t\tbuild: $className.build,');
+    buffer.write('\t)');
     if (i != allLocales.length - 1) {
       buffer.writeln(',');
     } else {
