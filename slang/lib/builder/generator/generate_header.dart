@@ -278,15 +278,23 @@ void _generateEnum({
   }
 
   buffer.writeln();
-  buffer.writeln(
-      '\tconst $enumName({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element');
+  buffer.writeln('\tconst $enumName({');
+  buffer.writeln('\t\trequired this.languageCode,');
+  buffer.writeln('\t\tthis.scriptCode,');
+  buffer.writeln('\t\tthis.countryCode,');
+  buffer.writeln('\t\trequired this.build,');
+  buffer.writeln('\t});');
 
   buffer.writeln();
-  buffer.writeln('\t@override final String languageCode;');
-  buffer.writeln('\t@override final String? scriptCode;');
-  buffer.writeln('\t@override final String? countryCode;');
-  buffer.writeln(
-      '\t@override final TranslationBuilder<$enumName, $baseClassName> build;');
+  buffer.writeln('\t@override');
+  buffer.writeln('\tfinal String languageCode;');
+  buffer.writeln('\t@override');
+  buffer.writeln('\tfinal String? scriptCode;');
+  buffer.writeln('\t@override');
+  buffer.writeln('\tfinal String? countryCode;');
+  buffer.writeln('\t@override');
+  buffer
+      .writeln('\tfinal TranslationBuilder<$enumName, $baseClassName> build;');
   if (config.localeHandling) {
     buffer.writeln();
     buffer.writeln('\t/// Gets current instance managed by [LocaleSettings].');
