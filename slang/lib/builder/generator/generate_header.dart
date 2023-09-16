@@ -469,7 +469,8 @@ void _generateUtil({
   buffer.writeln('\t$utilClass._()');
   buffer.writeln('\t\tsuper(');
   buffer.writeln('\t\t\tbaseLocale: $baseLocaleVar,');
-  buffer.writeln('\t\t\tlocales: $enumName.values${config.translationOverrides ? ', buildConfig: _buildConfig' : ''},');
+  buffer.writeln(
+      '\t\t\tlocales: $enumName.values${config.translationOverrides ? ', buildConfig: _buildConfig' : ''},');
   buffer.writeln('\t\t);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $utilClass._();');
@@ -479,8 +480,17 @@ void _generateUtil({
       .writeln('\t// static aliases (checkout base methods for documentation)');
   buffer.writeln(
       '\tstatic $enumName parse(String rawLocale) => instance.parse(rawLocale);');
-  buffer.writeln(
-      '\tstatic $enumName parseLocaleParts({required String languageCode, String? scriptCode, String? countryCode}) => instance.parseLocaleParts(languageCode: languageCode, scriptCode: scriptCode, countryCode: countryCode);');
+  buffer.writeln('\tstatic $enumName parseLocaleParts({');
+  buffer.writeln('\t\trequired String languageCode,');
+  buffer.writeln('\t\tfinal String? scriptCode,');
+  buffer.writeln('\t\tfinal String? countryCode,');
+  buffer.writeln('\t}) {');
+  buffer.writeln('\t\treturn instance.parseLocaleParts(');
+  buffer.writeln('\t\tlanguageCode: languageCode,');
+  buffer.writeln('\t\tscriptCode: scriptCode,');
+  buffer.writeln('\t\tcountryCode: countryCode,');
+  buffer.writeln('\t\t);');
+  buffer.writeln('\t}');
   if (config.flutterIntegration) {
     buffer.writeln(
         '\tstatic $enumName findDeviceLocale() => instance.findDeviceLocale();');
