@@ -11,38 +11,88 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  FLUTTER_VERSION_OLDEST: "3.0.5"
+  FLUTTER_VERSION_NEWEST: "3.13.4"
+
 jobs:
-  build:
+  format:
+    name: Format
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.12'
-          channel: 'stable'
+          flutter-version: ${{ env.FLUTTER_VERSION_NEWEST }}
+          channel: "stable"
+
       - name: Dependencies (core)
-        run: flutter pub get
         working-directory: slang
+        run: dart pub get
       - name: Check format (core)
+        working-directory: slang
         run: dart format --set-exit-if-changed lib bin test
-        working-directory: slang
       - name: Analyze (core)
+        working-directory: slang
         run: flutter analyze
-        working-directory: slang
-      - name: Test (core)
-        run: dart test
-        working-directory: slang
 
       - name: Dependencies (gpt)
-        run: flutter pub get
         working-directory: slang_gpt
+        run: dart pub get
       - name: Check format (gpt)
+        working-directory: slang_gpt
         run: dart format --set-exit-if-changed lib bin test
-        working-directory: slang_gpt
       - name: Analyze (gpt)
+        working-directory: slang_gpt
         run: flutter analyze
-        working-directory: slang_gpt
-      - name: Test (gpt)
+
+  test:
+    name: Test (newest Flutter version)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION_NEWEST }}
+          channel: "stable"
+
+      - name: Dependencies (core)
+        working-directory: slang
+        run: dart pub get
+      - name: Test (core)
+        working-directory: slang
         run: dart test
+
+      - name: Dependencies (gpt)
         working-directory: slang_gpt
+        run: dart pub get
+      - name: Test (gpt)
+        working-directory: slang_gpt
+        run: dart test
+
+  test_legacy:
+    name: Test (oldest Flutter version)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION_OLDEST }}
+          channel: "stable"
+
+      - name: Dependencies (core)
+        working-directory: slang
+        run: dart pub get
+      - name: Test (core)
+        working-directory: slang
+        run: dart test
+
+      - name: Dependencies (gpt)
+        working-directory: slang_gpt
+        run: dart pub get
+      - name: Test (gpt)
+        working-directory: slang_gpt
+        run: dart test
