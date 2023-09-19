@@ -1,0 +1,17 @@
+name: test_multi_package
+description: Multi-package test for slang. This package is used to test slang in a multi-package environment.
+version: 0.0.1
+
+environment:
+  sdk: ">=2.17.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  slang: ^3.23.0
+  slang_flutter: ^3.23.0
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter

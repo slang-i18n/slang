@@ -65,6 +65,13 @@ jobs:
         working-directory: slang
         run: dart test
 
+      - name: Dependencies (flutter)
+        working-directory: slang_flutter
+        run: flutter pub get
+      - name: Test (flutter)
+        working-directory: slang_flutter
+        run: flutter test
+
       - name: Dependencies (gpt)
         working-directory: slang_gpt
         run: dart pub get
@@ -89,6 +96,13 @@ jobs:
       - name: Test (core)
         working-directory: slang
         run: dart test
+
+      - name: Dependencies (flutter)
+        working-directory: slang_flutter
+        run: flutter pub get
+      - name: Test (flutter)
+        working-directory: slang_flutter
+        run: flutter test
 
       - name: Dependencies (gpt)
         working-directory: slang_gpt

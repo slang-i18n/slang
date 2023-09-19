@@ -1,0 +1,9 @@
+# To run this:
+# cd slang_flutter/test/integration/multi_package
+# dart run slang
+# (then change to the other package and run again)
+
+input_file_pattern: .i18n.json # change to .i18n.yaml for second package
+output_file_name: strings_a.g.dart # change to strings_b.g.dart for second package
+output_directory: gen
+timestamp: false

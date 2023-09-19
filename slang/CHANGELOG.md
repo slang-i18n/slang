@@ -1,3 +1,7 @@
+## 3.24.0
+
+- feat: use `WidgetsBinding.instance.platformDispatcher` instead of `PlatformDispatcher.instance` in `findDeviceLocale` implementation
+
 ## 3.23.0
 
 - feat: support multiple `TranslationProvider` at the same time when using multiple packages
