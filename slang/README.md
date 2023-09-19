@@ -896,12 +896,12 @@ Now you can access these fields using polymorphism:
 ```dart
 // before: without interfaces
 void myOldFunction(dynamic changes) {
-  List<String> rows = changes.rows as List<String>; // Not type-safe! Prone to typos!
+  final rows = changes.rows as List<String>; // Not type-safe! Prone to typos!
 }
 
 // after: using interfaces
 void myFunction(ChangeData changes) {
-  List<String> rows = changes.rows; // Type-safe! No need to worry!
+  final rows = changes.rows; // Type-safe! Inferred as List<String>
 }
 
 void main() {
