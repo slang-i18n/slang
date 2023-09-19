@@ -24,6 +24,18 @@ on:
           - deleted
           - disabled_inactivity
           - disabled_manually
+      delete_run_by_conclusion_pattern:
+        description: 'Remove workflow by conclusion: action_required, cancelled, failure, skipped, success'
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - "All"
+          - action_required
+          - cancelled
+          - failure
+          - skipped
+          - success
       dry_run:
         description: 'Only log actions, do not perform any delete operations.'
         required: false
@@ -31,9 +43,11 @@ on:
 jobs:
   del_runs:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
       - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
+        uses: Mattraks/delete-workflow-runs@9835e4abbefe04992885a989df6e3f61ddd60117 # 2.0.4
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
@@ -41,4 +55,5 @@ jobs:
           keep_minimum_runs: ${{ github.event.inputs.minimum_runs }}
           delete_workflow_pattern: ${{ github.event.inputs.delete_workflow_pattern }}
           delete_workflow_by_state_pattern: ${{ github.event.inputs.delete_workflow_by_state_pattern }}
+          delete_run_by_conclusion_pattern: ${{ github.event.inputs.delete_run_by_conclusion_pattern }}
           dry_run: ${{ github.event.inputs.dry_run }}
