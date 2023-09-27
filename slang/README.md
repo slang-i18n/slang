@@ -94,6 +94,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
 - [More Usages](#more-usages)
   - [Assets](#-assets)
   - [Unit Tests](#-unit-tests)
+  - [Multiple Packages](#-multiple-packages)
 - [Integrations](#integrations)
   - [slang x riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
@@ -1599,6 +1600,71 @@ void main() {
       expect(AppLocale.en.build().aboutPage.title, 'About');
     });
   });
+}
+```
+
+### ➤ Multiple packages
+
+You can have multiple `slang` instances spread across multiple packages.
+
+This might be useful if you want to share translations between multiple apps.
+
+Slang will automatically synchronize the locales between all packages if you use `LocaleSettings.setLocale`.
+
+```dart
+import 'package:my_package1/gen/strings.g.dart' as package1;
+import 'package:my_package2/gen/strings.g.dart' as package2;
+
+void main() {
+  final t1 = package1.Translations.of(context);
+  final t2 = package2.Translations.of(context);
+
+  // this changes the locale for all packages to Spanish
+  package1.LocaleSettings.setLocale(AppLocale.es);
+  
+  String spanishTitle = t2.title; // this will be in Spanish
+  
+  // this changes the locale for all packages to English
+  package2.LocaleSettings.setLocale(AppLocale.en);
+  
+  String englishTitle = t1.title; // this will be in English
+}
+```
+
+To still have auto rebuild on locale change, you need to wrap all the generated `TranslationProvider` widgets.
+
+```dart
+import 'package:my_package1/gen/strings.g.dart' as package1;
+import 'package:my_package2/gen/strings.g.dart' as package2;
+
+void main() {
+  final widget = package1.TranslationProvider(
+    child: package2.TranslationProvider(
+      child: MaterialApp(
+        home: Scaffold(
+          body: Builder(builder: (context) {
+            final t1 = package1.Translations.of(context);
+            final t2 = package2.Translations.of(context);
+            return Column(
+              children: [
+                Text(t1.title),
+                Text(t2.title),
+              ],
+            );
+          }),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              // this changes the locale for all packages
+              // does not matter which package you call it on
+              package1.LocaleSettings.setLocale(AppLocale.en);
+            },
+          ),
+        ),
+      ),
+    ),
+  );
+  
+  runApp(widget);
 }
 ```
 
