@@ -41,16 +41,47 @@ Future<void> runEdit({
     throw 'Invalid operation. Expected: ${EditOperation.values.map((e) => e.name).join(', ')}';
   }
 
-  final originPath = _getArgument(1, arguments);
-  final destinationPath = _getArgument(2, arguments);
+  final I18nLocale? locale;
+  final String? originPath;
+  final String? destinationPath; // or value for "add"
+  if (operation == EditOperation.add) {
+    if (arguments.length == 4) {
+      // add translation to specific locale: add en my.path "My value"
+      locale = I18nLocale.fromString(arguments[1]);
+      originPath = _getArgument(2, arguments);
+      destinationPath = _getArgument(3, arguments);
+    } else {
+      // add translation to all locales: add my.path "My value"
+      locale = null;
+      originPath = _getArgument(1, arguments);
+      destinationPath = _getArgument(2, arguments);
+    }
 
-  if (originPath == null) {
-    throw 'Missing path.';
-  }
+    if (originPath == null) {
+      throw 'Missing path.';
+    }
 
-  // Sanity check
-  if (fileCollection.config.namespaces && originPath.split('.').length <= 1) {
-    throw 'Missing namespace + path. Expected: dart run slang outdated myNamespace.my.path.to.key';
+    if (destinationPath == null) {
+      throw 'Missing value.';
+    }
+
+    // Sanity check
+    if (fileCollection.config.namespaces && originPath.split('.').length <= 1) {
+      throw 'Missing namespace + path. Expected: dart run slang edit add myNamespace.my.path.to.key';
+    }
+  } else {
+    locale = null;
+    originPath = _getArgument(1, arguments);
+    destinationPath = _getArgument(2, arguments);
+
+    if (originPath == null) {
+      throw 'Missing path.';
+    }
+
+    // Sanity check
+    if (fileCollection.config.namespaces && originPath.split('.').length <= 1) {
+      throw 'Missing namespace + path. Expected: dart run slang outdated myNamespace.my.path.to.key';
+    }
   }
 
   switch (operation) {
@@ -89,14 +120,14 @@ Future<void> runEdit({
       break;
     case EditOperation.add:
       print('Adding translation...\n');
-      if (arguments.length < 4) {
-        throw 'Missing arguments. Expected: dart run slang add myLocale myNamespace.my.path.to.key "My value"';
+      if (arguments.length != 4 && arguments.length != 3) {
+        throw 'Invalid arguments. Expected: dart run slang add myLocale myNamespace.my.path.to.key "My value" (or without locale)';
       }
       await _addEntry(
         fileCollection: fileCollection,
-        locale: I18nLocale.fromString(arguments[1]),
-        path: arguments[2],
-        value: arguments[3],
+        locale: locale,
+        path: originPath,
+        value: destinationPath!,
       );
       break;
   }
@@ -364,7 +395,7 @@ Future<void> _outdatedEntry({
 
 Future<void> _addEntry({
   required SlangFileCollection fileCollection,
-  required I18nLocale locale,
+  required I18nLocale? locale,
   required String path,
   required String value,
 }) async {
@@ -376,10 +407,12 @@ Future<void> _addEntry({
     verbose: false,
   );
   final config = fileCollection.config;
-  final baseTranslationMap = translationMap[config.baseLocale]!['strings']!;
+  final baseTranslationMap = config.namespaces
+      ? translationMap[config.baseLocale]![targetNamespace]!
+      : translationMap[config.baseLocale]!.values.first;
 
   for (final file in fileCollection.files) {
-    if (file.locale != locale) {
+    if (locale != null && file.locale != locale) {
       // We only want to add the key to the target locale
       continue;
     }

@@ -10,8 +10,8 @@ void main() {
         oldMap: {'b': 'B'},
         verbose: false,
       );
-      expect(result, {'b': 'B'});
-      expect(result.keys.toList(), ['b']);
+      expect(result, {'b': 'B', 'a': 'A'});
+      expect(result.keys.toList(), ['b', 'a']);
     });
 
     test('handle empty newMap', () {
@@ -44,7 +44,7 @@ void main() {
       expect(result, map);
     });
 
-    test('ignore new strings', () {
+    test('apply new strings', () {
       final result = applyMapRecursive(
         baseMap: {},
         newMap: {'d4': 'D'},
@@ -55,8 +55,9 @@ void main() {
         'c1': 'C',
         'a2': 'A',
         'b3': 'B',
+        'd4': 'D',
       });
-      expect(result.keys.toList(), ['c1', 'a2', 'b3']);
+      expect(result.keys.toList(), ['c1', 'a2', 'b3', 'd4']);
     });
 
     test('add string to populated map but respect order from base', () {

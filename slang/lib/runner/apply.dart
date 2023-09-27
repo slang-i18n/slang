@@ -289,7 +289,10 @@ Map<String, dynamic> applyMapRecursive({
   required bool verbose,
 }) {
   final resultMap = <String, dynamic>{};
-  final Set<String> overwrittenKeys = {}; // keys without modifiers
+
+  // Keys that have been applied.
+  // They do not have modifiers in their path.
+  final Set<String> appliedKeys = {};
 
   // [newMap] but without modifiers
   newMap = {
@@ -320,7 +323,7 @@ Map<String, dynamic> applyMapRecursive({
 
     if (newEntry != null) {
       final split = key.split('(');
-      overwrittenKeys.add(split.first);
+      appliedKeys.add(split.first);
       if (verbose) {
         _printAdding(currPath, actualValue);
       }
@@ -338,7 +341,7 @@ Map<String, dynamic> applyMapRecursive({
     // Check if the key is outdated and overwritten.
     final info = NodeUtils.parseModifiers(key);
     if (info.modifiers.containsKey(NodeModifiers.outdated) &&
-        overwrittenKeys.contains(info.path)) {
+        appliedKeys.contains(info.path)) {
       // This key is outdated and should not be added.
       continue;
     }
@@ -361,6 +364,32 @@ Map<String, dynamic> applyMapRecursive({
       _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;
+  }
+
+  // Add remaining new keys that are not in base locale and not in old map.
+  for (final entry in newMap.entries) {
+    final keyWithoutModifiers = entry.key.withoutModifiers;
+    if (resultMap.containsKey(keyWithoutModifiers)) {
+      continue;
+    }
+
+    final currPath = path == null ? entry.key : '$path.${entry.key}';
+
+    dynamic actualValue = entry.value;
+    if (actualValue is Map) {
+      actualValue = applyMapRecursive(
+        path: currPath,
+        baseMap: {},
+        newMap: entry.value,
+        oldMap: {},
+        verbose: verbose,
+      );
+    }
+
+    if (verbose) {
+      _printAdding(currPath, actualValue);
+    }
+    resultMap[entry.key] = actualValue;
   }
 
   return resultMap;

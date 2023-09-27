@@ -1402,15 +1402,17 @@ You can use this command to rename, remove, or add translation keys. This is use
 dart run slang edit <type> <params...>
 ```
 
-| Type        | Meaning              | Example                                                 |
-|-------------|----------------------|---------------------------------------------------------|
-| `add`       | Add a translation    | `dart run slang edit add fr greetings.hello "Bonjour"`  | 
-| `move`      | Move a translation   | `dart run slang edit move loginPage authPage`           |
-| `copy`      | Copy a translation   | `dart run slang edit copy loginPage authPage`           |
-| `delete`    | Delete a translation | `dart run slang edit delete loginPage.title`            |
-| `outdated`* | Add outdated flag    | `dart run slang edit outdated loginPage.title`          |
+| Type         | Meaning              | Example                                                 |
+|--------------|----------------------|---------------------------------------------------------|
+| `add`*       | Add a translation    | `dart run slang edit add fr greetings.hello "Bonjour"`  | 
+| `move`       | Move a translation   | `dart run slang edit move loginPage authPage`           |
+| `copy`       | Copy a translation   | `dart run slang edit copy loginPage authPage`           |
+| `delete`     | Delete a translation | `dart run slang edit delete loginPage.title`            |
+| `outdated`** | Add outdated flag    | `dart run slang edit outdated loginPage.title`          |
 
-\* See [Outdated Translations](#-outdated-translations)
+\* Also works without specifying the locale. It will add the translation to all locales.
+
+\*\* See [Outdated Translations](#-outdated-translations)
 
 ### ➤ Outdated Translations
 

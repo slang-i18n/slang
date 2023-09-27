@@ -1,5 +1,7 @@
 ## 3.24.0
 
+- feat: `slang edit add` respects order in base locale ([@adil192](https://github.com/adil192))
+- feat: `slang edit add` works without a specified locale, it will add the string to all locales
 - feat: use `WidgetsBinding.instance.platformDispatcher` instead of `PlatformDispatcher.instance` in `findDeviceLocale` implementation
 
 ## 3.23.0
