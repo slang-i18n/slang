@@ -612,7 +612,8 @@ void _addPluralizationCall({
 
   // add plural parameter first
   buffer.write('({required num ${node.paramName}');
-  if (node.rich) {
+  if (node.rich && paramSet.contains(node.paramName)) {
+    // add builder parameter if it is used
     buffer
         .write(', required InlineSpan Function(num) ${node.paramName}Builder');
   }
@@ -754,7 +755,8 @@ void _addContextCall({
 
   // parameters with context as first parameter
   buffer.write('({required ${node.context.enumName} ${node.paramName}');
-  if (node.rich) {
+  if (node.rich && paramSet.contains(node.paramName)) {
+    // add builder parameter if it is used
     buffer.write(
         ', required InlineSpan Function(${node.context.enumName}) ${node.paramName}Builder');
   }

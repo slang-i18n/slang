@@ -1,6 +1,7 @@
 ## 3.25.0
 
-- fix: code generator should not crash if context is not included in i18n
+- fix: code generator should not crash if context is not included in i18n (#165)
+- fix: should not generate `contextBuilder` and `nBuilder` parameter in rich text if not needed (#168)
 
 ## 3.24.0
 

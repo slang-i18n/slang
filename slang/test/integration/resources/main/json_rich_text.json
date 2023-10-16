@@ -1,0 +1,34 @@
+{
+  "simplePlural": {
+    "one": "one item",
+    "other": "multiple items"
+  },
+  "pluralWithParameter": {
+    "one": "one item",
+    "other": "$n items"
+  },
+  "simpleRichPlural(rich)": {
+    "one": "one item",
+    "other": "multiple items"
+  },
+  "richPluralWithParameter(rich)": {
+    "one": "one item",
+    "other": "$n items"
+  },
+  "simpleContext(context=Animal)": {
+    "cat": "Miaw",
+    "dog": "Woof"
+  },
+  "contextWithParameter(context=Animal)": {
+    "cat": "Miaw",
+    "dog": "Woof $context"
+  },
+  "simpleRichContext(rich, context=Animal)": {
+    "cat": "Miaw",
+    "dog": "Woof"
+  },
+  "richContextWithParameter(rich, context=Animal)": {
+    "cat": "Miaw",
+    "dog": "Woof $context"
+  }
+}

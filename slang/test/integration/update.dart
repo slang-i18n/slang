@@ -32,6 +32,7 @@ void main() {
   generateTranslationOverrides(buildConfig, en, de);
   generateFallbackBaseLocale(buildConfig, en, de);
   generateObfuscation(buildConfig, en, de);
+  generateRichText();
 
   print('');
 }
@@ -210,6 +211,26 @@ void generateObfuscation(RawConfig buildConfig, String en, String de) {
 
   _write(
     path: 'main/_expected_obfuscation',
+    content: result,
+  );
+}
+
+void generateRichText() {
+  final en = loadResource('main/json_rich_text.json');
+  final result = _generate(
+    rawConfig: RawConfig.defaultConfig.copyWith(
+      renderTimestamp: false,
+    ),
+    baseName: 'translations',
+    translationMap: TranslationMap()
+      ..addTranslations(
+        locale: I18nLocale.fromString('en'),
+        translations: JsonDecoder().decode(en),
+      ),
+  ).joinAsSingleOutput();
+
+  _write(
+    path: 'main/_expected_rich_text',
     content: result,
   );
 }
