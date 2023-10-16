@@ -189,5 +189,25 @@ void main() {
       expect(
           (objectNode2.entries['myList'] as ListNode).genericType, 'MyType2');
     });
+
+    test('Should not include context type if values are unspecified', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
+          ContextType(
+            enumName: 'GenderCon',
+            enumValues: null,
+            paths: [],
+            defaultParameter: 'gender',
+            generateEnum: true,
+          ),
+        ]).toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
+        map: {
+          'a': 'b',
+        },
+      );
+
+      expect(result.contexts, []);
+    });
   });
 }

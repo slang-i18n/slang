@@ -1,3 +1,7 @@
+## 3.25.0
+
+- fix: code generator should not crash if context is not included in i18n
+
 ## 3.24.0
 
 - feat: `slang edit add` respects order in base locale ([@adil192](https://github.com/adil192))

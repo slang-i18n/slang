@@ -182,7 +182,8 @@ class TranslationModelBuilder {
     return BuildModelResult(
       root: root,
       interfaces: interfaceCollection.resultInterfaces.values.toList(),
-      contexts: contextCollection.values.toList(),
+      contexts:
+          contextCollection.values.where((c) => c.enumValues != null).toList(),
     );
   }
 }
