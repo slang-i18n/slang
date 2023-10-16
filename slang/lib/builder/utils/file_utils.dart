@@ -16,26 +16,36 @@ class FileUtils {
     required String path,
     required Map<String, dynamic> content,
   }) {
-    final String encodedContent;
-    if (fileType == FileType.yaml) {
-      if (content.containsKey(INFO_KEY)) {
-        // workaround
-        // https://github.com/alexei-sintotski/json2yaml/issues/23
-        content = {
-          '"$INFO_KEY"': content[INFO_KEY],
-          ...content..remove(INFO_KEY),
-        };
-      }
-      encodedContent = json2yaml(content, yamlStyle: YamlStyle.generic);
-    } else {
-      // this encoder does not append \n automatically
-      encodedContent = JsonEncoder.withIndent('  ').convert(content) + '\n';
-    }
-
     FileUtils.writeFile(
       path: path,
-      content: encodedContent,
+      content: FileUtils.encodeContent(
+        fileType: fileType,
+        content: content,
+      ),
     );
+  }
+
+  static String encodeContent({
+    required FileType fileType,
+    required Map<String, dynamic> content,
+  }) {
+    switch (fileType) {
+      case FileType.json:
+        // this encoder does not append \n automatically
+        return JsonEncoder.withIndent('  ').convert(content) + '\n';
+      case FileType.yaml:
+        if (content.containsKey(INFO_KEY)) {
+          // workaround
+          // https://github.com/alexei-sintotski/json2yaml/issues/23
+          content = {
+            '"$INFO_KEY"': content[INFO_KEY],
+            ...content..remove(INFO_KEY),
+          };
+        }
+        return json2yaml(content, yamlStyle: YamlStyle.generic);
+      case FileType.csv:
+        throw UnimplementedError('CSV is not supported yet');
+    }
   }
 
   static void createMissingFolders({required String filePath}) {

@@ -1,5 +1,6 @@
 ## 3.25.0
 
+- feat: add `--exit-if-changed` to `slang analyze` to fail CI if there are missing / unused translations
 - fix: code generator should not crash if context is not included in i18n (#165)
 - fix: should not generate `contextBuilder` and `nBuilder` parameter in rich text if not needed (#168)
 

@@ -36,6 +36,7 @@ void runAnalyzeTranslations({
   final splitMissing = split || arguments.contains('--split-missing');
   final splitUnused = split || arguments.contains('--split-unused');
   final full = arguments.contains('--full');
+  final exitIfChanged = arguments.contains('--exit-if-changed');
 
   // build translation model
   final translationModelList = TranslationModelListBuilder.build(
@@ -52,6 +53,7 @@ void runAnalyzeTranslations({
     outDir: outDir,
     fileNamePrefix: '_missing_translations',
     fileType: rawConfig.fileType,
+    exitIfChanged: exitIfChanged,
     split: splitMissing,
     info: (locale, localeMap) {
       return [
@@ -78,6 +80,7 @@ void runAnalyzeTranslations({
     outDir: outDir,
     fileNamePrefix: '_unused_translations',
     fileType: rawConfig.fileType,
+    exitIfChanged: exitIfChanged,
     split: splitUnused,
     info: (locale, localeMap) {
       return [
@@ -364,6 +367,7 @@ void _writeMap({
   required String outDir,
   required String fileNamePrefix,
   required FileType fileType,
+  required bool exitIfChanged,
   required bool split,
   required List<String> Function(I18nLocale?, Map localeResult) info,
   required Map<I18nLocale, Map<String, dynamic>> result,
@@ -379,13 +383,29 @@ void _writeMap({
             '.${fileType.name}',
         pathSeparator: Platform.pathSeparator,
       );
-      FileUtils.writeFileOfType(
+
+      final fileContent = FileUtils.encodeContent(
         fileType: fileType,
-        path: path,
         content: {
           INFO_KEY: info(entry.key, entry.value),
           ...entry.value,
         },
+      );
+
+      if (exitIfChanged) {
+        final oldFile = File(path);
+        if (oldFile.existsSync()) {
+          if (fileContent != oldFile.readAsStringSync()) {
+            // exit non-zero
+            stderr.writeln('File changed: $path');
+            exit(1);
+          }
+        }
+      }
+
+      FileUtils.writeFile(
+        path: path,
+        content: fileContent,
       );
       print(' -> $path');
     }
@@ -396,13 +416,29 @@ void _writeMap({
       fileName: '$fileNamePrefix.${fileType.name}',
       pathSeparator: Platform.pathSeparator,
     );
-    FileUtils.writeFileOfType(
+
+    final fileContent = FileUtils.encodeContent(
       fileType: fileType,
-      path: path,
       content: {
         INFO_KEY: info(null, result),
         for (final entry in result.entries) entry.key.languageTag: entry.value,
       },
+    );
+
+    if (exitIfChanged) {
+      final oldFile = File(path);
+      if (oldFile.existsSync()) {
+        if (fileContent != oldFile.readAsStringSync()) {
+          // exit non-zero
+          stderr.writeln('File changed: $path');
+          exit(1);
+        }
+      }
+    }
+
+    FileUtils.writeFile(
+      path: path,
+      content: fileContent,
     );
     print(' -> $path');
   }
