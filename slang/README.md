@@ -83,6 +83,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
 - [Tools](#tools)
   - [Main Command](#-main-command)
   - [Analyze Translations](#-analyze-translations)
+  - [Clean Translations](#-clean-translations)
   - [Apply Translations](#-apply-translations)
   - [Edit Translations](#-edit-translations)
   - [Outdated Translations](#-outdated-translations)
