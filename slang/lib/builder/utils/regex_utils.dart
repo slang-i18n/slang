@@ -81,10 +81,12 @@ class RegexUtils {
       RegExp(r'((?:=|\w)+){((?:[^}{]+|{[^}]+})+)}');
 
   /// Matches any missing translations file
-  /// missing_translations.json, missing_translations_de-DE.json
+  /// _missing_translations.json, _missing_translations_de-DE.json
+  /// _unused_translations.json, _unused_translations_de-DE.json
   ///
-  /// 1 - de-DE
-  /// 2 - json
-  static RegExp missingTranslationsFileRegex =
-      RegExp(r'^_missing_translations(?:_(.*))?\.(json|yaml|csv)$');
+  /// 1 - missing_translations or unused_translations
+  /// 2 - de-DE
+  /// 3 - json
+  static RegExp analysisFileRegex = RegExp(
+      r'^_(missing_translations|unused_translations)(?:_(.*))?\.(json|yaml|csv)$');
 }

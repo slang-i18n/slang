@@ -323,6 +323,38 @@ class MapUtils {
     }
     return resultMap;
   }
+
+  /// Returns a list of all keys in the map.
+  /// A key is a path to a leaf (e.g. "a.b.c")
+  static List<String> getFlatMap(Map<String, dynamic> map) {
+    final resultMap = <String>[];
+    for (final entry in map.entries) {
+      if (entry.value is Map) {
+        // recursive
+        final subMap = getFlatMap(entry.value);
+        for (final subEntry in subMap) {
+          resultMap.add('${entry.key}.$subEntry');
+        }
+      } else {
+        resultMap.add(entry.key);
+      }
+    }
+    return resultMap;
+  }
+
+  /// Removes all entries that are empty maps recursively.
+  /// They are removed from the map in place.
+  static void clearEmptyMaps(Map map) {
+    for (final key in [...map.keys]) {
+      final value = map[key];
+      if (value is Map) {
+        clearEmptyMaps(value);
+        if (value.isEmpty) {
+          map.remove(key);
+        }
+      }
+    }
+  }
 }
 
 /// Helper function for [deepCast] handling lists

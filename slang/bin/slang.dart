@@ -9,6 +9,7 @@ import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/runner/analyze.dart';
 import 'package:slang/runner/apply.dart';
+import 'package:slang/runner/clean.dart';
 import 'package:slang/runner/edit.dart';
 import 'package:slang/runner/migrate.dart';
 import 'package:slang/runner/stats.dart';
@@ -27,6 +28,7 @@ enum RunnerMode {
   edit, // edit translations
   outdated, // add 'OUTDATED' modifier to secondary locales
   add, // add a translation
+  clean, // clean unused translations
 }
 
 /// To run this:
@@ -63,6 +65,9 @@ void main(List<String> arguments) async {
       case 'add':
         mode = RunnerMode.add;
         break;
+      case 'clean':
+        mode = RunnerMode.clean;
+        break;
       default:
         mode = RunnerMode.generate;
     }
@@ -95,6 +100,9 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.add:
       print('Adding translation...');
+      break;
+    case RunnerMode.clean:
+      print('Removing unused translations...\n');
       break;
   }
 
@@ -147,6 +155,12 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.add:
       await runEdit(
+        fileCollection: fileCollection,
+        arguments: arguments,
+      );
+      break;
+    case RunnerMode.clean:
+      await runClean(
         fileCollection: fileCollection,
         arguments: arguments,
       );

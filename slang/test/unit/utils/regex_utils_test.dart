@@ -233,31 +233,42 @@ void main() {
     });
   });
 
-  group('missingTranslationsFileRegex', () {
-    RegExp regex = RegexUtils.missingTranslationsFileRegex;
+  group('analysisFileRegex', () {
+    RegExp regex = RegexUtils.analysisFileRegex;
 
     test('without locale', () {
       RegExpMatch? match = regex.firstMatch('_missing_translations.json');
-      expect(match?.group(1), null);
-      expect(match?.group(2), 'json');
+      expect(match?.group(1), 'missing_translations');
+      expect(match?.group(2), null);
+      expect(match?.group(3), 'json');
     });
 
     test('with locale', () {
       RegExpMatch? match = regex.firstMatch('_missing_translations_fr-FR.json');
-      expect(match?.group(1), 'fr-FR');
-      expect(match?.group(2), 'json');
+      expect(match?.group(1), 'missing_translations');
+      expect(match?.group(2), 'fr-FR');
+      expect(match?.group(3), 'json');
     });
 
     test('yaml file', () {
       RegExpMatch? match = regex.firstMatch('_missing_translations.yaml');
-      expect(match?.group(1), null);
-      expect(match?.group(2), 'yaml');
+      expect(match?.group(1), 'missing_translations');
+      expect(match?.group(2), null);
+      expect(match?.group(3), 'yaml');
     });
 
     test('csv file', () {
       RegExpMatch? match = regex.firstMatch('_missing_translations.csv');
-      expect(match?.group(1), null);
-      expect(match?.group(2), 'csv');
+      expect(match?.group(1), 'missing_translations');
+      expect(match?.group(2), null);
+      expect(match?.group(3), 'csv');
+    });
+
+    test('unused translation', () {
+      RegExpMatch? match = regex.firstMatch('_unused_translations.json');
+      expect(match?.group(1), 'unused_translations');
+      expect(match?.group(2), null);
+      expect(match?.group(3), 'json');
     });
   });
 }

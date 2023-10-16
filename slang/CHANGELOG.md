@@ -1,6 +1,7 @@
 ## 3.25.0
 
-- feat: add `--exit-if-changed` to `slang analyze` to fail CI if there are missing / unused translations
+- feat: add `dart run slang clean` to remove unused translations after running `slang analyze` (#141)
+- feat: add `--exit-if-changed` to `slang analyze` to fail CI if there are missing / unused translations (#141)
 - fix: code generator should not crash if context is not included in i18n (#165)
 - fix: should not generate `contextBuilder` and `nBuilder` parameter in rich text if not needed (#168)
 

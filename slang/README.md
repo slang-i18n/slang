@@ -1378,6 +1378,20 @@ Result file:
 
 You can ignore a specific node by adding an `(ignoreMissing)` or `(ignoreUnused)` modifier.
 
+### ➤ Clean Translations
+
+The follow-up command for `analyze`. It requires `analyze` to be run first.
+
+This command essentially removes all unused translations specified in `_unused_translations`.
+
+```sh
+dart run slang clean [--outdir=assets/i18n]
+```
+
+| Argument            | Usage                                                  |
+|---------------------|--------------------------------------------------------|
+| `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
+
 ### ➤ Apply Translations
 
 The follow-up command for `analyze`.

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
 import 'package:slang/builder/builder/translation_model_list_builder.dart';
-import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
@@ -11,8 +10,8 @@ import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/node_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/runner/analyze.dart';
+import 'package:slang/runner/utils/read_analysis_file.dart';
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -46,7 +45,8 @@ Future<void> runApplyTranslations({
   print('Looking for missing translations files in $outDir');
   final files =
       Directory(outDir).listSync(recursive: true).whereType<File>().toList();
-  final missingTranslationsMap = _readMissingTranslations(
+  final missingTranslationsMap = readAnalysis(
+    type: AnalysisType.missingTranslations,
     files: files,
     targetLocales: targetLocales,
   );
@@ -121,74 +121,6 @@ Future<void> runApplyTranslations({
       newTranslations: missingTranslations,
     );
   }
-}
-
-/// Reads the missing translations.
-/// If [targetLocales] is specified, then only these locales are read.
-Map<I18nLocale, Map<String, dynamic>> _readMissingTranslations({
-  required List<File> files,
-  required List<I18nLocale>? targetLocales,
-}) {
-  final Map<I18nLocale, Map<String, dynamic>> resultMap = {};
-  for (final file in files) {
-    final fileName = PathUtils.getFileName(file.path);
-    final fileNameMatch =
-        RegexUtils.missingTranslationsFileRegex.firstMatch(fileName);
-    if (fileNameMatch == null) {
-      continue;
-    }
-
-    final locale = fileNameMatch.group(1) != null
-        ? I18nLocale.fromString(fileNameMatch.group(1)!)
-        : null;
-    if (locale != null &&
-        targetLocales != null &&
-        !targetLocales.contains(locale)) {
-      continue;
-    }
-
-    final fileType = _supportedFiles
-        .firstWhereOrNull((type) => type.name == fileNameMatch.group(2)!);
-    if (fileType == null) {
-      throw FileTypeNotSupportedError(file.path);
-    }
-    final content = File(file.path).readAsStringSync();
-
-    final Map<String, dynamic> parsedContent;
-    try {
-      parsedContent = BaseDecoder.decodeWithFileType(fileType, content);
-    } on FormatException catch (e) {
-      print('');
-      throw 'File: ${file.path}\n$e';
-    }
-
-    if (locale != null) {
-      _printReading(locale, file);
-      resultMap[locale] = {...parsedContent}..remove(INFO_KEY);
-    } else {
-      // handle file containing multiple locales
-      for (final entry in parsedContent.entries) {
-        if (entry.key.startsWith(INFO_KEY)) {
-          continue;
-        }
-
-        final locale = I18nLocale.fromString(entry.key);
-        if (targetLocales != null && !targetLocales.contains(locale)) {
-          continue;
-        }
-
-        if (entry.value == null) {
-          // in yaml, empty maps are parsed as null
-          continue;
-        }
-
-        _printReading(locale, file);
-        resultMap[locale] = entry.value;
-      }
-    }
-  }
-
-  return resultMap;
 }
 
 /// Apply translations only for ONE locale.
@@ -399,10 +331,6 @@ class FileTypeNotSupportedError extends UnsupportedError {
   FileTypeNotSupportedError(String filePath)
       : super(
             'The file "$filePath" has an invalid file extension (supported: ${_supportedFiles.map((e) => e.name)})');
-}
-
-void _printReading(I18nLocale locale, File file) {
-  print(' -> Reading <${locale.languageTag}> from ${file.path}');
 }
 
 void _printApplyingDestination(TranslationFile file) {

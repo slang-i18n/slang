@@ -372,4 +372,95 @@ void main() {
       });
     });
   });
+
+  group('getFlatMap', () {
+    test('Should return empty list', () {
+      final result = MapUtils.getFlatMap({});
+
+      expect(result, []);
+    });
+
+    test('Should return single entry', () {
+      final result = MapUtils.getFlatMap({
+        'a': 42,
+      });
+
+      expect(result, ['a']);
+    });
+
+    test('Should return multiple entries', () {
+      final result = MapUtils.getFlatMap({
+        'a': 42,
+        'b': 43,
+      });
+
+      expect(result, ['a', 'b']);
+    });
+
+    test('Should return nested entry', () {
+      final result = MapUtils.getFlatMap({
+        'a': {
+          'b': 42,
+        },
+      });
+
+      expect(result, ['a.b']);
+    });
+
+    test('Should return multiple nested entries', () {
+      final result = MapUtils.getFlatMap({
+        'a': {
+          'b': 42,
+          'c': 43,
+          'd': {
+            'e': 44,
+          },
+        },
+      });
+
+      expect(result, ['a.b', 'a.c', 'a.d.e']);
+    });
+
+    test('Should treat a list as a leaf', () {
+      final result = MapUtils.getFlatMap({
+        'a': {
+          'b': [1, 2],
+        },
+      });
+
+      expect(result, ['a.b']);
+    });
+  });
+
+  group('clearEmptyMaps', () {
+    test('Should clear empty map', () {
+      final map = {
+        'a': {},
+      };
+      MapUtils.clearEmptyMaps(map);
+
+      expect(map, {});
+    });
+
+    test('Should clear nested empty maps', () {
+      final map = {
+        'a': {
+          'b': {},
+          'not removed': 'c',
+          'c': {
+            'd': {},
+          },
+        },
+        'e': 42,
+      };
+      MapUtils.clearEmptyMaps(map);
+
+      expect(map, {
+        'a': {
+          'not removed': 'c',
+        },
+        'e': 42,
+      });
+    });
+  });
 }
