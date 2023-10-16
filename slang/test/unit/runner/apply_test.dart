@@ -1,4 +1,4 @@
-import 'package:slang/runner/apply.dart';
+import 'package:slang/src/runner/apply.dart';
 import 'package:test/test.dart';
 
 void main() {

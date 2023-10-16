@@ -1,4 +1,4 @@
-import 'package:slang/runner/analyze.dart';
+import 'package:slang/src/runner/analyze.dart';
 import 'package:test/test.dart';
 
 import '../../util/mocks/fake_file.dart';

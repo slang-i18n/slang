@@ -9,7 +9,7 @@ import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/map_utils.dart';
 import 'package:slang/builder/utils/node_utils.dart';
-import 'package:slang/runner/apply.dart';
+import 'package:slang/src/runner/apply.dart';
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 

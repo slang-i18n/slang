@@ -7,7 +7,7 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/runner/apply.dart';
+import 'package:slang/src/runner/apply.dart';
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
