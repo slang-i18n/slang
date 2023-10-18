@@ -1,3 +1,7 @@
+## 0.10.0
+
+- deps: bump slang to 3.25.0
+
 ## 0.9.0
 
 - feat: add `gpt-4` model
