@@ -24,18 +24,12 @@ Builder i18nBuilder(BuilderOptions options) {
 class I18nBuilder implements Builder {
   final RawConfig config;
   final String outputFilePattern;
-  bool _generated = false;
 
   I18nBuilder({required this.config})
       : this.outputFilePattern = config.outputFileName.getFileExtension();
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    // only generate once
-    if (_generated) return;
-
-    _generated = true;
-
     final Glob findAssetsPattern = config.inputDirectory != null
         ? Glob('**${config.inputDirectory}/**${config.inputFilePattern}')
         : Glob('**${config.inputFilePattern}');
