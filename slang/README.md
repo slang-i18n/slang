@@ -100,7 +100,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [slang x riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
-- [Apps built with slang](#apps-built-with-slang)
+- [Slang in production](#slang-in-production)
 
 ## Getting Started
 
@@ -638,6 +638,8 @@ If you use the built-in `LocaleSettings` solution, then it is quite easy to chan
 | `LocaleSettings.useDeviceLocale` | Set to device locale and listen to it | Flutter only  |
 
 The `TranslationProvider` listens to locale changes from the device.
+So if the user leaves the app and changes the locale in the system settings,
+then the app locale will be updated too.
 
 - `LocaleSettings.useDeviceLocale` will enable the listener.
 - `LocaleSettings.setLocale` and `LocaleSettings.setLocaleRaw` will disable the listener by default.
@@ -1013,10 +1015,10 @@ String a = t.onboarding.title(name: 'Tom'); // "Welcome Tom"
 
 A few remarks:
 
-1. New translations will be parsed but have no effect.
-2. New parameters stay unparsed. (i.e. `{name}` stays `{name}`)
-3. Missing translations will use translations **before** the override.
-4. Overriding a second time reverts the last override.
+1. The overrides can be partial. Only the specified translations will be updated.
+2. Overriding a second time reverts the last override.
+3. New translations will be parsed but have no effect.
+4. New parameters stay unparsed. (i.e. `{name}` stays `{name}`)
 
 ### ➤ Dependency Injection
 
@@ -1606,16 +1608,26 @@ It is recommended to add at least one test that accesses the translations to mak
 
 Because slang is type-safe, this test is most likely enough to ensure that the translations are working.
 
+You can also check if all locales are supported by Flutter.
+
 ```dart
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_app/gen/strings.g.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('i18n', () {
-    test('should compile', () {
+    test('Should compile', () {
       // The following test will fail if the i18n file is either not compiled
       // or there are compile-time errors.
       expect(AppLocale.en.build().aboutPage.title, 'About');
+    });
+
+    test('All locales should be supported by Flutter', () {
+      for (final locale in AppLocale.values) {
+        // This will fail if the locale is not supported by Flutter
+        expect(kMaterialSupportedLanguages, contains(locale.languageCode));
+      }
     });
   });
 }
@@ -1817,6 +1829,7 @@ The second one always returns a new instance.
 - [okaryo (Japanese)](https://blog.okaryo.io/20230104-split-and-manage-arb-files-for-internationalized-flutter-app-in-yaml-format)
 - [zenn (Japanese)](https://zenn.dev/flutteruniv_dev/articles/30cbf9a90442e1)
 - [zenn (Japanese)](https://zenn.dev/flutteruniv_dev/articles/6be509f86c0fd7)
+- [zenn (Japanese)](https://zenn.dev/al_rosa/articles/19a0443f8cf3d4)
 
 **Videos**
 
@@ -1826,13 +1839,14 @@ The second one always returns a new instance.
 
 Feel free to extend this list :)
 
-## Apps built with slang
+## Slang in production
 
 Open source:
 
 - [LocalSend (file sharing app)](https://github.com/localsend/localsend)
 - [Saber (notes app)](https://github.com/adil192/saber)
 - [Boorusphere (booru viewer)](https://github.com/nullxception/boorusphere)
+- [Digitale Ehrenamtskarte (German volunteer app)](https://github.com/digitalfabrik/entitlementcard)
 - [Flutter Advanced Boilerplate (boilerplate project)](https://github.com/fikretsengul/flutter_advanced_boilerplate)
 
 Closed source:
