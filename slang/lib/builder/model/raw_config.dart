@@ -38,6 +38,7 @@ class RawConfig {
   static final ObfuscationConfig defaultObfuscationConfig =
       ObfuscationConfig.disabled();
   static const List<String> defaultImports = <String>[];
+  static const String defaultClassName = 'Translations';
 
   final FileType fileType;
   final I18nLocale baseLocale;
@@ -69,6 +70,7 @@ class RawConfig {
   final List<InterfaceConfig> interfaces;
   final ObfuscationConfig obfuscation;
   final List<String> imports;
+  final String className;
 
   /// Used by external tools to access the raw config. (e.g. slang_gpt)
   final Map<String, dynamic> rawMap;
@@ -103,6 +105,7 @@ class RawConfig {
     required this.interfaces,
     required this.obfuscation,
     required this.imports,
+    required this.className,
     required this.rawMap,
   }) : fileType = _determineFileType(inputFilePattern);
 
@@ -157,6 +160,7 @@ class RawConfig {
       interfaces: interfaces ?? this.interfaces,
       obfuscation: obfuscation ?? this.obfuscation,
       imports: imports,
+      className: className,
       rawMap: rawMap,
     );
   }
@@ -268,6 +272,7 @@ class RawConfig {
     interfaces: RawConfig.defaultInterfaces,
     obfuscation: RawConfig.defaultObfuscationConfig,
     imports: RawConfig.defaultImports,
+    className: RawConfig.defaultClassName,
     rawMap: {},
   );
 }

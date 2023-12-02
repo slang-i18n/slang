@@ -302,7 +302,7 @@ void _generateTranslationGetter({
   required GenerateConfig config,
   required String baseClassName,
 }) {
-  const String translationsClass = 'Translations';
+  final String translationsClass = config.className;
   final String translateVar = config.translateVariable;
   final String enumName = config.enumName;
 

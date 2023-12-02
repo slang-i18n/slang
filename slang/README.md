@@ -440,6 +440,7 @@ targets:
 | `obfuscation`/`enabled`             | `Boolean`                          | enable obfuscation [(i)](#-obfuscation)                      | `false`       |
 | `obfuscation`/`secret`              | `String`                           | obfuscation secret (random if null) [(i)](#-obfuscation)     | `null`        |
 | `imports`                           | `List<String>`                     | generate import statements                                   | `[]`          |
+| `class_name`                        | `String`                           | name of the translations class                               | `Translations`|
 
 ## Main Features
 
