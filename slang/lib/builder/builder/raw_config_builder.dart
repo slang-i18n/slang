@@ -107,6 +107,7 @@ class RawConfigBuilder {
               ?.toObfuscationConfig() ??
           RawConfig.defaultObfuscationConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
+      className: map['class_name'] ?? RawConfig.defaultClassName,
       rawMap: map,
     );
   }

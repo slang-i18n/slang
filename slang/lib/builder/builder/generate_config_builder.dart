@@ -37,6 +37,7 @@ class GenerateConfigBuilder {
       interface: interfaces,
       obfuscation: config.obfuscation,
       imports: config.imports,
+      className: config.className,
     );
   }
 }
