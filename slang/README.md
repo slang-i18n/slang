@@ -433,7 +433,7 @@ targets:
 | `flat_map`                          | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`         |
 | `translation_overrides`             | `Boolean`                          | enable translation overrides [(i)](#-translation-overrides)  | `false`        |
 | `timestamp`                         | `Boolean`                          | write "Built on" timestamp                                   | `true`         |
-| `statistics`                        | `Boolean`                          | write statistics                                             | `true`         |
+| `statistics`                        | `Boolean`                          | write statistics (locale and string count)                   | `true`         |
 | `maps`                              | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`           |
 | `pluralization`/`auto`              | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`     |
 | `pluralization`/`default_parameter` | `String`                           | default plural parameter [(i)](#-pluralization)              | `n`            |
