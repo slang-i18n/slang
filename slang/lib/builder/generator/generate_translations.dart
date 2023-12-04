@@ -95,12 +95,13 @@ void _generateClass(
 
   if (localeData.base) {
     if (root) {
-      // Add typedef for backwards compatibility
       if (config.translationClassVisibility ==
           TranslationClassVisibility.public) {
+        // Add typedef for backwards compatibility
         final legacyClassName = getClassNameRoot(
           baseName: config.baseName,
           visibility: config.translationClassVisibility,
+          locale: localeData.locale,
         );
         buffer.writeln(
             'typedef $legacyClassName = ${config.className}; // ignore: unused_element');
