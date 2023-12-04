@@ -1,6 +1,6 @@
 name: slang
 description: Localization / Internationalization (i18n) solution. Use JSON, YAML or CSV files to create typesafe translations via source generation.
-version: 3.26.0
+version: 3.26.1
 repository: https://github.com/slang-i18n/slang
 topics:
   - i18n

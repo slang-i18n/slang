@@ -1,3 +1,7 @@
+## 3.26.1
+
+- fix: generate correct compatibility typedef for `Translations` class (#176)
+
 ## 3.26.0
 
 - feat: base translation class is named `Translations` so that `Translations.of(context)` returns the same type (#169)
