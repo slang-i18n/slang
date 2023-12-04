@@ -16,6 +16,7 @@ The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
 - 🐞 Bug-resistant, no typos or missing arguments possible due to compile-time checking.
 - ⚡ Fast, you get translations using native dart method calls, zero parsing!
 - 📁 Organized, split large files into smaller ones via namespaces.
+- 🖥 Flutter-independent, use it in any Dart project!
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
 You can see an example of the generated file [here](https://github.com/slang-i18n/slang/blob/main/slang/example/lib/i18n/strings.g.dart).
@@ -299,6 +300,7 @@ string_interpolation: double_braces
 flat_map: false
 translation_overrides: false
 timestamp: true
+statistics: true
 maps:
   - error.codes
   - category
@@ -369,6 +371,7 @@ targets:
           flat_map: false
           translation_overrides: false
           timestamp: true
+          statistics: true
           maps:
             - error.codes
             - category
@@ -430,6 +433,7 @@ targets:
 | `flat_map`                          | `Boolean`                          | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`         |
 | `translation_overrides`             | `Boolean`                          | enable translation overrides [(i)](#-translation-overrides)  | `false`        |
 | `timestamp`                         | `Boolean`                          | write "Built on" timestamp                                   | `true`         |
+| `statistics`                        | `Boolean`                          | write statistics                                             | `true`         |
 | `maps`                              | `List<String>`                     | entries which should be accessed via keys [(i)](#-maps)      | `[]`           |
 | `pluralization`/`auto`              | `off`, `cardinal`, `ordinal`       | detect plurals automatically [(i)](#-pluralization)          | `cardinal`     |
 | `pluralization`/`default_parameter` | `String`                           | default plural parameter [(i)](#-pluralization)              | `n`            |

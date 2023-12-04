@@ -29,6 +29,7 @@ class RawConfig {
   static const bool defaultRenderFlatMap = true;
   static const bool defaultTranslationOverrides = false;
   static const bool defaultRenderTimestamp = true;
+  static const bool defaultRenderStatistics = true;
   static const List<String> defaultMaps = <String>[];
   static const PluralAuto defaultPluralAuto = PluralAuto.cardinal;
   static const String defaultPluralParameter = 'n';
@@ -62,6 +63,7 @@ class RawConfig {
   final bool renderFlatMap;
   final bool translationOverrides;
   final bool renderTimestamp;
+  final bool renderStatistics;
   final List<String> maps;
   final PluralAuto pluralAuto;
   final String pluralParameter;
@@ -97,6 +99,7 @@ class RawConfig {
     required this.renderFlatMap,
     required this.translationOverrides,
     required this.renderTimestamp,
+    required this.renderStatistics,
     required this.maps,
     required this.pluralAuto,
     required this.pluralParameter,
@@ -122,6 +125,7 @@ class RawConfig {
     bool? renderFlatMap,
     bool? translationOverrides,
     bool? renderTimestamp,
+    bool? renderStatistics,
     List<String>? maps,
     PluralAuto? pluralAuto,
     List<String>? pluralCardinal,
@@ -152,6 +156,7 @@ class RawConfig {
       renderFlatMap: renderFlatMap ?? this.renderFlatMap,
       translationOverrides: translationOverrides ?? this.translationOverrides,
       renderTimestamp: renderTimestamp ?? this.renderTimestamp,
+      renderStatistics: renderStatistics ?? this.renderStatistics,
       maps: maps ?? this.maps,
       pluralAuto: pluralAuto ?? this.pluralAuto,
       pluralParameter: pluralParameter,
@@ -210,6 +215,7 @@ class RawConfig {
     print(' -> renderFlatMap: $renderFlatMap');
     print(' -> translationOverrides: $translationOverrides');
     print(' -> renderTimestamp: $renderTimestamp');
+    print(' -> renderStatistics: $renderStatistics');
     print(' -> maps: $maps');
     print(' -> pluralization/auto: ${pluralAuto.name}');
     print(' -> pluralization/default_parameter: $pluralParameter');
@@ -263,6 +269,7 @@ class RawConfig {
     renderFlatMap: RawConfig.defaultRenderFlatMap,
     translationOverrides: RawConfig.defaultTranslationOverrides,
     renderTimestamp: RawConfig.defaultRenderTimestamp,
+    renderStatistics: RawConfig.defaultRenderStatistics,
     maps: RawConfig.defaultMaps,
     pluralAuto: RawConfig.defaultPluralAuto,
     pluralParameter: RawConfig.defaultPluralParameter,

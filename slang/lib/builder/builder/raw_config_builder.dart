@@ -89,6 +89,7 @@ class RawConfigBuilder {
       translationOverrides:
           map['translation_overrides'] ?? RawConfig.defaultTranslationOverrides,
       renderTimestamp: map['timestamp'] ?? RawConfig.defaultRenderTimestamp,
+      renderStatistics: map['statistics'] ?? RawConfig.defaultRenderStatistics,
       maps: map['maps']?.cast<String>() ?? RawConfig.defaultMaps,
       pluralAuto: (map['pluralization']?['auto'] as String?)?.toPluralAuto() ??
           RawConfig.defaultPluralAuto,

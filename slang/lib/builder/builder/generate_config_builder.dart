@@ -28,6 +28,7 @@ class GenerateConfigBuilder {
       renderFlatMap: config.renderFlatMap,
       translationOverrides: config.translationOverrides,
       renderTimestamp: config.renderTimestamp,
+      renderStatistics: config.renderStatistics,
       contexts: contexts.map((c) {
         return PopulatedContextType(
           enumName: c.enumName,

@@ -101,24 +101,34 @@ void _generateHeaderComment({
 
   String twoDigits(int value) => value.toString().padLeft(2, '0');
 
-  String renderTimestamp = '';
+  final String statisticsStr;
+  if (config.renderStatistics) {
+    statisticsStr = '''
+
+///
+/// Locales: ${translations.length}
+/// Strings: $count$countPerLocale''';
+  } else {
+    statisticsStr = '';
+  }
+
+  final String timestampStr;
   if (config.renderTimestamp) {
     final date = '${now.year}-${twoDigits(now.month)}-${twoDigits(now.day)}';
     final time = '${twoDigits(now.hour)}:${twoDigits(now.minute)}';
-    renderTimestamp = '''
+    timestampStr = '''
+
 ///
 /// Built on $date at $time UTC''';
+  } else {
+    timestampStr = '';
   }
 
   buffer.writeln('''
 /// Generated file. Do not edit.
 ///
 /// Original: ${config.inputDirectoryHint}
-/// To regenerate, run: `dart run slang`
-///
-/// Locales: ${translations.length}
-/// Strings: $count$countPerLocale
-$renderTimestamp
+/// To regenerate, run: `dart run slang`$statisticsStr$timestampStr
 
 // coverage:ignore-file
 // ignore_for_file: type=lint''');

@@ -1,3 +1,9 @@
+## 3.26.0
+
+- feat: base translation class is named `Translations` so that `Translations.of(context)` returns the same type (#169)
+- feat: the name `Translations` can be configured via `class_name` (@bjernie, #174)
+- feat: add `statistics` configuration (similar to `timestamp`) to hide statistics in generated file
+
 ## 3.25.0
 
 - feat: add `dart run slang clean` to remove unused translations after running `slang analyze` (#141)

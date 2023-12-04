@@ -23,6 +23,7 @@ class GenerateConfig {
   final bool renderFlatMap;
   final bool translationOverrides;
   final bool renderTimestamp;
+  final bool renderStatistics;
   final List<PopulatedContextType> contexts;
   final List<Interface> interface; // may include more than in build config
   final ObfuscationConfig obfuscation;
@@ -44,6 +45,7 @@ class GenerateConfig {
     required this.renderFlatMap,
     required this.translationOverrides,
     required this.renderTimestamp,
+    required this.renderStatistics,
     required this.contexts,
     required this.interface,
     required this.obfuscation,
