@@ -29,7 +29,7 @@ Here is an example using the `riverpod` package.
 ```dart
 final english = AppLocale.en.build();
 final german = AppLocale.de.build();
-final translationProvider = StateProvider<StringsEn>((ref) => german); // set it
+final translationProvider = StateProvider<Translations>((ref) => german); // set it
 
 // access the current instance
 final t = ref.watch(translationProvider);
@@ -49,11 +49,11 @@ To make things easier, there are some utility functions in `AppLocaleUtils`.
 
 ```dart
 // get locale as enum
-final AppLocale deviceLocale = AppLocaleUtils.findDeviceLocale();
-final AppLocale specificLocale = AppLocaleUtils.parse('en_US'); // handles '-' and '_'
+AppLocale deviceLocale = AppLocaleUtils.findDeviceLocale();
+AppLocale specificLocale = AppLocaleUtils.parse('en_US'); // handles '-' and '_'
 
 // build instance
-final StringsEn translations = specificLocale.build();
+Translations translations = specificLocale.build();
 
 // access instance
 AppLocale locale = translations.$meta.locale;

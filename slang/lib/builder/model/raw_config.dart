@@ -18,6 +18,7 @@ class RawConfig {
   static const bool defaultNamespaces = false;
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
+  static const String defaultClassName = 'Translations';
   static const TranslationClassVisibility defaultTranslationClassVisibility =
       TranslationClassVisibility.private;
   static const CaseStyle? defaultKeyCase = null;
@@ -38,7 +39,6 @@ class RawConfig {
   static final ObfuscationConfig defaultObfuscationConfig =
       ObfuscationConfig.disabled();
   static const List<String> defaultImports = <String>[];
-  static const String defaultClassName = 'Translations';
 
   final FileType fileType;
   final I18nLocale baseLocale;
@@ -53,6 +53,7 @@ class RawConfig {
   final bool namespaces;
   final String translateVar;
   final String enumName;
+  final String className;
   final TranslationClassVisibility translationClassVisibility;
   final CaseStyle? keyCase;
   final CaseStyle? keyMapCase;
@@ -70,7 +71,6 @@ class RawConfig {
   final List<InterfaceConfig> interfaces;
   final ObfuscationConfig obfuscation;
   final List<String> imports;
-  final String className;
 
   /// Used by external tools to access the raw config. (e.g. slang_gpt)
   final Map<String, dynamic> rawMap;
@@ -88,6 +88,7 @@ class RawConfig {
     required this.namespaces,
     required this.translateVar,
     required this.enumName,
+    required this.className,
     required this.translationClassVisibility,
     required this.keyCase,
     required this.keyMapCase,
@@ -105,7 +106,6 @@ class RawConfig {
     required this.interfaces,
     required this.obfuscation,
     required this.imports,
-    required this.className,
     required this.rawMap,
   }) : fileType = _determineFileType(inputFilePattern);
 
@@ -143,6 +143,7 @@ class RawConfig {
       namespaces: namespaces ?? this.namespaces,
       translateVar: translateVar,
       enumName: enumName,
+      className: className,
       translationClassVisibility: translationClassVisibility,
       keyCase: keyCase ?? this.keyCase,
       keyMapCase: keyMapCase ?? this.keyMapCase,
@@ -160,7 +161,6 @@ class RawConfig {
       interfaces: interfaces ?? this.interfaces,
       obfuscation: obfuscation ?? this.obfuscation,
       imports: imports,
-      className: className,
       rawMap: rawMap,
     );
   }

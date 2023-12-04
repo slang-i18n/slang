@@ -71,6 +71,7 @@ class RawConfigBuilder {
       namespaces: map['namespaces'] ?? RawConfig.defaultNamespaces,
       translateVar: map['translate_var'] ?? RawConfig.defaultTranslateVar,
       enumName: map['enum_name'] ?? RawConfig.defaultEnumName,
+      className: map['class_name'] ?? RawConfig.defaultClassName,
       translationClassVisibility:
           (map['translation_class_visibility'] as String?)
                   ?.toTranslationClassVisibility() ??
@@ -107,7 +108,6 @@ class RawConfigBuilder {
               ?.toObfuscationConfig() ??
           RawConfig.defaultObfuscationConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
-      className: map['class_name'] ?? RawConfig.defaultClassName,
       rawMap: map,
     );
   }

@@ -18,6 +18,7 @@ class GenerateConfig {
   final bool flutterIntegration;
   final String translateVariable;
   final String enumName;
+  final String className;
   final TranslationClassVisibility translationClassVisibility;
   final bool renderFlatMap;
   final bool translationOverrides;
@@ -26,7 +27,6 @@ class GenerateConfig {
   final List<Interface> interface; // may include more than in build config
   final ObfuscationConfig obfuscation;
   final List<String> imports;
-  final String className;
 
   GenerateConfig({
     required this.buildConfig,
@@ -39,6 +39,7 @@ class GenerateConfig {
     required this.flutterIntegration,
     required this.translateVariable,
     required this.enumName,
+    required this.className,
     required this.translationClassVisibility,
     required this.renderFlatMap,
     required this.translationOverrides,
@@ -47,6 +48,5 @@ class GenerateConfig {
     required this.interface,
     required this.obfuscation,
     required this.imports,
-    required this.className,
   });
 }

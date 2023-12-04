@@ -23,6 +23,7 @@ class GenerateConfigBuilder {
       flutterIntegration: config.flutterIntegration,
       translateVariable: config.translateVar,
       enumName: config.enumName,
+      className: config.className,
       translationClassVisibility: config.translationClassVisibility,
       renderFlatMap: config.renderFlatMap,
       translationOverrides: config.translationOverrides,
@@ -37,7 +38,6 @@ class GenerateConfigBuilder {
       interface: interfaces,
       obfuscation: config.obfuscation,
       imports: config.imports,
-      className: config.className,
     );
   }
 }
