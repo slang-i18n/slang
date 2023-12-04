@@ -130,7 +130,10 @@ void generateNoFlutter(RawConfig buildConfig, String simple) {
 
 void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
   final result = _generate(
-    rawConfig: buildConfig.copyWith(localeHandling: false),
+    rawConfig: buildConfig.copyWith(
+      localeHandling: false,
+      translationClassVisibility: TranslationClassVisibility.public,
+    ),
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(

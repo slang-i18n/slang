@@ -120,6 +120,7 @@ class RawConfig {
     bool? localeHandling,
     bool? flutterIntegration,
     bool? namespaces,
+    TranslationClassVisibility? translationClassVisibility,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
     bool? renderFlatMap,
@@ -148,7 +149,8 @@ class RawConfig {
       translateVar: translateVar,
       enumName: enumName,
       className: className,
-      translationClassVisibility: translationClassVisibility,
+      translationClassVisibility:
+          translationClassVisibility ?? this.translationClassVisibility,
       keyCase: keyCase ?? this.keyCase,
       keyMapCase: keyMapCase ?? this.keyMapCase,
       paramCase: paramCase,

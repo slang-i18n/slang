@@ -1,6 +1,7 @@
 import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/generator_facade.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
 import 'package:test/test.dart';
@@ -22,6 +23,7 @@ void main() {
     final result = GeneratorFacade.generate(
       rawConfig: RawConfigBuilder.fromYaml(buildYaml)!.copyWith(
         localeHandling: false,
+        translationClassVisibility: TranslationClassVisibility.public,
       ),
       baseName: 'translations',
       translationMap: TranslationMap()

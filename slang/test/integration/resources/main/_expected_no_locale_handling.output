@@ -50,6 +50,7 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, Translations> {
 // translations
 
 // Path: <root>
+typedef TranslationsEn = Translations; // ignore: unused_element
 class Translations implements BaseTranslations<AppLocale, Translations> {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
@@ -74,12 +75,12 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 	// Translations
 	String get a => 'a';
-	late final _TranslationsBEn b = _TranslationsBEn._(_root);
+	late final TranslationsBEn b = TranslationsBEn._(_root);
 }
 
 // Path: b
-class _TranslationsBEn {
-	_TranslationsBEn._(this._root);
+class TranslationsBEn {
+	TranslationsBEn._(this._root);
 
 	final Translations _root; // ignore: unused_field
 
