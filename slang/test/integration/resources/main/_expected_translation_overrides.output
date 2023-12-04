@@ -45,8 +45,8 @@ const AppLocale _baseLocale = AppLocale.en;
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
 /// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
 /// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
-enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
-	en(languageCode: 'en', build: _TranslationsEn.build),
+enum AppLocale with BaseAppLocale<AppLocale, Translations> {
+	en(languageCode: 'en', build: Translations.build),
 	de(languageCode: 'de', build: _TranslationsDe.build);
 
 	const AppLocale({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element
@@ -54,10 +54,10 @@ enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
 	@override final String languageCode;
 	@override final String? scriptCode;
 	@override final String? countryCode;
-	@override final TranslationBuilder<AppLocale, _TranslationsEn> build;
+	@override final TranslationBuilder<AppLocale, Translations> build;
 
 	/// Gets current instance managed by [LocaleSettings].
-	_TranslationsEn get translations => LocaleSettings.instance.translationMap[this]!;
+	Translations get translations => LocaleSettings.instance.translationMap[this]!;
 }
 
 /// Method A: Simple
@@ -69,7 +69,7 @@ enum AppLocale with BaseAppLocale<AppLocale, _TranslationsEn> {
 /// Usage:
 /// String a = t.someKey.anotherKey;
 /// String b = t['someKey.anotherKey']; // Only for edge cases!
-_TranslationsEn get t => LocaleSettings.instance.currentTranslations;
+Translations get t => LocaleSettings.instance.currentTranslations;
 
 /// Method B: Advanced
 ///
@@ -86,17 +86,10 @@ _TranslationsEn get t => LocaleSettings.instance.currentTranslations;
 /// final t = Translations.of(context); // Get t variable.
 /// String a = t.someKey.anotherKey; // Use t variable.
 /// String b = t['someKey.anotherKey']; // Only for edge cases!
-class Translations {
-	Translations._(); // no constructor
-
-	static _TranslationsEn of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context).translations;
-}
-
-/// The provider for method B
-class TranslationProvider extends BaseTranslationProvider<AppLocale, _TranslationsEn> {
+class TranslationProvider extends BaseTranslationProvider<AppLocale, Translations> {
 	TranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);
 
-	static InheritedLocaleData<AppLocale, _TranslationsEn> of(BuildContext context) => InheritedLocaleData.of<AppLocale, _TranslationsEn>(context);
+	static InheritedLocaleData<AppLocale, Translations> of(BuildContext context) => InheritedLocaleData.of<AppLocale, Translations>(context);
 }
 
 /// Method B shorthand via [BuildContext] extension method.
@@ -105,11 +98,11 @@ class TranslationProvider extends BaseTranslationProvider<AppLocale, _Translatio
 /// Usage (e.g. in a widget's build method):
 /// context.t.someKey.anotherKey
 extension BuildContextTranslationsExtension on BuildContext {
-	_TranslationsEn get t => TranslationProvider.of(this).translations;
+	Translations get t => TranslationProvider.of(this).translations;
 }
 
 /// Manages all translation instances and the current locale
-class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsEn> {
+class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, Translations> {
 	LocaleSettings._() : super(utils: AppLocaleUtils.instance);
 
 	static final instance = LocaleSettings._();
@@ -133,7 +126,7 @@ class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, _TranslationsE
 }
 
 /// Provides utility functions without any side effects.
-class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, _TranslationsEn> {
+class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, Translations> {
 	AppLocaleUtils._() : super(baseLocale: _baseLocale, locales: AppLocale.values, buildConfig: _buildConfig);
 
 	static final instance = AppLocaleUtils._();
@@ -144,8 +137,8 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, _TranslationsEn> {
 	static AppLocale findDeviceLocale() => instance.findDeviceLocale();
 	static List<Locale> get supportedLocales => instance.supportedLocales;
 	static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
-	static _TranslationsEn buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
-	static _TranslationsEn buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+	static Translations buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
+	static Translations buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);
 }
 
 // context enums
@@ -193,12 +186,17 @@ mixin EndData {
 // translations
 
 // Path: <root>
-class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
+class Translations implements BaseTranslations<AppLocale, Translations> {
+	/// Returns the current translations of the given [context].
+	///
+	/// Usage:
+	/// final t = Translations.of(context);
+	static Translations of(BuildContext context) => InheritedLocaleData.of<AppLocale, Translations>(context).translations;
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
 	/// [AppLocaleUtils.buildWithOverrides] is recommended for overriding.
-	_TranslationsEn.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+	Translations.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
 		: $meta = TranslationMetadata(
 		    locale: AppLocale.en,
 		    overrides: overrides ?? {},
@@ -209,12 +207,12 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 	}
 
 	/// Metadata for the translations of <en>.
-	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
 
 	/// Access flat map
 	dynamic operator[](String key) => $meta.getTranslation(key);
 
-	late final _TranslationsEn _root = this; // ignore: unused_field
+	late final Translations _root = this; // ignore: unused_field
 
 	// Translations
 	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
@@ -238,7 +236,7 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 class _TranslationsOnboardingEn {
 	_TranslationsOnboardingEn._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	String welcome({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Welcome ${fullName}';
@@ -293,7 +291,7 @@ class _TranslationsOnboardingEn {
 class _TranslationsGroupEn {
 	_TranslationsGroupEn._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	String users({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
@@ -307,7 +305,7 @@ class _TranslationsGroupEn {
 class _TranslationsEndEn with EndData {
 	_TranslationsEndEn._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override List<String> get stringPages => TranslationOverrides.list(_root.$meta, 'end.stringPages') ?? [
@@ -329,7 +327,7 @@ class _TranslationsEndEn with EndData {
 class _TranslationsOnboarding$pages$0i0$En with PageData {
 	_TranslationsOnboarding$pages$0i0$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'First Page';
@@ -340,7 +338,7 @@ class _TranslationsOnboarding$pages$0i0$En with PageData {
 class _TranslationsOnboarding$pages$0i1$En with PageData {
 	_TranslationsOnboarding$pages$0i1$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Second Page';
@@ -350,7 +348,7 @@ class _TranslationsOnboarding$pages$0i1$En with PageData {
 class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
 	_TranslationsOnboarding$modifierPages$0i0$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'First Modifier Page';
@@ -361,15 +359,14 @@ class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
 class _TranslationsOnboarding$modifierPages$0i1$En with MPage {
 	_TranslationsOnboarding$modifierPages$0i1$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Second Modifier Page';
 }
 
 // Path: <root>
-class _TranslationsDe implements _TranslationsEn {
-
+class _TranslationsDe implements Translations {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
 	/// [AppLocaleUtils.buildWithOverrides] is recommended for overriding.
@@ -384,7 +381,7 @@ class _TranslationsDe implements _TranslationsEn {
 	}
 
 	/// Metadata for the translations of <de>.
-	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
 
 	/// Access flat map
 	@override dynamic operator[](String key) => $meta.getTranslation(key);
@@ -545,7 +542,7 @@ class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements _Transl
 /// Flat map(s) containing all translations.
 /// Only for edge cases! For simple maps, use the map function of this library.
 
-extension on _TranslationsEn {
+extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Welcome ${fullName}';

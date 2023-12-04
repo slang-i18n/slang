@@ -1,11 +1,16 @@
 part of 'translations.g.dart';
 
 // Path: <root>
-class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
+class Translations implements BaseTranslations<AppLocale, Translations> {
+	/// Returns the current translations of the given [context].
+	///
+	/// Usage:
+	/// final t = Translations.of(context);
+	static Translations of(BuildContext context) => InheritedLocaleData.of<AppLocale, Translations>(context).translations;
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsEn.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+	Translations.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
 		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
 		  $meta = TranslationMetadata(
 		    locale: AppLocale.en,
@@ -17,12 +22,12 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 	}
 
 	/// Metadata for the translations of <en>.
-	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
 
 	/// Access flat map
 	dynamic operator[](String key) => $meta.getTranslation(key);
 
-	late final _TranslationsEn _root = this; // ignore: unused_field
+	late final Translations _root = this; // ignore: unused_field
 
 	// Translations
 	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
@@ -46,7 +51,7 @@ class _TranslationsEn implements BaseTranslations<AppLocale, _TranslationsEn> {
 class _TranslationsOnboardingEn {
 	_TranslationsOnboardingEn._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	String welcome({required Object fullName}) => 'Welcome ${fullName}';
@@ -93,7 +98,7 @@ class _TranslationsOnboardingEn {
 class _TranslationsGroupEn {
 	_TranslationsGroupEn._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
@@ -107,7 +112,7 @@ class _TranslationsGroupEn {
 class _TranslationsEndEn with EndData {
 	_TranslationsEndEn._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override List<String> get stringPages => [
@@ -129,7 +134,7 @@ class _TranslationsEndEn with EndData {
 class _TranslationsOnboarding$pages$0i0$En with PageData {
 	_TranslationsOnboarding$pages$0i0$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'First Page';
@@ -140,7 +145,7 @@ class _TranslationsOnboarding$pages$0i0$En with PageData {
 class _TranslationsOnboarding$pages$0i1$En with PageData {
 	_TranslationsOnboarding$pages$0i1$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Second Page';
@@ -150,7 +155,7 @@ class _TranslationsOnboarding$pages$0i1$En with PageData {
 class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
 	_TranslationsOnboarding$modifierPages$0i0$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'First Modifier Page';
@@ -161,7 +166,7 @@ class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
 class _TranslationsOnboarding$modifierPages$0i1$En with MPage {
 	_TranslationsOnboarding$modifierPages$0i1$En._(this._root);
 
-	final _TranslationsEn _root; // ignore: unused_field
+	final Translations _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Second Modifier Page';

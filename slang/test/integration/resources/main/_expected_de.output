@@ -1,8 +1,7 @@
 part of 'translations.g.dart';
 
 // Path: <root>
-class _TranslationsDe implements _TranslationsEn {
-
+class _TranslationsDe implements Translations {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
 	_TranslationsDe.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
@@ -17,7 +16,7 @@ class _TranslationsDe implements _TranslationsEn {
 	}
 
 	/// Metadata for the translations of <de>.
-	@override final TranslationMetadata<AppLocale, _TranslationsEn> $meta;
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
 
 	/// Access flat map
 	@override dynamic operator[](String key) => $meta.getTranslation(key);

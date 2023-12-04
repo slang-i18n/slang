@@ -8,6 +8,7 @@ import 'package:slang/builder/utils/string_interpolation_extensions.dart';
 /// Pragmatic way to detect links within interpolations.
 const String characteristicLinkPrefix = '_root.';
 
+/// Returns the class name of the root translation class.
 String getClassNameRoot({
   required String baseName,
   I18nLocale? locale,

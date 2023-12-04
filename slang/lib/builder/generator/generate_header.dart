@@ -12,11 +12,6 @@ String generateHeader(
   List<I18nData> allLocales,
 ) {
   const String baseLocaleVar = '_baseLocale';
-  final String baseClassName = getClassNameRoot(
-    baseName: config.baseName,
-    visibility: config.translationClassVisibility,
-    locale: config.baseLocale,
-  );
   const String pluralResolverType = 'PluralResolver';
   const String pluralResolverMapCardinal = '_pluralResolversCardinal';
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
@@ -57,21 +52,18 @@ String generateHeader(
     buffer: buffer,
     config: config,
     allLocales: allLocales,
-    baseClassName: baseClassName,
   );
 
   if (config.localeHandling) {
     _generateTranslationGetter(
       buffer: buffer,
       config: config,
-      baseClassName: baseClassName,
     );
 
     _generateLocaleSettings(
       buffer: buffer,
       config: config,
       allLocales: allLocales,
-      baseClassName: baseClassName,
       pluralResolverType: pluralResolverType,
       pluralResolverCardinal: pluralResolverMapCardinal,
       pluralResolverOrdinal: pluralResolverMapOrdinal,
@@ -82,7 +74,6 @@ String generateHeader(
     buffer: buffer,
     config: config,
     baseLocaleVar: baseLocaleVar,
-    baseClassName: baseClassName,
   );
 
   _generateContextEnums(buffer: buffer, config: config);
@@ -234,7 +225,6 @@ void _generateEnum({
   required StringBuffer buffer,
   required GenerateConfig config,
   required List<I18nData> allLocales,
-  required String baseClassName,
 }) {
   final String enumName = config.enumName;
   final String baseLocaleEnumConstant =
@@ -252,14 +242,9 @@ void _generateEnum({
       '/// - if (LocaleSettings.currentLocale == $baseLocaleEnumConstant) // locale check');
 
   buffer.writeln(
-      'enum $enumName with BaseAppLocale<$enumName, $baseClassName> {');
+      'enum $enumName with BaseAppLocale<$enumName, ${config.className}> {');
   for (int i = 0; i < allLocales.length; i++) {
     final I18nLocale locale = allLocales[i].locale;
-    final String className = getClassNameRoot(
-      baseName: config.baseName,
-      visibility: config.translationClassVisibility,
-      locale: locale,
-    );
 
     buffer
         .write('\t${locale.enumConstant}(languageCode: \'${locale.language}\'');
@@ -269,7 +254,16 @@ void _generateEnum({
     if (locale.country != null) {
       buffer.write(', countryCode: \'${locale.country}\'');
     }
+
+    final String className = allLocales[i].base
+        ? config.className
+        : getClassNameRoot(
+            baseName: config.baseName,
+            visibility: config.translationClassVisibility,
+            locale: locale,
+          );
     buffer.write(', build: $className.build)');
+
     if (i != allLocales.length - 1) {
       buffer.writeln(',');
     } else {
@@ -286,12 +280,12 @@ void _generateEnum({
   buffer.writeln('\t@override final String? scriptCode;');
   buffer.writeln('\t@override final String? countryCode;');
   buffer.writeln(
-      '\t@override final TranslationBuilder<$enumName, $baseClassName> build;');
+      '\t@override final TranslationBuilder<$enumName, ${config.className}> build;');
   if (config.localeHandling) {
     buffer.writeln();
     buffer.writeln('\t/// Gets current instance managed by [LocaleSettings].');
     buffer.writeln(
-        '\t$baseClassName get translations => LocaleSettings.instance.translationMap[this]!;');
+        '\t${config.className} get translations => LocaleSettings.instance.translationMap[this]!;');
   }
 
   buffer.writeln('}');
@@ -300,7 +294,6 @@ void _generateEnum({
 void _generateTranslationGetter({
   required StringBuffer buffer,
   required GenerateConfig config,
-  required String baseClassName,
 }) {
   final String translationsClass = config.className;
   final String translateVar = config.translateVariable;
@@ -322,7 +315,7 @@ void _generateTranslationGetter({
         '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
   }
   buffer.writeln(
-      '$baseClassName get $translateVar => LocaleSettings.instance.currentTranslations;');
+      '${config.className} get $translateVar => LocaleSettings.instance.currentTranslations;');
 
   // t getter (advanced)
   if (config.flutterIntegration) {
@@ -349,23 +342,13 @@ void _generateTranslationGetter({
       buffer.writeln(
           '/// String b = $translateVar[\'someKey.anotherKey\']; // Only for edge cases!');
     }
-    buffer.writeln('class $translationsClass {');
-    buffer.writeln('\t$translationsClass._(); // no constructor');
-    buffer.writeln();
     buffer.writeln(
-        '\tstatic $baseClassName of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context).translations;');
-    buffer.writeln('}');
-
-    // provider
-    buffer.writeln();
-    buffer.writeln('/// The provider for method B');
-    buffer.writeln(
-        'class TranslationProvider extends BaseTranslationProvider<$enumName, $baseClassName> {');
+        'class TranslationProvider extends BaseTranslationProvider<$enumName, ${config.className}> {');
     buffer.writeln(
         '\tTranslationProvider({required super.child}) : super(settings: LocaleSettings.instance);');
     buffer.writeln();
     buffer.writeln(
-        '\tstatic InheritedLocaleData<$enumName, $baseClassName> of(BuildContext context) => InheritedLocaleData.of<$enumName, $baseClassName>(context);');
+        '\tstatic InheritedLocaleData<$enumName, ${config.className}> of(BuildContext context) => InheritedLocaleData.of<$enumName, ${config.className}>(context);');
     buffer.writeln('}');
 
     // BuildContext extension for provider
@@ -379,7 +362,7 @@ void _generateTranslationGetter({
     buffer.writeln(
         'extension BuildContextTranslationsExtension on BuildContext {');
     buffer.writeln(
-        '\t$baseClassName get $translateVar => TranslationProvider.of(this).translations;');
+        '\t${config.className} get $translateVar => TranslationProvider.of(this).translations;');
     buffer.writeln('}');
   }
 }
@@ -388,7 +371,6 @@ void _generateLocaleSettings({
   required StringBuffer buffer,
   required GenerateConfig config,
   required List<I18nData> allLocales,
-  required String baseClassName,
   required String pluralResolverType,
   required String pluralResolverCardinal,
   required String pluralResolverOrdinal,
@@ -403,7 +385,7 @@ void _generateLocaleSettings({
   buffer
       .writeln('/// Manages all translation instances and the current locale');
   buffer.writeln(
-      'class $settingsClass extends $baseClass<$enumName, $baseClassName> {');
+      'class $settingsClass extends $baseClass<$enumName, ${config.className}> {');
   buffer
       .writeln('\t$settingsClass._() : super(utils: AppLocaleUtils.instance);');
   buffer.writeln();
@@ -449,7 +431,6 @@ void _generateUtil({
   required StringBuffer buffer,
   required GenerateConfig config,
   required String baseLocaleVar,
-  required String baseClassName,
 }) {
   const String utilClass = 'AppLocaleUtils';
   final String enumName = config.enumName;
@@ -457,7 +438,7 @@ void _generateUtil({
   buffer.writeln();
   buffer.writeln('/// Provides utility functions without any side effects.');
   buffer.writeln(
-      'class $utilClass extends BaseAppLocaleUtils<$enumName, $baseClassName> {');
+      'class $utilClass extends BaseAppLocaleUtils<$enumName, ${config.className}> {');
   buffer.writeln(
       '\t$utilClass._() : super(baseLocale: $baseLocaleVar, locales: $enumName.values${config.translationOverrides ? ', buildConfig: _buildConfig' : ''});');
   buffer.writeln();
@@ -480,9 +461,9 @@ void _generateUtil({
       '\tstatic List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
   if (config.translationOverrides) {
     buffer.writeln(
-        '\tstatic $baseClassName buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic ${config.className} buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln(
-        '\tstatic $baseClassName buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic ${config.className} buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
   }
 
   buffer.writeln('}');

@@ -21,7 +21,7 @@ String generateTranslationMap(
 
     buffer.writeln();
     buffer.writeln(
-        'extension on ${getClassNameRoot(baseName: config.baseName, locale: localeData.locale, visibility: config.translationClassVisibility)} {');
+        'extension on ${localeData.base ? config.className : getClassNameRoot(baseName: config.baseName, locale: localeData.locale, visibility: config.translationClassVisibility)} {');
     buffer.writeln('\tdynamic _flatMapFunction(String path) {');
 
     buffer.writeln('\t\tswitch (path) {');

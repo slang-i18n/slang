@@ -73,31 +73,51 @@ void _generateClass(
     buffer.writeln('// Path: ${node.path}');
   }
 
-  final baseClassName = getClassName(
-    parentName: className,
-    locale: config.baseLocale,
-  );
-  final rootClassName = getClassNameRoot(
-    baseName: config.baseName,
-    visibility: config.translationClassVisibility,
-    locale: localeData.locale,
-  );
-  final finalClassName = getClassName(
-    parentName: className,
-    locale: localeData.locale,
-  );
+  // The root class of **this** locale (path-independent).
+  final rootClassName = localeData.base
+      ? config.className
+      : getClassNameRoot(
+          baseName: config.baseName,
+          visibility: config.translationClassVisibility,
+          locale: localeData.locale,
+        );
+
+  // The current class name.
+  final finalClassName = root && localeData.base
+      ? config.className
+      : getClassName(
+          parentName: className,
+          locale: localeData.locale,
+        );
 
   final mixinStr =
       node.interface != null ? ' with ${node.interface!.name}' : '';
 
   if (localeData.base) {
     if (root) {
+      // Add typedef for backwards compatibility
+      if (config.translationClassVisibility ==
+          TranslationClassVisibility.public) {
+        final legacyClassName = getClassNameRoot(
+          baseName: config.baseName,
+          visibility: config.translationClassVisibility,
+        );
+        buffer.writeln(
+            'typedef $legacyClassName = ${config.className}; // ignore: unused_element');
+      }
       buffer.writeln(
-          'class $finalClassName$mixinStr implements BaseTranslations<${config.enumName}, $rootClassName> {');
+          'class $finalClassName$mixinStr implements BaseTranslations<${config.enumName}, ${config.className}> {');
     } else {
       buffer.writeln('class $finalClassName$mixinStr {');
     }
   } else {
+    // The class name of the **base** locale (path-dependent).
+    final baseClassName = root
+        ? config.className
+        : getClassName(
+            parentName: className,
+            locale: config.baseLocale,
+          );
     if (config.fallbackStrategy == FallbackStrategy.none) {
       buffer.writeln(
           'class $finalClassName$mixinStr implements $baseClassName {');
@@ -110,7 +130,19 @@ void _generateClass(
   final callSuperConstructor = !localeData.base &&
       config.fallbackStrategy == FallbackStrategy.baseLocale;
   if (root) {
-    buffer.writeln();
+    if (localeData.base && config.flutterIntegration && config.localeHandling) {
+      buffer.writeln(
+          '\t/// Returns the current translations of the given [context].');
+      buffer.writeln('\t///');
+      buffer.writeln('\t/// Usage:');
+      buffer.writeln(
+          '\t/// final ${config.translateVariable} = ${config.className}.of(context);');
+      buffer.writeln(
+        '\tstatic $finalClassName of(BuildContext context) => InheritedLocaleData.of<${config.enumName}, $finalClassName>(context).translations;',
+      );
+      buffer.writeln();
+    }
+
     buffer.writeln(
         '\t/// You can call this constructor and build your own translation instance of this locale.');
     buffer.writeln(
@@ -171,7 +203,7 @@ void _generateClass(
     buffer.writeln(
         '\t/// Metadata for the translations of <${localeData.locale.languageTag}>.');
     buffer.writeln(
-        '\t@override final TranslationMetadata<${config.enumName}, $baseClassName> \$meta;');
+        '\t@override final TranslationMetadata<${config.enumName}, ${config.className}> \$meta;');
 
     if (config.renderFlatMap) {
       // flat map
