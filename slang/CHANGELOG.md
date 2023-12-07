@@ -1,6 +1,6 @@
 ## 3.26.2
 
-- fix: should not escape strings when parsed via the "Translation Overrides" feature (#177)
+- fix: should not escape special characters when parsed via the "Translation Overrides" feature (#177)
 
 ## 3.26.1
 
