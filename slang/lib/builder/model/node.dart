@@ -229,6 +229,7 @@ abstract class TextNode extends Node implements LeafNode {
 
   /// Several configs, persisted into node to make it easier to copy
   /// See [updateWithLinkParams]
+  final bool shouldEscape;
   final StringInterpolation interpolation;
   final CaseStyle? paramCase;
 
@@ -238,6 +239,7 @@ abstract class TextNode extends Node implements LeafNode {
     required super.modifiers,
     required super.comment,
     required this.raw,
+    required this.shouldEscape,
     required this.interpolation,
     required this.paramCase,
   });
@@ -278,12 +280,13 @@ class StringTextNode extends TextNode {
     required super.modifiers,
     required super.raw,
     required super.comment,
+    required super.shouldEscape,
     required super.interpolation,
     required super.paramCase,
     Map<String, Set<String>>? linkParamMap,
   }) {
     final parsedResult = _parseInterpolation(
-      raw: _escapeContent(raw, interpolation),
+      raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
       paramCase: paramCase,
     );
@@ -317,6 +320,7 @@ class StringTextNode extends TextNode {
       modifiers: modifiers,
       raw: raw,
       comment: comment,
+      shouldEscape: shouldEscape,
       interpolation: interpolation,
       paramCase: paramCase,
       linkParamMap: linkParamMap,
@@ -361,12 +365,13 @@ class RichTextNode extends TextNode {
     required super.modifiers,
     required super.raw,
     required super.comment,
+    required super.shouldEscape,
     required super.interpolation,
     required super.paramCase,
     Map<String, Set<String>>? linkParamMap,
   }) {
     final rawParsedResult = _parseInterpolation(
-      raw: _escapeContent(raw, interpolation),
+      raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
       paramCase: null, // param case will be applied later
     );
@@ -437,6 +442,7 @@ class RichTextNode extends TextNode {
       modifiers: modifiers,
       raw: raw,
       comment: comment,
+      shouldEscape: shouldEscape,
       interpolation: interpolation,
       paramCase: paramCase,
       linkParamMap: linkParamMap,

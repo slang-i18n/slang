@@ -51,6 +51,11 @@ void main() {
       expect(input.dart(), '} X');
     });
 
+    test('dollar in the middle', () {
+      final input = r'$a $ ';
+      expect(input.dart(), r'X $ ');
+    });
+
     test('ends with dollar', () {
       final input = r'$a $';
       expect(input.dart(), r'X $');

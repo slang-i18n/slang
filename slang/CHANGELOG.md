@@ -1,3 +1,7 @@
+## 3.26.2
+
+- fix: should not escape strings when parsed via the "Translation Overrides" feature (#177)
+
 ## 3.26.1
 
 - fix: generate correct compatibility typedef for `Translations` class (#176)

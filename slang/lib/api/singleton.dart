@@ -163,6 +163,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
       buildConfig: buildConfig!,
       map: digestedMap,
       handleLinks: false,
+      shouldEscapeText: false,
       localeDebug: locale.languageTag,
     );
 

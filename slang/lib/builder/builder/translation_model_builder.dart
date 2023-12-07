@@ -29,12 +29,19 @@ class TranslationModelBuilder {
   /// The map must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
   ///
-  /// [handleLinks] can be set false to ignore links at leave them as is
+  /// [handleLinks] can be set false to ignore links and leave them as is
   /// e.g. ${_root.greet(name: name} will be ${_root.greet}
+  /// This is used for "Translation Overrides" where the links are resolved
+  /// on invocation.
+  ///
+  /// [shouldEscapeText] can be set false to ignore escaping of text nodes
+  /// e.g. "Let's go" will be "Let's go" instead of "Let\'s go".
+  /// Similar to [handleLinks], this is used for "Translation Overrides".
   static BuildModelResult build({
     required BuildModelConfig buildConfig,
     required Map<String, dynamic> map,
     bool handleLinks = true,
+    bool shouldEscapeText = true,
     required String localeDebug,
   }) {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
@@ -59,6 +66,7 @@ class TranslationModelBuilder {
       keyCase: buildConfig.keyCase,
       leavesMap: leavesMap,
       contextCollection: contextCollection,
+      shouldEscapeText: shouldEscapeText,
     );
 
     // 2nd iteration: Handle parameterized linked translations
@@ -199,6 +207,7 @@ Map<String, Node> _parseMapNode({
   required CaseStyle? keyCase,
   required Map<String, LeafNode> leavesMap,
   required Map<String, ContextType> contextCollection,
+  required bool shouldEscapeText,
 }) {
   final Map<String, Node> resultNodeTree = {};
 
@@ -228,6 +237,7 @@ Map<String, Node> _parseMapNode({
               modifiers: modifiers,
               raw: value.toString(),
               comment: comment,
+              shouldEscape: shouldEscapeText,
               interpolation: config.stringInterpolation,
               paramCase: config.paramCase,
             )
@@ -237,6 +247,7 @@ Map<String, Node> _parseMapNode({
               modifiers: modifiers,
               raw: value.toString(),
               comment: comment,
+              shouldEscape: shouldEscapeText,
               interpolation: config.stringInterpolation,
               paramCase: config.paramCase,
             );
@@ -260,6 +271,7 @@ Map<String, Node> _parseMapNode({
           keyCase: config.keyCase,
           leavesMap: leavesMap,
           contextCollection: contextCollection,
+          shouldEscapeText: shouldEscapeText,
         );
 
         // finally only take their values, ignoring keys
@@ -287,6 +299,7 @@ Map<String, Node> _parseMapNode({
               : config.keyCase,
           leavesMap: leavesMap,
           contextCollection: contextCollection,
+          shouldEscapeText: shouldEscapeText,
         );
 
         final Node finalNode;
@@ -338,6 +351,7 @@ Map<String, Node> _parseMapNode({
               keyCase: config.keyCase,
               leavesMap: leavesMap,
               contextCollection: contextCollection,
+              shouldEscapeText: shouldEscapeText,
             ).cast<String, RichTextNode>();
           }
 

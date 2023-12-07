@@ -13,15 +13,17 @@ extension StringInterpolationExtensions on String {
       int startCharacterLength = 1;
       int startIndex = curr.indexOf(_DOLLAR);
       if (startIndex == -1) {
+        // no more matches
         buffer.write(curr);
         break;
       }
+
+      // Check if the $ is escaped with a preceding \
       if (startIndex >= 1 && curr[startIndex - 1] == '\\') {
-        // ignore because of preceding \
         buffer.write(curr.substring(0, startIndex)); // *do* include \
         buffer.write(_DOLLAR);
         if (startIndex + 1 < curr.length) {
-          curr = curr.substring(startIndex + startCharacterLength);
+          curr = curr.substring(startIndex + 1);
           continue;
         } else {
           break;
@@ -29,12 +31,20 @@ extension StringInterpolationExtensions on String {
       }
 
       if (startIndex != 0) {
-        // add prefix
+        // Add everything before the $ to the buffer
         buffer.write(curr.substring(0, startIndex));
       }
 
-      if (startIndex + 1 < curr.length && curr[startIndex + 1] == '{') {
-        startCharacterLength = 2; // it is now "${"
+      if (startIndex + 1 < curr.length) {
+        final nextCharacter = curr[startIndex + 1];
+        if (nextCharacter == '{') {
+          startCharacterLength = 2; // it is now "${"
+        } else if (nextCharacter.contains(_nonWordRegex)) {
+          // $ stands alone
+          buffer.write(_DOLLAR);
+          curr = curr.substring(startIndex + 1);
+          continue;
+        }
       }
 
       final endRegex = startCharacterLength == 1 ? _nonWordRegex : '}';

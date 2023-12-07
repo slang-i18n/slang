@@ -11,7 +11,9 @@ class TranslationModelListBuilder {
   /// After this method call, information about the namespace is lost.
   /// It will be just a normal parent.
   static List<I18nData> build(
-      RawConfig rawConfig, TranslationMap translationMap) {
+    RawConfig rawConfig,
+    TranslationMap translationMap,
+  ) {
     final buildConfig = rawConfig.toBuildModelConfig();
 
     return translationMap.getInternalMap().entries.map((localeEntry) {
