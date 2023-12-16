@@ -1,4 +1,4 @@
-enum FileType { json, yaml, csv }
+enum FileType { json, yaml, csv, arb }
 
 enum FallbackStrategy { none, baseLocale }
 

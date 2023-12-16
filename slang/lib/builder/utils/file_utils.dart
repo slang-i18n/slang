@@ -45,6 +45,9 @@ class FileUtils {
         return json2yaml(content, yamlStyle: YamlStyle.generic);
       case FileType.csv:
         throw UnimplementedError('CSV is not supported yet');
+      case FileType.arb:
+        // this encoder does not append \n automatically
+        return JsonEncoder.withIndent('  ').convert(content) + '\n';
     }
   }
 

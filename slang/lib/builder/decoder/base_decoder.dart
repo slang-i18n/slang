@@ -1,3 +1,4 @@
+import 'package:slang/builder/decoder/arb_decoder.dart';
 import 'package:slang/builder/decoder/csv_decoder.dart';
 import 'package:slang/builder/decoder/json_decoder.dart';
 import 'package:slang/builder/decoder/yaml_decoder.dart';
@@ -27,6 +28,9 @@ abstract class BaseDecoder {
         break;
       case FileType.csv:
         decoder = CsvDecoder();
+        break;
+      case FileType.arb:
+        decoder = ArbDecoder();
         break;
     }
     return decoder.decode(raw);

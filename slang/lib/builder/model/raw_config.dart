@@ -95,7 +95,7 @@ class RawConfig {
     required this.keyCase,
     required this.keyMapCase,
     required this.paramCase,
-    required this.stringInterpolation,
+    required StringInterpolation stringInterpolation,
     required this.renderFlatMap,
     required this.translationOverrides,
     required this.renderTimestamp,
@@ -110,7 +110,11 @@ class RawConfig {
     required this.obfuscation,
     required this.imports,
     required this.rawMap,
-  }) : fileType = _determineFileType(inputFilePattern);
+  })  : fileType = _determineFileType(inputFilePattern),
+        stringInterpolation =
+            _determineFileType(inputFilePattern) == FileType.arb
+                ? StringInterpolation.braces
+                : stringInterpolation;
 
   RawConfig copyWith({
     I18nLocale? baseLocale,
@@ -185,8 +189,10 @@ class RawConfig {
       return FileType.yaml;
     } else if (extension.endsWith('.csv')) {
       return FileType.csv;
+    } else if (extension.endsWith('.arb')) {
+      return FileType.arb;
     } else {
-      throw 'Input file pattern must end with .json or .yaml (Input: $extension)';
+      throw 'Input file pattern must end with .json, .yaml, .csv, or .arb (Input: $extension)';
     }
   }
 

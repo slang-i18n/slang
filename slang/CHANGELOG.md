@@ -1,3 +1,7 @@
+## 3.27.0
+
+- feat: add support for ARB files (#179)
+
 ## 3.26.2
 
 - fix: should not escape special characters when parsed via the "Translation Overrides" feature (#177)
