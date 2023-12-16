@@ -6,7 +6,7 @@
 ![ci](https://github.com/slang-i18n/slang/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Type-safe i18n solution using JSON, YAML or CSV files.
+Type-safe i18n solution using JSON, YAML, CSV, or ARB files.
 
 The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
 
@@ -415,7 +415,7 @@ targets:
 | `base_locale`                       | `String`                           | locale of default json                                       | `en`           |
 | `fallback_strategy`                 | `none`, `base_locale`              | handle missing translations [(i)](#-fallback)                | `none`         |
 | `input_directory`                   | `String`                           | path to input directory                                      | `null`         |
-| `input_file_pattern`                | `String`                           | input file pattern, must end with .json, .yaml or .csv       | `.i18n.json`   |
+| `input_file_pattern`                | `String`                           | input file pattern, must end with .json, .yaml, .csv, .arb   | `.i18n.json`   |
 | `output_directory`                  | `String`                           | path to output directory                                     | `null`         |
 | `output_file_name`                  | `String`                           | output file name                                             | `null`         |
 | `output_format`                     | `single_file`, `multiple_files`    | split output files [(i)](#-output-format)                    | `single_file`  |
@@ -452,17 +452,20 @@ targets:
 
 ### ➤ File Types
 
-Supported file types: `JSON (default)`, `YAML` and `CSV`.
+Supported file types: `JSON (default)`, `YAML`, `CSV`, and `ARB`.
 
-To change to YAML or CSV, please modify `input_file_pattern`.
+Update `input_file_pattern` to change the file type.
 
 ```yaml
 # Config
 input_directory: assets/i18n
-input_file_pattern: .i18n.yaml # must end with .json, .yaml or .csv
+input_file_pattern: .i18n.yaml # must end with .json, .yaml, .csv, or .arb
 ```
 
 **JSON Example**
+
+The default file type.
+
 ```json
 {
   "welcome": {
@@ -472,6 +475,9 @@ input_file_pattern: .i18n.yaml # must end with .json, .yaml or .csv
 ```
 
 **YAML Example**
+
+YAML offers a more compact syntax. It provides native support for multiline strings and comments.
+
 ```yaml
 welcome:
   title: Welcome $name # some comment
@@ -482,11 +488,33 @@ welcome:
 You may also combine multiple locales into one CSV (see [Compact CSV](#-compact-csv)).
 
 ```csv
-# Format: <key>, <translation>
-
 welcome.title,Welcome $name
 pages.0.title,First Page
 pages.1.title,Second Page
+```
+
+**ARB Example**
+
+ARB is the default format for Flutter projects.
+However, it doesn't support [lists](#-lists) or [maps](#-maps).
+String interpolation is fixed to `braces` mode.
+
+```json
+{
+  "@@locale": "en",
+  "welcomeTitle": "Welcome {name}",
+  "@welcomeTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "inboxPageCount": "You have {count, plural, one {1 message} other {{count} messages}}",
+  "@inboxPageCount": {
+    "placeholders": {
+      "count": {}
+    }
+  }
+}
 ```
 
 ### ➤ String Interpolation
