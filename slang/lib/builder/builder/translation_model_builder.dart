@@ -230,6 +230,13 @@ Map<String, Node> _parseMapNode({
     if (value is String || value is num) {
       // leaf
       // key: 'value'
+
+      if (config.fallbackStrategy == FallbackStrategy.baseLocaleEmptyString &&
+          value is String &&
+          value.isEmpty) {
+        return;
+      }
+
       final textNode = modifiers.containsKey(NodeModifiers.rich)
           ? RichTextNode(
               path: currPath,
@@ -315,6 +322,7 @@ Map<String, Node> _parseMapNode({
               case FallbackStrategy.none:
                 throw '"$currPath" in <$localeDebug> is empty but it is marked for pluralization / context. Define "fallback_strategy: base_locale" to ignore this node.';
               case FallbackStrategy.baseLocale:
+              case FallbackStrategy.baseLocaleEmptyString:
                 return;
             }
           }

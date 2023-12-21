@@ -1,6 +1,10 @@
 enum FileType { json, yaml, csv, arb }
 
-enum FallbackStrategy { none, baseLocale }
+enum FallbackStrategy { none, baseLocale, baseLocaleEmptyString }
+
+/// Similar to [FallbackStrategy] but [FallbackStrategy.baseLocaleEmptyString]
+/// has been already handled in the previous step.
+enum GenerateFallbackStrategy { none, baseLocale }
 
 enum OutputFormat { singleFile, multipleFiles }
 
@@ -19,6 +23,8 @@ extension Parser on String {
         return FallbackStrategy.none;
       case 'base_locale':
         return FallbackStrategy.baseLocale;
+      case 'base_locale_empty_string':
+        return FallbackStrategy.baseLocaleEmptyString;
       default:
         return null;
     }
@@ -82,6 +88,19 @@ extension Parser on String {
         return PluralAuto.ordinal;
       default:
         return null;
+    }
+  }
+}
+
+extension FallbackStrategyExt on FallbackStrategy {
+  GenerateFallbackStrategy toGenerateFallbackStrategy() {
+    switch (this) {
+      case FallbackStrategy.none:
+        return GenerateFallbackStrategy.none;
+      case FallbackStrategy.baseLocale:
+        return GenerateFallbackStrategy.baseLocale;
+      case FallbackStrategy.baseLocaleEmptyString:
+        return GenerateFallbackStrategy.baseLocale;
     }
   }
 }

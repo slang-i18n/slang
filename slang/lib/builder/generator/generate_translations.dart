@@ -119,7 +119,7 @@ void _generateClass(
             parentName: className,
             locale: config.baseLocale,
           );
-    if (config.fallbackStrategy == FallbackStrategy.none) {
+    if (config.fallbackStrategy == GenerateFallbackStrategy.none) {
       buffer.writeln(
           'class $finalClassName$mixinStr implements $baseClassName {');
     } else {
@@ -129,7 +129,7 @@ void _generateClass(
 
   // constructor and custom fields
   final callSuperConstructor = !localeData.base &&
-      config.fallbackStrategy == FallbackStrategy.baseLocale;
+      config.fallbackStrategy == GenerateFallbackStrategy.baseLocale;
   if (root) {
     if (localeData.base && config.flutterIntegration && config.localeHandling) {
       buffer.writeln(
@@ -218,7 +218,7 @@ void _generateClass(
       buffer.write(
           'dynamic operator[](String key) => \$meta.getTranslation(key)');
 
-      if (config.fallbackStrategy == FallbackStrategy.baseLocale &&
+      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale &&
           !localeData.base) {
         buffer.writeln(' ?? super.\$meta.getTranslation(key);');
       } else {
@@ -277,12 +277,13 @@ void _generateClass(
     // even if this attribute exist, it has to satisfy the same signature as
     // specified in the interface
     // this error seems to occur when using in combination with "extends"
-    final optional = config.fallbackStrategy == FallbackStrategy.baseLocale &&
-            node.interface?.attributes.any((attribute) =>
-                    attribute.optional && attribute.attributeName == key) ==
-                true
-        ? '?'
-        : '';
+    final optional =
+        config.fallbackStrategy == GenerateFallbackStrategy.baseLocale &&
+                node.interface?.attributes.any((attribute) =>
+                        attribute.optional && attribute.attributeName == key) ==
+                    true
+            ? '?'
+            : '';
 
     if (value is StringTextNode) {
       final translationOverrides = config.translationOverrides
