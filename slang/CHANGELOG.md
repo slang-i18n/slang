@@ -1,3 +1,8 @@
+## 3.28.0
+
+- feat: add `fallback_strategy: base_locale_empty_string` to also treat empty strings as missing translations (#180)
+- fix: special case where linked translations had invalid parenthesis (#181)
+
 ## 3.27.0
 
 - feat: add support for ARB files (#179)
