@@ -557,6 +557,10 @@ _ParseLinksResult _parseLinks({
     }
 
     final linkedParams = linkParamMap[linkedPath]!;
+    if (linkedParams.isEmpty) {
+      return '\${_root.$linkedPath}';
+    }
+
     final parameterString =
         linkedParams.map((param) => '$param: $param').join(', ');
     return '\${_root.$linkedPath($parameterString)}';

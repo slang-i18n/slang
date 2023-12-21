@@ -3,9 +3,10 @@ import 'package:slang/builder/model/node.dart';
 
 StringTextNode textNode(
   String raw,
-  StringInterpolation interpolation, [
+  StringInterpolation interpolation, {
   CaseStyle? paramCase,
-]) {
+  Map<String, Set<String>>? linkParamMap,
+}) {
   return StringTextNode(
     path: '',
     rawPath: '',
@@ -15,14 +16,16 @@ StringTextNode textNode(
     interpolation: interpolation,
     paramCase: paramCase,
     shouldEscape: true,
+    linkParamMap: linkParamMap,
   );
 }
 
 RichTextNode richTextNode(
   String raw,
-  StringInterpolation interpolation, [
+  StringInterpolation interpolation, {
   CaseStyle? paramCase,
-]) {
+  Map<String, Set<String>>? linkParamMap,
+}) {
   return RichTextNode(
     path: '',
     rawPath: '',
@@ -32,5 +35,6 @@ RichTextNode richTextNode(
     interpolation: interpolation,
     paramCase: paramCase,
     shouldEscape: true,
+    linkParamMap: linkParamMap,
   );
 }

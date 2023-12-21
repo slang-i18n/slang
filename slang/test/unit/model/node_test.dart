@@ -253,7 +253,11 @@ void main() {
 
       test('with case', () {
         final test = r'Nice $cool_hi $wow ${yes} ${no_yes} @:hello_world.yes';
-        final node = textNode(test, StringInterpolation.dart, CaseStyle.camel);
+        final node = textNode(
+          test,
+          StringInterpolation.dart,
+          paramCase: CaseStyle.camel,
+        );
         expect(node.content,
             r'Nice ${coolHi} ${wow} ${yes} ${noYes} ${_root.hello_world.yes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
@@ -265,6 +269,16 @@ void main() {
         expect(node.content,
             r'@:.c ${_root.a} ${_root.hi} ${_root.wow}. ${_root.nice.cool}');
         expect(node.params, <String>{});
+      });
+
+      test('with links and params', () {
+        final test = r'@:a @:b';
+        final node = textNode(test, StringInterpolation.dart, linkParamMap: {
+          'a': {},
+          'b': {'c', 'd'},
+        });
+        expect(node.content, r'${_root.a} ${_root.b(c: c, d: d)}');
+        expect(node.params, <String>{'c', 'd'});
       });
     });
 
@@ -329,8 +343,11 @@ void main() {
 
       test('with case', () {
         final test = r'Nice {cool_hi} {wow} {yes}a {no_yes}';
-        final node =
-            textNode(test, StringInterpolation.braces, CaseStyle.camel);
+        final node = textNode(
+          test,
+          StringInterpolation.braces,
+          paramCase: CaseStyle.camel,
+        );
         expect(node.content, r'Nice ${coolHi} ${wow} ${yes}a ${noYes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
@@ -381,8 +398,11 @@ void main() {
 
       test('with case', () {
         final test = r'Nice {{cool_hi}} {{wow}} {{yes}}a {{no_yes}}';
-        final node =
-            textNode(test, StringInterpolation.doubleBraces, CaseStyle.camel);
+        final node = textNode(
+          test,
+          StringInterpolation.doubleBraces,
+          paramCase: CaseStyle.camel,
+        );
         expect(node.content, r'Nice ${coolHi} ${wow} ${yes}a ${noYes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
@@ -444,6 +464,24 @@ void main() {
         expect(node.links, {'myLink'});
         expect(node.params, {'yey'});
       });
+
+      test('with links and params', () {
+        final test = r'@:a $yey @:b';
+        final node =
+            richTextNode(test, StringInterpolation.dart, linkParamMap: {
+          'a': {},
+          'b': {'c', 'd'},
+        });
+        expect(node.spans.length, 3);
+        expect((node.spans[0] as LiteralSpan).literal, r'${_root.a} ');
+        expect((node.spans[0] as LiteralSpan).isConstant, false);
+        expect((node.spans[1] as VariableSpan).variableName, 'yey');
+        expect(
+            (node.spans[2] as LiteralSpan).literal, r' ${_root.b(c: c, d: d)}');
+        expect((node.spans[2] as LiteralSpan).isConstant, false);
+        expect(node.links, {'a', 'b'});
+        expect(node.params, <String>{'yey', 'c', 'd'});
+      });
     });
 
     group(StringInterpolation.braces, () {
@@ -489,7 +527,10 @@ void main() {
       test('two arguments with default text and param case', () {
         final test = r'Hello {{myFirstSpan}}{{mySpan(Default Text)}}!';
         final node = richTextNode(
-            test, StringInterpolation.doubleBraces, CaseStyle.snake);
+          test,
+          StringInterpolation.doubleBraces,
+          paramCase: CaseStyle.snake,
+        );
         expect(node.spans.length, 4);
         expect((node.spans[0] as LiteralSpan).literal, 'Hello ');
         expect((node.spans[0] as LiteralSpan).isConstant, true);
