@@ -1,4 +1,4 @@
-part of 'translations.g.dart';
+part of 'translations.cgm.dart';
 
 // Path: <root>
 class _TranslationsDe implements Translations {
