@@ -31,6 +31,7 @@ void main() {
     final result = GeneratorFacade.generate(
       rawConfig: RawConfigBuilder.fromYaml(buildYaml)!.copyWith(
         outputFormat: OutputFormat.multipleFiles,
+        outputFileName: 'translations.cgm.dart',
       ),
       baseName: 'translations',
       translationMap: TranslationMap()

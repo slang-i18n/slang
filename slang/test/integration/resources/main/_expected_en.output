@@ -1,4 +1,4 @@
-part of 'translations.g.dart';
+part of 'translations.cgm.dart';
 
 // Path: <root>
 class Translations implements BaseTranslations<AppLocale, Translations> {

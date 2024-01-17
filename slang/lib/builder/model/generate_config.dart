@@ -13,6 +13,7 @@ class GenerateConfig {
   final String baseName; // name of all i18n files, like strings or messages
   final I18nLocale baseLocale; // defaults to 'en'
   final GenerateFallbackStrategy fallbackStrategy;
+  final String outputFileName;
   final OutputFormat outputFormat;
   final bool localeHandling;
   final bool flutterIntegration;
@@ -35,6 +36,7 @@ class GenerateConfig {
     required this.baseName,
     required this.baseLocale,
     required this.fallbackStrategy,
+    required this.outputFileName,
     required this.outputFormat,
     required this.localeHandling,
     required this.flutterIntegration,

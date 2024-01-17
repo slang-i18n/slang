@@ -8,7 +8,7 @@ String generateTranslationMap(
 
   if (config.outputFormat == OutputFormat.multipleFiles) {
     // this is a part file
-    buffer.writeln('part of \'${config.baseName}.g.dart\';');
+    buffer.writeln('part of \'${config.outputFileName}\';');
     buffer.writeln();
   }
 
