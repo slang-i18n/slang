@@ -8,7 +8,15 @@ String generateTranslationMap(
 
   if (config.outputFormat == OutputFormat.multipleFiles) {
     // this is a part file
-    buffer.writeln('part of \'${config.outputFileName}\';');
+    
+    buffer.writeln('''
+///
+/// Generated file. Do not edit.
+///
+// coverage:ignore-file
+// ignore_for_file: type=lint
+
+part of \'${config.outputFileName}\';''');
     buffer.writeln();
   }
 
