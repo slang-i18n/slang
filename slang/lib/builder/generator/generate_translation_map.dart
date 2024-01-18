@@ -8,7 +8,7 @@ String generateTranslationMap(
 
   if (config.outputFormat == OutputFormat.multipleFiles) {
     // this is a part file
-    
+
     buffer.writeln('''
 ///
 /// Generated file. Do not edit.
