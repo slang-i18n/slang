@@ -1,0 +1,5 @@
+{
+  "greet(context=Gender)": {
+    "male": "Hallo Herr"
+  }
+}

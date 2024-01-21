@@ -26,8 +26,11 @@ class BuildModelResult {
 class TranslationModelBuilder {
   /// Builds the i18n model for ONE locale
   ///
-  /// The map must be of type Map<String, dynamic> and all children may of type
+  /// The [map] must be of type Map<String, dynamic> and all children may of type
   /// String, num, List<dynamic> or Map<String, dynamic>.
+  ///
+  /// If [baseData] is set and [BuildModelConfig.fallbackStrategy] is [FallbackStrategy.baseLocale],
+  /// then the base translations will be added to contexts where the translation is missing.
   ///
   /// [handleLinks] can be set false to ignore links and leave them as is
   /// e.g. ${_root.greet(name: name} will be ${_root.greet}
@@ -40,12 +43,27 @@ class TranslationModelBuilder {
   static BuildModelResult build({
     required BuildModelConfig buildConfig,
     required Map<String, dynamic> map,
+    BuildModelResult? baseData,
     bool handleLinks = true,
     bool shouldEscapeText = true,
     required String localeDebug,
   }) {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
     final Map<String, LeafNode> leavesMap = {};
+
+    // base contexts to be used for fallback
+    final Map<String, PopulatedContextType>? baseContexts = baseData == null ||
+            baseData.contexts.isEmpty ||
+            buildConfig.fallbackStrategy == FallbackStrategy.none
+        ? null
+        : {
+            for (final c in baseData.contexts)
+              c.enumName: PopulatedContextType(
+                enumName: c.enumName,
+                enumValues: c.enumValues,
+                generateEnum: c.generateEnum,
+              ),
+          };
 
     final contextCollection = {
       for (final context in buildConfig.contexts) context.enumName: context,
@@ -66,6 +84,8 @@ class TranslationModelBuilder {
       keyCase: buildConfig.keyCase,
       leavesMap: leavesMap,
       contextCollection: contextCollection,
+      baseData: baseData,
+      baseContexts: baseContexts,
       shouldEscapeText: shouldEscapeText,
     );
 
@@ -213,6 +233,8 @@ Map<String, Node> _parseMapNode({
   required CaseStyle? keyCase,
   required Map<String, LeafNode> leavesMap,
   required Map<String, ContextType> contextCollection,
+  required BuildModelResult? baseData,
+  required Map<String, PopulatedContextType>? baseContexts,
   required bool shouldEscapeText,
 }) {
   final Map<String, Node> resultNodeTree = {};
@@ -284,6 +306,8 @@ Map<String, Node> _parseMapNode({
           keyCase: config.keyCase,
           leavesMap: leavesMap,
           contextCollection: contextCollection,
+          baseData: baseData,
+          baseContexts: baseContexts,
           shouldEscapeText: shouldEscapeText,
         );
 
@@ -312,6 +336,8 @@ Map<String, Node> _parseMapNode({
               : config.keyCase,
           leavesMap: leavesMap,
           contextCollection: contextCollection,
+          baseData: baseData,
+          baseContexts: baseContexts,
           shouldEscapeText: shouldEscapeText,
         );
 
@@ -365,6 +391,8 @@ Map<String, Node> _parseMapNode({
               keyCase: config.keyCase,
               leavesMap: leavesMap,
               contextCollection: contextCollection,
+              baseData: baseData,
+              baseContexts: baseContexts,
               shouldEscapeText: shouldEscapeText,
             ).cast<String, RichTextNode>();
           }
@@ -383,6 +411,21 @@ Map<String, Node> _parseMapNode({
                     context?.generateEnum ?? ContextType.defaultGenerateEnum,
               );
               contextCollection[context.enumName] = context;
+            }
+
+            if (config.fallbackStrategy == FallbackStrategy.baseLocale ||
+                config.fallbackStrategy ==
+                    FallbackStrategy.baseLocaleEmptyString) {
+              // add base context values if necessary
+              final baseContext = baseContexts?[context.enumName];
+              if (baseContext != null) {
+                digestedMap = _digestContextEntries(
+                  baseTranslation: baseData!.root,
+                  baseContext: baseContext,
+                  path: '$currPath',
+                  entries: digestedMap,
+                );
+              }
             }
 
             finalNode = ContextNode(
@@ -778,6 +821,39 @@ void _fixEmptyLists({
       }
     }
   });
+}
+
+/// Makes sure that every enum value in [baseContext] is also present in [entries].
+/// If a value is missing, the base translation is used.
+Map<String, TextNode> _digestContextEntries({
+  required ObjectNode baseTranslation,
+  required PopulatedContextType baseContext,
+  required String path,
+  required Map<String, TextNode> entries,
+}) {
+  // Using "late" keyword because we are optimistic that all values are present
+  late ContextNode baseContextNode =
+      _findContextNode(baseTranslation, path.split('.'));
+  return {
+    for (final value in baseContext.enumValues)
+      value: entries[value] ?? baseContextNode.entries[value]!,
+  };
+}
+
+/// Recursively find the [ContextNode] using the given [path].
+ContextNode _findContextNode(ObjectNode node, List<String> path) {
+  final child = node.entries[path[0]];
+  if (path.length == 1) {
+    if (child is ContextNode) {
+      return child;
+    } else {
+      throw 'Parent node is not a ContextNode but a ${node.runtimeType} at path $path';
+    }
+  } else if (child is ObjectNode) {
+    return _findContextNode(child, path.sublist(1));
+  } else {
+    throw 'Cannot find base ContextNode';
+  }
 }
 
 enum _DetectionType {

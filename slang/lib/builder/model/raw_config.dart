@@ -4,7 +4,7 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';
 
-/// represents a build.yaml
+/// represents a build.yaml or a slang.yaml file
 class RawConfig {
   static const String defaultBaseLocale = 'en';
   static const FallbackStrategy defaultFallbackStrategy = FallbackStrategy.none;

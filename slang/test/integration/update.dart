@@ -23,6 +23,8 @@ void main() {
   final en = loadResource('main/json_en.json');
   final de = loadResource('main/json_de.json');
   final simple = loadResource('main/json_simple.json');
+  final fallbackEn = loadResource('main/fallback_en.json');
+  final fallbackDe = loadResource('main/fallback_de.json');
   final buildConfig =
       RawConfigBuilder.fromYaml(loadResource('main/build_config.yaml'))!;
   generateMainIntegration(buildConfig, en, de);
@@ -31,6 +33,7 @@ void main() {
   generateNoLocaleHandling(buildConfig, simple);
   generateTranslationOverrides(buildConfig, en, de);
   generateFallbackBaseLocale(buildConfig, en, de);
+  generateFallbackBaseLocaleSpecial(buildConfig, fallbackEn, fallbackDe);
   generateObfuscation(buildConfig, en, de);
   generateRichText();
 
@@ -188,6 +191,33 @@ void generateFallbackBaseLocale(RawConfig buildConfig, String en, String de) {
 
   _write(
     path: 'main/_expected_fallback_base_locale',
+    content: result,
+  );
+}
+
+void generateFallbackBaseLocaleSpecial(
+  RawConfig buildConfig,
+  String en,
+  String de,
+) {
+  final result = _generate(
+    rawConfig: buildConfig.copyWith(
+      fallbackStrategy: FallbackStrategy.baseLocale,
+    ),
+    baseName: 'translations',
+    translationMap: TranslationMap()
+      ..addTranslations(
+        locale: I18nLocale.fromString('en'),
+        translations: JsonDecoder().decode(en),
+      )
+      ..addTranslations(
+        locale: I18nLocale.fromString('de'),
+        translations: JsonDecoder().decode(de),
+      ),
+  ).joinAsSingleOutput();
+
+  _write(
+    path: 'main/_expected_fallback_base_locale_special',
     content: result,
   );
 }
