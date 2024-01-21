@@ -52,7 +52,7 @@ class TranslationModelListBuilder {
         );
 
         return I18nData(
-          base: rawConfig.baseLocale == locale,
+          base: false,
           locale: locale,
           root: result.root,
           contexts: result.contexts,

@@ -1,3 +1,10 @@
+## 3.29.0
+
+- feat: `dart run slang analyze` supports csv files (#185) @nikaera
+- feat: also add linter and coverage ignore to part files (#188) @cmenkemeller
+- fix: generate base translations as fallback when using context enums where some enum values are missing (#182) @Tienisto
+- fix: generate correct `part of` directive when using a custom dart file extension (#187) @cmenkemeller
+
 ## 3.28.0
 
 - feat: add `fallback_strategy: base_locale_empty_string` to also treat empty strings as missing translations (#180)
