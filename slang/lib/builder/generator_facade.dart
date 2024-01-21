@@ -26,7 +26,7 @@ class GeneratorFacade {
     // combine all contexts of all locales
     // if one context appears on more than one locale, then the context of
     // the base locale will have precedence
-    final contextMap = <String, ContextType>{};
+    final contextMap = <String, PopulatedContextType>{};
     for (final locale in translationModelList) {
       for (final context in locale.contexts) {
         if (!contextMap.containsKey(context.enumName)) {

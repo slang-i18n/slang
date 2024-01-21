@@ -10,7 +10,7 @@ class I18nData {
   final bool base; // whether or not this is the base locale
   final I18nLocale locale; // the locale (the part after the underscore)
   final ObjectNode root; // the actual strings
-  final List<ContextType> contexts; // detected context types
+  final List<PopulatedContextType> contexts; // detected context types
   final List<Interface> interfaces; // detected interfaces
 
   I18nData({

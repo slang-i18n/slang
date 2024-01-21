@@ -14,7 +14,7 @@ import 'package:slang/builder/utils/string_extensions.dart';
 class BuildModelResult {
   final ObjectNode root; // the actual strings
   final List<Interface> interfaces; // detected interfaces
-  final List<ContextType> contexts; // detected context types
+  final List<PopulatedContextType> contexts; // detected context types
 
   BuildModelResult({
     required this.root,
@@ -190,8 +190,14 @@ class TranslationModelBuilder {
     return BuildModelResult(
       root: root,
       interfaces: interfaceCollection.resultInterfaces.values.toList(),
-      contexts:
-          contextCollection.values.where((c) => c.enumValues != null).toList(),
+      contexts: contextCollection.values
+          .where((c) => c.enumValues != null)
+          .map((c) => PopulatedContextType(
+                enumName: c.enumName,
+                enumValues: c.enumValues!,
+                generateEnum: c.generateEnum,
+              ))
+          .toList(),
     );
   }
 }

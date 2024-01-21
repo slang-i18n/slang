@@ -10,7 +10,7 @@ class GenerateConfigBuilder {
     required String baseName,
     required RawConfig config,
     required String inputDirectoryHint,
-    required List<ContextType> contexts,
+    required List<PopulatedContextType> contexts,
     required List<Interface> interfaces,
   }) {
     return GenerateConfig(
@@ -31,13 +31,7 @@ class GenerateConfigBuilder {
       translationOverrides: config.translationOverrides,
       renderTimestamp: config.renderTimestamp,
       renderStatistics: config.renderStatistics,
-      contexts: contexts.map((c) {
-        return PopulatedContextType(
-          enumName: c.enumName,
-          enumValues: c.enumValues!,
-          generateEnum: c.generateEnum,
-        );
-      }).toList(),
+      contexts: contexts,
       interface: interfaces,
       obfuscation: config.obfuscation,
       imports: config.imports,
