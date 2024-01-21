@@ -8,8 +8,8 @@ import 'package:slang/builder/model/translation_map.dart';
 class TranslationMapBuilder {
   /// This method transforms files to an intermediate model [TranslationMap].
   /// After this step,
-  /// - we ignore the environment (i.e. dart:io, build_runner)
-  /// - we ignore the file type (JSON, YAML, CSV) because everything is a map now
+  /// - we removed the environment (i.e. dart:io, build_runner)
+  /// - we removed the file type (JSON, YAML, CSV) because everything is a map now
   ///
   /// The resulting map is in a unmodified state, so no actual i18n handling (plural, rich text) has been applied.
   static Future<TranslationMap> build({

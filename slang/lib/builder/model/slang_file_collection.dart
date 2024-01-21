@@ -4,6 +4,9 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 
+/// A collection of translation files that can be read in a later step.
+/// This is an abstraction to support build_runner and the custom CLI by
+/// providing a common [FileReader] interface.
 class SlangFileCollection {
   final RawConfig config;
   final List<TranslationFile> files;
