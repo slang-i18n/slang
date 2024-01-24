@@ -38,6 +38,11 @@ Future<void> runClean({
   for (final entry in unusedTranslationsMap.entries) {
     final locale = entry.key;
     final map = entry.value;
+
+    if (map.isEmpty) {
+      continue;
+    }
+
     final entries = MapUtils.getFlatMap(map);
 
     print(' -> Cleaning <${locale.languageTag}>...');
@@ -103,6 +108,8 @@ Future<void> _deleteEntriesForLocale({
     );
   }
 
+  // Final step: Write the result
+
   if (config.namespaces) {
     for (final entry in outputMap.entries) {
       final namespace = entry.key;
@@ -118,7 +125,8 @@ Future<void> _deleteEntriesForLocale({
     }
   } else {
     if (fileMap.isEmpty) {
-      throw 'No file found for locale <$locale>';
+      // All specified namespaces might not exist
+      return;
     }
 
     final file = fileMap.values.first;
@@ -133,6 +141,8 @@ Future<void> _deleteEntriesForLocale({
   }
 }
 
+/// Returns the first file in the collection
+/// that matches the given [locale] and [namespace].
 TranslationFile? _findFileInCollection({
   required SlangFileCollection fileCollection,
   required I18nLocale locale,
