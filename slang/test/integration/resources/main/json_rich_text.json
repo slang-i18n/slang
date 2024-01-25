@@ -1,4 +1,11 @@
 {
+  "simple": "Simple",
+  "simpleParam": "Simple ${simpleParam}",
+  "rich(rich)": "Rich",
+  "richParam(rich)": "Rich ${param}",
+  "richDefaultParam(rich)": "Rich ${param(Hello)}",
+  "richDefaultLinkedParam(rich)": "Rich ${param(@:simple)}",
+  "richDefaultLinkedParamTransitiveParam(rich)": "Rich ${param(@:simpleParam)}",
   "simplePlural": {
     "one": "one item",
     "other": "multiple items"

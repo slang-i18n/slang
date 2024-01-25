@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 1
-/// Strings: 16
+/// Strings: 23
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -152,6 +152,27 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final Translations _root = this; // ignore: unused_field
 
 	// Translations
+	String get simple => 'Simple';
+	String simpleParam({required Object simpleParam}) => 'Simple ${simpleParam}';
+	TextSpan get rich => TextSpan(children: [
+		const TextSpan(text: 'Rich'),
+	]);
+	TextSpan richParam({required InlineSpan param}) => TextSpan(children: [
+		const TextSpan(text: 'Rich '),
+		param,
+	]);
+	TextSpan richDefaultParam({required InlineSpanBuilder param}) => TextSpan(children: [
+		const TextSpan(text: 'Rich '),
+		param('Hello'),
+	]);
+	TextSpan richDefaultLinkedParam({required InlineSpanBuilder param}) => TextSpan(children: [
+		const TextSpan(text: 'Rich '),
+		param(_root.simple),
+	]);
+	TextSpan richDefaultLinkedParamTransitiveParam({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [
+		const TextSpan(text: 'Rich '),
+		param(_root.simpleParam(simpleParam: simpleParam)),
+	]);
 	String simplePlural({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		one: 'one item',
 		other: 'multiple items',
@@ -230,6 +251,27 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
+			case 'simple': return 'Simple';
+			case 'simpleParam': return ({required Object simpleParam}) => 'Simple ${simpleParam}';
+			case 'rich': return TextSpan(children: [
+				const TextSpan(text: 'Rich'),
+			]);
+			case 'richParam': return ({required InlineSpan param}) => TextSpan(children: [
+				const TextSpan(text: 'Rich '),
+				param,
+			]);
+			case 'richDefaultParam': return ({required InlineSpanBuilder param}) => TextSpan(children: [
+				const TextSpan(text: 'Rich '),
+				param('Hello'),
+			]);
+			case 'richDefaultLinkedParam': return ({required InlineSpanBuilder param}) => TextSpan(children: [
+				const TextSpan(text: 'Rich '),
+				param(_root.simple),
+			]);
+			case 'richDefaultLinkedParamTransitiveParam': return ({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [
+				const TextSpan(text: 'Rich '),
+				param(_root.simpleParam(simpleParam: simpleParam)),
+			]);
 			case 'simplePlural': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 				one: 'one item',
 				other: 'multiple items',
