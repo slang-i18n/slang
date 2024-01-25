@@ -61,6 +61,7 @@ class _TranslationsOnboardingEn {
 
 	// Translations
 	String welcome({required Object fullName}) => 'Welcome ${fullName}';
+	String welcomeAlias({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 
 	/// Bye text
 	String bye({required Object firstName}) => 'Bye ${firstName}';

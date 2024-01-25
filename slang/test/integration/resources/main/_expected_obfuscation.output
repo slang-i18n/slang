@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
-/// Strings: 54 (27 per locale)
+/// Strings: 56 (28 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -215,6 +215,7 @@ class _TranslationsOnboardingEn {
 
 	// Translations
 	String welcome({required Object fullName}) => _root.$meta.d([12, 62, 55, 56, 52, 54, 62, 123]) + fullName.toString();
+	String welcomeAlias({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 
 	/// Bye text
 	String bye({required Object firstName}) => _root.$meta.d([25, 34, 62, 123]) + firstName.toString();
@@ -382,6 +383,7 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 
 	// Translations
 	@override String welcome({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123]) + fullName.toString();
+	@override String welcomeAlias({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 
 	/// Bye text
 	@override String bye({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123]) + firstName.toString();
@@ -506,6 +508,7 @@ extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => _root.$meta.d([12, 62, 55, 56, 52, 54, 62, 123]) + fullName.toString();
+			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([25, 34, 62, 123]) + firstName.toString();
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				TextSpan(text: _root.$meta.d([19, 50, 123])),
@@ -569,6 +572,7 @@ extension on _TranslationsDe {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123]) + fullName.toString();
+			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123]) + firstName.toString();
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				TextSpan(text: _root.$meta.d([19, 50, 123])),

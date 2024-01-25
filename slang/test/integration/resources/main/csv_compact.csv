@@ -1,5 +1,6 @@
 key,(comments),en,de
 onboarding.welcome,,Welcome {fullName},Willkommen {fullName}
+onboarding.welcomeAlias,,@:onboarding.welcome,@:onboarding.welcome
 onboarding.bye,Bye text,Bye {firstName},Tschüss {firstName}
 onboarding.hi(rich),,Hi {name} and @:onboarding.greet,Hi {name} und @:onboarding.greet
 onboarding.pages.0.title,,First Page,Erste Seite

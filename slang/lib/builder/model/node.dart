@@ -417,8 +417,8 @@ class RichTextNode extends TextNode {
           );
           _links.addAll(parsedLinksResult.links);
           return FunctionSpan(
-            parsed.paramName,
-            parsedLinksResult.parsedContent,
+            functionName: parsed.paramName,
+            arg: parsedLinksResult.parsedContent,
           );
         } else {
           return VariableSpan(parsed.paramName);
@@ -615,14 +615,20 @@ class LiteralSpan extends BaseSpan {
   final String literal;
   final bool isConstant;
 
-  LiteralSpan({required this.literal, required this.isConstant});
+  LiteralSpan({
+    required this.literal,
+    required this.isConstant,
+  });
 }
 
 class FunctionSpan extends BaseSpan {
   final String functionName;
   final String arg;
 
-  FunctionSpan(this.functionName, this.arg);
+  FunctionSpan({
+    required this.functionName,
+    required this.arg,
+  });
 }
 
 class VariableSpan extends BaseSpan {

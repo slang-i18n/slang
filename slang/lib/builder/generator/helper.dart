@@ -43,7 +43,13 @@ const _NULL_FLAG = '\u0000';
 String getStringLiteral(String value, ObfuscationConfig config) {
   if (!config.enabled || value.isEmpty) {
     // Return the plain version
-    return "'$value'";
+    if (value.startsWith(r'${') && value.indexOf('}') == value.length - 1) {
+      // We can just remove the ${ and } since it's already a string
+      return value.substring(2, value.length - 1).trim();
+    } else {
+      // We need to add quotes
+      return "'$value'";
+    }
   }
 
   // Return the obfuscated version

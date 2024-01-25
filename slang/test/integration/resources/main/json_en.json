@@ -1,6 +1,7 @@
 {
   "onboarding": {
     "welcome": "Welcome {fullName}",
+    "welcomeAlias": "@:onboarding.welcome",
     "bye": "Bye {firstName}",
     "@bye": {
       "this should be ignored": "ignored",

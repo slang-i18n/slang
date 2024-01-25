@@ -1,4 +1,5 @@
 onboarding.welcome,Welcome {fullName}
+onboarding.welcomeAlias,@:onboarding.welcome
 onboarding.bye,Bye {firstName}
 onboarding.@bye,Bye text
 onboarding.hi(rich),Hi {name} and @:onboarding.greet

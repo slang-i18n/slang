@@ -1,4 +1,5 @@
 onboarding.welcome(!!!this file is in LF which is part of the integration test!!!),Willkommen {fullName}
+onboarding.welcomeAlias,@:onboarding.welcome
 onboarding.bye,Tschüss {firstName}
 onboarding.@bye,Bye text
 onboarding.hi(rich),Hi {name} und @:onboarding.greet
