@@ -58,19 +58,21 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION_NEWEST }}
           channel: "stable"
 
-      - name: Dependencies (core)
-        working-directory: slang
-        run: dart pub get
-      - name: Test (core)
-        working-directory: slang
-        run: dart test
-
       - name: Dependencies (flutter)
         working-directory: slang_flutter
         run: flutter pub get
       - name: Test (flutter)
         working-directory: slang_flutter
         run: flutter test
+
+      # The compilation test needs "pub get" to be run for Flutter first.
+      # That's why we run the core tests after the Flutter tests.
+      - name: Dependencies (core)
+        working-directory: slang
+        run: dart pub get
+      - name: Test (core)
+        working-directory: slang
+        run: dart test
 
       - name: Dependencies (gpt)
         working-directory: slang_gpt
@@ -90,19 +92,21 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION_OLDEST }}
           channel: "stable"
 
-      - name: Dependencies (core)
-        working-directory: slang
-        run: dart pub get
-      - name: Test (core)
-        working-directory: slang
-        run: dart test
-
       - name: Dependencies (flutter)
         working-directory: slang_flutter
         run: flutter pub get
       - name: Test (flutter)
         working-directory: slang_flutter
         run: flutter test
+
+      # The compilation test needs "pub get" to be run for Flutter first.
+      # That's why we run the core tests after the Flutter tests.
+      - name: Dependencies (core)
+        working-directory: slang
+        run: dart pub get
+      - name: Test (core)
+        working-directory: slang
+        run: dart test
 
       - name: Dependencies (gpt)
         working-directory: slang_gpt

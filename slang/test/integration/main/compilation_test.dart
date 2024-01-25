@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 import '../../util/resources_utils.dart';
 
-/// These tests are used to ensure that the generated code compiles.
+/// These tests ensure that the generated code compiles.
 void main() {
   late Library library;
 
