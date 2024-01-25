@@ -45,7 +45,7 @@ String getStringLiteral(String value, ObfuscationConfig config) {
     // Return the plain version
     if (value.startsWith(r'${') && value.indexOf('}') == value.length - 1) {
       // We can just remove the ${ and } since it's already a string
-      return value.substring(2, value.length - 1).trim();
+      return value.substring(2, value.length - 1);
     } else {
       // We need to add quotes
       return "'$value'";
