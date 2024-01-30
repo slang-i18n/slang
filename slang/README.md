@@ -8,8 +8,6 @@
 
 Type-safe i18n solution using JSON, YAML, CSV, or ARB files.
 
-The official successor of [fast_i18n](https://pub.dev/packages/fast_i18n).
-
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
@@ -167,19 +165,15 @@ lib/
 
 **Step 3: Generate the dart code**
 
-Built-in:
+Built-in (recommended during development):
 
 ```text
-# Recommended during development. It runs much faster than build_runner.
-
 dart run slang
 ```
 
-Alternative (requires [slang_build_runner](https://pub.dev/packages/slang_build_runner)):
+Alternative (useful for CI and initial git checkout, requires [slang_build_runner](https://pub.dev/packages/slang_build_runner)):
 
 ```text
-# Useful for CI and initial git checkout.
-
 dart run build_runner build -d
 ```
 
@@ -249,6 +243,10 @@ MaterialApp(
 
 **Step 4b: iOS configuration**
 
+Add the supported locales to your `Info.plist` file.
+
+In this example, we support English (`en`) and German (`de`).
+
 ```
 File: ios/Runner/Info.plist
 
@@ -262,9 +260,9 @@ File: ios/Runner/Info.plist
 **Step 5: Use your translations**
 
 ```dart
-import 'package:my_app/i18n/strings.g.dart'; // import
+import 'package:my_app/i18n/strings.g.dart'; // (1) import
 
-String a = t.login.success; // get translation
+String a = t.login.success; // (2) get translation
 ```
 
 ## Configuration
@@ -1896,7 +1894,7 @@ Feel free to extend this list :)
 
 MIT License
 
-Copyright (c) 2020-2023 Tien Do Nam
+Copyright (c) 2020-2024 Tien Do Nam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
