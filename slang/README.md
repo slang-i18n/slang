@@ -1879,8 +1879,10 @@ Feel free to extend this list :)
 Open source:
 
 - [LocalSend (file sharing app)](https://github.com/localsend/localsend)
+- [Hiddify](https://github.com/hiddify/hiddify-next)
 - [Saber (notes app)](https://github.com/adil192/saber)
 - [Boorusphere (booru viewer)](https://github.com/nullxception/boorusphere)
+- [Alist Helper](https://github.com/Xmarmalade/alisthelper)
 - [Digitale Ehrenamtskarte (German volunteer app)](https://github.com/digitalfabrik/entitlementcard)
 - [Flutter Advanced Boilerplate (boilerplate project)](https://github.com/fikretsengul/flutter_advanced_boilerplate)
 
