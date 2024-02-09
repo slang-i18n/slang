@@ -300,7 +300,7 @@ void _generateClass(
       final stringLiteral = getStringLiteral(value.content, config.obfuscation);
       if (value.params.isEmpty) {
         buffer.writeln(
-            'String$optional get $key => $translationOverrides$stringLiteral;');
+            'late final String$optional $key = $translationOverrides$stringLiteral;');
       } else {
         buffer.writeln(
             'String$optional $key${_toParameterList(value.params, value.paramTypeMap)} => $translationOverrides$stringLiteral;');
