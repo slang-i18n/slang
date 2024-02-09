@@ -144,8 +144,8 @@ class _TranslationsOnboarding$pages$0i0$En with PageData {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'First Page';
-	@override String get content => 'First Page Content';
+	@override late final String title = 'First Page';
+	@override late final String content = 'First Page Content';
 }
 
 // Path: onboarding.pages.1
@@ -155,7 +155,7 @@ class _TranslationsOnboarding$pages$0i1$En with PageData {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Second Page';
+	@override late final String title = 'Second Page';
 }
 
 // Path: onboarding.modifierPages.0
@@ -165,8 +165,8 @@ class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'First Modifier Page';
-	@override String get content => 'First Page Content';
+	@override late final String title = 'First Modifier Page';
+	@override late final String content = 'First Page Content';
 }
 
 // Path: onboarding.modifierPages.1
@@ -176,5 +176,5 @@ class _TranslationsOnboarding$modifierPages$0i1$En with MPage {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Second Modifier Page';
+	@override late final String title = 'Second Modifier Page';
 }

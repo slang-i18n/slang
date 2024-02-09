@@ -152,7 +152,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final Translations _root = this; // ignore: unused_field
 
 	// Translations
-	String get simple => 'Simple';
+	late final String simple = 'Simple';
 	String simpleParam({required Object simpleParam}) => 'Simple ${simpleParam}';
 	TextSpan get rich => TextSpan(children: [
 		const TextSpan(text: 'Rich'),

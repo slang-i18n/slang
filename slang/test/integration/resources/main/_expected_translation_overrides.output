@@ -330,8 +330,8 @@ class _TranslationsOnboarding$pages$0i0$En with PageData {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'First Page';
-	@override String get content => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.content', {}) ?? 'First Page Content';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'First Page';
+	@override late final String content = TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.content', {}) ?? 'First Page Content';
 }
 
 // Path: onboarding.pages.1
@@ -341,7 +341,7 @@ class _TranslationsOnboarding$pages$0i1$En with PageData {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Second Page';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Second Page';
 }
 
 // Path: onboarding.modifierPages.0
@@ -351,8 +351,8 @@ class _TranslationsOnboarding$modifierPages$0i0$En with MPage {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'First Modifier Page';
-	@override String get content => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.content', {}) ?? 'First Page Content';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'First Modifier Page';
+	@override late final String content = TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.content', {}) ?? 'First Page Content';
 }
 
 // Path: onboarding.modifierPages.1
@@ -362,7 +362,7 @@ class _TranslationsOnboarding$modifierPages$0i1$En with MPage {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Second Modifier Page';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Second Modifier Page';
 }
 
 // Path: <root>
@@ -505,8 +505,8 @@ class _TranslationsOnboarding$pages$0i0$De with PageData implements _Translation
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'Erste Seite';
-	@override String get content => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.content', {}) ?? 'Erster Seiteninhalt';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'Erste Seite';
+	@override late final String content = TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.content', {}) ?? 'Erster Seiteninhalt';
 }
 
 // Path: onboarding.pages.1
@@ -516,7 +516,7 @@ class _TranslationsOnboarding$pages$0i1$De with PageData implements _Translation
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Zweite Seite';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Zweite Seite';
 }
 
 // Path: onboarding.modifierPages.0
@@ -526,8 +526,8 @@ class _TranslationsOnboarding$modifierPages$0i0$De with MPage implements _Transl
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'Erste Modifier Seite';
-	@override String get content => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.content', {}) ?? 'Erster Seiteninhalt';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'Erste Modifier Seite';
+	@override late final String content = TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.content', {}) ?? 'Erster Seiteninhalt';
 }
 
 // Path: onboarding.modifierPages.1
@@ -537,7 +537,7 @@ class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements _Transl
 	@override final _TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Zweite Modifier Seite';
+	@override late final String title = TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Zweite Modifier Seite';
 }
 
 /// Flat map(s) containing all translations.

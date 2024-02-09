@@ -74,7 +74,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final Translations _root = this; // ignore: unused_field
 
 	// Translations
-	String get a => 'a';
+	late final String a = 'a';
 	late final TranslationsBEn b = TranslationsBEn._(_root);
 }
 
@@ -85,7 +85,7 @@ class TranslationsBEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String get bb => 'bb';
+	late final String bb = 'bb';
 }
 
 /// Flat map(s) containing all translations.
