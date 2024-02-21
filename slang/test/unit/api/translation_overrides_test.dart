@@ -15,6 +15,14 @@ void main() {
       expect(parsed, 'About');
     });
 
+    test('Should not escape new line', () {
+      final meta = _buildMetaWithOverrides({
+        'aboutPage.title': 'About\nPage',
+      });
+      final parsed = TranslationOverrides.string(meta, 'aboutPage.title', {});
+      expect(parsed, 'About\nPage');
+    });
+
     test('Should return a plain string without escaping', () {
       final meta = _buildMetaWithOverrides({
         'aboutPage.title': 'About \' \$ {arg}',
