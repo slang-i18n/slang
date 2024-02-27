@@ -594,7 +594,8 @@ void _applyInterfaceAndGenericsRecursive({
     if (interface != null) {
       curr.setInterface(interface);
 
-      // in case this interface is new
+      // Save the interface in the collection
+      // (might override existing interface of the same name)
       interfaceCollection.resultInterfaces[interface.name] = interface;
     }
   }
@@ -783,7 +784,13 @@ Set<InterfaceAttribute> _parseAttributes(ObjectNode node) {
       returnType = 'List<${child.genericType}>';
       parameters = {}; // lists never have parameters
     } else if (child is ObjectNode) {
-      returnType = 'Map<String, ${child.genericType}>';
+      if (child.interface != null) {
+        returnType = child.interface!.name;
+      } else if (child.isMap) {
+        returnType = 'Map<String, ${child.genericType}>';
+      } else {
+        returnType = 'UnsupportedType';
+      }
       parameters = {}; // objects never have parameters
     } else if (child is PluralNode) {
       returnType = child.rich ? 'TextSpan' : 'String';

@@ -209,5 +209,127 @@ void main() {
 
       expect(result.contexts, []);
     });
+
+    test('Should handle nested interfaces specified via modifier', () {
+      final resultUsingModifiers = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        map: {
+          'myContainer(interface=MyInterface)': {
+            'firstItem': {
+              'a': 'A1',
+              'nestedItem(singleInterface=MyNestedInterface)': {
+                'z': 'Z',
+              },
+            },
+            'secondItem': {
+              'a': 'A2',
+              'nestedItem(singleInterface=MyNestedInterface)': {
+                'z': 'Z',
+              },
+            },
+            'thirdItem': {
+              'a': 'A3',
+              'nestedItem(singleInterface=MyNestedInterface)': {
+                'z': 'Z',
+              },
+            },
+          }
+        },
+        localeDebug: RawConfig.defaultBaseLocale,
+      );
+
+      _checkInterfaceResult(resultUsingModifiers);
+    });
+
+    test('Should handle nested interface specified via config', () {
+      final resultUsingConfig = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.copyWith(
+          interfaces: [
+            InterfaceConfig(
+              name: 'MyNestedInterface',
+              paths: [],
+              attributes: {
+                InterfaceAttribute(
+                  attributeName: 'z',
+                  returnType: 'String',
+                  parameters: {},
+                  optional: false,
+                ),
+              },
+            ),
+          ],
+        ).toBuildModelConfig(),
+        map: {
+          'myContainer(interface=MyInterface)': {
+            'firstItem': {
+              'a': 'A1',
+              'nestedItem': {
+                'z': 'Z',
+              },
+            },
+            'secondItem': {
+              'a': 'A2',
+              'nestedItem': {
+                'z': 'Z',
+              },
+            },
+            'thirdItem': {
+              'a': 'A3',
+              'nestedItem': {
+                'z': 'Z',
+              },
+            },
+          }
+        },
+        localeDebug: RawConfig.defaultBaseLocale,
+      );
+
+      _checkInterfaceResult(resultUsingConfig);
+    });
   });
+}
+
+void _checkInterfaceResult(BuildModelResult result) {
+  final interfaces = result.interfaces;
+  expect(interfaces.length, 2);
+  expect(interfaces[0].name, 'MyNestedInterface');
+  expect(interfaces[0].attributes.length, 1);
+  expect(interfaces[0].attributes.first.attributeName, 'z');
+  expect(interfaces[1].name, 'MyInterface');
+  expect(interfaces[1].attributes.length, 2);
+  expect(interfaces[1].attributes.first.attributeName, 'a');
+  expect(interfaces[1].attributes.last.attributeName, 'nestedItem');
+
+  final objectNode = result.root.entries['myContainer'] as ObjectNode;
+  expect(objectNode.interface, isNull);
+
+  expect(objectNode.entries['firstItem'], isA<ObjectNode>());
+  expect(objectNode.entries['secondItem'], isA<ObjectNode>());
+  expect(objectNode.entries['thirdItem'], isA<ObjectNode>());
+
+  expect((objectNode.entries['firstItem'] as ObjectNode).interface?.name,
+      'MyInterface');
+  expect((objectNode.entries['secondItem'] as ObjectNode).interface?.name,
+      'MyInterface');
+  expect((objectNode.entries['thirdItem'] as ObjectNode).interface?.name,
+      'MyInterface');
+
+  expect(
+      ((objectNode.entries['firstItem'] as ObjectNode).entries['nestedItem']
+              as ObjectNode)
+          .interface
+          ?.name,
+      'MyNestedInterface');
+  expect(
+      ((objectNode.entries['secondItem'] as ObjectNode).entries['nestedItem']
+              as ObjectNode)
+          .interface
+          ?.name,
+      'MyNestedInterface');
+  expect(
+      ((objectNode.entries['thirdItem'] as ObjectNode).entries['nestedItem']
+              as ObjectNode)
+          .interface
+          ?.name,
+      'MyNestedInterface');
 }
