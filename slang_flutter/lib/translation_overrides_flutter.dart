@@ -1,7 +1,5 @@
 part of 'slang_flutter.dart';
 
-typedef InlineSpanBuilder = InlineSpan Function(String);
-
 class TranslationOverridesFlutter {
   /// Handler for overridden rich text.
   /// Returns a [TextSpan] if the [path] was successfully overridden.

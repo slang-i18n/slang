@@ -5,6 +5,7 @@ import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/builder/utils/string_extensions.dart';
 import 'package:slang/builder/utils/regex_utils.dart';
 import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/text_parser.dart';
 
 class NodeModifiers {
   static const rich = 'rich';
@@ -288,9 +289,11 @@ class StringTextNode extends TextNode {
     final parsedResult = _parseInterpolation(
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
+      defaultType: 'Object',
       paramCase: paramCase,
     );
-    _params = parsedResult.params;
+    _params = parsedResult.params.keys.toSet();
+    _paramTypeMap.addAll(parsedResult.params);
 
     if (linkParamMap != null) {
       _params.addAll(linkParamMap.values.expand((e) => e));
@@ -373,21 +376,24 @@ class RichTextNode extends TextNode {
     final rawParsedResult = _parseInterpolation(
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
+      defaultType: '', // types are ignored
       paramCase: null, // param case will be applied later
     );
 
-    final parsedParams = rawParsedResult.params
-        .map((p) => _parseParamWithArg(input: p, paramCase: paramCase))
-        .toList();
-    _params = parsedParams.map((e) => e.paramName).toSet();
+    _params = <String>{};
+    for (final key in rawParsedResult.params.keys) {
+      final parsedParam = _parseParamWithArg(
+        rawParam: key,
+        paramCase: paramCase,
+      );
+      _params.add(parsedParam.paramName);
+      _paramTypeMap[parsedParam.paramName] =
+          parsedParam.arg == null ? 'InlineSpan' : 'InlineSpanBuilder';
+    }
+
     if (linkParamMap != null) {
       _params.addAll(linkParamMap.values.expand((e) => e));
     }
-
-    _paramTypeMap = {
-      for (final p in parsedParams)
-        p.paramName: (p.arg != null ? 'InlineSpanBuilder' : 'InlineSpan'),
-    };
 
     _links = {};
     _spans = _splitWithMatchAndNonMatch(
@@ -406,7 +412,7 @@ class RichTextNode extends TextNode {
       },
       onMatch: (match) {
         final parsed = _parseParamWithArg(
-          input: (match.group(1) ?? match.group(2))!,
+          rawParam: (match.group(1) ?? match.group(2))!,
           paramCase: paramCase,
         );
         final parsedArg = parsed.arg;
@@ -485,7 +491,9 @@ String _escapeContent(String raw, StringInterpolation interpolation) {
 
 class _ParseInterpolationResult {
   final String parsedContent;
-  final Set<String> params;
+
+  /// Map of parameter name -> parameter type
+  final Map<String, String> params;
 
   _ParseInterpolationResult(this.parsedContent, this.params);
 
@@ -497,10 +505,11 @@ class _ParseInterpolationResult {
 _ParseInterpolationResult _parseInterpolation({
   required String raw,
   required StringInterpolation interpolation,
+  required String defaultType,
   required CaseStyle? paramCase,
 }) {
   final String parsedContent;
-  final params = Set<String>();
+  final params = Map<String, String>();
 
   switch (interpolation) {
     case StringInterpolation.dart:
@@ -508,23 +517,37 @@ _ParseInterpolationResult _parseInterpolation({
         final rawParam = match.startsWith(r'${')
             ? match.substring(2, match.length - 1)
             : match.substring(1, match.length);
-        final param = rawParam.toCase(paramCase);
-        params.add(param);
-        return '\${$param}';
+        final parsedParam = parseParam(
+          rawParam: rawParam,
+          defaultType: defaultType,
+          caseStyle: paramCase,
+        );
+        params[parsedParam.paramName] = parsedParam.paramType;
+        return '\${${parsedParam.paramName}}';
       });
       break;
     case StringInterpolation.braces:
       parsedContent = raw.replaceBracesInterpolation(replacer: (match) {
-        final param = match.substring(1, match.length - 1).toCase(paramCase);
-        params.add(param);
-        return '\${$param}';
+        final rawParam = match.substring(1, match.length - 1);
+        final parsedParam = parseParam(
+          rawParam: rawParam,
+          defaultType: defaultType,
+          caseStyle: paramCase,
+        );
+        params[parsedParam.paramName] = parsedParam.paramType;
+        return '\${${parsedParam.paramName}}';
       });
       break;
     case StringInterpolation.doubleBraces:
       parsedContent = raw.replaceDoubleBracesInterpolation(replacer: (match) {
-        final param = match.substring(2, match.length - 2).toCase(paramCase);
-        params.add(param);
-        return '\${$param}';
+        final rawParam = match.substring(2, match.length - 2);
+        final parsedParam = parseParam(
+          rawParam: rawParam,
+          defaultType: defaultType,
+          caseStyle: paramCase,
+        );
+        params[parsedParam.paramName] = parsedParam.paramType;
+        return '\${${parsedParam.paramName}}';
       });
   }
 
@@ -589,14 +612,17 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
 }
 
 _ParamWithArg _parseParamWithArg({
-  required String input,
+  required String rawParam,
   required CaseStyle? paramCase,
 }) {
-  final match = RegexUtils.paramWithArg.firstMatch(input);
-  if (match == null) {
-    throw 'Rich text parameters must follow the syntax: "param(default text)"\nGot instead: "$input"\n';
+  final end = rawParam.lastIndexOf(')');
+  if (end == -1) {
+    return _ParamWithArg(rawParam.toCase(paramCase), null);
   }
-  return _ParamWithArg(match.group(1)!.toCase(paramCase), match.group(3));
+
+  final start = rawParam.indexOf('(');
+  final parameterName = rawParam.substring(0, start).toCase(paramCase);
+  return _ParamWithArg(parameterName, rawParam.substring(start + 1, end));
 }
 
 class _ParamWithArg {

@@ -8,6 +8,8 @@ export 'package:slang/slang.dart';
 
 part 'translation_overrides_flutter.dart';
 
+typedef InlineSpanBuilder = InlineSpan Function(String);
+
 extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> on BaseAppLocaleUtils<E, T> {
   /// Returns the locale of the device.
