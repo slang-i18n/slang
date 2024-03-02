@@ -1,7 +1,7 @@
 extension StringEncryptionExt on String {
   /// Encrypts the string using the provided secret.
   List<int> encrypt(int secret) {
-    final chars = [...this.codeUnits];
+    final chars = [...codeUnits];
     for (var i = 0; i < chars.length; i++) {
       chars[i] = chars[i] ^ secret;
     }

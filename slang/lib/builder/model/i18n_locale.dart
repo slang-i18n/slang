@@ -1,6 +1,6 @@
 import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
 
 /// own Locale type to decouple from dart:ui package
 class I18nLocale {

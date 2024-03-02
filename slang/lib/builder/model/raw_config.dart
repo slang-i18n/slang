@@ -201,11 +201,10 @@ class RawConfig {
     print(' -> fileType: ${fileType.name}');
     print(' -> baseLocale: ${baseLocale.languageTag}');
     print(' -> fallbackStrategy: ${fallbackStrategy.name}');
-    print(
-        ' -> inputDirectory: ${inputDirectory != null ? inputDirectory : 'null (everywhere)'}');
+    print(' -> inputDirectory: ${inputDirectory ?? 'null (everywhere)'}');
     print(' -> inputFilePattern: $inputFilePattern');
     print(
-        ' -> outputDirectory: ${outputDirectory != null ? outputDirectory : 'null (directory of input)'}');
+        ' -> outputDirectory: ${outputDirectory ?? 'null (directory of input)'}');
     print(' -> outputFileName: $outputFileName');
     print(' -> outputFileFormat: ${outputFormat.name}');
     print(' -> localeHandling: $localeHandling');

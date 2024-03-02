@@ -1,12 +1,12 @@
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/obfuscation_config.dart';
-import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
-import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
+import 'package:slang/builder/model/obfuscation_config.dart';
+import 'package:slang/builder/model/raw_config.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
 import 'package:yaml/yaml.dart';
 
 class RawConfigBuilder {
@@ -117,7 +117,7 @@ class RawConfigBuilder {
 extension on Map<String, dynamic> {
   /// Parses the 'contexts' config
   List<ContextType> toContextTypes() {
-    return this.entries.map((e) {
+    return entries.map((e) {
       final enumName = e.key.toCase(CaseStyle.pascal);
       final config = e.value as Map<String, dynamic>;
 
@@ -139,7 +139,7 @@ extension on Map<String, dynamic> {
 
   /// Parses the 'interfaces' config
   List<InterfaceConfig> toInterfaces() {
-    return this.entries.map((e) {
+    return entries.map((e) {
       final interfaceName = e.key.toCase(CaseStyle.pascal);
       final Set<InterfaceAttribute> attributes = {};
       final List<InterfacePath> paths;
@@ -157,7 +157,7 @@ extension on Map<String, dynamic> {
 
         // parse attributes
         final attributesConfig = interfaceConfig['attributes'] as List? ?? {};
-        attributesConfig.forEach((attribute) {
+        for (final attribute in attributesConfig) {
           final match = RegexUtils.attributeRegex.firstMatch(attribute);
           if (match == null) {
             throw 'Interface "$interfaceName" has invalid attributes. "$attribute" could not be parsed.';
@@ -190,7 +190,7 @@ extension on Map<String, dynamic> {
           );
 
           attributes.add(parsedAttribute);
-        });
+        }
 
         // parse paths
         final pathsConfig = interfaceConfig['paths'] as List? ?? [];
@@ -223,6 +223,6 @@ extension on Map<String, dynamic> {
 
 extension on String {
   String removeTrailingSlash() {
-    return this.endsWith('/') ? this.substring(0, this.length - 1) : this;
+    return endsWith('/') ? substring(0, length - 1) : this;
   }
 }

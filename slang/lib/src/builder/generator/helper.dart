@@ -1,9 +1,9 @@
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';
-import 'package:slang/builder/utils/encryption_utils.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
-import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/builder/utils/encryption_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 /// Pragmatic way to detect links within interpolations.
 const String characteristicLinkPrefix = '_root.';
@@ -18,7 +18,7 @@ String getClassNameRoot({
       (locale != null
           ? locale.languageTag.toCaseOfLocale(CaseStyle.pascal)
           : '');
-  if (visibility == TranslationClassVisibility.private) result = '_' + result;
+  if (visibility == TranslationClassVisibility.private) result = '_$result';
   return result;
 }
 

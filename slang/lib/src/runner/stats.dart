@@ -3,7 +3,7 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 StatsResult getStats({
   required RawConfig rawConfig,
@@ -17,7 +17,7 @@ StatsResult getStats({
 
   // use translation model and calculate statistics
   Map<I18nLocale, StatsLocaleResult> result = {};
-  translationModelList.forEach((localeData) {
+  for (final localeData in translationModelList) {
     final keyCount = _countKeys(localeData.root) - 1; // don't include root
     final translationCount = _countTranslations(localeData.root);
     final wordCount = _countWords(localeData.root);
@@ -28,7 +28,7 @@ StatsResult getStats({
       wordCount: wordCount,
       characterCount: characterCount,
     );
-  });
+  }
 
   return StatsResult(
     localeStats: result,

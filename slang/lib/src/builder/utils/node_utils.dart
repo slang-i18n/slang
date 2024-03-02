@@ -1,5 +1,5 @@
 import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class NodeUtils {
   /// Returns a map containing modifiers
@@ -80,7 +80,7 @@ class NodePathInfo {
 extension StringModifierExt on String {
   /// Returns the key without modifiers.
   String get withoutModifiers {
-    return this.split('(').first;
+    return split('(').first;
   }
 
   String withModifier(String modifierKey, [String? modifierValue]) {
@@ -99,9 +99,9 @@ extension NodeFlatter on Node {
     final curr = this;
     if (curr is ObjectNode && !curr.isMap) {
       // recursive
-      curr.entries.values.forEach((child) {
+      for (final child in curr.entries.values) {
         result.addAll(child.toFlatMap());
-      });
+      }
     } else {
       result[path] = curr;
     }

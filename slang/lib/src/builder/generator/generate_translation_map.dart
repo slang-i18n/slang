@@ -16,7 +16,7 @@ String generateTranslationMap(
 // coverage:ignore-file
 // ignore_for_file: type=lint
 
-part of \'${config.outputFileName}\';''');
+part of '${config.outputFileName}';''');
     buffer.writeln();
   }
 
@@ -80,24 +80,24 @@ _generateTranslationMapRecursive({
     );
   } else if (curr is ListNode) {
     // recursive
-    curr.entries.forEach((child) {
+    for (final child in curr.entries) {
       _generateTranslationMapRecursive(
         buffer: buffer,
         curr: child,
         config: config,
         language: language,
       );
-    });
+    }
   } else if (curr is ObjectNode) {
     // recursive
-    curr.entries.values.forEach((child) {
+    for (final child in curr.entries.values) {
       _generateTranslationMapRecursive(
         buffer: buffer,
         curr: child,
         config: config,
         language: language,
       );
-    });
+    }
   } else if (curr is PluralNode) {
     buffer.write('\t\t\tcase \'${curr.path}\': return ');
     _addPluralizationCall(

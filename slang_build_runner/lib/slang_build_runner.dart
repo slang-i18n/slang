@@ -1,17 +1,22 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
+import 'package:glob/glob.dart';
 import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
-import 'package:slang/builder/generator_facade.dart';
+// ignore: implementation_imports
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
-import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/path_utils.dart';
-import 'package:glob/glob.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/generator_facade.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/utils/file_utils.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/utils/map_utils.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/utils/path_utils.dart';
 
 /// Static entry point for build_runner
 Builder i18nBuilder(BuilderOptions options) {
@@ -27,7 +32,7 @@ class I18nBuilder implements Builder {
   bool _generated = false;
 
   I18nBuilder({required this.config})
-      : this.outputFilePattern = config.outputFileName.getFileExtension();
+      : outputFilePattern = config.outputFileName.getFileExtension();
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {

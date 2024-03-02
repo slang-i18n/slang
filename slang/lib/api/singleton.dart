@@ -3,12 +3,12 @@ import 'package:slang/api/locale.dart';
 import 'package:slang/api/pluralization.dart';
 import 'package:slang/api/state.dart';
 import 'package:slang/builder/builder/translation_model_builder.dart';
-import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/build_model_config.dart';
 import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/node_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 /// Provides utility functions without any side effects.
 abstract class BaseAppLocaleUtils<E extends BaseAppLocale<E, T>,
@@ -190,7 +190,7 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
 
   BaseLocaleSettings({
     required this.utils,
-  }) : this.translationMap = _buildMap(utils.locales);
+  }) : translationMap = _buildMap(utils.locales);
 
   /// Updates the provider state and therefore triggers a rebuild
   /// on all widgets listening to this provider.

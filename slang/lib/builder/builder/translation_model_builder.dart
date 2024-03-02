@@ -2,14 +2,14 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:slang/builder/model/build_model_config.dart';
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
-import 'package:slang/builder/utils/node_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
 
 class BuildModelResult {
   final ObjectNode root; // the actual strings
@@ -101,7 +101,7 @@ class TranslationModelBuilder {
 
         final linkParamMap = <String, Set<String>>{};
         final paramTypeMap = <String, String>{};
-        value.links.forEach((link) {
+        for (final link in value.links) {
           final paramSet = <String>{};
           final visitedLinks = <String>{};
           final pathQueue = Queue<String>();
@@ -121,11 +121,11 @@ class TranslationModelBuilder {
               paramTypeMap.addAll(linkedNode.paramTypeMap);
 
               // lookup links
-              linkedNode.links.forEach((child) {
+              for (final child in linkedNode.links) {
                 if (!visitedLinks.contains(child)) {
                   pathQueue.add(child);
                 }
-              });
+              }
             } else if (linkedNode is PluralNode || linkedNode is ContextNode) {
               final Iterable<TextNode> textNodes = linkedNode is PluralNode
                   ? linkedNode.quantities.values
@@ -164,20 +164,20 @@ class TranslationModelBuilder {
               paramSet.addAll(linkedParamSet);
 
               // lookup links of children
-              textNodes.forEach((element) {
-                element.links.forEach((child) {
+              for (final element in textNodes) {
+                for (final child in element.links) {
                   if (!visitedLinks.contains(child)) {
                     pathQueue.add(child);
                   }
-                });
-              });
+                }
+              }
             } else {
               throw '"$key" is linked to "$currLink" which is a ${linkedNode.runtimeType} (must be $TextNode or $ObjectNode).';
             }
           }
 
           linkParamMap[link] = paramSet;
-        });
+        }
 
         if (linkParamMap.values.any((params) => params.isNotEmpty)) {
           // rebuild TextNode because its linked translations have parameters
@@ -422,7 +422,7 @@ Map<String, Node> _parseMapNode({
                 digestedMap = _digestContextEntries(
                   baseTranslation: baseData!.root,
                   baseContext: baseContext,
-                  path: '$currPath',
+                  path: currPath,
                   entries: digestedMap,
                 );
               }
@@ -498,7 +498,9 @@ String? _parseCommentNode(dynamic node) {
 }
 
 void _setParent(Node parent, Iterable<Node> children) {
-  children.forEach((child) => child.setParent(parent));
+  for (final child in children) {
+    child.setParent(parent);
+  }
 }
 
 _DetectionResult _determineNodeType(
@@ -576,14 +578,14 @@ void _applyInterfaceAndGenericsRecursive({
   required InterfaceCollection interfaceCollection,
 }) {
   // first calculate for children (post order!)
-  curr.values.forEach((child) {
+  for (final child in curr.values) {
     if (child is IterableNode) {
       _applyInterfaceAndGenericsRecursive(
         curr: child,
         interfaceCollection: interfaceCollection,
       );
     }
-  });
+  }
 
   if (curr is ObjectNode) {
     // check if this node itself is an interface
@@ -818,7 +820,7 @@ void _fixEmptyLists({
   required ObjectNode node,
   required Interface interface,
 }) {
-  interface.attributes.forEach((attribute) {
+  for (final attribute in interface.attributes) {
     final child = node.entries[attribute.attributeName];
     if (child != null && child is ListNode && child.entries.isEmpty) {
       final match = RegexUtils.genericRegex.firstMatch(attribute.returnType);
@@ -827,7 +829,7 @@ void _fixEmptyLists({
         child.setGenericType(generic);
       }
     }
-  });
+  }
 }
 
 /// Makes sure that every enum value in [baseContext] is also present in [entries].
@@ -908,13 +910,13 @@ extension on BuildModelConfig {
       if (interfaceConfig.paths.isEmpty && interface != null) {
         globalInterfaces[interface.name] = interface;
       } else {
-        interfaceConfig.paths.forEach((path) {
+        for (final path in interfaceConfig.paths) {
           if (path.isContainer) {
             pathInterfaceContainerMap[path.path] = interfaceConfig.name;
           } else {
             pathInterfaceNameMap[path.path] = interfaceConfig.name;
           }
-        });
+        }
       }
     }
     return InterfaceCollection(

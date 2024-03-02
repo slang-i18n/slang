@@ -1,7 +1,7 @@
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/model/raw_config.dart';
 
 /// Config to generate the model.
 /// A subset of [RawConfig].

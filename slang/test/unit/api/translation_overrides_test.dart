@@ -33,7 +33,7 @@ void main() {
 
     test('Should return an interpolated string', () {
       final meta = _buildMetaWithOverrides({
-        'aboutPage.title': r"About ${arg}",
+        'aboutPage.title': r'About ${arg}',
       });
       final parsed = TranslationOverrides.string(meta, 'aboutPage.title', {
         'arg': 'Page',
@@ -43,7 +43,7 @@ void main() {
 
     test('Should return an interpolated string with dollar only', () {
       final meta = _buildMetaWithOverrides({
-        'aboutPage.title': r"About $arg",
+        'aboutPage.title': r'About $arg',
       });
       final parsed = TranslationOverrides.string(meta, 'aboutPage.title', {
         'arg': 'Page',

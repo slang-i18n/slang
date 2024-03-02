@@ -1,11 +1,11 @@
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/pluralization.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/builder/utils/string_interpolation_extensions.dart';
-import 'package:slang/src/text_parser.dart';
+import 'package:slang/src/builder/builder/text_parser.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 class NodeModifiers {
   static const rich = 'rich';
@@ -304,8 +304,8 @@ class StringTextNode extends TextNode {
       linkParamMap: linkParamMap,
     );
 
-    this._links = parsedLinksResult.links;
-    this._content = parsedLinksResult.parsedContent;
+    _links = parsedLinksResult.links;
+    _content = parsedLinksResult.parsedContent;
   }
 
   @override
@@ -313,8 +313,8 @@ class StringTextNode extends TextNode {
     required Map<String, Set<String>> linkParamMap,
     required Map<String, String> paramTypeMap,
   }) {
-    this._paramTypeMap = paramTypeMap;
-    this._params.addAll(linkParamMap.values.expand((e) => e));
+    _paramTypeMap = paramTypeMap;
+    _params.addAll(linkParamMap.values.expand((e) => e));
 
     // build a temporary TextNode to get the updated content
     final temp = StringTextNode(
@@ -329,7 +329,7 @@ class StringTextNode extends TextNode {
       linkParamMap: linkParamMap,
     );
 
-    this._content = temp.content;
+    _content = temp.content;
   }
 
   @override
@@ -357,7 +357,7 @@ class RichTextNode extends TextNode {
   @override
   Set<String> get links => _links;
 
-  Map<String, String> _paramTypeMap = <String, String>{};
+  final Map<String, String> _paramTypeMap = <String, String>{};
 
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
@@ -438,8 +438,8 @@ class RichTextNode extends TextNode {
     required Map<String, Set<String>> linkParamMap,
     required Map<String, String> paramTypeMap,
   }) {
-    this._paramTypeMap.addAll(paramTypeMap);
-    this._params.addAll(linkParamMap.values.expand((e) => e));
+    _paramTypeMap.addAll(paramTypeMap);
+    _params.addAll(linkParamMap.values.expand((e) => e));
 
     // build a temporary TextNode to get the updated content
     final temp = RichTextNode(
@@ -454,7 +454,7 @@ class RichTextNode extends TextNode {
       linkParamMap: linkParamMap,
     );
 
-    this._spans = temp.spans;
+    _spans = temp.spans;
   }
 }
 
@@ -509,7 +509,7 @@ _ParseInterpolationResult _parseInterpolation({
   required CaseStyle? paramCase,
 }) {
   final String parsedContent;
-  final params = Map<String, String>();
+  final params = <String, String>{};
 
   switch (interpolation) {
     case StringInterpolation.dart:
@@ -569,7 +569,7 @@ _ParseLinksResult _parseLinks({
   required String input,
   required Map<String, Set<String>>? linkParamMap,
 }) {
-  final links = Set<String>();
+  final links = <String>{};
   final parsedContent = input.replaceAllMapped(RegexUtils.linkedRegex, (match) {
     final linkedPath = match.group(1)!;
     links.add(linkedPath);

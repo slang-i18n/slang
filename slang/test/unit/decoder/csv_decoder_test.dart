@@ -1,4 +1,4 @@
-import 'package:slang/builder/decoder/csv_decoder.dart';
+import 'package:slang/src/builder/decoder/csv_decoder.dart';
 import 'package:test/test.dart';
 
 void main() {

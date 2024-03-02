@@ -1,4 +1,4 @@
-import 'package:slang/builder/utils/brackets_utils.dart';
+import 'package:slang/src/builder/utils/brackets_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

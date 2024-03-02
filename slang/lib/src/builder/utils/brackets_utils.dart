@@ -68,7 +68,7 @@ class BracketRange {
   }
 
   @override
-  int get hashCode => this.start.hashCode * this.end.hashCode;
+  int get hashCode => start.hashCode * end.hashCode;
 
   @override
   String toString() {

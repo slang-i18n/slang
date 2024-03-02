@@ -1,8 +1,8 @@
-import 'package:slang/builder/decoder/arb_decoder.dart';
-import 'package:slang/builder/decoder/csv_decoder.dart';
-import 'package:slang/builder/decoder/json_decoder.dart';
-import 'package:slang/builder/decoder/yaml_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
+import 'package:slang/src/builder/decoder/arb_decoder.dart';
+import 'package:slang/src/builder/decoder/csv_decoder.dart';
+import 'package:slang/src/builder/decoder/json_decoder.dart';
+import 'package:slang/src/builder/decoder/yaml_decoder.dart';
 
 abstract class BaseDecoder {
   /// Transforms the raw string (json, yaml, csv)

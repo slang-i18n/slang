@@ -1,10 +1,10 @@
 import 'package:slang/api/locale.dart';
 import 'package:slang/api/pluralization.dart';
-import 'package:slang/builder/generator/helper.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 /// Utility class handling overridden translations
 class TranslationOverrides {

@@ -1,8 +1,8 @@
 import 'package:slang/builder/builder/raw_config_builder.dart';
-import 'package:slang/builder/decoder/csv_decoder.dart';
-import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/decoder/csv_decoder.dart';
+import 'package:slang/src/builder/generator_facade.dart';
 import 'package:test/test.dart';
 
 import '../../util/resources_utils.dart';

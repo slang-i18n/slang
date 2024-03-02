@@ -1,5 +1,5 @@
-import 'slang.dart' as mainRunner;
+import 'slang.dart' as main_runner;
 
 void main(List<String> arguments) async {
-  mainRunner.main(['edit', ...arguments]);
+  main_runner.main(['edit', ...arguments]);
 }

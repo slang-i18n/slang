@@ -7,9 +7,9 @@ import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
-import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/node_utils.dart';
-import 'package:slang/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/file_utils.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/utils/read_analysis_file.dart';
 

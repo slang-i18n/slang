@@ -1,7 +1,7 @@
 import 'package:csv/csv.dart';
 import 'package:csv/csv_settings_autodetection.dart';
-import 'package:slang/builder/decoder/base_decoder.dart';
-import 'package:slang/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
 
 final _csvConverter = CsvToListConverter(
   // Allow both \r\n and \n

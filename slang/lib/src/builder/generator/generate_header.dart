@@ -1,11 +1,11 @@
-import 'package:slang/builder/generator/helper.dart';
 import 'package:slang/builder/model/build_model_config.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 
 String generateHeader(
   GenerateConfig config,

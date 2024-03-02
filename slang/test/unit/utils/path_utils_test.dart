@@ -1,5 +1,5 @@
 import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -20,7 +20,7 @@ void main() {
   });
 
   group('findDirectoryLocale', () {
-    final f = (String filePath, [String? inputDirectory]) =>
+    f(String filePath, [String? inputDirectory]) =>
         PathUtils.findDirectoryLocale(
           filePath: filePath,
           inputDirectory: inputDirectory,

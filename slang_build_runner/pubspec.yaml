@@ -12,3 +12,6 @@ dependencies:
 
   # Use a tight version to ensure that all features are available
   slang: '>=3.29.0 <3.30.0'
+
+dev_dependencies:
+  lints: ^2.0.0

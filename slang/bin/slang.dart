@@ -3,18 +3,18 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:slang/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/builder/builder/translation_map_builder.dart';
-import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
+import 'package:slang/src/builder/generator_facade.dart';
+import 'package:slang/src/builder/utils/file_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/apply.dart';
 import 'package:slang/src/runner/clean.dart';
 import 'package:slang/src/runner/edit.dart';
 import 'package:slang/src/runner/migrate.dart';
 import 'package:slang/src/runner/stats.dart';
-import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/path_utils.dart';
 import 'package:watcher/watcher.dart';
 
 /// Determines what the runner will do
@@ -372,7 +372,7 @@ Future<void> generateTranslations({
         .firstWhereOrNull((c) => c.enumValues != null || c.paths.isNotEmpty);
     if (deprecatedContext != null) {
       print(
-          '${_YELLOW}[Deprecated] Use explicit context modifiers instead of populating the config: ${deprecatedContext.enumName} (see: https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md#use-context-modifier-since-3190)$_RESET');
+          '$_YELLOW[Deprecated] Use explicit context modifiers instead of populating the config: ${deprecatedContext.enumName} (see: https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md#use-context-modifier-since-3190)$_RESET');
     }
   }
 }

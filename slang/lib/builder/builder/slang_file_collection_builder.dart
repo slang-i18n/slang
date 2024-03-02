@@ -6,8 +6,8 @@ import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
-import 'package:slang/builder/utils/path_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class SlangFileCollectionBuilder {
   static SlangFileCollection readFromFileSystem({
@@ -101,7 +101,7 @@ class SlangFileCollectionBuilder {
               // could also be a non-base locale when directory name is a locale
 
               // directory name could be a locale
-              I18nLocale? directoryLocale = null;
+              I18nLocale? directoryLocale;
               if (config.namespaces) {
                 directoryLocale = PathUtils.findDirectoryLocale(
                   filePath: f.path,

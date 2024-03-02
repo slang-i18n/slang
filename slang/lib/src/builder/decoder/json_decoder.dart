@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:slang/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/decoder/base_decoder.dart';
 
 class JsonDecoder extends BaseDecoder {
   @override

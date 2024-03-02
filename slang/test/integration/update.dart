@@ -1,13 +1,13 @@
 import 'package:slang/builder/builder/raw_config_builder.dart';
-import 'package:slang/builder/decoder/json_decoder.dart';
-import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/build_result.dart';
 import 'package:slang/builder/model/enums.dart';
+import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';
 import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/translation_map.dart';
-import 'package:slang/builder/utils/file_utils.dart';
+import 'package:slang/src/builder/decoder/json_decoder.dart';
+import 'package:slang/src/builder/generator_facade.dart';
+import 'package:slang/src/builder/utils/file_utils.dart';
 
 import '../util/resources_utils.dart';
 

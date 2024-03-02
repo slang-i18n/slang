@@ -1,8 +1,8 @@
-import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 
 /// A collection of translation files that can be read in a later step.
 /// This is an abstraction to support build_runner and the custom CLI by
@@ -19,7 +19,7 @@ class SlangFileCollection {
   String determineOutputPath() {
     if (config.outputDirectory != null) {
       // output directory specified, use this path instead
-      return config.outputDirectory! + '/' + config.outputFileName;
+      return '${config.outputDirectory!}/${config.outputFileName}';
     } else {
       // use the directory of the first (random) translation file
       final tempPath = files.first.path;
@@ -82,7 +82,7 @@ class PlainTranslationFile {
       return BaseDecoder.decodeWithFileType(fileType, content);
     } on FormatException catch (e) {
       print('');
-      throw 'File: ${path}\n$e';
+      throw 'File: $path\n$e';
     }
   }
 }

@@ -1,4 +1,5 @@
-import 'package:slang/builder/utils/node_utils.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/utils/node_utils.dart';
 
 const ignoreGpt = 'ignoreGpt';
 

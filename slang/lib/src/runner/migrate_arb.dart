@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/utils/brackets_utils.dart';
-import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
-import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/builder/utils/brackets_utils.dart';
+import 'package:slang/src/builder/utils/file_utils.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 final _setEquality = SetEquality();
 
@@ -85,14 +85,14 @@ Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
       );
     } else {
       final contextResult = _digestEntry(keyParts, value, resultMap);
-      contextResult.forEach((c) {
+      for (final c in contextResult) {
         if (detectedContexts
             .every((c2) => !_setEquality.equals(c2, c.contextEnum))) {
           // detected new context
           detectedContexts.add(c.contextEnum);
           detectedContextNames.add(c.contextName);
         }
-      });
+      }
     }
   });
 
@@ -119,9 +119,9 @@ Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
         print('[$contextName] ... or ${additionalNames.join(', ')}');
       }
 
-      detectedContexts[i].forEach((enumValue) {
+      for (final enumValue in detectedContexts[i]) {
         print(' - $enumValue');
-      });
+      }
     }
   }
 
@@ -296,7 +296,7 @@ extension on List<String> {
   /// Replace last element with another, returns the new list
   List<String> replaceLast(String replace) {
     final copy = [...this];
-    copy[this.length - 1] = replace;
+    copy[length - 1] = replace;
     return copy;
   }
 }

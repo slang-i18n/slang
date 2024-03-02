@@ -1,6 +1,6 @@
 import 'package:slang/builder/model/build_model_config.dart';
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';

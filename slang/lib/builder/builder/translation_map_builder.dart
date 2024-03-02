@@ -1,9 +1,9 @@
-import 'package:slang/builder/decoder/base_decoder.dart';
-import 'package:slang/builder/decoder/csv_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/slang_file_collection.dart';
 import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/decoder/csv_decoder.dart';
 
 class TranslationMapBuilder {
   /// This method transforms files to an intermediate model [TranslationMap].

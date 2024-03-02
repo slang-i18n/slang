@@ -1,4 +1,4 @@
-import 'package:slang/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

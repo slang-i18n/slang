@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:slang/builder/decoder/base_decoder.dart';
 import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/utils/brackets_utils.dart';
-import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
-import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/utils/brackets_utils.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 class ArbDecoder extends BaseDecoder {
   @override

@@ -1,9 +1,9 @@
 import 'package:slang/builder/builder/build_model_config_builder.dart';
 import 'package:slang/builder/model/context_type.dart';
 import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/model/raw_config.dart';
 
 class GenerateConfigBuilder {
   static GenerateConfig build({

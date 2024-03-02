@@ -172,7 +172,7 @@ class InterfaceAttribute {
 
   @override
   String toString() {
-    return '$returnType${optional ? '?' : ''} $attributeName${parameters.isNotEmpty ? '(' + parameters.join(', ') + ')' : ''}';
+    return '$returnType${optional ? '?' : ''} $attributeName${parameters.isNotEmpty ? '(${parameters.join(', ')})' : ''}';
   }
 }
 

@@ -32,7 +32,7 @@ class FileUtils {
     switch (fileType) {
       case FileType.json:
         // this encoder does not append \n automatically
-        return JsonEncoder.withIndent('  ').convert(content) + '\n';
+        return '${JsonEncoder.withIndent('  ').convert(content)}\n';
       case FileType.yaml:
         if (content.containsKey(INFO_KEY)) {
           // workaround
@@ -75,9 +75,9 @@ class FileUtils {
           final info = content.remove(INFO_KEY);
           columns[INFO_KEY] = {INFO_KEY: escapeRow(info.join('\\n'))};
         }
-        content.entries.forEach((e) {
+        for (final e in content.entries) {
           columns[e.key] = encodeRow(value: e.value);
-        });
+        }
 
         // get all translation keys
         final translationKeys = columns.values
@@ -95,7 +95,7 @@ class FileUtils {
         return "$headers\n${rows.join('\n')}";
       case FileType.arb:
         // this encoder does not append \n automatically
-        return JsonEncoder.withIndent('  ').convert(content) + '\n';
+        return '${JsonEncoder.withIndent('  ').convert(content)}\n';
     }
   }
 

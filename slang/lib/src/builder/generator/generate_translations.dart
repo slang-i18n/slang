@@ -1,13 +1,13 @@
 import 'dart:collection';
 
-import 'package:slang/builder/generator/helper.dart';
 import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
-import 'package:slang/builder/utils/encryption_utils.dart';
+import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/utils/encryption_utils.dart';
 
 part 'generate_translation_map.dart';
 
@@ -36,7 +36,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
 // coverage:ignore-file
 // ignore_for_file: type=lint
 
-part of \'${config.outputFileName}\';''');
+part of '${config.outputFileName}';''');
   }
 
   queue.add(ClassTask(
@@ -532,8 +532,8 @@ void _generateList({
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      final String key = r'$' +
-          '${listName ?? ''}\$' +
+      // ignore: prefer_interpolation_to_compose_strings
+      final String key = r'$' '${listName ?? ''}\$' +
           depth.toString() +
           'i' +
           i.toString() +
@@ -764,7 +764,7 @@ void _addRichTextCall({
       }
     } else if (span is FunctionSpan) {
       buffer.write(
-        "${span.functionName}(${getStringLiteral(span.arg, config.obfuscation)})",
+        '${span.functionName}(${getStringLiteral(span.arg, config.obfuscation)})',
       );
     }
     buffer.writeln(',');

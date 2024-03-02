@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:slang/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
 
 class MapUtils {
   /// converts Map<dynamic, dynamic> to Map<String, dynamic> for all children
@@ -108,7 +108,7 @@ class MapUtils {
             throw 'The leaf "$destinationPath" cannot be added because there are missing indices.';
           }
         } else {
-          if (!(curr is Map)) {
+          if (curr is! Map) {
             throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
           }
           curr[subPath] = item;

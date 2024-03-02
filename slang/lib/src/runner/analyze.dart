@@ -8,10 +8,10 @@ import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
-import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/map_utils.dart';
-import 'package:slang/builder/utils/node_utils.dart';
-import 'package:slang/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/file_utils.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 
 final _setEquality = SetEquality();
 
@@ -225,37 +225,37 @@ void _addNodeRecursive({
     );
   } else {
     if (node is ListNode) {
-      node.entries.forEach((child) {
+      for (final child in node.entries) {
         _addNodeRecursive(
           node: child,
           resultMap: resultMap,
           addOutdatedModifier: false,
         );
-      });
+      }
     } else if (node is ObjectNode) {
-      node.entries.values.forEach((child) {
+      for (final child in node.entries.values) {
         _addNodeRecursive(
           node: child,
           resultMap: resultMap,
           addOutdatedModifier: false,
         );
-      });
+      }
     } else if (node is PluralNode) {
-      node.quantities.values.forEach((child) {
+      for (final child in node.quantities.values) {
         _addNodeRecursive(
           node: child,
           resultMap: resultMap,
           addOutdatedModifier: false,
         );
-      });
+      }
     } else if (node is ContextNode) {
-      node.entries.values.forEach((child) {
+      for (final child in node.entries.values) {
         _addNodeRecursive(
           node: child,
           resultMap: resultMap,
           addOutdatedModifier: false,
         );
-      });
+      }
     } else {
       throw 'This should not happen';
     }
@@ -377,10 +377,8 @@ void _writeMap({
     for (final entry in result.entries) {
       final path = PathUtils.withFileName(
         directoryPath: outDir,
-        fileName: fileNamePrefix +
-            '_' +
-            entry.key.languageTag.replaceAll('-', '_') +
-            '.${fileType.name}',
+        fileName:
+            '${fileNamePrefix}_${entry.key.languageTag.replaceAll('-', '_')}.${fileType.name}',
         pathSeparator: Platform.pathSeparator,
       );
 

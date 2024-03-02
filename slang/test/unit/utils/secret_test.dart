@@ -1,5 +1,5 @@
-import 'package:slang/builder/generator/helper.dart';
 import 'package:slang/builder/model/obfuscation_config.dart';
+import 'package:slang/src/builder/generator/helper.dart';
 import 'package:test/test.dart';
 
 void main() {

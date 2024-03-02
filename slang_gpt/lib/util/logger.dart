@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/utils/file_utils.dart';
-import 'package:slang/builder/utils/path_utils.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/utils/file_utils.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang_gpt/model/gpt_prompt.dart';
 import 'package:slang_gpt/model/gpt_response.dart';
 

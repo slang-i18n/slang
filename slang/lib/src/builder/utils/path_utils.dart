@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 /// Operations on paths
 class PathUtils {
@@ -46,7 +46,7 @@ class PathUtils {
     List<String> segments = PathUtils.getPathSegments(filePath);
 
     // either first directory after inputDirectory, or last directory
-    RegExpMatch? match = null;
+    RegExpMatch? match;
 
     if (inputDirectory != null) {
       final inputDirectorySegments = PathUtils.getPathSegments(inputDirectory);

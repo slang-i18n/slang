@@ -7,8 +7,8 @@ extension StringExtensions on String {
   /// 'Hello' => 'Hello'
   /// '' => ''
   String capitalize() {
-    if (this.isEmpty) return '';
-    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+    if (isEmpty) return '';
+    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
   }
 
   /// transforms the string to the specified case
@@ -35,7 +35,7 @@ extension StringExtensions on String {
   /// de-DE will be interpreted as [de,DE]
   /// normally, it would be [de,D,E] which we do not want
   String toCaseOfLocale(CaseStyle style) {
-    return this.toLowerCase().toCase(style);
+    return toLowerCase().toCase(style);
   }
 
   /// get word list from string input

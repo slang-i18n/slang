@@ -1,5 +1,5 @@
 import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
 
 class ParseParamResult {
   final String paramName;

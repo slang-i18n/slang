@@ -1,7 +1,7 @@
 import 'package:slang/builder/builder/build_model_config_builder.dart';
 import 'package:slang/builder/builder/translation_model_builder.dart';
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/context_type.dart';
+import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/raw_config.dart';

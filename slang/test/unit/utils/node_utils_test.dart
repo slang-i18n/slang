@@ -1,4 +1,4 @@
-import 'package:slang/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

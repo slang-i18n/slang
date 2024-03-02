@@ -1,5 +1,5 @@
 import 'package:slang/api/secret.dart';
-import 'package:slang/builder/utils/encryption_utils.dart';
+import 'package:slang/src/builder/utils/encryption_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

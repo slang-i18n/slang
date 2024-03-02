@@ -1,4 +1,4 @@
-import 'package:slang/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 import 'package:test/test.dart';
 
 String _replacer(String s) {
