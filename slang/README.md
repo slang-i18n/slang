@@ -63,6 +63,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Linked Translations](#-linked-translations)
   - [Pluralization](#-pluralization)
   - [Custom Contexts / Enums](#-custom-contexts--enums)
+  - [Typed Parameters](#-typed-parameters)
   - [Interfaces](#-interfaces)
   - [Modifiers](#-modifiers)
   - [Locale Enum](#-locale-enum)
@@ -881,6 +882,18 @@ imports:
 contexts:
   UserType:
     generate_enum: false # turn off enum generation
+```
+
+### ➤ Typed Parameters
+
+Parameters are typed as `Object` by default. This is handy because it offers maximum flexibility.
+
+You can specify the type using the `name: type` syntax to increase type safety.
+
+```json
+{
+  "greet": "Hello {name: String}, you are {age: int} years old"
+}
 ```
 
 ### ➤ Interfaces

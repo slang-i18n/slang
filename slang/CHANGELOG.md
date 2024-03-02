@@ -1,3 +1,9 @@
+## 3.30.0
+
+- feat: add parameter types (e.g. `Hello {name: String}, you are {age: int} years old`); is `Object` by default @Tienisto
+- fix: handle nested interfaces (#191) @Tienisto
+- refactor: move code to src folder @Tienisto
+
 ## 3.29.0
 
 - feat: `dart run slang analyze` supports csv files (#185) @nikaera
