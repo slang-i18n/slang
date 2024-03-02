@@ -13,9 +13,6 @@ class RegexUtils {
   /// matches only $ but not \$
   static RegExp dollarOnlyRegex = RegExp(r'([^\\]|^)\$( |$)');
 
-  /// matches `param(arg)`
-  static RegExp paramWithArg = RegExp(r'^(\w+)(\((.+)\))?$');
-
   /// locale regex
   static const LOCALE_REGEX_RAW =
       r'([a-z]{2,3})(?:[_-]([A-Za-z]{4}))?(?:[_-]([A-Z]{2}|[0-9]{3}))?';

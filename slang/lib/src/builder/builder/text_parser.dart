@@ -9,7 +9,7 @@ class ParseParamResult {
 
   @override
   String toString() =>
-      '_ParseParamResult(paramName: $paramName, paramType: $paramType)';
+      'ParseParamResult(paramName: $paramName, paramType: $paramType)';
 }
 
 ParseParamResult parseParam({
@@ -19,7 +19,7 @@ ParseParamResult parseParam({
 }) {
   if (rawParam.endsWith(')')) {
     // rich text parameter with default value
-    // this will be parsed by another method
+    // this will be parsed by parseParamWithArg
     return ParseParamResult(
       rawParam,
       '',
@@ -30,4 +30,28 @@ ParseParamResult parseParam({
     return ParseParamResult(split[0].toCase(caseStyle), defaultType);
   }
   return ParseParamResult(split[0].trim().toCase(caseStyle), split[1].trim());
+}
+
+class ParamWithArg {
+  final String paramName;
+  final String? arg;
+
+  ParamWithArg(this.paramName, this.arg);
+
+  @override
+  String toString() => 'ParamWithArg(paramName: $paramName, arg: $arg)';
+}
+
+ParamWithArg parseParamWithArg({
+  required String rawParam,
+  required CaseStyle? paramCase,
+}) {
+  final end = rawParam.lastIndexOf(')');
+  if (end == -1) {
+    return ParamWithArg(rawParam.toCase(paramCase), null);
+  }
+
+  final start = rawParam.indexOf('(');
+  final parameterName = rawParam.substring(0, start).toCase(paramCase);
+  return ParamWithArg(parameterName, rawParam.substring(start + 1, end));
 }

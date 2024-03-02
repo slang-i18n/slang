@@ -4,7 +4,6 @@ import 'package:slang/builder/model/interface.dart';
 import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/src/builder/builder/text_parser.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
-import 'package:slang/src/builder/utils/string_extensions.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 class NodeModifiers {
@@ -382,7 +381,7 @@ class RichTextNode extends TextNode {
 
     _params = <String>{};
     for (final key in rawParsedResult.params.keys) {
-      final parsedParam = _parseParamWithArg(
+      final parsedParam = parseParamWithArg(
         rawParam: key,
         paramCase: paramCase,
       );
@@ -411,7 +410,7 @@ class RichTextNode extends TextNode {
         );
       },
       onMatch: (match) {
-        final parsed = _parseParamWithArg(
+        final parsed = parseParamWithArg(
           rawParam: (match.group(1) ?? match.group(2))!,
           paramCase: paramCase,
         );
@@ -609,30 +608,6 @@ Iterable<T> _splitWithMatchAndNonMatch<T>(
   if (nonMatches.last.isNotEmpty) {
     yield onNonMatch(nonMatches.last);
   }
-}
-
-_ParamWithArg _parseParamWithArg({
-  required String rawParam,
-  required CaseStyle? paramCase,
-}) {
-  final end = rawParam.lastIndexOf(')');
-  if (end == -1) {
-    return _ParamWithArg(rawParam.toCase(paramCase), null);
-  }
-
-  final start = rawParam.indexOf('(');
-  final parameterName = rawParam.substring(0, start).toCase(paramCase);
-  return _ParamWithArg(parameterName, rawParam.substring(start + 1, end));
-}
-
-class _ParamWithArg {
-  final String paramName;
-  final String? arg;
-
-  _ParamWithArg(this.paramName, this.arg);
-
-  @override
-  String toString() => '_ParamWithArg{paramName: $paramName, arg: $arg}';
 }
 
 abstract class BaseSpan {}
