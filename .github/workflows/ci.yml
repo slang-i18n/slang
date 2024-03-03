@@ -13,7 +13,7 @@ on:
 
 env:
   FLUTTER_VERSION_OLDEST: "3.0.5"
-  FLUTTER_VERSION_NEWEST: "3.19.0"
+  FLUTTER_VERSION_NEWEST: "3.19.2"
 
 jobs:
   format:
