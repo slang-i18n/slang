@@ -1,6 +1,6 @@
 name: slang_build_runner
 description: build_runner integration for slang. This library ensures that slang is recognized by build_runner.
-version: 3.29.0
+version: 3.30.0
 repository: https://github.com/slang-i18n/slang
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   glob: ^2.0.2
 
   # Use a tight version to ensure that all features are available
-  slang: '>=3.29.0 <3.30.0'
+  slang: '>=3.30.0 <3.31.0'
 
 dev_dependencies:
   lints: ^2.0.0
