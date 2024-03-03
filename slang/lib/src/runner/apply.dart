@@ -221,6 +221,7 @@ Map<String, dynamic> applyMapRecursive({
   required bool verbose,
 }) {
   final resultMap = <String, dynamic>{};
+  final resultKeys = <String>{}; // keys without modifiers
 
   // Keys that have been applied.
   // They do not have modifiers in their path.
@@ -234,7 +235,8 @@ Map<String, dynamic> applyMapRecursive({
   // Add keys according to the order in base map.
   // Prefer new map over old map.
   for (final key in baseMap.keys) {
-    final newEntry = newMap[key.withoutModifiers];
+    final keyWithoutModifiers = key.withoutModifiers;
+    final newEntry = newMap[keyWithoutModifiers];
     dynamic actualValue = newEntry ?? oldMap[key];
     if (actualValue == null) {
       continue;
@@ -261,12 +263,14 @@ Map<String, dynamic> applyMapRecursive({
       }
     }
     resultMap[key] = actualValue;
+    resultKeys.add(keyWithoutModifiers);
   }
 
   // Add keys from old map that are unknown in base locale.
   // It may contain the OUTDATED modifier.
   for (final key in oldMap.keys) {
-    if (resultMap.containsKey(key)) {
+    final keyWithoutModifiers = key.withoutModifiers;
+    if (resultKeys.contains(keyWithoutModifiers)) {
       continue;
     }
 
@@ -296,12 +300,13 @@ Map<String, dynamic> applyMapRecursive({
       _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;
+    resultKeys.add(keyWithoutModifiers);
   }
 
   // Add remaining new keys that are not in base locale and not in old map.
   for (final entry in newMap.entries) {
     final keyWithoutModifiers = entry.key.withoutModifiers;
-    if (resultMap.containsKey(keyWithoutModifiers)) {
+    if (resultKeys.contains(keyWithoutModifiers)) {
       continue;
     }
 

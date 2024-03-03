@@ -1,3 +1,8 @@
+## 0.10.1
+
+- deps: bump slang to 3.30.1
+- fix: duplicate keys when there are modifiers #192
+
 ## 0.10.0
 
 - deps: bump slang to 3.25.0

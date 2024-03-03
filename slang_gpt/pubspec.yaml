@@ -9,7 +9,7 @@ environment:
 dependencies:
   collection: ^1.15.0
   http: '>=0.13.0 <2.0.0'
-  slang: ^3.25.0
+  slang: ^3.30.1
 
 dev_dependencies:
   lints: ^2.0.0

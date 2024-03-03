@@ -3,7 +3,7 @@ import 'package:slang/src/builder/utils/node_utils.dart';
 
 const ignoreGpt = 'ignoreGpt';
 
-/// Remove all entries from [map] that have the "ignoreMissing" modifier.
+/// Remove all entries from [map] that have the "ignoreGpt" modifier.
 /// This method removes the entries in-place.
 void removeIgnoreGpt({
   required Map<String, dynamic> map,

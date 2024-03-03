@@ -5,13 +5,13 @@ void main() {
   group('applyMapRecursive', () {
     test('ignore strings in baseMap if not applied', () {
       final result = applyMapRecursive(
-        baseMap: {'c': 'C'},
-        newMap: {'a': 'A'},
-        oldMap: {'b': 'B'},
+        baseMap: {'base': 'BB'},
+        newMap: {'new': 'NN'},
+        oldMap: {'old': 'OO'},
         verbose: false,
       );
-      expect(result, {'b': 'B', 'a': 'A'});
-      expect(result.keys.toList(), ['b', 'a']);
+      expect(result, {'new': 'NN', 'old': 'OO'});
+      expect(result.keys.toList(), ['old', 'new']);
     });
 
     test('handle empty newMap', () {
@@ -144,6 +144,26 @@ void main() {
       });
       expect(result.keys.toList(), ['c', 'a', 'b']);
       expect((result['a'] as Map).keys.toList(), ['y', 'x', 'z', '0']);
+    });
+
+    test('ignore new modifier', () {
+      final result = applyMapRecursive(
+        baseMap: {},
+        newMap: {'a(param=arg0)': 'A'},
+        oldMap: {},
+        verbose: false,
+      );
+      expect(result, {'a': 'A'});
+    });
+
+    test('apply modifier of base map', () {
+      final result = applyMapRecursive(
+        baseMap: {'a(param=arg0)': 'base'},
+        newMap: {'a': 'new'},
+        oldMap: {'a': 'old'},
+        verbose: false,
+      );
+      expect(result, {'a(param=arg0)': 'new'});
     });
   });
 }

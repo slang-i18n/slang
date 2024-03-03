@@ -80,7 +80,11 @@ class NodePathInfo {
 extension StringModifierExt on String {
   /// Returns the key without modifiers.
   String get withoutModifiers {
-    return split('(').first;
+    final index = indexOf('(');
+    if (index == -1) {
+      return this;
+    }
+    return substring(0, index);
   }
 
   String withModifier(String modifierKey, [String? modifierValue]) {

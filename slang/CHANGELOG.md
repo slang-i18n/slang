@@ -1,3 +1,7 @@
+## 3.30.1
+
+- fix: applying translations with `dart run slang apply` should use only modifiers from the base locale (#192)
+
 ## 3.30.0
 
 - feat: add parameter types (e.g. `Hello {name: String}, you are {age: int} years old`); is `Object` by default @Tienisto
