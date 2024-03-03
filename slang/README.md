@@ -100,6 +100,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [slang x riverpod](#-slang-x-riverpod)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
+- [Ecosystem](#ecosystem)
 - [Slang in production](#slang-in-production)
 
 ## Getting Started
@@ -1887,11 +1888,17 @@ The second one always returns a new instance.
 
 Feel free to extend this list :)
 
+## Ecosystem
+
+- [slang_gpt](https://pub.dev/packages/slang_gpt) - Use GPT to internationalize your app with context-aware translations.
+- [Apparencekit](https://apparencekit.dev/docs/other/internationalization/) - Boilerplate solution
+
 ## Slang in production
 
 Open source:
 
 - [LocalSend (file sharing app)](https://github.com/localsend/localsend)
+- [ReVanced](https://github.com/ReVanced/revanced-manager)
 - [Hiddify](https://github.com/hiddify/hiddify-next)
 - [Saber (notes app)](https://github.com/adil192/saber)
 - [Boorusphere (booru viewer)](https://github.com/nullxception/boorusphere)
