@@ -41,6 +41,16 @@ void main() {
       expect(parsed, 'About Page');
     });
 
+    test('Should ignore type in interpolated string', () {
+      final meta = _buildMetaWithOverrides({
+        'aboutPage.title': r'About ${arg: int}',
+      });
+      final parsed = TranslationOverrides.string(meta, 'aboutPage.title', {
+        'arg': 'Page',
+      });
+      expect(parsed, 'About Page');
+    });
+
     test('Should return an interpolated string with dollar only', () {
       final meta = _buildMetaWithOverrides({
         'aboutPage.title': r'About $arg',
