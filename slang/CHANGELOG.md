@@ -1,6 +1,6 @@
 ## 3.30.1
 
-- fix: applying translations with `dart run slang apply` should use only modifiers from the base locale (#192)
+- fix: when applying translations with `dart run slang apply`, only modifiers from the base locale should be used (#192)
 
 ## 3.30.0
 
