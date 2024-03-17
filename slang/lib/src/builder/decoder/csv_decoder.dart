@@ -54,7 +54,7 @@ class CsvDecoder extends BaseDecoder {
           final locale = locales[localeIndex];
           final path = parsed[rowIndex][0];
           final content = parsed[rowIndex][localeIndex + 1].toString();
-          if (locale != null) {
+          if (locale != null && content.isNotEmpty) {
             // normal column
             MapUtils.addItemToMap(
               map: result[locale]!,
