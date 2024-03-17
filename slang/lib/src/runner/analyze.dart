@@ -348,8 +348,8 @@ void _getUnusedTranslationsInSourceCodeRecursive({
 String loadSourceCode(List<File> files) {
   final buffer = StringBuffer();
   final spacesRegex = RegExp(r'\s');
-  final singleLineCommentsRegex = RegExp(r'\/\/.*');
-  final multiLineCommentsRegex = RegExp(r'\/\*.*?\*\/', multiLine: true);
+  final singleLineCommentsRegex = RegExp(r'//.*');
+  final multiLineCommentsRegex = RegExp(r'/\*.*?\*/', dotAll: true);
 
   for (final file in files) {
     buffer.write(file
