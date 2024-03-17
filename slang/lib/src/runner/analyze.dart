@@ -347,9 +347,16 @@ void _getUnusedTranslationsInSourceCodeRecursive({
 /// and joins them into a single (huge) string without any spaces.
 String loadSourceCode(List<File> files) {
   final buffer = StringBuffer();
-  final regex = RegExp(r'\s');
+  final spacesRegex = RegExp(r'\s');
+  final singleLineCommentsRegex = RegExp(r'\/\/.*');
+  final multiLineCommentsRegex = RegExp(r'\/\*.*?\*\/', multiLine: true);
+
   for (final file in files) {
-    buffer.write(file.readAsStringSync().replaceAll(regex, ''));
+    buffer.write(file
+        .readAsStringSync()
+        .replaceAll(singleLineCommentsRegex, '')
+        .replaceAll(multiLineCommentsRegex, '')
+        .replaceAll(spacesRegex, ''));
   }
 
   return buffer.toString();
