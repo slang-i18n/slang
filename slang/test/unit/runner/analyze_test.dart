@@ -28,5 +28,29 @@ void main() {
 
       expect(result, 'ABCDEFGH;');
     });
+
+    test('should ignore inline comments', () {
+      final files = [
+        FakeFile('A // B\nC'),
+        FakeFile('D /* E */ F'),
+        FakeFile('G'),
+      ];
+
+      final result = loadSourceCode(files);
+
+      expect(result, 'ACDFG');
+    });
+
+    test('should ignore block comments', () {
+      final files = [
+        FakeFile('A /* B\nC */ D'),
+        FakeFile('E // F'),
+        FakeFile('G //'),
+      ];
+
+      final result = loadSourceCode(files);
+
+      expect(result, 'ADEG');
+    });
   });
 }
