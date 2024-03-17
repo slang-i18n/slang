@@ -18,7 +18,7 @@ environment:
 
 dependencies:
   collection: ^1.15.0
-  csv: ^5.0.1
+  csv: ">=5.0.1 <7.0.0"
   json2yaml: ^3.0.0
   watcher: ^1.0.2
   yaml: ^3.1.0
