@@ -52,22 +52,23 @@ class FileUtils {
           return escaped;
         }
 
-        Map<String, String> encodeRow({
+        void encodeCsvRows({
           String key = '',
           required dynamic value,
+          required Map<String, String> result,
         }) {
           if (value is Map) {
-            final keyPrefix = key.isEmpty ? '' : '$key.';
-            return value.map((k, v) {
-              final map = encodeRow(key: '$keyPrefix$k', value: v);
-              final mapEntry = map.entries.first;
-
-              return MapEntry(mapEntry.key, mapEntry.value);
-            });
+            for (final k in value.keys) {
+              final prefix = key.isEmpty ? '' : '$key.';
+              encodeCsvRows(
+                key: '$prefix$k',
+                value: value[k],
+                result: result,
+              );
+            }
           } else if (value is String) {
-            return {key: escapeRow(value)};
+            result[key] = escapeRow(value);
           }
-          return {};
         }
 
         final Map<String, Map<String, String>> columns = {};
@@ -76,7 +77,10 @@ class FileUtils {
           columns[INFO_KEY] = {INFO_KEY: escapeRow(info.join('\\n'))};
         }
         for (final e in content.entries) {
-          columns[e.key] = encodeRow(value: e.value);
+          final result = <String, String>{};
+          encodeCsvRows(result: result, value: e.value);
+
+          columns[e.key] = result;
         }
 
         // get all translation keys
