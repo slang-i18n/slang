@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
-/// Strings: 56 (28 per locale)
+/// Strings: 58 (29 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -240,6 +240,7 @@ class _TranslationsOnboardingEn {
 	// Translations
 	String welcome({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Welcome ${fullName}';
 	String welcomeAlias({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
+	String welcomeOnlyParam({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeOnlyParam', {'firstName': firstName}) ?? '${firstName}';
 
 	/// Bye text
 	String bye({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.bye', {'firstName': firstName}) ?? 'Bye ${firstName}';
@@ -415,6 +416,7 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 	// Translations
 	@override String welcome({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Willkommen ${fullName}';
 	@override String welcomeAlias({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
+	@override String welcomeOnlyParam({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeOnlyParam', {'firstName': firstName}) ?? '${firstName}';
 
 	/// Bye text
 	@override String bye({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.bye', {'firstName': firstName}) ?? 'Tschüss ${firstName}';
@@ -548,6 +550,7 @@ extension on Translations {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Welcome ${fullName}';
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
+			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeOnlyParam', {'firstName': firstName}) ?? '${firstName}';
 			case 'onboarding.bye': return ({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.bye', {'firstName': firstName}) ?? 'Bye ${firstName}';
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TranslationOverridesFlutter.rich(_root.$meta, 'onboarding.hi', {'name': name, 'lastName': lastName, 'context': context, 'fullName': fullName, 'firstName': firstName}) ?? TextSpan(children: [
 				const TextSpan(text: 'Hi '),
@@ -620,6 +623,7 @@ extension on _TranslationsDe {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Willkommen ${fullName}';
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
+			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeOnlyParam', {'firstName': firstName}) ?? '${firstName}';
 			case 'onboarding.bye': return ({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.bye', {'firstName': firstName}) ?? 'Tschüss ${firstName}';
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TranslationOverridesFlutter.rich(_root.$meta, 'onboarding.hi', {'name': name, 'lastName': lastName, 'context': context, 'fullName': fullName, 'firstName': firstName}) ?? TextSpan(children: [
 				const TextSpan(text: 'Hi '),

@@ -58,7 +58,8 @@ _generateTranslationMapRecursive({
     final translationOverrides = config.translationOverrides
         ? 'TranslationOverrides.string(_root.\$meta, \'${curr.path}\', ${_toParameterMap(curr.params)}) ?? '
         : '';
-    final stringLiteral = getStringLiteral(curr.content, config.obfuscation);
+    final stringLiteral =
+        getStringLiteral(curr.content, curr.links.length, config.obfuscation);
     if (curr.params.isEmpty) {
       buffer.writeln(
           '\t\t\tcase \'${curr.path}\': return $translationOverrides$stringLiteral;');

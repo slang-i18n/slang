@@ -6,7 +6,7 @@ void main() {
   group('getStringLiteral', () {
     test('Should return text as is', () {
       final config = ObfuscationConfig.disabled();
-      expect(getStringLiteral('Hello World', config), "'Hello World'");
+      expect(getStringLiteral('Hello World', 0, config), "'Hello World'");
     });
 
     test('Should obfuscate word with zero XOR', () {
@@ -14,7 +14,8 @@ void main() {
         enabled: true,
         secret: 0,
       );
-      expect(getStringLiteral('abc', config), '_root.\$meta.d([97, 98, 99])');
+      expect(
+          getStringLiteral('abc', 0, config), '_root.\$meta.d([97, 98, 99])');
     });
 
     test('Should obfuscate word with positive XOR', () {
@@ -22,7 +23,8 @@ void main() {
         enabled: true,
         secret: 1,
       );
-      expect(getStringLiteral('abc', config), '_root.\$meta.d([96, 99, 98])');
+      expect(
+          getStringLiteral('abc', 0, config), '_root.\$meta.d([96, 99, 98])');
       expect(_d([96, 99, 98], 1), 'abc');
     });
 
@@ -31,7 +33,8 @@ void main() {
         enabled: true,
         secret: 1,
       );
-      expect(getStringLiteral('a\\nb', config), '_root.\$meta.d([96, 11, 99])');
+      expect(
+          getStringLiteral('a\\nb', 0, config), '_root.\$meta.d([96, 11, 99])');
       expect(_d([96, 11, 99], 1), 'a\nb');
     });
 
@@ -40,7 +43,8 @@ void main() {
         enabled: true,
         secret: 1,
       );
-      expect(getStringLiteral("a\\'b", config), '_root.\$meta.d([96, 38, 99])');
+      expect(
+          getStringLiteral("a\\'b", 0, config), '_root.\$meta.d([96, 38, 99])');
       expect(_d([96, 38, 99], 1), "a'b");
     });
   });

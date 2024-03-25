@@ -297,7 +297,8 @@ void _generateClass(
       final translationOverrides = config.translationOverrides
           ? 'TranslationOverrides.string(_root.\$meta, \'${value.path}\', ${_toParameterMap(value.params)}) ?? '
           : '';
-      final stringLiteral = getStringLiteral(value.content, config.obfuscation);
+      final stringLiteral = getStringLiteral(
+          value.content, value.links.length, config.obfuscation);
       if (value.params.isEmpty) {
         buffer.writeln(
             'String$optional get $key => $translationOverrides$stringLiteral;');
@@ -409,7 +410,8 @@ void _generateMap({
     // Maps cannot contain rich texts
     // because there is no way to add the "rich" modifier.
     if (value is StringTextNode) {
-      final stringLiteral = getStringLiteral(value.content, config.obfuscation);
+      final stringLiteral = getStringLiteral(
+          value.content, value.links.length, config.obfuscation);
       if (value.params.isEmpty) {
         buffer.writeln('\'$key\': $stringLiteral,');
       } else {
@@ -512,7 +514,8 @@ void _generateList({
     // Lists cannot contain rich texts
     // because there is no way to add the "rich" modifier.
     if (value is StringTextNode) {
-      final stringLiteral = getStringLiteral(value.content, config.obfuscation);
+      final stringLiteral = getStringLiteral(
+          value.content, value.links.length, config.obfuscation);
       if (value.params.isEmpty) {
         buffer.writeln('$stringLiteral,');
       } else {
@@ -708,8 +711,9 @@ void _addPluralizationCall({
         '$translationOverrides(_root.\$meta.${prefix}Resolver ?? PluralResolvers.$prefix(\'$language\'))(${node.paramName},');
     for (final quantity in node.quantities.entries) {
       _addTabs(buffer, depth + 2);
+      final textNode = quantity.value as StringTextNode;
       buffer.writeln(
-          '${quantity.key.paramName()}: ${getStringLiteral((quantity.value as StringTextNode).content, config.obfuscation)},');
+          '${quantity.key.paramName()}: ${getStringLiteral(textNode.content, textNode.links.length, config.obfuscation)},');
     }
   }
 
@@ -754,7 +758,7 @@ void _addRichTextCall({
 
     if (span is LiteralSpan) {
       buffer.write(
-        "${!config.obfuscation.enabled && span.isConstant ? 'const ' : ''}TextSpan(text: ${getStringLiteral(span.literal, config.obfuscation)})",
+        "${!config.obfuscation.enabled && span.isConstant ? 'const ' : ''}TextSpan(text: ${getStringLiteral(span.literal, span.links.length, config.obfuscation)})",
       );
     } else if (span is VariableSpan) {
       if (variableNameResolver != null) {
@@ -764,7 +768,7 @@ void _addRichTextCall({
       }
     } else if (span is FunctionSpan) {
       buffer.write(
-        '${span.functionName}(${getStringLiteral(span.arg, config.obfuscation)})',
+        '${span.functionName}(${getStringLiteral(span.arg, span.links.length, config.obfuscation)})',
       );
     }
     buffer.writeln(',');
@@ -852,8 +856,9 @@ void _addContextCall({
         forceSemicolon: true,
       );
     } else {
+      final textNode = entry.value as StringTextNode;
       buffer.writeln(
-        '${getStringLiteral((entry.value as StringTextNode).content, config.obfuscation)};',
+        '${getStringLiteral(textNode.content, textNode.links.length, config.obfuscation)};',
       );
     }
   }

@@ -40,10 +40,12 @@ const _NULL_FLAG = '\u0000';
 
 /// Either returns the plain string or the obfuscated one.
 /// Whenever translation strings gets rendered, this method must be called.
-String getStringLiteral(String value, ObfuscationConfig config) {
+String getStringLiteral(String value, int linkCount, ObfuscationConfig config) {
   if (!config.enabled || value.isEmpty) {
     // Return the plain version
-    if (value.startsWith(r'${') && value.indexOf('}') == value.length - 1) {
+    if (value.startsWith(r'${') &&
+        value.indexOf('}') == value.length - 1 &&
+        linkCount == 1) {
       // We can just remove the ${ and } since it's already a string
       return value.substring(2, value.length - 1);
     } else {

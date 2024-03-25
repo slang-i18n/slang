@@ -1,6 +1,7 @@
 onboarding:
   welcome: Welcome {fullName}
   welcomeAlias: "@:onboarding.welcome"
+  welcomeOnlyParam: "{firstName}"
   bye: Bye {firstName}
   "@bye": Bye text
   hi(rich): Hi {name} and @:onboarding.greet

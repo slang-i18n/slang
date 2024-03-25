@@ -56,6 +56,7 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 	// Translations
 	@override String welcome({required Object fullName}) => 'Willkommen ${fullName}';
 	@override String welcomeAlias({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+	@override String welcomeOnlyParam({required Object firstName}) => '${firstName}';
 
 	/// Bye text
 	@override String bye({required Object firstName}) => 'Tschüss ${firstName}';

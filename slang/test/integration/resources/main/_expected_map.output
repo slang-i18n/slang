@@ -14,6 +14,7 @@ extension on Translations {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => 'Welcome ${fullName}';
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => '${firstName}';
 			case 'onboarding.bye': return ({required Object firstName}) => 'Bye ${firstName}';
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
@@ -78,6 +79,7 @@ extension on _TranslationsDe {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => 'Willkommen ${fullName}';
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => '${firstName}';
 			case 'onboarding.bye': return ({required Object firstName}) => 'Tschüss ${firstName}';
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
