@@ -1,4 +1,4 @@
-.fvm/flutter_sdk
+/.fvm
 
 # testing
 /slang/lib/builder/i18n/
