@@ -1,3 +1,9 @@
+## 3.30.2
+
+- fix: commented out translations should be declared as unused during `slang analyze` (#200) @nikaera
+- fix: should use interpolation for strings with a single parameter (#207) @Tienisto
+- fix: encode csv files correctly (#202) @nikaera
+
 ## 3.30.1
 
 - fix: when applying translations with `dart run slang apply`, only modifiers from the base locale should be used (#192)
