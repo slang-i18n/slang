@@ -91,6 +91,7 @@ class SlangFileCollectionBuilder {
     return SlangFileCollection(
       config: config,
       files: files
+          .sortedBy((file) => file.path)
           .map((f) {
             final fileNameNoExtension =
                 PathUtils.getFileNameNoExtension(f.path);
