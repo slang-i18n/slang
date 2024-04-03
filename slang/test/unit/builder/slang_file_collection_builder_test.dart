@@ -35,8 +35,8 @@ void main() {
       );
 
       expect(model.files.length, 3);
-      expect(model.files[0].locale.language, 'en');
-      expect(model.files[1].locale.language, 'de');
+      expect(model.files[0].locale.language, 'de');
+      expect(model.files[1].locale.language, 'en');
       expect(model.files[2].locale.language, 'fr');
       expect(model.files[2].locale.country, 'FR');
     });
@@ -97,9 +97,9 @@ void main() {
 
       expect(model.files.length, 2);
       expect(model.files[0].locale.language, 'fr');
-      expect(model.files[0].namespace, 'dialogs');
+      expect(model.files[0].namespace, 'ab_cd');
       expect(model.files[1].locale.language, 'fr');
-      expect(model.files[1].namespace, 'ab_cd');
+      expect(model.files[1].namespace, 'dialogs');
     });
   });
 }
