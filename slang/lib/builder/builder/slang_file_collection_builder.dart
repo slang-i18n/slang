@@ -139,7 +139,7 @@ class SlangFileCollectionBuilder {
             return null;
           })
           .whereNotNull()
-          .toList(),
+          .sortedBy((file) => '${file.locale}-${file.namespace}'),
     );
   }
 }
