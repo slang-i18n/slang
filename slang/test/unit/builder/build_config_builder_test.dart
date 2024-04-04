@@ -35,7 +35,7 @@ void main() {
       final result = RawConfigBuilder.fromMap(
         {
           'contexts': {
-            'gender_context': {
+            'GenderContext': {
               'enum': [
                 'male',
                 'female',
@@ -57,7 +57,7 @@ void main() {
       final result = RawConfigBuilder.fromMap(
         {
           'contexts': {
-            'gender_context': {
+            'GenderContext': {
               'enum': [
                 'male',
                 'female',
