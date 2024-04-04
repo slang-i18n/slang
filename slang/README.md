@@ -313,7 +313,7 @@ pluralization:
   ordinal:
     - someKey.place
 contexts:
-  gender_context:
+  GenderContext:
     enum:
       - male
       - female
@@ -384,7 +384,7 @@ targets:
             ordinal:
               - someKey.place
           contexts:
-            gender_context:
+            GenderContext:
               enum:
                 - male
                 - female
