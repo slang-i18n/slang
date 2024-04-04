@@ -118,7 +118,7 @@ extension on Map<String, dynamic> {
   /// Parses the 'contexts' config
   List<ContextType> toContextTypes() {
     return entries.map((e) {
-      final enumName = e.key.toCase(CaseStyle.pascal);
+      final enumName = e.key;
       final config = e.value as Map<String, dynamic>;
 
       if (config['auto'] != null) {
