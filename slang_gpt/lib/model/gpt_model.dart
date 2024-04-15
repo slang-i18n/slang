@@ -2,6 +2,7 @@ enum GptProvider {
   openai,
 }
 
+// ignore_for_file: constant_identifier_names
 enum GptModel {
   gpt3_5_4k('gpt-3.5-turbo', GptProvider.openai,
       defaultInputLength: 2000,
