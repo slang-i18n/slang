@@ -15,6 +15,10 @@ enum GptModel {
       defaultInputLength: 4000,
       costPerInputToken: 0.00003,
       costPerOutputToken: 0.00006),
+  gpt4_turbo('gpt-4-turbo', GptProvider.openai,
+      defaultInputLength: 64000,
+      costPerInputToken: 0.00001,
+      costPerOutputToken: 0.00002),
   ;
 
   const GptModel(
