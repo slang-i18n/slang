@@ -75,7 +75,7 @@ class RegexUtils {
   /// 1 - male
   /// 2 - His birthday
   static RegExp arbComplexNodeContent =
-      RegExp(r'((?:=|\w)+){((?:[^}{]+|{[^}]+})+)}');
+      RegExp(r'((?:=|\w)+) *{((?:[^}{]+|{[^}]+})+)}');
 
   /// Matches any missing translations file
   /// _missing_translations.json, _missing_translations_de-DE.json
