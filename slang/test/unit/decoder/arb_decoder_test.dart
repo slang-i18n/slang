@@ -89,6 +89,20 @@ void main() {
       );
     });
 
+    test('Should decode plural with spaces between identifiers', () {
+      expect(
+        _decodeArb({
+          'inboxCount': 'You have {count, plural, one  {1 new message} }',
+        }),
+        {
+          'inboxCount__count(plural, param=count)': {
+            'one': '1 new message',
+          },
+          'inboxCount': 'You have @:inboxCount__count',
+        },
+      );
+    });
+
     test('Should decode custom context', () {
       expect(
         _decodeArb({

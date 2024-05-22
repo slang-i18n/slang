@@ -18,9 +18,11 @@ class ArbDecoder extends BaseDecoder {
     // Parse metadata first
     for (final key in sourceMap.keys) {
       final value = sourceMap[key];
-      if (key.length > 1 && key.startsWith('@')) {
+      if (key.length > 1 &&
+          key.startsWith('@') &&
+          value is Map<String, dynamic>) {
         entryMetadata[key.substring(1)] = _EntryMetadata.parseEntry(
-          value as Map<String, dynamic>,
+          value,
         );
       }
     }
