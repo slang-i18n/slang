@@ -12,31 +12,45 @@ class ArbDecoder extends BaseDecoder {
   @override
   Map<String, dynamic> decode(String raw) {
     final sourceMap = json.decode(raw) as Map<String, dynamic>;
-    final resultMap = <String, dynamic>{};
 
-    sourceMap.forEach((key, value) {
-      if (key.startsWith('@@')) {
-        // add without modifications
-        resultMap[key] = value.toString();
-        return;
-      }
+    final entryMetadata = <String, _EntryMetadata>{}; // key -> metadata
 
-      if (key.startsWith('@')) {
-        // take description
-        final description = value['description'] as String?;
-        if (description == null) {
-          return;
-        }
-
-        resultMap[key] = description;
-      } else {
-        _addEntry(
-          key: key,
-          value: value,
-          resultMap: resultMap,
+    // Parse metadata first
+    for (final key in sourceMap.keys) {
+      final value = sourceMap[key];
+      if (key.length > 1 && key.startsWith('@')) {
+        entryMetadata[key.substring(1)] = _EntryMetadata.parseEntry(
+          value as Map<String, dynamic>,
         );
       }
-    });
+    }
+
+    final resultMap = <String, dynamic>{};
+
+    for (final key in sourceMap.keys) {
+      if (key.startsWith('@')) {
+        continue;
+      }
+
+      final metadata = entryMetadata[key] ??
+          const _EntryMetadata(
+            description: null,
+            paramTypeMap: {},
+          );
+
+      final value = sourceMap[key];
+
+      _addEntry(
+        key: key,
+        metadata: metadata,
+        value: value,
+        resultMap: resultMap,
+      );
+
+      if (metadata.description != null) {
+        resultMap['@$key'] = metadata.description;
+      }
+    }
 
     return resultMap;
   }
@@ -44,6 +58,7 @@ class ArbDecoder extends BaseDecoder {
 
 void _addEntry({
   required final String key,
+  required final _EntryMetadata metadata,
   required final String value,
   required final Map<String, dynamic> resultMap,
 }) {
@@ -69,7 +84,7 @@ void _addEntry({
           map: resultMap,
           destinationPath:
               '$key(${isPlural ? 'plural' : 'context=${variable.toCase(CaseStyle.pascal)}'}, param=$variable).$partName',
-          item: _digestLeafText(partContent),
+          item: _digestLeafText(partContent, metadata.paramTypeMap),
         );
       }
       return;
@@ -98,6 +113,7 @@ void _addEntry({
     // create new key
     _addEntry(
       key: '${key}__$parameter',
+      metadata: metadata,
       value: match.group(0)!,
       resultMap: resultMap,
     );
@@ -109,19 +125,21 @@ void _addEntry({
     brackets = BracketsUtils.findTopLevelBrackets(result);
   }
 
-  resultMap[key] = _digestLeafText(result);
+  resultMap[key] = _digestLeafText(result, metadata.paramTypeMap);
 }
 
 /// Transforms arguments to camel case
 /// Adds 'arg' to every positional argument
-String _digestLeafText(String text) {
+String _digestLeafText(String text, Map<String, String> paramTypeMap) {
   return text.replaceBracesInterpolation(replacer: (match) {
     final param = match.substring(1, match.length - 1);
+    final paramType =
+        paramTypeMap[param] != null ? ': ${paramTypeMap[param]}' : '';
     final number = int.tryParse(param);
     if (number != null) {
-      return '{arg$number}';
+      return '{arg$number$paramType}';
     } else {
-      return '{${param.toCase(CaseStyle.camel)}}';
+      return '{${param.toCase(CaseStyle.camel)}$paramType}';
     }
   });
 }
@@ -138,6 +156,42 @@ String _digestPluralKey(String key) {
       return 'two';
     default:
       return key;
+  }
+}
+
+class _EntryMetadata {
+  final String? description;
+  final Map<String, String> paramTypeMap;
+
+  const _EntryMetadata({
+    required this.description,
+    required this.paramTypeMap,
+  });
+
+  static _EntryMetadata parseEntry(Map<String, dynamic> map) {
+    final description = map['description'] as String?;
+
+    final placeholders = map['placeholders'] as Map<String, dynamic>?;
+    if (placeholders == null) {
+      return _EntryMetadata(
+        description: description,
+        paramTypeMap: {},
+      );
+    }
+
+    final paramTypeMap = <String, String>{};
+    for (final key in placeholders.keys) {
+      final value = placeholders[key] as Map<String, dynamic>;
+      final type = value['type'] as String?;
+      if (type != null) {
+        paramTypeMap[key] = type;
+      }
+    }
+
+    return _EntryMetadata(
+      description: description,
+      paramTypeMap: paramTypeMap,
+    );
   }
 }
 
