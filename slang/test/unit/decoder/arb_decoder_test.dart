@@ -26,7 +26,7 @@ void main() {
       );
     });
 
-    test('Should decode with meta', () {
+    test('Should decode with description', () {
       expect(
         _decodeArb({
           'hello': 'world',
@@ -35,6 +35,24 @@ void main() {
         {
           'hello': 'world',
           '@hello': 'This is a description',
+        },
+      );
+    });
+
+    test('Should decode with parameter type', () {
+      expect(
+        _decodeArb({
+          'age': 'You are {age} years old',
+          '@age': {
+            'placeholders': {
+              'age': {
+                'type': 'int',
+              },
+            },
+          }
+        }),
+        {
+          'age': 'You are {age: int} years old',
         },
       );
     });
