@@ -510,8 +510,11 @@ String interpolation is fixed to `braces` mode.
   },
   "inboxPageCount": "You have {count, plural, one {1 message} other {{count} messages}}",
   "@inboxPageCount": {
+    "description": "The number of messages in the user's inbox",
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "int"
+      }
     }
   }
 }
