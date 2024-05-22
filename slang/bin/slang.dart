@@ -14,6 +14,7 @@ import 'package:slang/src/runner/apply.dart';
 import 'package:slang/src/runner/clean.dart';
 import 'package:slang/src/runner/edit.dart';
 import 'package:slang/src/runner/migrate.dart';
+import 'package:slang/src/runner/normalize.dart';
 import 'package:slang/src/runner/stats.dart';
 import 'package:watcher/watcher.dart';
 
@@ -29,6 +30,7 @@ enum RunnerMode {
   outdated, // add 'OUTDATED' modifier to secondary locales
   add, // add a translation
   clean, // clean unused translations
+  normalize, // normalize translations according to base locale
 }
 
 /// To run this:
@@ -68,9 +70,13 @@ void main(List<String> arguments) async {
       case 'clean':
         mode = RunnerMode.clean;
         break;
+      case 'normalize':
+        mode = RunnerMode.normalize;
+        break;
       default:
         mode = RunnerMode.generate;
     }
+
     verbose = mode == RunnerMode.generate ||
         mode == RunnerMode.watch ||
         (arguments.length == 2 &&
@@ -103,6 +109,9 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.clean:
       print('Removing unused translations...\n');
+      break;
+    case RunnerMode.normalize:
+      print('Normalizing translations...\n');
       break;
   }
 
@@ -161,6 +170,12 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.clean:
       await runClean(
+        fileCollection: fileCollection,
+        arguments: arguments,
+      );
+      break;
+    case RunnerMode.normalize:
+      await runNormalize(
         fileCollection: fileCollection,
         arguments: arguments,
       );
