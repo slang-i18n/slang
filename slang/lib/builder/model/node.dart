@@ -130,6 +130,7 @@ class PluralNode extends Node implements LeafNode {
   final PluralType pluralType;
   final Map<Quantity, TextNode> quantities;
   final String paramName; // name of the plural parameter
+  final String paramType; // type of the plural parameter defaults to num
   final bool rich;
 
   PluralNode({
@@ -140,6 +141,7 @@ class PluralNode extends Node implements LeafNode {
     required this.pluralType,
     required this.quantities,
     required this.paramName,
+    required this.paramType,
     required this.rich,
   });
 
@@ -151,15 +153,17 @@ class PluralNode extends Node implements LeafNode {
       paramTypeMap.addAll(textNode.paramTypeMap);
     }
     paramSet.add(paramName);
-    paramTypeMap[paramName] = 'num';
+    paramTypeMap[paramName] = paramType;
     if (rich) {
       final builderParam = '${paramName}Builder';
       paramSet.add(builderParam);
-      paramTypeMap[builderParam] = 'InlineSpan Function(num)';
+      paramTypeMap[builderParam] = 'InlineSpan Function($paramType)';
     }
     return paramSet.map((param) {
       return AttributeParameter(
-          parameterName: param, type: paramTypeMap[param] ?? 'Object');
+        parameterName: param,
+        type: paramTypeMap[param] ?? 'Object',
+      );
     }).toSet();
   }
 
@@ -375,7 +379,7 @@ class RichTextNode extends TextNode {
     final rawParsedResult = _parseInterpolation(
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
-      defaultType: '', // types are ignored
+      defaultType: 'ignored', // types are ignored
       paramCase: null, // param case will be applied later
     );
 

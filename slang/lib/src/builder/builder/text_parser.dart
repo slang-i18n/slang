@@ -5,7 +5,7 @@ class ParseParamResult {
   final String paramName;
   final String paramType;
 
-  ParseParamResult(this.paramName, this.paramType);
+  const ParseParamResult(this.paramName, this.paramType);
 
   @override
   String toString() =>
@@ -36,7 +36,7 @@ class ParamWithArg {
   final String paramName;
   final String? arg;
 
-  ParamWithArg(this.paramName, this.arg);
+  const ParamWithArg(this.paramName, this.arg);
 
   @override
   String toString() => 'ParamWithArg(paramName: $paramName, arg: $arg)';

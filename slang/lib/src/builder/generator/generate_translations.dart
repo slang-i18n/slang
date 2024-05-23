@@ -363,7 +363,7 @@ void _generateClass(
     } else if (value is PluralNode) {
       final returnType = value.rich ? 'TextSpan' : 'String';
       buffer.write('$returnType$optional $key');
-      _addPluralizationCall(
+      _addPluralCall(
         buffer: buffer,
         config: config,
         language: localeData.locale.language,
@@ -457,7 +457,7 @@ void _generateMap({
       }
     } else if (value is PluralNode) {
       buffer.write('\'$key\': ');
-      _addPluralizationCall(
+      _addPluralCall(
         buffer: buffer,
         config: config,
         language: locale.language,
@@ -567,7 +567,7 @@ void _generateList({
         buffer.writeln('$childClassWithLocale._(_root),');
       }
     } else if (value is PluralNode) {
-      _addPluralizationCall(
+      _addPluralCall(
         buffer: buffer,
         config: config,
         language: locale.language,
@@ -632,7 +632,7 @@ String _toParameterMap(Set<String> params) {
   return buffer.toString();
 }
 
-void _addPluralizationCall({
+void _addPluralCall({
   required StringBuffer buffer,
   required GenerateConfig config,
   required String language,
@@ -653,14 +653,17 @@ void _addPluralizationCall({
     paramSet.addAll(textNode.params);
     paramTypeMap.addAll(textNode.paramTypeMap);
   }
-  final params = paramSet.where((p) => p != node.paramName).toList();
+
+  final builderParam = '${node.paramName}Builder';
+  final params =
+      paramSet.where((p) => p != node.paramName && p != builderParam).toList();
 
   // add plural parameter first
-  buffer.write('({required num ${node.paramName}');
+  buffer.write('({required ${node.paramType} ${node.paramName}');
   if (node.rich && paramSet.contains(node.paramName)) {
     // add builder parameter if it is used
-    buffer
-        .write(', required InlineSpan Function(num) ${node.paramName}Builder');
+    buffer.write(
+        ', required InlineSpan Function(${node.paramType}) ${node.paramName}Builder');
   }
   for (int i = 0; i < params.length; i++) {
     buffer.write(', required ${paramTypeMap[params[i]] ?? 'Object'} ');

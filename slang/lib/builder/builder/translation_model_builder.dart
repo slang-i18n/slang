@@ -130,38 +130,32 @@ class TranslationModelBuilder {
               final Iterable<TextNode> textNodes = linkedNode is PluralNode
                   ? linkedNode.quantities.values
                   : (linkedNode as ContextNode).entries.values;
-              final linkedParamSet = textNodes
-                  .map((e) => e.params)
-                  .expand((params) => params)
-                  .toSet();
+
+              for (final textNode in textNodes) {
+                paramSet.addAll(textNode.params);
+                paramTypeMap.addAll(textNode.paramTypeMap);
+              }
 
               if (linkedNode is PluralNode) {
                 if (linkedNode.rich) {
                   final builderParam = '${linkedNode.paramName}Builder';
-                  linkedParamSet.add(builderParam);
-                  paramTypeMap[builderParam] = 'InlineSpan Function(num)';
-                  for (final n in textNodes) {
-                    paramTypeMap.addAll(n.paramTypeMap);
-                  }
+                  paramSet.add(builderParam);
+                  paramTypeMap[builderParam] =
+                      'InlineSpan Function(${linkedNode.paramType})';
                 }
-                linkedParamSet.add(linkedNode.paramName);
-                paramTypeMap[linkedNode.paramName] = 'num';
+                paramSet.add(linkedNode.paramName);
+                paramTypeMap[linkedNode.paramName] = linkedNode.paramType;
               } else if (linkedNode is ContextNode) {
                 if (linkedNode.rich) {
                   final builderParam = '${linkedNode.paramName}Builder';
-                  linkedParamSet.add(builderParam);
+                  paramSet.add(builderParam);
                   paramTypeMap[builderParam] =
                       'InlineSpan Function(${linkedNode.context.enumName})';
-                  for (final n in textNodes) {
-                    paramTypeMap.addAll(n.paramTypeMap);
-                  }
                 }
-                linkedParamSet.add(linkedNode.paramName);
+                paramSet.add(linkedNode.paramName);
                 paramTypeMap[linkedNode.paramName] =
                     linkedNode.context.enumName;
               }
-
-              paramSet.addAll(linkedParamSet);
 
               // lookup links of children
               for (final element in textNodes) {
@@ -440,6 +434,19 @@ Map<String, Node> _parseMapNode({
               rich: rich,
             );
           } else {
+            final paramName =
+                modifiers[NodeModifiers.param] ?? config.pluralParameter;
+            String paramType = 'num';
+            for (final textNode in digestedMap.values) {
+              final tempType = textNode.paramTypeMap[paramName];
+              if (tempType != null &&
+                  ((textNode is StringTextNode && tempType != 'Object') ||
+                      (textNode is RichTextNode && tempType != 'InlineSpan'))) {
+                paramType = tempType;
+                break;
+              }
+            }
+
             finalNode = PluralNode(
               path: currPath,
               rawPath: currRawPath,
@@ -453,8 +460,8 @@ Map<String, Node> _parseMapNode({
                 // because detection was correct
                 return MapEntry(key.toQuantity()!, value);
               }),
-              paramName:
-                  modifiers[NodeModifiers.param] ?? config.pluralParameter,
+              paramName: paramName,
+              paramType: paramType,
               rich: rich,
             );
           }
