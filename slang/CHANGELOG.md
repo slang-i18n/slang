@@ -1,7 +1,7 @@
 ## 3.31.0
 
 - feat: add `dart run slang normalize` to normalize translations based on base locale @Tienisto
-- feat: add parameter type support (introduced 3.30.0) to ARB files @Tienisto
+- feat: add parameter type support (introduced 3.30.0) to ARB files (#214) @Tienisto
 - feat: sort translation files for reproducible console output (#210) @poppingmoon
 
 ## 3.30.2
