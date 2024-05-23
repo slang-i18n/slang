@@ -86,6 +86,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Clean Translations](#-clean-translations)
   - [Apply Translations](#-apply-translations)
   - [Edit Translations](#-edit-translations)
+  - [Normalize Translations](#-normalize-translations)
   - [Outdated Translations](#-outdated-translations)
   - [Translate with GPT](#-translate-with-gpt)
   - [Migration](#-migration)
@@ -1483,6 +1484,19 @@ dart run slang edit <type> <params...>
 \* Also works without specifying the locale. It will add the translation to all locales.
 
 \*\* See [Outdated Translations](#-outdated-translations)
+
+### ➤ Normalize Translations
+
+To keep the order of the keys consistent, you can normalize the translations.
+They will follow the same order as the base locale.
+
+```sh
+dart run slang normalize [--locale=fr-FR]
+```
+
+| Argument            | Usage                              |
+|---------------------|------------------------------------|
+| `--locale=<locale>` | Normalize only one specific locale |
 
 ### ➤ Outdated Translations
 
