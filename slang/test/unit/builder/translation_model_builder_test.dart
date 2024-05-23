@@ -103,15 +103,33 @@ void main() {
         map: {
           'a': {
             'one': 'ONE',
-            'other': r'OTHER $p1',
+            'other': r'OTHER ${p1: String}',
           },
           'b': r'Hello @:a',
         },
       );
       final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'n'});
-      expect(textNode.paramTypeMap, {'n': 'num'});
+      expect(textNode.paramTypeMap, {'n': 'num', 'p1': 'String'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, n: n)}');
+    });
+
+    test('linked translation with plural and custom number type', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        localeDebug: RawConfig.defaultBaseLocale,
+        map: {
+          'a': {
+            'one': 'ONE',
+            'other': r'OTHER ${n: int} ${p1: String}',
+          },
+          'b': r'Hello @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as StringTextNode;
+      expect(textNode.params, {'p1', 'n'});
+      expect(textNode.paramTypeMap, {'n': 'int', 'p1': 'String'});
+      expect(textNode.content, r'Hello ${_root.a(n: n, p1: p1)}');
     });
 
     test('linked translation with context', () {
@@ -136,7 +154,7 @@ void main() {
       );
       final textNode = result.root.entries['b'] as StringTextNode;
       expect(textNode.params, {'p1', 'gender'});
-      expect(textNode.paramTypeMap, {'gender': 'GenderCon'});
+      expect(textNode.paramTypeMap, {'p1': 'Object', 'gender': 'GenderCon'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, gender: gender)}');
     });
 

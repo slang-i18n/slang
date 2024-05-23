@@ -101,7 +101,7 @@ _generateTranslationMapRecursive({
     }
   } else if (curr is PluralNode) {
     buffer.write('\t\t\tcase \'${curr.path}\': return ');
-    _addPluralizationCall(
+    _addPluralCall(
       buffer: buffer,
       config: config,
       language: language,
