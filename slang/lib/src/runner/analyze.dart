@@ -331,7 +331,18 @@ void _getUnusedTranslationsInSourceCodeRecursive({
       );
     } else {
       final translationCall = '$translateVar.${child.path}';
-      if (!sourceCode.contains(translationCall)) {
+      const linkedPrefix = r'${_root';
+
+      // We only need to check if the translateVar is not part of the linked string.
+      // Since most developers use the default "t" as translateVar,
+      // we can ignore the linked call because it is already covered by the translateVar.
+      final linkedCall = linkedPrefix.endsWith(translateVar)
+          ? null
+          : '$linkedPrefix.${child.path}';
+
+      final isUsed = sourceCode.contains(translationCall) ||
+          (linkedCall != null && sourceCode.contains(linkedCall));
+      if (!isUsed) {
         // add whole base node which is expected
         _addNodeRecursive(
           node: child,
