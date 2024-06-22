@@ -138,6 +138,9 @@ class SlangFileCollectionBuilder {
 
             return null;
           })
+          // We cannot use "nonNulls" because this requires Dart 3.0
+          // and slang currently supports Dart 2.17
+          // ignore: deprecated_member_use
           .whereNotNull()
           .sortedBy((file) => '${file.locale}-${file.namespace}'),
     );
