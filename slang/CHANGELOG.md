@@ -1,3 +1,8 @@
+## 3.31.1
+
+- fix: "translation overrides" do not work with parameterized linked translations (#226) @Tienisto
+- fix: linked translations should not be unused when running `dart run slang analyze` (#222) @Tienisto
+
 ## 3.31.0
 
 - feat: add `dart run slang normalize` to normalize translations based on base locale @Tienisto
