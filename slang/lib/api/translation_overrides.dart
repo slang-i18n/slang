@@ -3,6 +3,7 @@ import 'package:slang/api/pluralization.dart';
 import 'package:slang/builder/model/node.dart';
 import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/utils/reflection_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
@@ -152,11 +153,13 @@ extension TranslationOverridesStringExt on String {
       }
 
       if (refInFlatMap is Function) {
+        final parameterList = getFunctionParameters(refInFlatMap);
         return Function.apply(
           refInFlatMap,
-          [],
+          const [],
           {
-            for (final p in param.entries) Symbol(p.key): p.value,
+            for (final p in param.entries)
+              if (parameterList.contains(p.key)) Symbol(p.key): p.value,
           },
         );
       }
