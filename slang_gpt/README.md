@@ -74,8 +74,10 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 | Model name          | Provider | Context length | Cost per 1k input token | Cost per input word (English) |
 |---------------------|----------|----------------|-------------------------|-------------------------------|
 | `gpt-3.5-turbo`     | Open AI  | 4096           | $0.0015                 | $0.000001125                  |
-| `gpt-3.5-turbo-16k` | Open AI  | 16384          | $0.003                  | $0.00000225                   | 
+| `gpt-3.5-turbo-16k` | Open AI  | 16384          | $0.003                  | $0.00000225                   |
 | `gpt-4`             | Open AI  | 8192           | $0.03                   | $0.0000225                    |
+| `gpt-4-turbo`       | Open AI  | 64000          | $0.01                   | $0.00001                      |
+| `gpt-4o`            | Open AI  | 128000         | $0.005                  | $0.000005                     |
 
 ## GPT context length
 
