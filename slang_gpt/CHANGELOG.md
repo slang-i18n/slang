@@ -1,3 +1,7 @@
+## 0.10.2
+
+- feat: add `gpt-4o`, `gpt-4-turbo` models
+
 ## 0.10.1
 
 - deps: bump slang to 3.30.1

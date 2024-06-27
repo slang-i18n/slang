@@ -6,32 +6,32 @@ enum GptProvider {
 enum GptModel {
   gpt3_5_4k('gpt-3.5-turbo', GptProvider.openai,
       defaultInputLength: 2000,
-      costPerInputToken: 0.0000015,
-      costPerOutputToken: 0.000002),
+      costPer1kInputToken: 0.0005,
+      costPer1kOutputToken: 0.0015),
   gpt3_5_16k('gpt-3.5-turbo-16k', GptProvider.openai,
       defaultInputLength: 8000,
-      costPerInputToken: 0.000003,
-      costPerOutputToken: 0.000004),
+      costPer1kInputToken: 0.003,
+      costPer1kOutputToken: 0.004),
   gpt4_8k('gpt-4', GptProvider.openai,
       defaultInputLength: 4000,
-      costPerInputToken: 0.00003,
-      costPerOutputToken: 0.00006),
+      costPer1kInputToken: 0.03,
+      costPer1kOutputToken: 0.06),
   gpt4_turbo('gpt-4-turbo', GptProvider.openai,
       defaultInputLength: 64000,
-      costPerInputToken: 0.00001,
-      costPerOutputToken: 0.00002),
+      costPer1kInputToken: 0.01,
+      costPer1kOutputToken: 0.03),
   gpt4o('gpt-4o', GptProvider.openai,
       defaultInputLength: 128000,
-      costPerInputToken: 0.000005,
-      costPerOutputToken: 0.000015),
+      costPer1kInputToken: 0.005,
+      costPer1kOutputToken: 0.015),
   ;
 
   const GptModel(
     this.id,
     this.provider, {
     required this.defaultInputLength,
-    required this.costPerInputToken,
-    required this.costPerOutputToken,
+    required this.costPer1kInputToken,
+    required this.costPer1kOutputToken,
   });
 
   /// The id of this model.
@@ -50,8 +50,12 @@ enum GptModel {
   final int defaultInputLength;
 
   /// The cost per input token in USD.
-  final double costPerInputToken;
+  final double costPer1kInputToken;
+
+  double get costPerInputToken => costPer1kInputToken / 1000;
 
   /// The cost per output token in USD.
-  final double costPerOutputToken;
+  final double costPer1kOutputToken;
+
+  double get costPerOutputToken => costPer1kOutputToken / 1000;
 }
