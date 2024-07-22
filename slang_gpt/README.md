@@ -78,6 +78,7 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 | `gpt-4`             | Open AI  | 8192           | $0.03                   | $0.06                    |
 | `gpt-4-turbo`       | Open AI  | 64000          | $0.01                   | $0.03                    |
 | `gpt-4o`            | Open AI  | 128000         | $0.005                  | $0.015                   |
+| `gpt-4o-mini`       | Open AI  | 128000         | $0.00015                | $0.0006                  |
 
 1k tokens = 750 words (English)
 

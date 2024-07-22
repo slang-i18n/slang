@@ -24,6 +24,10 @@ enum GptModel {
       defaultInputLength: 128000,
       costPer1kInputToken: 0.005,
       costPer1kOutputToken: 0.015),
+  gpt4o_mini('gpt-4o-mini', GptProvider.openai,
+      defaultInputLength: 128000,
+      costPer1kInputToken: 0.00015,
+      costPer1kOutputToken: 0.0006),
   ;
 
   const GptModel(
