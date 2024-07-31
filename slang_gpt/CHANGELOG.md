@@ -1,3 +1,7 @@
+## 0.10.3
+
+- feat: add `gpt-4o-mini` model
+
 ## 0.10.2
 
 - feat: add `gpt-4o`, `gpt-4-turbo` models
