@@ -1,5 +1,3 @@
-/.fvm
-
 # testing
 /slang/lib/builder/i18n/
 
@@ -80,3 +78,6 @@ build/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 pubspec.lock
+
+# FVM Version Cache
+.fvm/
