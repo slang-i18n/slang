@@ -46,6 +46,7 @@ class SlangFileCollectionBuilder {
           '.flutter.git',
           '.dart_tool',
           '.symlinks',
+          'cargokit_build',
         },
       );
     }
