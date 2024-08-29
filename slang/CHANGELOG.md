@@ -1,3 +1,7 @@
+## 3.31.2
+
+- fix: should match first language code if there are no matches by country code and at least one match by language code (#241) @Tienisto
+
 ## 3.31.1
 
 - fix: "translation overrides" do not work with parameterized linked translations (#226) @Tienisto

@@ -89,25 +89,28 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
       return candidates.first;
     }
 
-    if (countryCode == null) {
-      // no country code given
-      return candidates.firstOrNull ?? baseLocale;
-    }
-
     if (candidates.isEmpty) {
-      // match country code
+      // no matching language, try match country code only
       return locales.firstWhereOrNull((supported) {
             return supported.countryCode == countryCode;
           }) ??
           baseLocale;
-    } else {
-      // there are multiple locales with same language code
-      // e.g. zh-Hans, zh-Hant-HK, zh-Hant-TW
-      return candidates.firstWhereOrNull((candidate) {
-            return candidate.countryCode == countryCode;
-          }) ??
-          baseLocale;
     }
+
+    // There is at least a locale with matching language code
+    final fallback = candidates.first;
+
+    if (countryCode == null) {
+      // no country code given
+      return fallback;
+    }
+
+    // there are multiple locales with same language code
+    // e.g. zh-Hans, zh-Hant-HK, zh-Hant-TW
+    return candidates.firstWhereOrNull((candidate) {
+          return candidate.countryCode == countryCode;
+        }) ??
+        fallback;
   }
 
   /// Gets supported locales in string format.
