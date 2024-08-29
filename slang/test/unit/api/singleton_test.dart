@@ -53,7 +53,7 @@ void main() {
       );
     });
 
-    test('should match first language', () {
+    test('should match first language when there is no country code', () {
       final utils = AppLocaleUtils(
         baseLocale: esEs,
         locales: [
@@ -66,6 +66,21 @@ void main() {
       expect(
         utils.parseLocaleParts(languageCode: 'zh', scriptCode: 'Hans'),
         zhCN,
+      );
+    });
+
+    test('should match first language when there is a country code', () {
+      final utils = AppLocaleUtils(
+        baseLocale: esEs,
+        locales: [
+          deDe,
+          deAu,
+        ],
+      );
+
+      expect(
+        utils.parseLocaleParts(languageCode: 'de', countryCode: 'CH'),
+        deDe,
       );
     });
 
