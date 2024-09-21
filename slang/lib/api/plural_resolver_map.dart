@@ -18,7 +18,7 @@ final _defaultResolver = _Resolvers(
 );
 
 /// Predefined pluralization resolvers
-/// See https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
+/// See https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 /// Sorted by language alphabetically
 ///
 /// Contribution would be nice! (Only this file needs to be changed)
@@ -137,6 +137,37 @@ final Map<String, _Resolvers> _resolverMap = {
       }
       return other!;
     },
+  ),
+  // Polish
+  'pl': _Resolvers(
+    cardinal: (n, {zero, one, two, few, many, other}) {
+      final i = n.toInt();
+      final v = i == n ? 0 : n.toString().split('.')[1].length;
+
+      if (v == 0) {
+        if (i == 0) {
+          return zero ?? other!;
+        }
+
+        if (i == 1) {
+          return one ?? other!;
+        }
+
+        final r10 = i % 10;
+        final r100 = i % 100;
+
+        if (r10 > 1 && r10 < 5 && (r100 < 12 || r100 > 14)) {
+          return few ?? other!;
+        }
+
+        if (r10 < 2 || (r10 > 4 && r10 < 10) || (r100 > 11 && r100 < 15)) {
+          return many ?? other!;
+        }
+      }
+
+      return other!;
+    },
+    ordinal: (n, {zero, one, two, few, many, other}) => other!,
   ),
   // Russian
   'ru': _Resolvers(
