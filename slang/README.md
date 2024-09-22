@@ -711,7 +711,7 @@ If namespaces are used, then it has to be specified in the path too.
 
 ### ➤ Pluralization
 
-This library uses the concept defined [here](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
+This library uses the concept defined [here](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
 
 Some languages have support out of the box. See [here](https://github.com/slang-i18n/slang/blob/main/slang/lib/api/plural_resolver_map.dart).
 
