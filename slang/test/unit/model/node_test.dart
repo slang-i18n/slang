@@ -271,6 +271,14 @@ void main() {
         expect(node.params, <String>{});
       });
 
+      test('with escaped links', () {
+        final test = r'@:.c@:a:@@:hi:@@:wow. @:nice.cool:@';
+        final node = textNode(test, StringInterpolation.dart);
+        expect(node.content,
+            r'@:.c${_root.a}${_root.hi}${_root.wow}. ${_root.nice.cool}');
+        expect(node.params, <String>{});
+      });
+
       test('with links and params', () {
         final test = r'@:a @:b';
         final node = textNode(test, StringInterpolation.dart, linkParamMap: {
