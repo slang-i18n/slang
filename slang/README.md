@@ -714,12 +714,10 @@ Optionally, you can escape linked translations with this syntax:
 
 ```json
 {
-
-   "fields": {
-    "name": "my name is {firstName}",
-    "nbsp": "\u00a0",
+  "fields": {
+    "nbsp": "\u00a0"
   },
-  "introduce": "Hello, @:fields.name:@@:fields.nbsp:@how are you?"
+  "message": "10@:common.nbsp:@Days"
 }
 ```
 
