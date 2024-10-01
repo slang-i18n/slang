@@ -709,6 +709,18 @@ If namespaces are used, then it has to be specified in the path too.
 
 [RichTexts](#-richtext) can also contain links! But only [RichTexts](#-richtext) can link to [RichTexts](#-richtext).
 
+Optionally, you can escape linked translations with this syntax: 
+
+
+```json
+{
+  "fields": {
+    "nbsp": "\u00a0"
+  },
+  "message": "10@:{fields.nbsp}Days"
+}
+```
+
 ### ➤ Pluralization
 
 This library uses the concept defined [here](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
