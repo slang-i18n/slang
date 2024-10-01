@@ -112,6 +112,11 @@ void main() {
       final input = 'Hello \\{ World {arg}!';
       expect(input.braces(), 'Hello { World X!');
     });
+
+    test('ignore @:', () {
+      final input = 'Hello @:{arg}!';
+      expect(input.braces(), 'Hello @:{arg}!');
+    });
   });
 
   group('double braces', () {
