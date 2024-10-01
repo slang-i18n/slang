@@ -717,7 +717,7 @@ Optionally, you can escape linked translations with this syntax:
   "fields": {
     "nbsp": "\u00a0"
   },
-  "message": "10@:{common.nbsp}Days"
+  "message": "10@:{fields.nbsp}Days"
 }
 ```
 
