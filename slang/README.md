@@ -108,6 +108,8 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
 
 Coming from ARB? There is a [tool](#arb) for that.
 
+Are you using Slang without Flutter? Check out the [Dart only](#-dart-only) section.
+
 **Step 1: Add dependencies**
 
 You will probably need at least 2 packages: [slang](https://pub.dev/packages/slang) and [slang_flutter](https://pub.dev/packages/slang_flutter).
@@ -709,15 +711,14 @@ If namespaces are used, then it has to be specified in the path too.
 
 [RichTexts](#-richtext) can also contain links! But only [RichTexts](#-richtext) can link to [RichTexts](#-richtext).
 
-Optionally, you can escape linked translations with this syntax: 
-
+Optionally, you can escape linked translations by surrounding the path with `{}`:
 
 ```json
 {
   "fields": {
-    "nbsp": "\u00a0"
+    "name": "my name is {firstName}"
   },
-  "message": "10@:{fields.nbsp}Days"
+  "introduce": "Hello, @:{fields.name}inator"
 }
 ```
 
@@ -1396,6 +1397,12 @@ An experienced reverse engineer can still find the strings given enough time.
 ### ➤ Dart Only
 
 You can use this library without flutter.
+
+```yaml
+# pubspec.yaml
+dependencies:
+  slang: <version>
+```
 
 ```yaml
 # Config
