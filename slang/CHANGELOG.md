@@ -1,3 +1,9 @@
+## 3.32.0
+
+- feat: add syntax to escape linked translations (#248) @Fasust
+- i18n: add Polish plural resolver (#245) @0rzech
+- docs: broken Unicode CLDR link (#246) @0rzech
+
 ## 3.31.2
 
 - fix: should match first language code if there are no matches by country code and at least one match by language code (#241) @Tienisto
