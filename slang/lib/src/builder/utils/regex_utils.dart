@@ -4,8 +4,12 @@ class RegexUtils {
   /// 2 = argument of ${argument}
   static RegExp argumentsDartRegex = RegExp(r'(?<!\\)\$(?:([\w]+)|\{(.+?)\})');
 
-  /// matches @:translation.key
-  static RegExp linkedRegex = RegExp(r'@:(\w[\w|.]*\w|\w)');
+  /// matches @:translation.key or @:{translation.key}, but not \@:translation.key
+  /// 1 = argument of @:translation.key
+  /// 2 = argument of @:{translation.key}
+  static RegExp linkedRegex = RegExp(
+    r'(?<!\\)@:(?:(\w[\w|.]*\w|\w)|\{(\w[\w|.]*\w|\w)\})',
+  );
 
   /// matches $hello, $ but not \$
   static RegExp dollarRegex = RegExp(r'([^\\]|^)\$');

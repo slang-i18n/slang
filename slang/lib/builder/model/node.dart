@@ -576,7 +576,7 @@ _ParseLinksResult _parseLinks({
 }) {
   final links = <String>{};
   final parsedContent = input.replaceAllMapped(RegexUtils.linkedRegex, (match) {
-    final linkedPath = match.group(1)!;
+    final linkedPath = (match.group(1) ?? match.group(2))!;
     links.add(linkedPath);
 
     if (linkParamMap == null) {

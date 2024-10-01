@@ -137,6 +137,19 @@ String _replaceBetween({
       }
     }
 
+    if (startIndex >= 2 &&
+        curr[startIndex - 1] == ':' &&
+        curr[startIndex - 2] == '@') {
+      // ignore because of preceding @: which indicates an escaped, linked translation
+      buffer.write(curr.substring(0, startIndex + 1));
+      if (startIndex + 1 < curr.length) {
+        curr = curr.substring(startIndex + startCharacterLength);
+        continue;
+      } else {
+        break;
+      }
+    }
+
     if (startIndex != 0) {
       // add prefix
       buffer.write(curr.substring(0, startIndex));
