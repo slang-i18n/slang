@@ -359,6 +359,23 @@ void main() {
         expect(node.content, r'Nice ${coolHi} ${wow} ${yes}a ${noYes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
       });
+
+      test('with links', () {
+        final test = r'{myArg} @:myLink';
+        final node = textNode(test, StringInterpolation.braces);
+        expect(node.content, r'${myArg} ${_root.myLink}');
+        expect(node.params, <String>{'myArg'});
+      });
+
+      test('with escaped links', () {
+        final test = r'{myArg} @:linkA @:{linkB}hello @:{linkC}';
+        final node = textNode(test, StringInterpolation.braces);
+        expect(
+          node.content,
+          r'${myArg} ${_root.linkA} ${_root.linkB}hello ${_root.linkC}',
+        );
+        expect(node.params, <String>{'myArg'});
+      });
     });
 
     group(StringInterpolation.doubleBraces, () {
@@ -413,6 +430,23 @@ void main() {
         );
         expect(node.content, r'Nice ${coolHi} ${wow} ${yes}a ${noYes}');
         expect(node.params, {'coolHi', 'wow', 'yes', 'noYes'});
+      });
+
+      test('with links', () {
+        final test = r'{{myArg}} @:myLink';
+        final node = textNode(test, StringInterpolation.doubleBraces);
+        expect(node.content, r'${myArg} ${_root.myLink}');
+        expect(node.params, <String>{'myArg'});
+      });
+
+      test('with escaped links', () {
+        final test = r'{{myArg}} @:linkA @:{linkB}hello @:{linkC}';
+        final node = textNode(test, StringInterpolation.doubleBraces);
+        expect(
+          node.content,
+          r'${myArg} ${_root.linkA} ${_root.linkB}hello ${_root.linkC}',
+        );
+        expect(node.params, <String>{'myArg'});
       });
     });
   });
