@@ -1,8 +1,8 @@
-import 'package:slang/builder/builder/raw_config_builder.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/builder/raw_config_builder.dart';
 import 'package:slang/src/builder/decoder/csv_decoder.dart';
 import 'package:slang/src/builder/generator_facade.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
 import '../../util/resources_utils.dart';
@@ -10,12 +10,16 @@ import '../../util/resources_utils.dart';
 void main() {
   late String compactInput;
   late String buildYaml;
-  late String expectedOutput;
+  late String expectedMainOutput;
+  late String expectedEnOutput;
+  late String expectedDeOutput;
 
   setUp(() {
     compactInput = loadResource('main/csv_compact.csv');
     buildYaml = loadResource('main/build_config.yaml');
-    expectedOutput = loadResource('main/_expected_single.output');
+    expectedMainOutput = loadResource('main/_expected_main.output');
+    expectedEnOutput = loadResource('main/_expected_en.output');
+    expectedDeOutput = loadResource('main/_expected_de.output');
   });
 
   test('compact csv', () {
@@ -23,7 +27,6 @@ void main() {
 
     final result = GeneratorFacade.generate(
       rawConfig: RawConfigBuilder.fromYaml(buildYaml)!,
-      baseName: 'translations',
       translationMap: TranslationMap()
         ..addTranslations(
           locale: I18nLocale.fromString('en'),
@@ -36,6 +39,8 @@ void main() {
       inputDirectoryHint: 'fake/path/integration',
     );
 
-    expect(result.joinAsSingleOutput(), expectedOutput);
+    expect(result.main, expectedMainOutput);
+    expect(result.translations[I18nLocale.fromString('en')], expectedEnOutput);
+    expect(result.translations[I18nLocale.fromString('de')], expectedDeOutput);
   });
 }

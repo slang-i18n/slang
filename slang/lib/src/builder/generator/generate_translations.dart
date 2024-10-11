@@ -1,12 +1,12 @@
 import 'dart:collection';
 
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/generate_config.dart';
-import 'package:slang/builder/model/i18n_data.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/generate_config.dart';
+import 'package:slang/src/builder/model/i18n_data.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/node.dart';
+import 'package:slang/src/builder/model/pluralization.dart';
 import 'package:slang/src/builder/utils/encryption_utils.dart';
 
 part 'generate_translation_map.dart';
@@ -26,23 +26,34 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
   final queue = Queue<ClassTask>();
   final buffer = StringBuffer();
 
-  if (config.outputFormat == OutputFormat.multipleFiles) {
-    // this is a part file
-
-    buffer.writeln('''
+  buffer.writeln('''
 ///
 /// Generated file. Do not edit.
 ///
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_import
+''');
 
-part of '${config.outputFileName}';''');
+  if (localeData.base) {
+    buffer.writeln("part of '${config.outputFileName}';");
+  } else {
+    final imports = [
+      config.outputFileName,
+      ...config.imports,
+      'package:slang/node.dart',
+      if (config.obfuscation.enabled) 'package:slang/secret.dart',
+      if (config.translationOverrides) 'package:slang/overrides.dart',
+      if (config.flutterIntegration) 'package:flutter/widgets.dart',
+    ]..sort((a, b) => a.compareTo(b));
+
+    for (final i in imports) {
+      buffer.writeln('import \'$i\';');
+    }
   }
 
   queue.add(ClassTask(
     getClassNameRoot(
-      baseName: config.baseName,
-      visibility: config.translationClassVisibility,
+      className: config.className,
     ),
     localeData.root,
   ));
@@ -54,10 +65,22 @@ part of '${config.outputFileName}';''');
     ClassTask task = queue.removeFirst();
 
     _generateClass(
-        config, localeData, buffer, queue, task.className, task.node, root);
+      config,
+      localeData,
+      buffer,
+      queue,
+      task.className,
+      task.node,
+      root,
+    );
 
     root = false;
   } while (queue.isNotEmpty);
+
+  if (config.renderFlatMap) {
+    buffer.writeln();
+    buffer.writeln(generateTranslationMap(config, localeData));
+  }
 
   return buffer.toString();
 }
@@ -85,35 +108,37 @@ void _generateClass(
   final rootClassName = localeData.base
       ? config.className
       : getClassNameRoot(
-          baseName: config.baseName,
-          visibility: config.translationClassVisibility,
+          className: config.className,
           locale: localeData.locale,
         );
 
   // The current class name.
-  final finalClassName = root && localeData.base
-      ? config.className
-      : getClassName(
-          parentName: className,
-          locale: localeData.locale,
-        );
+  final finalClassName = switch (root) {
+    true => switch (localeData.base) {
+        true => config.className,
+        false =>
+          getClassNameRoot(className: className, locale: localeData.locale),
+      },
+    false => getClassName(
+        base: localeData.base,
+        visibility: config.translationClassVisibility,
+        parentName: className,
+        locale: localeData.locale,
+      ),
+  };
 
   final mixinStr =
       node.interface != null ? ' with ${node.interface!.name}' : '';
 
   if (localeData.base) {
     if (root) {
-      if (config.translationClassVisibility ==
-          TranslationClassVisibility.public) {
-        // Add typedef for backwards compatibility
-        final legacyClassName = getClassNameRoot(
-          baseName: config.baseName,
-          visibility: config.translationClassVisibility,
-          locale: localeData.locale,
-        );
-        buffer.writeln(
-            'typedef $legacyClassName = ${config.className}; // ignore: unused_element');
-      }
+      // Add typedef for backwards compatibility
+      final legacyClassName = getClassNameRoot(
+        className: config.className,
+        locale: localeData.locale,
+      );
+      buffer.writeln(
+          'typedef $legacyClassName = ${config.className}; // ignore: unused_element');
       buffer.writeln(
           'class $finalClassName$mixinStr implements BaseTranslations<${config.enumName}, ${config.className}> {');
     } else {
@@ -124,6 +149,8 @@ void _generateClass(
     final baseClassName = root
         ? config.className
         : getClassName(
+            base: true,
+            visibility: TranslationClassVisibility.public,
             parentName: className,
             locale: config.baseLocale,
           );
@@ -162,7 +189,7 @@ void _generateClass(
     }
 
     buffer.writeln(
-        '\t$finalClassName.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
+        '\t$finalClassName({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
     if (!config.translationOverrides) {
       buffer.write(
           '\t\t: assert(overrides == null, \'Set "translation_overrides: true" in order to enable this feature.\'),\n\t\t  ');
@@ -244,11 +271,7 @@ void _generateClass(
 
   // root
   buffer.writeln();
-  if (!localeData.base) {
-    buffer.write('\t@override ');
-  } else {
-    buffer.write('\t');
-  }
+  buffer.write('\t');
 
   if (root) {
     buffer.write('late final $rootClassName _root = this;');
@@ -336,8 +359,12 @@ void _generateClass(
         depth: 0,
       );
     } else if (value is ObjectNode) {
-      String childClassNoLocale =
-          getClassName(parentName: className, childName: key);
+      String childClassNoLocale = getClassName(
+        base: localeData.base,
+        visibility: config.translationClassVisibility,
+        parentName: className,
+        childName: key,
+      );
 
       if (value.isMap) {
         // inline map
@@ -356,7 +383,12 @@ void _generateClass(
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale = getClassName(
-            parentName: className, childName: key, locale: localeData.locale);
+          base: localeData.base,
+          visibility: config.translationClassVisibility,
+          parentName: className,
+          childName: key,
+          locale: localeData.locale,
+        );
         buffer.writeln(
             'late final $childClassWithLocale$optional $key = $childClassWithLocale._(_root);');
       }
@@ -432,8 +464,12 @@ void _generateMap({
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      String childClassNoLocale =
-          getClassName(parentName: className, childName: key);
+      String childClassNoLocale = getClassName(
+        base: base,
+        visibility: config.translationClassVisibility,
+        parentName: className,
+        childName: key,
+      );
 
       if (value.isMap) {
         // inline map
@@ -451,8 +487,13 @@ void _generateMap({
       } else {
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
-        String childClassWithLocale =
-            getClassName(parentName: className, childName: key, locale: locale);
+        String childClassWithLocale = getClassName(
+          base: base,
+          visibility: config.translationClassVisibility,
+          parentName: className,
+          childName: key,
+          locale: locale,
+        );
         buffer.writeln('\'$key\': $childClassWithLocale._(_root),');
       }
     } else if (value is PluralNode) {
@@ -541,8 +582,11 @@ void _generateList({
           'i' +
           i.toString() +
           r'$';
-      final String childClassNoLocale =
-          getClassName(parentName: className, childName: key);
+      final String childClassNoLocale = getClassName(
+          base: base,
+          visibility: config.translationClassVisibility,
+          parentName: className,
+          childName: key);
 
       if (value.isMap) {
         // inline map
@@ -560,6 +604,8 @@ void _generateList({
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale = getClassName(
+          base: base,
+          visibility: config.translationClassVisibility,
           parentName: className,
           childName: key,
           locale: locale,

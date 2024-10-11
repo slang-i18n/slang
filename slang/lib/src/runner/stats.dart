@@ -1,8 +1,8 @@
-import 'package:slang/builder/builder/translation_model_list_builder.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/node.dart';
+import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 
 StatsResult getStats({

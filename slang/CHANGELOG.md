@@ -1,3 +1,15 @@
+## 4.0.0
+
+**Number formats and Lazy loading**
+
+On web, [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-library) is used to reduce initial load time.
+
+- **Breaking:** `setLocale`, `setLocaleRaw`, and `useDeviceLocale` returns a Future, use `-Sync` suffix for synchronous calls
+- **Breaking:** `output_format` removed, always generates multiple files now
+- **Breaking:** deprecated functions in `LocaleSettings` (`supportedLocales`, `supportedLocalesRaw`) removed
+- **Breaking:** defining contexts (enums) is no longer allowed in `build.yaml` or `slang.yaml` (deprecated in v3.19.0)
+- **Breaking:** enums specified in `context` are no longer transformed into pascal case keeping the original case
+
 ## 3.32.0
 
 - feat: add syntax to escape linked translations (#248) @Fasust

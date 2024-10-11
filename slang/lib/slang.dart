@@ -1,3 +1,3 @@
-export 'api/locale.dart';
-export 'api/pluralization.dart';
-export 'api/singleton.dart';
+export 'src/api/locale.dart';
+export 'src/api/pluralization.dart';
+export 'src/api/singleton.dart';

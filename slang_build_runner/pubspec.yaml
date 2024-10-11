@@ -4,7 +4,7 @@ version: 3.30.0
 repository: https://github.com/slang-i18n/slang
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   build: ^2.2.1

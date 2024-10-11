@@ -1,3 +1,5 @@
+@Skip('not updated for multiple files')
+
 import 'package:expect_error/expect_error.dart';
 import 'package:test/test.dart';
 

@@ -1,4 +1,4 @@
-import 'package:slang/builder/model/interface.dart';
+import 'package:slang/src/builder/model/interface.dart';
 import 'package:test/test.dart';
 
 Interface _i(Map<String, bool> attributes, [String name = '']) {

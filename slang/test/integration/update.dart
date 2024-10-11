@@ -1,12 +1,12 @@
-import 'package:slang/builder/builder/raw_config_builder.dart';
-import 'package:slang/builder/model/build_result.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/obfuscation_config.dart';
-import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/builder/raw_config_builder.dart';
 import 'package:slang/src/builder/decoder/json_decoder.dart';
 import 'package:slang/src/builder/generator_facade.dart';
+import 'package:slang/src/builder/model/build_result.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/obfuscation_config.dart';
+import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 
 import '../util/resources_utils.dart';
@@ -28,7 +28,6 @@ void main() {
   final buildConfig =
       RawConfigBuilder.fromYaml(loadResource('main/build_config.yaml'))!;
   generateMainIntegration(buildConfig, en, de);
-  generateMainSplitIntegration(buildConfig, en, de);
   generateNoFlutter(buildConfig, simple);
   generateNoLocaleHandling(buildConfig, simple);
   generateTranslationOverrides(buildConfig, en, de);
@@ -47,40 +46,18 @@ BuildResult _generate({
 }) {
   return GeneratorFacade.generate(
     rawConfig: rawConfig,
-    baseName: 'translations',
     translationMap: translationMap,
     inputDirectoryHint: 'fake/path/integration',
   );
 }
 
-void generateMainIntegration(RawConfig buildConfig, String en, String de) {
-  final result = _generate(
-    rawConfig: buildConfig,
-    baseName: 'translations',
-    translationMap: TranslationMap()
-      ..addTranslations(
-        locale: I18nLocale.fromString('en'),
-        translations: JsonDecoder().decode(en),
-      )
-      ..addTranslations(
-        locale: I18nLocale.fromString('de'),
-        translations: JsonDecoder().decode(de),
-      ),
-  ).joinAsSingleOutput();
-
-  _write(
-    path: 'main/_expected_single',
-    content: result,
-  );
-}
-
-void generateMainSplitIntegration(
+void generateMainIntegration(
   RawConfig buildConfig,
   String en,
   String de,
 ) {
   final result = _generate(
-    rawConfig: buildConfig.copyWith(outputFormat: OutputFormat.multipleFiles),
+    rawConfig: buildConfig,
     baseName: 'translations',
     translationMap: TranslationMap()
       ..addTranslations(
@@ -95,7 +72,7 @@ void generateMainSplitIntegration(
 
   _write(
     path: 'main/_expected_main',
-    content: result.header,
+    content: result.main,
   );
 
   _write(
@@ -106,11 +83,6 @@ void generateMainSplitIntegration(
   _write(
     path: 'main/_expected_de',
     content: result.translations[I18nLocale.fromString('de')]!,
-  );
-
-  _write(
-    path: 'main/_expected_map',
-    content: result.flatMap!,
   );
 }
 
@@ -123,11 +95,11 @@ void generateNoFlutter(RawConfig buildConfig, String simple) {
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(simple),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
     path: 'main/_expected_no_flutter',
-    content: result,
+    content: result.main,
   );
 }
 
@@ -143,11 +115,11 @@ void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(simple),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
     path: 'main/_expected_no_locale_handling',
-    content: result,
+    content: result.main,
   );
 }
 
@@ -164,11 +136,21 @@ void generateTranslationOverrides(RawConfig buildConfig, String en, String de) {
         locale: I18nLocale.fromString('de'),
         translations: JsonDecoder().decode(de),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
-    path: 'main/_expected_translation_overrides',
-    content: result,
+    path: 'main/_expected_translation_overrides_main',
+    content: result.main,
+  );
+
+  _write(
+    path: 'main/_expected_translation_overrides_en',
+    content: result.translations[I18nLocale.fromString('en')]!,
+  );
+
+  _write(
+    path: 'main/_expected_translation_overrides_de',
+    content: result.translations[I18nLocale.fromString('de')]!,
   );
 }
 
@@ -187,11 +169,21 @@ void generateFallbackBaseLocale(RawConfig buildConfig, String en, String de) {
         locale: I18nLocale.fromString('de'),
         translations: JsonDecoder().decode(de),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
-    path: 'main/_expected_fallback_base_locale',
-    content: result,
+    path: 'main/_expected_fallback_base_locale_main',
+    content: result.main,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_base_locale_en',
+    content: result.translations[I18nLocale.fromString('en')]!,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_base_locale_de',
+    content: result.translations[I18nLocale.fromString('de')]!,
   );
 }
 
@@ -214,11 +206,21 @@ void generateFallbackBaseLocaleSpecial(
         locale: I18nLocale.fromString('de'),
         translations: JsonDecoder().decode(de),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
-    path: 'main/_expected_fallback_base_locale_special',
-    content: result,
+    path: 'main/_expected_fallback_base_locale_special_main',
+    content: result.main,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_base_locale_special_en',
+    content: result.translations[I18nLocale.fromString('en')]!,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_base_locale_special_de',
+    content: result.translations[I18nLocale.fromString('de')]!,
   );
 }
 
@@ -240,11 +242,21 @@ void generateObfuscation(RawConfig buildConfig, String en, String de) {
         locale: I18nLocale.fromString('de'),
         translations: JsonDecoder().decode(de),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
-    path: 'main/_expected_obfuscation',
-    content: result,
+    path: 'main/_expected_obfuscation_main',
+    content: result.main,
+  );
+
+  _write(
+    path: 'main/_expected_obfuscation_en',
+    content: result.translations[I18nLocale.fromString('en')]!,
+  );
+
+  _write(
+    path: 'main/_expected_obfuscation_de',
+    content: result.translations[I18nLocale.fromString('de')]!,
   );
 }
 
@@ -260,11 +272,11 @@ void generateRichText() {
         locale: I18nLocale.fromString('en'),
         translations: JsonDecoder().decode(en),
       ),
-  ).joinAsSingleOutput();
+  );
 
   _write(
     path: 'main/_expected_rich_text',
-    content: result,
+    content: result.translations.values.first,
   );
 }
 

@@ -442,8 +442,6 @@ targets:
 | `pluralization`/`default_parameter` | `String`                                          | default plural parameter [(i)](#-pluralization)              | `n`            |
 | `pluralization`/`cardinal`          | `List<String>`                                    | entries which have cardinals                                 | `[]`           |
 | `pluralization`/`ordinal`           | `List<String>`                                    | entries which have ordinals                                  | `[]`           |
-| `<context>`/`enum`                  | `List<String>`                                    | DEPRECATED: context forms [(i)](#-custom-contexts--enums)    | no default     |
-| `<context>`/`paths`                 | `List<String>`                                    | DEPRECATED: entries using this context                       | `[]`           |
 | `<context>`/`default_parameter`     | `String`                                          | default parameter name                                       | `context`      |
 | `<context>`/`generate_enum`         | `Boolean`                                         | generate enum                                                | `true`         |
 | `children of interfaces`            | `Pairs of Alias:Path`                             | alias interfaces [(i)](#-interfaces)                         | `null`         |

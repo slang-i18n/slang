@@ -1,9 +1,9 @@
-import 'package:slang/builder/builder/raw_config_builder.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/builder/raw_config_builder.dart';
 import 'package:slang/src/builder/decoder/json_decoder.dart';
 import 'package:slang/src/builder/generator_facade.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
 import '../../util/resources_utils.dart';
@@ -25,7 +25,6 @@ void main() {
         localeHandling: false,
         translationClassVisibility: TranslationClassVisibility.public,
       ),
-      baseName: 'translations',
       translationMap: TranslationMap()
         ..addTranslations(
           locale: I18nLocale.fromString('en'),
@@ -34,6 +33,6 @@ void main() {
       inputDirectoryHint: 'fake/path/integration',
     );
 
-    expect(result.joinAsSingleOutput(), expectedOutput);
+    expect(result.main, expectedOutput);
   });
 }

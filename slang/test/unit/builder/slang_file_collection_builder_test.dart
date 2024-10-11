@@ -1,7 +1,7 @@
-import 'package:slang/builder/builder/slang_file_collection_builder.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/slang_file_collection.dart';
+import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:test/test.dart';
 
 PlainTranslationFile _file(String path) {

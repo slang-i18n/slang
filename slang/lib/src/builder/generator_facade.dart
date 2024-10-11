@@ -1,17 +1,16 @@
-import 'package:slang/builder/builder/generate_config_builder.dart';
-import 'package:slang/builder/builder/translation_model_list_builder.dart';
-import 'package:slang/builder/model/build_result.dart';
-import 'package:slang/builder/model/context_type.dart';
-import 'package:slang/builder/model/interface.dart';
-import 'package:slang/builder/model/raw_config.dart';
-import 'package:slang/builder/model/translation_map.dart';
+import 'package:slang/src/builder/builder/generate_config_builder.dart';
+import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/src/builder/generator/generator.dart';
+import 'package:slang/src/builder/model/build_result.dart';
+import 'package:slang/src/builder/model/context_type.dart';
+import 'package:slang/src/builder/model/interface.dart';
+import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 
 class GeneratorFacade {
   /// Common step used by custom runner and builder to get the .g.dart content
   static BuildResult generate({
     required RawConfig rawConfig,
-    required String baseName,
     required TranslationMap translationMap,
     required String inputDirectoryHint,
   }) {
@@ -49,7 +48,6 @@ class GeneratorFacade {
 
     // generate config
     final config = GenerateConfigBuilder.build(
-      baseName: baseName,
       config: rawConfig,
       inputDirectoryHint: inputDirectoryHint,
       contexts: contextMap.values.toList(),

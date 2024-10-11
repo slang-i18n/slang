@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:slang/api/translation_overrides.dart';
-import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/model/pluralization.dart';
 import 'package:slang/slang.dart';
+import 'package:slang/node.dart';
+import 'package:slang/overrides.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/pluralization.dart';
 
 export 'package:slang/slang.dart';
 
@@ -61,9 +62,15 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> on BaseFlutterLocaleSettings<E, T> {
   /// Uses locale of the device, fallbacks to base locale.
   /// Returns the locale which has been set.
-  E useDeviceLocale() {
+  Future<E> useDeviceLocale() async {
     final E locale = utils.findDeviceLocale();
-    return setLocale(locale, listenToDeviceLocale: true);
+    return await setLocale(locale, listenToDeviceLocale: true);
+  }
+
+  /// Sync version of [useDeviceLocale].
+  E useDeviceLocaleSync() {
+    final E locale = utils.findDeviceLocale();
+    return setLocaleSync(locale, listenToDeviceLocale: true);
   }
 
   /// Gets supported locales (as Locale objects) with base locale sorted first.
@@ -74,14 +81,12 @@ extension ExtBaseLocaleSettings<E extends BaseAppLocale<E, T>,
 
 abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends StatefulWidget {
-  final T initTranslations;
   final BaseFlutterLocaleSettings<E, T> settings;
 
   BaseTranslationProvider({
     required this.settings,
     required this.child,
-  })  : initTranslations = settings.currentTranslations,
-        super(
+  }) : super(
           key: _GlobalKeyHandler.instance.register<E, T>(
             baseLocale: settings.utils.baseLocale,
           ),
@@ -91,15 +96,13 @@ abstract class BaseTranslationProvider<E extends BaseAppLocale<E, T>,
 
   @override
   _TranslationProviderState<E, T> createState() =>
-      _TranslationProviderState<E, T>(initTranslations);
+      _TranslationProviderState<E, T>();
 }
 
 class _TranslationProviderState<E extends BaseAppLocale<E, T>,
         T extends BaseTranslations<E, T>>
     extends State<BaseTranslationProvider<E, T>> with WidgetsBindingObserver {
-  T translations;
-
-  _TranslationProviderState(this.translations);
+  T? translations;
 
   @override
   void initState() {
@@ -137,8 +140,9 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
 
   /// Updates the provider state.
   /// Widgets listening to this provider will rebuild if [translations] differ.
-  void updateState(BaseAppLocale locale) {
+  void updateState(BaseAppLocale locale) async {
     final E localeTyped = widget.settings.utils.parseAppLocale(locale);
+    await widget.settings.loadLocale(localeTyped);
     setState(() {
       this.translations = widget.settings.translationMap[localeTyped]!;
     });
@@ -146,8 +150,9 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
 
   @override
   Widget build(BuildContext context) {
+    translations ??= widget.settings.currentTranslations;
     return InheritedLocaleData<E, T>(
-      translations: translations,
+      translations: translations!,
       child: widget.child,
     );
   }

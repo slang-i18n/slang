@@ -12,7 +12,7 @@ on:
     branches: [ main ]
 
 env:
-  FLUTTER_VERSION_OLDEST: "3.0.5"
+  FLUTTER_VERSION_OLDEST: "3.19.6"
   FLUTTER_VERSION_NEWEST: "3.24.3"
 
 jobs:

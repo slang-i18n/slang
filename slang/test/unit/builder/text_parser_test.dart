@@ -1,5 +1,5 @@
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/src/builder/builder/text_parser.dart';
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:test/test.dart';
 
 void main() {

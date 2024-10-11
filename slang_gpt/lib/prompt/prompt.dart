@@ -1,8 +1,11 @@
 import 'dart:convert';
 
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/raw_config.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/enums.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/i18n_locale.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang_gpt/model/gpt_config.dart';
 import 'package:slang_gpt/model/gpt_prompt.dart';
 import 'package:slang_gpt/util/locales.dart';

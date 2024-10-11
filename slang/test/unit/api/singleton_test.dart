@@ -1,5 +1,5 @@
-import 'package:slang/api/locale.dart';
-import 'package:slang/api/singleton.dart';
+import 'package:slang/src/api/locale.dart';
+import 'package:slang/src/api/singleton.dart';
 import 'package:test/test.dart';
 
 class AppLocaleUtils
