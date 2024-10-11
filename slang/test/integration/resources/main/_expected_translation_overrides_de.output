@@ -1,0 +1,262 @@
+///
+/// Generated file. Do not edit.
+///
+// coverage:ignore-file
+// ignore_for_file: type=lint, unused_import
+
+import 'package:flutter/widgets.dart';
+import 'package:slang/node.dart';
+import 'package:slang/overrides.dart';
+import 'translations.cgm.dart';
+
+// Path: <root>
+class TranslationsDe implements Translations {
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	/// [AppLocaleUtils.buildWithOverrides] is recommended for overriding.
+	TranslationsDe({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: $meta = TranslationMetadata(
+		    locale: AppLocale.de,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <de>.
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
+
+	/// Access flat map
+	@override dynamic operator[](String key) => $meta.getTranslation(key);
+
+	late final TranslationsDe _root = this; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsOnboardingDe onboarding = _TranslationsOnboardingDe._(_root);
+	@override late final _TranslationsGroupDe group = _TranslationsGroupDe._(_root);
+	@override late final _TranslationsEndDe end = _TranslationsEndDe._(_root);
+	@override TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => TranslationOverridesFlutter.richPlural(_root.$meta, 'advancedPlural', {'gender': gender, 'count': count, 'countBuilder': countBuilder}) ?? RichPluralResolvers.bridge(
+		n: count,
+		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+		one: () => TextSpan(children: [
+			const TextSpan(text: 'Eins'),
+		]),
+		other: () => TextSpan(children: [
+			const TextSpan(text: 'Andere '),
+			countBuilder(count),
+			TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+		]),
+	);
+}
+
+// Path: onboarding
+class _TranslationsOnboardingDe implements TranslationsOnboardingEn {
+	_TranslationsOnboardingDe._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String welcome({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Willkommen ${fullName}';
+	@override String welcomeAlias({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
+	@override String welcomeOnlyParam({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeOnlyParam', {'firstName': firstName}) ?? '${firstName}';
+
+	/// Bye text
+	@override String bye({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.bye', {'firstName': firstName}) ?? 'Tschüss ${firstName}';
+
+	@override TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TranslationOverridesFlutter.rich(_root.$meta, 'onboarding.hi', {'name': name, 'lastName': lastName, 'context': context, 'fullName': fullName, 'firstName': firstName}) ?? TextSpan(children: [
+		const TextSpan(text: 'Hi '),
+		name,
+		TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+	]);
+	@override List<PageData> get pages => [
+		_TranslationsOnboarding$pages$0i0$De._(_root),
+		_TranslationsOnboarding$pages$0i1$De._(_root),
+	];
+	@override List<MPage> get modifierPages => [
+		_TranslationsOnboarding$modifierPages$0i0$De._(_root),
+		_TranslationsOnboarding$modifierPages$0i1$De._(_root),
+	];
+	@override String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+		final override = TranslationOverrides.context(_root.$meta, 'onboarding.greet', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context});
+		if (override != null) {
+			return override;
+		}
+		switch (context) {
+			case GenderContext.male:
+				return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+			case GenderContext.female:
+				return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
+		}
+	}
+	@override String greet2({required GenderContext gender}) {
+		final override = TranslationOverrides.context(_root.$meta, 'onboarding.greet2', {'gender': gender});
+		if (override != null) {
+			return override;
+		}
+		switch (gender) {
+			case GenderContext.male:
+				return 'Hallo Herr';
+			case GenderContext.female:
+				return 'Hallo Frau';
+		}
+	}
+	@override String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => TranslationOverrides.string(_root.$meta, 'onboarding.greetCombination', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context, 'gender': gender}) ?? '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+	@override String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'n': n, 'fullName': fullName, 'firstName': firstName}) ?? 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
+	@override String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedContext', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context}) ?? 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+	@override String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'n': n, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+}
+
+// Path: group
+class _TranslationsGroupDe implements TranslationsGroupEn {
+	_TranslationsGroupDe._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String users({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+		zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
+		one: 'Ein Nutzer',
+		other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+	);
+}
+
+// Path: end
+class _TranslationsEndDe with EndData implements TranslationsEndEn {
+	_TranslationsEndDe._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get stringPages => TranslationOverrides.list(_root.$meta, 'end.stringPages') ?? [
+		'1. Seite',
+		'2. Seite',
+	];
+	@override List<Map<String, String>> get pages => [
+		TranslationOverrides.map(_root.$meta, 'end.pages.0') ?? {
+			'unknown': 'Unbekannter\nFehler',
+		},
+		TranslationOverrides.map(_root.$meta, 'end.pages.1') ?? {
+			'with space': 'Ein Fehler',
+			'with second space': 'Ein 2. Fehler',
+		},
+	];
+}
+
+// Path: onboarding.pages.0
+class _TranslationsOnboarding$pages$0i0$De with PageData implements TranslationsOnboarding$pages$0i0$En {
+	_TranslationsOnboarding$pages$0i0$De._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'Erste Seite';
+	@override String get content => TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.content', {}) ?? 'Erster Seiteninhalt';
+}
+
+// Path: onboarding.pages.1
+class _TranslationsOnboarding$pages$0i1$De with PageData implements TranslationsOnboarding$pages$0i1$En {
+	_TranslationsOnboarding$pages$0i1$De._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Zweite Seite';
+}
+
+// Path: onboarding.modifierPages.0
+class _TranslationsOnboarding$modifierPages$0i0$De with MPage implements TranslationsOnboarding$modifierPages$0i0$En {
+	_TranslationsOnboarding$modifierPages$0i0$De._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'Erste Modifier Seite';
+	@override String get content => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.content', {}) ?? 'Erster Seiteninhalt';
+}
+
+// Path: onboarding.modifierPages.1
+class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements TranslationsOnboarding$modifierPages$0i1$En {
+	_TranslationsOnboarding$modifierPages$0i1$De._(this._root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Zweite Modifier Seite';
+}
+
+/// Flat map(s) containing all translations.
+/// Only for edge cases! For simple maps, use the map function of this library.
+extension on TranslationsDe {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'onboarding.welcome': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Willkommen ${fullName}';
+			case 'onboarding.welcomeAlias': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
+			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeOnlyParam', {'firstName': firstName}) ?? '${firstName}';
+			case 'onboarding.bye': return ({required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.bye', {'firstName': firstName}) ?? 'Tschüss ${firstName}';
+			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TranslationOverridesFlutter.rich(_root.$meta, 'onboarding.hi', {'name': name, 'lastName': lastName, 'context': context, 'fullName': fullName, 'firstName': firstName}) ?? TextSpan(children: [
+				const TextSpan(text: 'Hi '),
+				name,
+				TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+			]);
+			case 'onboarding.pages.0.title': return TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.title', {}) ?? 'Erste Seite';
+			case 'onboarding.pages.0.content': return TranslationOverrides.string(_root.$meta, 'onboarding.pages.0.content', {}) ?? 'Erster Seiteninhalt';
+			case 'onboarding.pages.1.title': return TranslationOverrides.string(_root.$meta, 'onboarding.pages.1.title', {}) ?? 'Zweite Seite';
+			case 'onboarding.modifierPages.0.title': return TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.title', {}) ?? 'Erste Modifier Seite';
+			case 'onboarding.modifierPages.0.content': return TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.0.content', {}) ?? 'Erster Seiteninhalt';
+			case 'onboarding.modifierPages.1.title': return TranslationOverrides.string(_root.$meta, 'onboarding.modifierPages.1.title', {}) ?? 'Zweite Modifier Seite';
+			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+				final override = TranslationOverrides.context(_root.$meta, 'onboarding.greet', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context});
+				if (override != null) {
+					return override;
+				}
+				switch (context) {
+					case GenderContext.male:
+						return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+					case GenderContext.female:
+						return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
+				}
+			};
+			case 'onboarding.greet2': return ({required GenderContext gender}) {
+				final override = TranslationOverrides.context(_root.$meta, 'onboarding.greet2', {'gender': gender});
+				if (override != null) {
+					return override;
+				}
+				switch (gender) {
+					case GenderContext.male:
+						return 'Hallo Herr';
+					case GenderContext.female:
+						return 'Hallo Frau';
+				}
+			};
+			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => TranslationOverrides.string(_root.$meta, 'onboarding.greetCombination', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context, 'gender': gender}) ?? '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedPlural', {'n': n, 'fullName': fullName, 'firstName': firstName}) ?? 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeLinkedContext', {'lastName': lastName, 'fullName': fullName, 'firstName': firstName, 'context': context}) ?? 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeFullLink', {'n': n, 'fullName': fullName, 'firstName': firstName, 'lastName': lastName, 'context': context}) ?? 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => TranslationOverrides.plural(_root.$meta, 'group.users', {'fullName': fullName, 'firstName': firstName, 'n': n}) ?? (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
+				one: 'Ein Nutzer',
+				other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+			);
+			case 'end.stringPages.0': return TranslationOverrides.string(_root.$meta, 'end.stringPages.0', {}) ?? '1. Seite';
+			case 'end.stringPages.1': return TranslationOverrides.string(_root.$meta, 'end.stringPages.1', {}) ?? '2. Seite';
+			case 'end.pages.0.unknown': return TranslationOverrides.string(_root.$meta, 'end.pages.0.unknown', {}) ?? 'Unbekannter\nFehler';
+			case 'end.pages.1.with space': return TranslationOverrides.string(_root.$meta, 'end.pages.1.with space', {}) ?? 'Ein Fehler';
+			case 'end.pages.1.with second space': return TranslationOverrides.string(_root.$meta, 'end.pages.1.with second space', {}) ?? 'Ein 2. Fehler';
+			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => TranslationOverridesFlutter.richPlural(_root.$meta, 'advancedPlural', {'gender': gender, 'count': count, 'countBuilder': countBuilder}) ?? RichPluralResolvers.bridge(
+				n: count,
+				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+				one: () => TextSpan(children: [
+					const TextSpan(text: 'Eins'),
+				]),
+				other: () => TextSpan(children: [
+					const TextSpan(text: 'Andere '),
+					countBuilder(count),
+					TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+				]),
+			);
+			default: return null;
+		}
+	}
+}
+

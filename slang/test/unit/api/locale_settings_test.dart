@@ -1,8 +1,8 @@
-import 'package:slang/api/locale.dart';
-import 'package:slang/api/singleton.dart';
-import 'package:slang/api/state.dart';
-import 'package:slang/builder/model/build_model_config.dart';
-import 'package:slang/builder/model/enums.dart';
+import 'package:slang/src/api/locale.dart';
+import 'package:slang/src/api/singleton.dart';
+import 'package:slang/src/api/state.dart';
+import 'package:slang/src/builder/model/build_model_config.dart';
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -24,16 +24,16 @@ void main() {
       expect(localeSettings.currentTranslations.providedNullOverrides, true);
     });
 
-    test('should keep overrides when it is previously not empty', () {
+    test('should keep overrides when it is previously not empty', () async {
       final localeSettings = _LocaleSettings();
 
-      localeSettings.overrideTranslationsFromMap(
+      await localeSettings.overrideTranslationsFromMap(
         locale: _baseLocale,
         isFlatMap: false,
         map: {'hello': 'hi'},
       );
 
-      localeSettings.setPluralResolver(
+      await localeSettings.setPluralResolver(
         language: 'und',
         cardinalResolver: (n, {zero, one, two, few, many, other}) {
           return other!;

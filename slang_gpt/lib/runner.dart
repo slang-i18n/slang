@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:slang/builder/builder/slang_file_collection_builder.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/slang_file_collection.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
 // ignore: implementation_imports
 import 'package:slang/src/builder/decoder/base_decoder.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/i18n_locale.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/slang_file_collection.dart';
 // ignore: implementation_imports
 import 'package:slang/src/builder/utils/file_utils.dart';
 // ignore: implementation_imports

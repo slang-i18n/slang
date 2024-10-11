@@ -2,15 +2,17 @@
 /// Generated file. Do not edit.
 ///
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_import
 
-part of 'translations.cgm.dart';
+import 'package:flutter/widgets.dart';
+import 'package:slang/node.dart';
+import 'translations.cgm.dart';
 
 // Path: <root>
-class _TranslationsDe implements Translations {
+class TranslationsDe implements Translations {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	_TranslationsDe.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+	TranslationsDe({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
 		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
 		  $meta = TranslationMetadata(
 		    locale: AppLocale.de,
@@ -27,7 +29,7 @@ class _TranslationsDe implements Translations {
 	/// Access flat map
 	@override dynamic operator[](String key) => $meta.getTranslation(key);
 
-	@override late final _TranslationsDe _root = this; // ignore: unused_field
+	late final TranslationsDe _root = this; // ignore: unused_field
 
 	// Translations
 	@override late final _TranslationsOnboardingDe onboarding = _TranslationsOnboardingDe._(_root);
@@ -48,10 +50,10 @@ class _TranslationsDe implements Translations {
 }
 
 // Path: onboarding
-class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
+class _TranslationsOnboardingDe implements TranslationsOnboardingEn {
 	_TranslationsOnboardingDe._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String welcome({required Object fullName}) => 'Willkommen ${fullName}';
@@ -97,10 +99,10 @@ class _TranslationsOnboardingDe implements _TranslationsOnboardingEn {
 }
 
 // Path: group
-class _TranslationsGroupDe implements _TranslationsGroupEn {
+class _TranslationsGroupDe implements TranslationsGroupEn {
 	_TranslationsGroupDe._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
@@ -111,10 +113,10 @@ class _TranslationsGroupDe implements _TranslationsGroupEn {
 }
 
 // Path: end
-class _TranslationsEndDe with EndData implements _TranslationsEndEn {
+class _TranslationsEndDe with EndData implements TranslationsEndEn {
 	_TranslationsEndDe._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override List<String> get stringPages => [
@@ -133,10 +135,10 @@ class _TranslationsEndDe with EndData implements _TranslationsEndEn {
 }
 
 // Path: onboarding.pages.0
-class _TranslationsOnboarding$pages$0i0$De with PageData implements _TranslationsOnboarding$pages$0i0$En {
+class _TranslationsOnboarding$pages$0i0$De with PageData implements TranslationsOnboarding$pages$0i0$En {
 	_TranslationsOnboarding$pages$0i0$De._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Erste Seite';
@@ -144,20 +146,20 @@ class _TranslationsOnboarding$pages$0i0$De with PageData implements _Translation
 }
 
 // Path: onboarding.pages.1
-class _TranslationsOnboarding$pages$0i1$De with PageData implements _TranslationsOnboarding$pages$0i1$En {
+class _TranslationsOnboarding$pages$0i1$De with PageData implements TranslationsOnboarding$pages$0i1$En {
 	_TranslationsOnboarding$pages$0i1$De._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Zweite Seite';
 }
 
 // Path: onboarding.modifierPages.0
-class _TranslationsOnboarding$modifierPages$0i0$De with MPage implements _TranslationsOnboarding$modifierPages$0i0$En {
+class _TranslationsOnboarding$modifierPages$0i0$De with MPage implements TranslationsOnboarding$modifierPages$0i0$En {
 	_TranslationsOnboarding$modifierPages$0i0$De._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Erste Modifier Seite';
@@ -165,11 +167,79 @@ class _TranslationsOnboarding$modifierPages$0i0$De with MPage implements _Transl
 }
 
 // Path: onboarding.modifierPages.1
-class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements _TranslationsOnboarding$modifierPages$0i1$En {
+class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements TranslationsOnboarding$modifierPages$0i1$En {
 	_TranslationsOnboarding$modifierPages$0i1$De._(this._root);
 
-	@override final _TranslationsDe _root; // ignore: unused_field
+	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
 	@override String get title => 'Zweite Modifier Seite';
 }
+
+/// Flat map(s) containing all translations.
+/// Only for edge cases! For simple maps, use the map function of this library.
+extension on TranslationsDe {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'onboarding.welcome': return ({required Object fullName}) => 'Willkommen ${fullName}';
+			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => '${firstName}';
+			case 'onboarding.bye': return ({required Object firstName}) => 'Tschüss ${firstName}';
+			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+				const TextSpan(text: 'Hi '),
+				name,
+				TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
+			]);
+			case 'onboarding.pages.0.title': return 'Erste Seite';
+			case 'onboarding.pages.0.content': return 'Erster Seiteninhalt';
+			case 'onboarding.pages.1.title': return 'Zweite Seite';
+			case 'onboarding.modifierPages.0.title': return 'Erste Modifier Seite';
+			case 'onboarding.modifierPages.0.content': return 'Erster Seiteninhalt';
+			case 'onboarding.modifierPages.1.title': return 'Zweite Modifier Seite';
+			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+				switch (context) {
+					case GenderContext.male:
+						return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
+					case GenderContext.female:
+						return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
+				}
+			};
+			case 'onboarding.greet2': return ({required GenderContext gender}) {
+				switch (gender) {
+					case GenderContext.male:
+						return 'Hallo Herr';
+					case GenderContext.female:
+						return 'Hallo Frau';
+				}
+			};
+			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
+			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
+				one: 'Ein Nutzer',
+				other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
+			);
+			case 'end.stringPages.0': return '1. Seite';
+			case 'end.stringPages.1': return '2. Seite';
+			case 'end.pages.0.unknown': return 'Unbekannter\nFehler';
+			case 'end.pages.1.with space': return 'Ein Fehler';
+			case 'end.pages.1.with second space': return 'Ein 2. Fehler';
+			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+				n: count,
+				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
+				one: () => TextSpan(children: [
+					const TextSpan(text: 'Eins'),
+				]),
+				other: () => TextSpan(children: [
+					const TextSpan(text: 'Andere '),
+					countBuilder(count),
+					TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
+				]),
+			);
+			default: return null;
+		}
+	}
+}
+

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/utils/brackets_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';

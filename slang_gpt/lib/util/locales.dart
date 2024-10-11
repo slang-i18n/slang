@@ -1,4 +1,5 @@
-import 'package:slang/builder/model/i18n_locale.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/i18n_locale.dart';
 
 const _englishLocales = {
   'af': 'Afrikaans',

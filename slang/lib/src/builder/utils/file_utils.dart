@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:json2yaml/json2yaml.dart';
-import 'package:slang/builder/model/enums.dart';
+import 'package:slang/src/builder/model/enums.dart';
 
 const String INFO_KEY = '@@info';
 

@@ -1,4 +1,4 @@
-import 'package:slang/builder/model/node.dart';
+import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class NodeUtils {

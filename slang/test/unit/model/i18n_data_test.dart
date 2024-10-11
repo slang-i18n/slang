@@ -1,6 +1,6 @@
-import 'package:slang/builder/model/i18n_data.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/node.dart';
+import 'package:slang/src/builder/model/i18n_data.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/node.dart';
 import 'package:test/test.dart';
 
 I18nData _i18n(String locale, [bool base = false]) {

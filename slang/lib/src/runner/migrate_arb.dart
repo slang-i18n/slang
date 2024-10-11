@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:slang/builder/model/enums.dart';
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/utils/brackets_utils.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';

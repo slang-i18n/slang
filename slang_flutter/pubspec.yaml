@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # Use a tight version to ensure that all features are available
   slang: '>=3.30.0 <3.31.0'

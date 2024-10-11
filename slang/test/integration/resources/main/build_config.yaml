@@ -7,7 +7,6 @@ targets:
           base_locale: en
           input_file_pattern: .i18n.json # will be ignored anyways because we put in manually
           output_file_name: translations.cgm.dart # currently set manually for each test
-          output_format: single_file # may get changed programmatically
           locale_handling: true # may get changed programmatically
           string_interpolation: braces
           timestamp: false # make every test deterministic

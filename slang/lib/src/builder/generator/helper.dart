@@ -1,6 +1,6 @@
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/obfuscation_config.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/obfuscation_config.dart';
 import 'package:slang/src/builder/utils/encryption_utils.dart';
 import 'package:slang/src/builder/utils/string_extensions.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
@@ -8,21 +8,27 @@ import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 /// Pragmatic way to detect links within interpolations.
 const String characteristicLinkPrefix = '_root.';
 
+String getImportName({
+  required I18nLocale locale,
+}) {
+  return '_\$${locale.languageTag.replaceAll('-', '_')}';
+}
+
 /// Returns the class name of the root translation class.
 String getClassNameRoot({
-  required String baseName,
+  required String className,
   I18nLocale? locale,
-  required TranslationClassVisibility visibility,
 }) {
-  String result = baseName.toCase(CaseStyle.pascal) +
+  String result = className +
       (locale != null
           ? locale.languageTag.toCaseOfLocale(CaseStyle.pascal)
           : '');
-  if (visibility == TranslationClassVisibility.private) result = '_$result';
   return result;
 }
 
 String getClassName({
+  required bool base,
+  required TranslationClassVisibility visibility,
   required String parentName,
   String childName = '',
   I18nLocale? locale,
@@ -32,6 +38,16 @@ String getClassName({
     languageTag = locale.languageTag.toCaseOfLocale(CaseStyle.pascal);
   } else {
     languageTag = '';
+  }
+  if (base) {
+    visibility = TranslationClassVisibility.public;
+  }
+  if (!parentName.startsWith('_') &&
+      visibility == TranslationClassVisibility.private) {
+    parentName = '_$parentName';
+  } else if (parentName.startsWith('_') &&
+      visibility == TranslationClassVisibility.public) {
+    parentName = parentName.substring(1);
   }
   return parentName + childName.toCase(CaseStyle.pascal) + languageTag;
 }

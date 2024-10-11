@@ -15,6 +15,7 @@ dependencies:
   slang_flutter: ^3.16.0 # add this
   flutter_localizations: # add this
     sdk: flutter
+  intl: any
 
 dev_dependencies:
   lints: ^2.0.0

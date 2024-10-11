@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/decoder/base_decoder.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';

@@ -1,10 +1,10 @@
-import 'package:slang/builder/builder/build_model_config_builder.dart';
-import 'package:slang/builder/builder/translation_model_builder.dart';
-import 'package:slang/builder/model/context_type.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/interface.dart';
-import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/model/raw_config.dart';
+import 'package:slang/src/builder/builder/build_model_config_builder.dart';
+import 'package:slang/src/builder/builder/translation_model_builder.dart';
+import 'package:slang/src/builder/model/context_type.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/interface.dart';
+import 'package:slang/src/builder/model/node.dart';
+import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -137,15 +137,13 @@ void main() {
         buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
           ContextType(
             enumName: 'GenderCon',
-            enumValues: ['male', 'female'],
-            paths: [],
             defaultParameter: 'gender',
             generateEnum: true,
           ),
         ]).toBuildModelConfig(),
         localeDebug: RawConfig.defaultBaseLocale,
         map: {
-          'a': {
+          'a(context=GenderCon)': {
             'male': 'MALE',
             'female': r'FEMALE $p1',
           },
@@ -213,8 +211,6 @@ void main() {
         buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
           ContextType(
             enumName: 'GenderCon',
-            enumValues: null,
-            paths: [],
             defaultParameter: 'gender',
             generateEnum: true,
           ),

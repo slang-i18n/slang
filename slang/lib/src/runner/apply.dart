@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:slang/builder/builder/translation_map_builder.dart';
-import 'package:slang/builder/builder/translation_model_list_builder.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/node.dart';
-import 'package:slang/builder/model/slang_file_collection.dart';
+import 'package:slang/src/builder/builder/translation_map_builder.dart';
+import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/node.dart';
+import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';

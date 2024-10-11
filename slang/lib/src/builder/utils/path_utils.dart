@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 
 /// Operations on paths

@@ -1,17 +1,15 @@
-import 'package:slang/builder/model/build_model_config.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/generate_config.dart';
-import 'package:slang/builder/model/i18n_data.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/node.dart';
 import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/model/build_model_config.dart';
+import 'package:slang/src/builder/model/generate_config.dart';
+import 'package:slang/src/builder/model/i18n_data.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 
 String generateHeader(
   GenerateConfig config,
   List<I18nData> allLocales,
 ) {
-  const String baseLocaleVar = '_baseLocale';
   const String pluralResolverType = 'PluralResolver';
   const String pluralResolverMapCardinal = '_pluralResolversCardinal';
   const String pluralResolverMapOrdinal = '_pluralResolversOrdinal';
@@ -27,13 +25,11 @@ String generateHeader(
 
   _generateImports(config, buffer);
 
-  if (config.outputFormat == OutputFormat.multipleFiles) {
-    _generateParts(
-      buffer: buffer,
-      config: config,
-      locales: allLocales,
-    );
-  }
+  _generateLocaleImports(
+    buffer: buffer,
+    config: config,
+    locales: allLocales,
+  );
 
   if (config.translationOverrides) {
     _generateBuildConfig(
@@ -41,12 +37,6 @@ String generateHeader(
       config: config.buildConfig,
     );
   }
-
-  _generateBaseLocale(
-    buffer: buffer,
-    config: config,
-    baseLocaleVar: baseLocaleVar,
-  );
 
   _generateEnum(
     buffer: buffer,
@@ -73,7 +63,6 @@ String generateHeader(
   _generateUtil(
     buffer: buffer,
     config: config,
-    baseLocaleVar: baseLocaleVar,
   );
 
   _generateContextEnums(buffer: buffer, config: config);
@@ -131,22 +120,16 @@ void _generateHeaderComment({
 /// To regenerate, run: `dart run slang`$statisticsStr$timestampStr
 
 // coverage:ignore-file
-// ignore_for_file: type=lint''');
+// ignore_for_file: type=lint, unused_import''');
 }
 
 void _generateImports(GenerateConfig config, StringBuffer buffer) {
   buffer.writeln();
   final imports = [
     ...config.imports,
-    'package:slang/builder/model/node.dart',
-    if (config.obfuscation.enabled) 'package:slang/api/secret.dart',
-    if (config.translationOverrides) ...[
-      'package:slang/api/translation_overrides.dart',
-      'package:slang/builder/model/build_model_config.dart',
-      'package:slang/builder/model/enums.dart',
-      if (config.contexts.isNotEmpty)
-        'package:slang/builder/model/context_type.dart',
-    ],
+    'package:slang/node.dart',
+    if (config.obfuscation.enabled) 'package:slang/secret.dart',
+    if (config.translationOverrides) 'package:slang/overrides.dart',
     if (config.flutterIntegration) ...[
       'package:flutter/widgets.dart',
       'package:slang_flutter/slang_flutter.dart',
@@ -166,20 +149,21 @@ void _generateImports(GenerateConfig config, StringBuffer buffer) {
   }
 }
 
-void _generateParts({
+void _generateLocaleImports({
   required StringBuffer buffer,
   required GenerateConfig config,
   required List<I18nData> locales,
 }) {
   buffer.writeln();
-  for (final locale in locales) {
+  for (final locale in locales.skip(1)) {
+    final localeImportName = getImportName(
+      locale: locale.locale,
+    );
     buffer.writeln(
-        'part \'${BuildResultPaths.localePath(outputPath: config.baseName, locale: locale.locale)}\';');
+        'import \'${BuildResultPaths.localePath(outputPath: config.outputFileName, locale: locale.locale)}\' deferred as $localeImportName;');
   }
-  if (config.renderFlatMap) {
-    buffer.writeln(
-        'part \'${BuildResultPaths.flatMapPath(outputPath: config.baseName)}\';');
-  }
+  buffer.writeln(
+      'part \'${BuildResultPaths.localePath(outputPath: config.outputFileName, locale: locales.first.locale)}\';');
 }
 
 void _generateBuildConfig({
@@ -212,23 +196,11 @@ void _generateBuildConfig({
   buffer.write('\tcontexts: [');
   for (final context in config.contexts) {
     buffer.write(
-        'ContextType(enumName: \'${context.enumName}\', enumValues: ${context.enumValues != null ? '[${context.enumValues!.map((e) => '\'$e\'').join(', ')}]' : 'null'}, paths: [${context.paths.map((p) => '\'$p\'').join(', ')}], defaultParameter: \'${context.defaultParameter}\', generateEnum: ${context.generateEnum}),');
+        'ContextType(enumName: \'${context.enumName}\', defaultParameter: \'${context.defaultParameter}\', generateEnum: ${context.generateEnum}),');
   }
   buffer.writeln('],');
   buffer.writeln('\tinterfaces: [], // currently not supported');
   buffer.writeln(');');
-}
-
-void _generateBaseLocale({
-  required StringBuffer buffer,
-  required GenerateConfig config,
-  required String baseLocaleVar,
-}) {
-  final String enumName = config.enumName;
-
-  buffer.writeln();
-  buffer.writeln(
-      'const $enumName $baseLocaleVar = $enumName.${config.baseLocale.enumConstant};');
 }
 
 void _generateEnum({
@@ -264,15 +236,7 @@ void _generateEnum({
     if (locale.country != null) {
       buffer.write(', countryCode: \'${locale.country}\'');
     }
-
-    final String className = allLocales[i].base
-        ? config.className
-        : getClassNameRoot(
-            baseName: config.baseName,
-            visibility: config.translationClassVisibility,
-            locale: locale,
-          );
-    buffer.write(', build: $className.build)');
+    buffer.write(')');
 
     if (i != allLocales.length - 1) {
       buffer.writeln(',');
@@ -282,20 +246,59 @@ void _generateEnum({
   }
 
   buffer.writeln();
-  buffer.writeln(
-      '\tconst $enumName({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element');
+  buffer.writeln('\tconst $enumName({');
+  buffer.writeln('\t\trequired this.languageCode,');
+  buffer.writeln('\t\tthis.scriptCode, // ignore: unused_element');
+  buffer.writeln('\t\tthis.countryCode, // ignore: unused_element');
+  buffer.writeln('\t});');
 
   buffer.writeln();
   buffer.writeln('\t@override final String languageCode;');
   buffer.writeln('\t@override final String? scriptCode;');
   buffer.writeln('\t@override final String? countryCode;');
-  buffer.writeln(
-      '\t@override final TranslationBuilder<$enumName, ${config.className}> build;');
+
+  void generateBuildMethod(StringBuffer buffer, bool sync) {
+    buffer.writeln();
+    buffer.writeln('\t@override');
+    buffer.writeln(
+        '\t${sync ? 'Translations' : 'Future<Translations>'} build${sync ? 'Sync' : ''}({');
+    buffer.writeln('\t\tMap<String, Node>? overrides,');
+    buffer.writeln('\t\tPluralResolver? cardinalResolver,');
+    buffer.writeln('\t\tPluralResolver? ordinalResolver,');
+    buffer.writeln('\t}) ${sync ? '' : 'async '}{');
+    buffer.writeln('\t\tswitch (this) {');
+    for (final locale in allLocales) {
+      final localeImportName = getImportName(
+        locale: locale.locale,
+      );
+      final className = getClassNameRoot(
+        className: config.className,
+        locale: locale.locale,
+      );
+
+      buffer.writeln('\t\t\tcase $enumName.${locale.locale.enumConstant}:');
+      if (!locale.base && !sync) {
+        buffer.writeln('\t\t\t\tawait $localeImportName.loadLibrary();');
+      }
+      buffer.writeln(
+          '\t\t\t\treturn ${locale.base ? '' : '$localeImportName.'}$className(');
+      buffer.writeln('\t\t\t\t\toverrides: overrides,');
+      buffer.writeln('\t\t\t\t\tcardinalResolver: cardinalResolver,');
+      buffer.writeln('\t\t\t\t\tordinalResolver: ordinalResolver,');
+      buffer.writeln('\t\t\t\t);');
+    }
+    buffer.writeln('\t\t}');
+    buffer.writeln('\t}');
+  }
+
+  generateBuildMethod(buffer, false);
+  generateBuildMethod(buffer, true);
+
   if (config.localeHandling) {
     buffer.writeln();
     buffer.writeln('\t/// Gets current instance managed by [LocaleSettings].');
     buffer.writeln(
-        '\t${config.className} get translations => LocaleSettings.instance.translationMap[this]!;');
+        '\t${config.className} get translations => LocaleSettings.instance.getTranslations(this);');
   }
 
   buffer.writeln('}');
@@ -409,19 +412,17 @@ void _generateLocaleSettings({
   buffer.writeln(
       '\tstatic Stream<$enumName> getLocaleStream() => instance.getLocaleStream();');
   buffer.writeln(
-      '\tstatic $enumName setLocale($enumName locale, {bool? listenToDeviceLocale = false}) => instance.setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);');
+      '\tstatic Future<$enumName> setLocale($enumName locale, {bool? listenToDeviceLocale = false}) => instance.setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);');
   buffer.writeln(
-      '\tstatic $enumName setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRaw(rawLocale, listenToDeviceLocale: listenToDeviceLocale);');
+      '\tstatic Future<$enumName> setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRaw(rawLocale, listenToDeviceLocale: listenToDeviceLocale);');
+
   if (config.flutterIntegration) {
     buffer.writeln(
-        '\tstatic $enumName useDeviceLocale() => instance.useDeviceLocale();');
-    buffer.writeln(
-        '\t@Deprecated(\'Use [AppLocaleUtils.supportedLocales]\') static List<Locale> get supportedLocales => instance.supportedLocales;');
+        '\tstatic Future<$enumName> useDeviceLocale() => instance.useDeviceLocale();');
   }
+
   buffer.writeln(
-      '\t@Deprecated(\'Use [AppLocaleUtils.supportedLocalesRaw]\') static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
-  buffer.writeln(
-      '\tstatic void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
+      '\tstatic Future<void> setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
   buffer.writeln('\t\tlanguage: language,');
   buffer.writeln('\t\tlocale: locale,');
   buffer.writeln('\t\tcardinalResolver: cardinalResolver,');
@@ -429,9 +430,36 @@ void _generateLocaleSettings({
   buffer.writeln('\t);');
   if (config.translationOverrides) {
     buffer.writeln(
-        '\tstatic void overrideTranslations({required AppLocale locale, required FileType fileType, required String content}) => instance.overrideTranslations(locale: locale, fileType: fileType, content: content);');
+        '\tstatic Future<void> overrideTranslations({required AppLocale locale, required FileType fileType, required String content}) => instance.overrideTranslations(locale: locale, fileType: fileType, content: content);');
     buffer.writeln(
-        '\tstatic void overrideTranslationsFromMap({required AppLocale locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMap(locale: locale, isFlatMap: isFlatMap, map: map);');
+        '\tstatic Future<void> overrideTranslationsFromMap({required AppLocale locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMap(locale: locale, isFlatMap: isFlatMap, map: map);');
+  }
+
+  // sync versions
+  buffer.writeln();
+  buffer.writeln('\t// synchronous versions');
+  buffer.writeln(
+      '\tstatic $enumName setLocaleSync($enumName locale, {bool? listenToDeviceLocale = false}) => instance.setLocaleSync(locale, listenToDeviceLocale: listenToDeviceLocale);');
+  buffer.writeln(
+      '\tstatic $enumName setLocaleRawSync(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRawSync(rawLocale, listenToDeviceLocale: listenToDeviceLocale);');
+  if (config.flutterIntegration) {
+    buffer.writeln(
+        '\tstatic $enumName useDeviceLocaleSync() => instance.useDeviceLocaleSync();');
+  }
+
+  buffer.writeln(
+      '\tstatic void setPluralResolverSync({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolverSync(');
+  buffer.writeln('\t\tlanguage: language,');
+  buffer.writeln('\t\tlocale: locale,');
+  buffer.writeln('\t\tcardinalResolver: cardinalResolver,');
+  buffer.writeln('\t\tordinalResolver: ordinalResolver,');
+  buffer.writeln('\t);');
+
+  if (config.translationOverrides) {
+    buffer.writeln(
+        '\tstatic void overrideTranslationsSync({required AppLocale locale, required FileType fileType, required String content}) => instance.overrideTranslationsSync(locale: locale, fileType: fileType, content: content);');
+    buffer.writeln(
+        '\tstatic void overrideTranslationsFromMapSync({required AppLocale locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMapSync(locale: locale, isFlatMap: isFlatMap, map: map);');
   }
 
   buffer.writeln('}');
@@ -440,7 +468,6 @@ void _generateLocaleSettings({
 void _generateUtil({
   required StringBuffer buffer,
   required GenerateConfig config,
-  required String baseLocaleVar,
 }) {
   const String utilClass = 'AppLocaleUtils';
   final String enumName = config.enumName;
@@ -450,7 +477,13 @@ void _generateUtil({
   buffer.writeln(
       'class $utilClass extends BaseAppLocaleUtils<$enumName, ${config.className}> {');
   buffer.writeln(
-      '\t$utilClass._() : super(baseLocale: $baseLocaleVar, locales: $enumName.values${config.translationOverrides ? ', buildConfig: _buildConfig' : ''});');
+      '\t$utilClass._() : super(');
+  buffer.writeln('\t\tbaseLocale: $enumName.${config.baseLocale.enumConstant},');
+  buffer.writeln('\t\tlocales: $enumName.values,');
+  if (config.translationOverrides) {
+    buffer.writeln('\t\tbuildConfig: _buildConfig,');
+  }
+  buffer.writeln('\t);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $utilClass._();');
 
@@ -471,9 +504,13 @@ void _generateUtil({
       '\tstatic List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
   if (config.translationOverrides) {
     buffer.writeln(
-        '\tstatic ${config.className} buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic Future<${config.className}> buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln(
-        '\tstatic ${config.className} buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic Future<${config.className}> buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+    buffer.writeln(
+        '\tstatic ${config.className} buildWithOverridesSync({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesSync(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+    buffer.writeln(
+        '\tstatic ${config.className} buildWithOverridesFromMapSync({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMapSync(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
   }
 
   buffer.writeln('}');

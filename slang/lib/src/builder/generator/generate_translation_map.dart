@@ -1,49 +1,31 @@
 part of 'generate_translations.dart';
 
+/// Generates the flat map(s) containing all translations for one locale.
 String generateTranslationMap(
   GenerateConfig config,
-  List<I18nData> translations,
+  I18nData localeData,
 ) {
   final buffer = StringBuffer();
-
-  if (config.outputFormat == OutputFormat.multipleFiles) {
-    // this is a part file
-
-    buffer.writeln('''
-///
-/// Generated file. Do not edit.
-///
-// coverage:ignore-file
-// ignore_for_file: type=lint
-
-part of '${config.outputFileName}';''');
-    buffer.writeln();
-  }
 
   buffer.writeln('/// Flat map(s) containing all translations.');
   buffer.writeln(
       '/// Only for edge cases! For simple maps, use the map function of this library.');
 
-  for (I18nData localeData in translations) {
-    final language = localeData.locale.language;
+  buffer.writeln(
+      'extension on ${localeData.base ? config.className : getClassNameRoot(className: config.className, locale: localeData.locale)} {');
+  buffer.writeln('\tdynamic _flatMapFunction(String path) {');
 
-    buffer.writeln();
-    buffer.writeln(
-        'extension on ${localeData.base ? config.className : getClassNameRoot(baseName: config.baseName, locale: localeData.locale, visibility: config.translationClassVisibility)} {');
-    buffer.writeln('\tdynamic _flatMapFunction(String path) {');
-
-    buffer.writeln('\t\tswitch (path) {');
-    _generateTranslationMapRecursive(
-      buffer: buffer,
-      curr: localeData.root,
-      config: config,
-      language: language,
-    );
-    buffer.writeln('\t\t\tdefault: return null;');
-    buffer.writeln('\t\t}');
-    buffer.writeln('\t}');
-    buffer.writeln('}');
-  }
+  buffer.writeln('\t\tswitch (path) {');
+  _generateTranslationMapRecursive(
+    buffer: buffer,
+    curr: localeData.root,
+    config: config,
+    language: localeData.locale.language,
+  );
+  buffer.writeln('\t\t\tdefault: return null;');
+  buffer.writeln('\t\t}');
+  buffer.writeln('\t}');
+  buffer.writeln('}');
 
   return buffer.toString();
 }

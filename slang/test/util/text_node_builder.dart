@@ -1,5 +1,5 @@
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/model/node.dart';
+import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/node.dart';
 
 StringTextNode textNode(
   String raw,

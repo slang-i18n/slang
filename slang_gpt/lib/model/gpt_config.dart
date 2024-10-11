@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:slang/builder/model/i18n_locale.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang_gpt/model/gpt_model.dart';
 
 /// Represents the gpt node in build.yaml

@@ -1,5 +1,7 @@
-import 'package:slang/builder/model/i18n_locale.dart';
-import 'package:slang/builder/model/raw_config.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/i18n_locale.dart';
+// ignore: implementation_imports
+import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang_gpt/model/gpt_config.dart';
 import 'package:slang_gpt/model/gpt_model.dart';
 import 'package:slang_gpt/prompt/prompt.dart';
