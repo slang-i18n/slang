@@ -1,6 +1,6 @@
 /// Generated file. Do not edit.
 ///
-/// Original: fake/path/integration
+/// Source: fake/path/integration
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 1
@@ -15,7 +15,7 @@ export 'package:slang/slang.dart';
 
 part 'translations_en.g.dart';
 
-/// Supported locales, see extension methods below.
+/// Supported locales.
 ///
 /// Usage:
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
@@ -83,7 +83,10 @@ Translations get t => LocaleSettings.instance.currentTranslations;
 
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseLocaleSettings<AppLocale, Translations> {
-	LocaleSettings._() : super(utils: AppLocaleUtils.instance);
+	LocaleSettings._() : super(
+		utils: AppLocaleUtils.instance,
+		lazy: true,
+	);
 
 	static final instance = LocaleSettings._();
 

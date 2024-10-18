@@ -69,6 +69,7 @@ class RawConfigBuilder {
               RawConfig.defaultOutputDirectory,
       outputFileName:
           map['output_file_name'] ?? RawConfig.defaultOutputFileName,
+      lazy: map['lazy'] ?? RawConfig.defaultLazy,
       localeHandling: map['locale_handling'] ?? RawConfig.defaultLocaleHandling,
       flutterIntegration:
           map['flutter_integration'] ?? RawConfig.defaultFlutterIntegration,

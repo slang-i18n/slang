@@ -2,16 +2,17 @@
 /// Generated file. Do not edit.
 ///
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_import
 
-import 'strings_a.g.dart';
+import 'package:flutter/widgets.dart';
 import 'package:slang/node.dart';
+import 'strings_a.g.dart';
 
 // Path: <root>
-class StringsADe implements Translations {
+class TranslationsDe implements Translations {
   /// You can call this constructor and build your own translation instance of this locale.
   /// Constructing via the enum [AppLocale.build] is preferred.
-  StringsADe.build(
+  TranslationsDe(
       {Map<String, Node>? overrides,
       PluralResolver? cardinalResolver,
       PluralResolver? ordinalResolver})
@@ -34,7 +35,7 @@ class StringsADe implements Translations {
   @override
   dynamic operator [](String key) => $meta.getTranslation(key);
 
-  late final StringsADe _root = this; // ignore: unused_field
+  late final TranslationsDe _root = this; // ignore: unused_field
 
   // Translations
   @override
@@ -43,7 +44,7 @@ class StringsADe implements Translations {
 
 /// Flat map(s) containing all translations.
 /// Only for edge cases! For simple maps, use the map function of this library.
-extension on StringsADe {
+extension on TranslationsDe {
   dynamic _flatMapFunction(String path) {
     switch (path) {
       case 'title':

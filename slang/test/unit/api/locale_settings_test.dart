@@ -76,5 +76,5 @@ class _AppLocaleUtils
 
 class _LocaleSettings
     extends BaseLocaleSettings<FakeAppLocale, FakeTranslations> {
-  _LocaleSettings() : super(utils: _AppLocaleUtils());
+  _LocaleSettings() : super(utils: _AppLocaleUtils(), lazy: false);
 }

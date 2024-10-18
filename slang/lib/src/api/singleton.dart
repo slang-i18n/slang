@@ -254,9 +254,14 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
 
   BaseLocaleSettings({
     required this.utils,
-  }) : translationMap = {
-          utils.baseLocale: utils.baseLocale.buildSync(),
-        };
+    required bool lazy,
+  }) : translationMap = lazy
+            ? {
+                utils.baseLocale: utils.baseLocale.buildSync(),
+              }
+            : {
+                for (final locale in utils.locales) locale: locale.buildSync(),
+              };
 
   /// Updates the provider state and therefore triggers a rebuild
   /// on all widgets listening to this provider.

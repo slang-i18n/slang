@@ -13,6 +13,7 @@ class GenerateConfig {
   final I18nLocale baseLocale; // defaults to 'en'
   final GenerateFallbackStrategy fallbackStrategy;
   final String outputFileName;
+  final bool lazy;
   final bool localeHandling;
   final bool flutterIntegration;
   final String translateVariable;
@@ -34,6 +35,7 @@ class GenerateConfig {
     required this.baseLocale,
     required this.fallbackStrategy,
     required this.outputFileName,
+    required this.lazy,
     required this.localeHandling,
     required this.flutterIntegration,
     required this.translateVariable,

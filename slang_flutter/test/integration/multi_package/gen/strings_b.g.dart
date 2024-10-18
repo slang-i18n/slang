@@ -1,25 +1,23 @@
 /// Generated file. Do not edit.
 ///
-/// Original: i18n
+/// Source: i18n
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
 import 'package:slang/node.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'strings_b_de.g.dart' deferred as strings_b_de;
+import 'strings_b_de.g.dart' deferred as _$de;
 part 'strings_b_en.g.dart';
 
-const AppLocale _baseLocale = AppLocale.en;
-
-/// Supported locales, see extension methods below.
+/// Supported locales.
 ///
 /// Usage:
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
@@ -50,14 +48,14 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
   }) async {
     switch (this) {
       case AppLocale.en:
-        return StringsBEn.build(
+        return TranslationsEn(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
         );
       case AppLocale.de:
-        await strings_b_de.loadLibrary();
-        return strings_b_de.StringsBDe.build(
+        await _$de.loadLibrary();
+        return _$de.TranslationsDe(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
@@ -73,13 +71,13 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
   }) {
     switch (this) {
       case AppLocale.en:
-        return StringsBEn.build(
+        return TranslationsEn(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
         );
       case AppLocale.de:
-        return strings_b_de.StringsBDe.build(
+        return _$de.TranslationsDe(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
@@ -140,7 +138,11 @@ extension BuildContextTranslationsExtension on BuildContext {
 /// Manages all translation instances and the current locale
 class LocaleSettings
     extends BaseFlutterLocaleSettings<AppLocale, Translations> {
-  LocaleSettings._() : super(utils: AppLocaleUtils.instance);
+  LocaleSettings._()
+      : super(
+          utils: AppLocaleUtils.instance,
+          lazy: true,
+        );
 
   static final instance = LocaleSettings._();
 
@@ -193,7 +195,10 @@ class LocaleSettings
 /// Provides utility functions without any side effects.
 class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, Translations> {
   AppLocaleUtils._()
-      : super(baseLocale: _baseLocale, locales: AppLocale.values);
+      : super(
+          baseLocale: AppLocale.en,
+          locales: AppLocale.values,
+        );
 
   static final instance = AppLocaleUtils._();
 

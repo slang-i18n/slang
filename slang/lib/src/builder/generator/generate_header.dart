@@ -116,7 +116,7 @@ void _generateHeaderComment({
   buffer.writeln('''
 /// Generated file. Do not edit.
 ///
-/// Original: ${config.inputDirectoryHint}
+/// Source: ${config.inputDirectoryHint}
 /// To regenerate, run: `dart run slang`$statisticsStr$timestampStr
 
 // coverage:ignore-file
@@ -159,8 +159,9 @@ void _generateLocaleImports({
     final localeImportName = getImportName(
       locale: locale.locale,
     );
+    final deferred = config.lazy ? ' deferred' : '';
     buffer.writeln(
-        'import \'${BuildResultPaths.localePath(outputPath: config.outputFileName, locale: locale.locale)}\' deferred as $localeImportName;');
+        'import \'${BuildResultPaths.localePath(outputPath: config.outputFileName, locale: locale.locale)}\'$deferred as $localeImportName;');
   }
   buffer.writeln(
       'part \'${BuildResultPaths.localePath(outputPath: config.outputFileName, locale: locales.first.locale)}\';');
@@ -213,7 +214,7 @@ void _generateEnum({
       '$enumName.${config.baseLocale.enumConstant}';
 
   buffer.writeln();
-  buffer.writeln('/// Supported locales, see extension methods below.');
+  buffer.writeln('/// Supported locales.');
   buffer.writeln('///');
   buffer.writeln('/// Usage:');
   buffer.writeln(
@@ -257,7 +258,8 @@ void _generateEnum({
   buffer.writeln('\t@override final String? scriptCode;');
   buffer.writeln('\t@override final String? countryCode;');
 
-  void generateBuildMethod(StringBuffer buffer, bool sync) {
+  void generateBuildMethod(StringBuffer buffer,
+      {required bool sync, required bool proxySync}) {
     buffer.writeln();
     buffer.writeln('\t@override');
     buffer.writeln(
@@ -266,33 +268,43 @@ void _generateEnum({
     buffer.writeln('\t\tPluralResolver? cardinalResolver,');
     buffer.writeln('\t\tPluralResolver? ordinalResolver,');
     buffer.writeln('\t}) ${sync ? '' : 'async '}{');
-    buffer.writeln('\t\tswitch (this) {');
-    for (final locale in allLocales) {
-      final localeImportName = getImportName(
-        locale: locale.locale,
-      );
-      final className = getClassNameRoot(
-        className: config.className,
-        locale: locale.locale,
-      );
 
-      buffer.writeln('\t\t\tcase $enumName.${locale.locale.enumConstant}:');
-      if (!locale.base && !sync) {
-        buffer.writeln('\t\t\t\tawait $localeImportName.loadLibrary();');
+    if (proxySync) {
+      buffer.writeln('\t\treturn buildSync(');
+      buffer.writeln('\t\t\toverrides: overrides,');
+      buffer.writeln('\t\t\tcardinalResolver: cardinalResolver,');
+      buffer.writeln('\t\t\tordinalResolver: ordinalResolver,');
+      buffer.writeln('\t\t);');
+    } else {
+      buffer.writeln('\t\tswitch (this) {');
+      for (final locale in allLocales) {
+        final localeImportName = getImportName(
+          locale: locale.locale,
+        );
+        final className = getClassNameRoot(
+          className: config.className,
+          locale: locale.locale,
+        );
+
+        buffer.writeln('\t\t\tcase $enumName.${locale.locale.enumConstant}:');
+        if (!locale.base && !sync) {
+          buffer.writeln('\t\t\t\tawait $localeImportName.loadLibrary();');
+        }
+        buffer.writeln(
+            '\t\t\t\treturn ${locale.base ? '' : '$localeImportName.'}$className(');
+        buffer.writeln('\t\t\t\t\toverrides: overrides,');
+        buffer.writeln('\t\t\t\t\tcardinalResolver: cardinalResolver,');
+        buffer.writeln('\t\t\t\t\tordinalResolver: ordinalResolver,');
+        buffer.writeln('\t\t\t\t);');
       }
-      buffer.writeln(
-          '\t\t\t\treturn ${locale.base ? '' : '$localeImportName.'}$className(');
-      buffer.writeln('\t\t\t\t\toverrides: overrides,');
-      buffer.writeln('\t\t\t\t\tcardinalResolver: cardinalResolver,');
-      buffer.writeln('\t\t\t\t\tordinalResolver: ordinalResolver,');
-      buffer.writeln('\t\t\t\t);');
+      buffer.writeln('\t\t}');
     }
-    buffer.writeln('\t\t}');
+
     buffer.writeln('\t}');
   }
 
-  generateBuildMethod(buffer, false);
-  generateBuildMethod(buffer, true);
+  generateBuildMethod(buffer, sync: false, proxySync: !config.lazy);
+  generateBuildMethod(buffer, sync: true, proxySync: false);
 
   if (config.localeHandling) {
     buffer.writeln();
@@ -399,8 +411,10 @@ void _generateLocaleSettings({
       .writeln('/// Manages all translation instances and the current locale');
   buffer.writeln(
       'class $settingsClass extends $baseClass<$enumName, ${config.className}> {');
-  buffer
-      .writeln('\t$settingsClass._() : super(utils: AppLocaleUtils.instance);');
+  buffer.writeln('\t$settingsClass._() : super(');
+  buffer.writeln('\t\tutils: AppLocaleUtils.instance,');
+  buffer.writeln('\t\tlazy: ${config.lazy},');
+  buffer.writeln('\t);');
   buffer.writeln();
   buffer.writeln('\tstatic final instance = $settingsClass._();');
 

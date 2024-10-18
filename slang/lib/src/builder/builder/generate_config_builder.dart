@@ -18,6 +18,7 @@ class GenerateConfigBuilder {
       baseLocale: config.baseLocale,
       fallbackStrategy: config.fallbackStrategy.toGenerateFallbackStrategy(),
       outputFileName: config.outputFileName,
+      lazy: config.lazy,
       localeHandling: config.localeHandling,
       flutterIntegration: config.flutterIntegration,
       translateVariable: config.translateVar,

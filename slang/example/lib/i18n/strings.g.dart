@@ -1,12 +1,12 @@
 /// Generated file. Do not edit.
 ///
-/// Original: lib/i18n
+/// Source: lib/i18n
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 3
 /// Strings: 21 (7 per locale)
 ///
-/// Built on 2024-10-18 at 00:05 UTC
+/// Built on 2024-10-18 at 01:08 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
@@ -20,7 +20,7 @@ import 'strings_de.g.dart' deferred as _$de;
 import 'strings_fr_FR.g.dart' deferred as _$fr_FR;
 part 'strings_en.g.dart';
 
-/// Supported locales, see extension methods below.
+/// Supported locales.
 ///
 /// Usage:
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
@@ -146,7 +146,10 @@ extension BuildContextTranslationsExtension on BuildContext {
 
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, Translations> {
-	LocaleSettings._() : super(utils: AppLocaleUtils.instance);
+	LocaleSettings._() : super(
+		utils: AppLocaleUtils.instance,
+		lazy: true,
+	);
 
 	static final instance = LocaleSettings._();
 

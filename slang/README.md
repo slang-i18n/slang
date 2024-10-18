@@ -72,10 +72,10 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Dependency Injection](#-dependency-injection)
 - [Structuring Features](#structuring-features)
   - [Namespaces](#-namespaces)
-  - [Output Format](#-output-format)
   - [Compact CSV](#-compact-csv)
 - [Other Features](#other-features)
   - [Fallback](#-fallback)
+  - [Lazy Loading](#-lazy-loading)
   - [Comments](#-comments)
   - [Recasing](#-recasing)
   - [Obfuscation](#-obfuscation)
@@ -288,7 +288,7 @@ input_directory: lib/i18n
 input_file_pattern: .i18n.json
 output_directory: lib/i18n
 output_file_name: translations.g.dart
-output_format: single_file
+lazy: true
 locale_handling: true
 flutter_integration: true
 namespaces: false
@@ -317,11 +317,6 @@ pluralization:
     - someKey.place
 contexts:
   GenderContext:
-    enum:
-      - male
-      - female
-    paths:
-      - my.path.to.greet
     default_parameter: gender
     generate_enum: true
 interfaces:
@@ -359,7 +354,7 @@ targets:
           input_file_pattern: .i18n.json
           output_directory: lib/i18n
           output_file_name: translations.g.dart
-          output_format: single_file
+          lazy: true
           locale_handling: true
           flutter_integration: true
           namespaces: false
@@ -388,11 +383,6 @@ targets:
               - someKey.place
           contexts:
             GenderContext:
-              enum:
-                - male
-                - female
-              paths:
-                - my.path.to.greet
               default_parameter: gender
               generate_enum: true
           interfaces:
@@ -421,7 +411,7 @@ targets:
 | `input_file_pattern`                | `String`                                          | input file pattern, must end with .json, .yaml, .csv, .arb   | `.i18n.json`   |
 | `output_directory`                  | `String`                                          | path to output directory                                     | `null`         |
 | `output_file_name`                  | `String`                                          | output file name                                             | `null`         |
-| `output_format`                     | `single_file`, `multiple_files`                   | split output files [(i)](#-output-format)                    | `single_file`  |
+| `lazy`                              | `Boolean`                                         | load translations lazily [(i)](#-lazy-loading)               | `true`         |
 | `locale_handling`                   | `Boolean`                                         | generate locale handling logic [(i)](#-dependency-injection) | `true`         |
 | `flutter_integration`               | `Boolean`                                         | generate flutter features [(i)](#-dart-only)                 | `true`         |
 | `namespaces`                        | `Boolean`                                         | split input files [(i)](#-namespaces)                        | `false`        |
@@ -1174,32 +1164,6 @@ String a = t.widgets.welcomeCard.title;
 String b = t.errorDialogs.login.wrongPassword;
 ```
 
-### ➤ Output Format
-
-By default, a single `.g.dart` file will be generated.
-
-You can split this file into multiple ones to improve readability and IDE performance.
-
-```yaml
-# Config
-output_file_name: translations.g.dart
-output_format: multiple_files # set this
-```
-
-This will generate the following files:
-
-```text
-lib/
- └── i18n/
-      └── translations.g.dart <-- main file
-      └── translations_en.g.dart <-- translation classes
-      └── translations_de.g.dart <-- translation classes
-      └── ...
-      └── translations_map.g.dart <-- translations stored in flat maps
-```
-
-You only need to import the main file!
-
 ### ➤ Compact CSV
 
 Normally, you would create a new csv file for each locale:
@@ -1262,6 +1226,19 @@ fallback_strategy: base_locale # add this
 ```
 
 To also treat empty strings as missing translations, set `fallback_strategy: base_locale_empty_string`.
+
+### ➤ Lazy Loading
+
+By default, translations for secondary locales are loaded lazily if [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-library) is supported (Web).
+
+This reduces the initial startup time.
+
+Disable this feature by setting `lazy: false`. In this case, all locales are available immediately.
+
+```yaml
+# Config
+lazy: false
+```
 
 ### ➤ Comments
 

@@ -12,6 +12,7 @@ class RawConfig {
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
   static const String defaultOutputFileName = 'strings.g.dart';
+  static const bool defaultLazy = true;
   static const bool defaultLocaleHandling = true;
   static const bool defaultFlutterIntegration = true;
   static const bool defaultNamespaces = false;
@@ -47,6 +48,7 @@ class RawConfig {
   final String inputFilePattern;
   final String? outputDirectory;
   final String outputFileName;
+  final bool lazy;
   final bool localeHandling;
   final bool flutterIntegration;
   final bool namespaces;
@@ -82,6 +84,7 @@ class RawConfig {
     required this.inputFilePattern,
     required this.outputDirectory,
     required this.outputFileName,
+    required this.lazy,
     required this.localeHandling,
     required this.flutterIntegration,
     required this.namespaces,
@@ -118,6 +121,7 @@ class RawConfig {
     FallbackStrategy? fallbackStrategy,
     String? inputFilePattern,
     String? outputFileName,
+    bool? lazy,
     bool? localeHandling,
     bool? flutterIntegration,
     bool? namespaces,
@@ -143,6 +147,7 @@ class RawConfig {
       inputFilePattern: inputFilePattern ?? this.inputFilePattern,
       outputDirectory: outputDirectory,
       outputFileName: outputFileName ?? this.outputFileName,
+      lazy: lazy ?? this.lazy,
       localeHandling: localeHandling ?? this.localeHandling,
       flutterIntegration: flutterIntegration ?? this.flutterIntegration,
       namespaces: namespaces ?? this.namespaces,
@@ -201,6 +206,7 @@ class RawConfig {
     print(
         ' -> outputDirectory: ${outputDirectory ?? 'null (directory of input)'}');
     print(' -> outputFileName: $outputFileName');
+    print(' -> lazy: $lazy');
     print(' -> localeHandling: $localeHandling');
     print(' -> flutterIntegration: $flutterIntegration');
     print(' -> namespaces: $namespaces');
@@ -256,6 +262,7 @@ class RawConfig {
     inputFilePattern: RawConfig.defaultInputFilePattern,
     outputDirectory: RawConfig.defaultOutputDirectory,
     outputFileName: RawConfig.defaultOutputFileName,
+    lazy: RawConfig.defaultLazy,
     localeHandling: RawConfig.defaultLocaleHandling,
     flutterIntegration: RawConfig.defaultFlutterIntegration,
     namespaces: RawConfig.defaultNamespaces,

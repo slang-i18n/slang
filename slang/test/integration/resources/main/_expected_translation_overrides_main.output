@@ -1,6 +1,6 @@
 /// Generated file. Do not edit.
 ///
-/// Original: fake/path/integration
+/// Source: fake/path/integration
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
@@ -36,7 +36,7 @@ final _buildConfig = BuildModelConfig(
 	interfaces: [], // currently not supported
 );
 
-/// Supported locales, see extension methods below.
+/// Supported locales.
 ///
 /// Usage:
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
@@ -148,7 +148,10 @@ extension BuildContextTranslationsExtension on BuildContext {
 
 /// Manages all translation instances and the current locale
 class LocaleSettings extends BaseFlutterLocaleSettings<AppLocale, Translations> {
-	LocaleSettings._() : super(utils: AppLocaleUtils.instance);
+	LocaleSettings._() : super(
+		utils: AppLocaleUtils.instance,
+		lazy: true,
+	);
 
 	static final instance = LocaleSettings._();
 

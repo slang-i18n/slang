@@ -48,6 +48,7 @@ class BaseFlutterLocaleSettings<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> extends BaseLocaleSettings<E, T> {
   BaseFlutterLocaleSettings({
     required super.utils,
+    required super.lazy,
   });
 
   @override

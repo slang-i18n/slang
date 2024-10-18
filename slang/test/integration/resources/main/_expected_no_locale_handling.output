@@ -1,6 +1,6 @@
 /// Generated file. Do not edit.
 ///
-/// Original: fake/path/integration
+/// Source: fake/path/integration
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 1
@@ -16,7 +16,7 @@ export 'package:slang_flutter/slang_flutter.dart';
 
 part 'translations_en.g.dart';
 
-/// Supported locales, see extension methods below.
+/// Supported locales.
 ///
 /// Usage:
 /// - LocaleSettings.setLocale(AppLocale.en) // set locale
