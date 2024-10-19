@@ -86,9 +86,18 @@ abstract mixin class BaseAppLocale<E extends BaseAppLocale<E, T>,
   static final BaseAppLocale undefinedLocale =
       FakeAppLocale(languageCode: 'und');
 
+  /// Concatenates language, script and country code with dashes.
+  /// Resembles [Locale.toLanguageTag] of dart:ui.
   String get languageTag => [languageCode, scriptCode, countryCode]
       .where((element) => element != null)
       .join('-');
+
+  /// For whatever reason, the intl package uses underscores instead of dashes
+  /// that contradicts https://www.unicode.org/reports/tr35/
+  /// that is used by the Locale class in dart:ui.
+  String get underscoreTag => [languageCode, scriptCode, countryCode]
+      .where((element) => element != null)
+      .join('_');
 
   bool sameLocale(BaseAppLocale other) {
     return languageCode == other.languageCode &&
@@ -123,12 +132,7 @@ class FakeAppLocale extends BaseAppLocale<FakeAppLocale, FakeTranslations> {
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
   }) async =>
-      FakeTranslations(
-        FakeAppLocale(
-          languageCode: languageCode,
-          scriptCode: scriptCode,
-          countryCode: countryCode,
-        ),
+      buildSync(
         overrides: overrides,
         cardinalResolver: cardinalResolver,
         ordinalResolver: ordinalResolver,
