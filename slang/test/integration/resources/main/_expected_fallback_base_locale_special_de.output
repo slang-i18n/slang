@@ -5,6 +5,7 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:slang/node.dart';
 import 'translations.cgm.dart';
 
@@ -20,7 +21,7 @@ class TranslationsDe extends Translations {
 		    cardinalResolver: cardinalResolver,
 		    ordinalResolver: ordinalResolver,
 		  ),
-		  super.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver) {
+		  super(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver) {
 		super.$meta.setFlatMapFunction($meta.getTranslation); // copy base translations to super.$meta
 		$meta.setFlatMapFunction(_flatMapFunction);
 	}

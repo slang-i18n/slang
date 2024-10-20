@@ -10,6 +10,7 @@ class I18nLocale {
   final String? script;
   final String? country;
   late String languageTag = _toLanguageTag();
+  late String underscoreTag = languageTag.replaceAll('-', '_');
   late String enumConstant = _toEnumConstant();
 
   I18nLocale({required this.language, this.script, this.country});

@@ -26,7 +26,7 @@ class TranslationModelListBuilder {
     final baseResult = TranslationModelBuilder.build(
       buildConfig: buildConfig,
       map: rawConfig.namespaces ? namespaces : namespaces.values.first,
-      localeDebug: baseEntry.key.languageTag,
+      locale: baseEntry.key,
     );
 
     return translationMap.getInternalMap().entries.map((localeEntry) {
@@ -48,7 +48,7 @@ class TranslationModelListBuilder {
           buildConfig: buildConfig,
           map: rawConfig.namespaces ? namespaces : namespaces.values.first,
           baseData: baseResult,
-          localeDebug: locale.languageTag,
+          locale: locale,
         );
 
         return I18nData(

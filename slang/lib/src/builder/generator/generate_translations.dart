@@ -40,6 +40,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
     final imports = [
       config.outputFileName,
       ...config.imports,
+      'package:intl/intl.dart',
       'package:slang/node.dart',
       if (config.obfuscation.enabled) 'package:slang/secret.dart',
       if (config.translationOverrides) 'package:slang/overrides.dart',
@@ -220,7 +221,7 @@ void _generateClass(
 
     if (callSuperConstructor) {
       buffer.write(
-          ',\n\t\t  super.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver)');
+          ',\n\t\t  super(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver)');
     }
 
     if (config.renderFlatMap) {
@@ -263,9 +264,13 @@ void _generateClass(
   } else {
     if (callSuperConstructor) {
       buffer.writeln(
-          '\t$finalClassName._($rootClassName root) : this._root = root, super._(root);');
+          '\t$finalClassName._($rootClassName root) : this._root = root, super.internal(root);');
     } else {
-      buffer.writeln('\t$finalClassName._(this._root);');
+      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+        buffer.writeln('\t$finalClassName.internal(this._root);');
+      } else {
+        buffer.writeln('\t$finalClassName._(this._root);');
+      }
     }
   }
 
@@ -389,8 +394,14 @@ void _generateClass(
           childName: key,
           locale: localeData.locale,
         );
-        buffer.writeln(
-            'late final $childClassWithLocale$optional $key = $childClassWithLocale._(_root);');
+
+        buffer.write('late final $childClassWithLocale$optional $key = ');
+        if (localeData.base &&
+            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+          buffer.writeln('$childClassWithLocale.internal(_root);');
+        } else {
+          buffer.writeln('$childClassWithLocale._(_root);');
+        }
       }
     } else if (value is PluralNode) {
       final returnType = value.rich ? 'TextSpan' : 'String';

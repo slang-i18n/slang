@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
@@ -41,12 +42,12 @@ class TranslationModelBuilder {
   /// e.g. "Let's go" will be "Let's go" instead of "Let\'s go".
   /// Similar to [handleLinks], this is used for "Translation Overrides".
   static BuildModelResult build({
+    required I18nLocale locale,
     required BuildModelConfig buildConfig,
     required Map<String, dynamic> map,
     BuildModelResult? baseData,
     bool handleLinks = true,
     bool shouldEscapeText = true,
-    required String localeDebug,
   }) {
     // flat map for leaves (TextNode, PluralNode, ContextNode)
     final Map<String, LeafNode> leavesMap = {};
@@ -77,7 +78,7 @@ class TranslationModelBuilder {
     // Assumption: They are basic linked translations without parameters
     // Reason: Not all TextNodes are built, so final parameters are unknown
     final resultNodeTree = _parseMapNode(
-      localeDebug: localeDebug,
+      locale: locale,
       parentPath: '',
       parentRawPath: '',
       curr: map,
@@ -112,7 +113,7 @@ class TranslationModelBuilder {
             final currLink = pathQueue.removeFirst();
             final linkedNode = leavesMap[currLink];
             if (linkedNode == null) {
-              throw '"$key" in <$localeDebug> is linked to "$currLink" but "$currLink" is undefined.';
+              throw '"$key" in <${locale.languageTag}> is linked to "$currLink" but "$currLink" is undefined.';
             }
 
             visitedLinks.add(currLink);
@@ -220,7 +221,7 @@ class TranslationModelBuilder {
 /// Takes the [curr] map which is (a part of) the raw tree from json / yaml
 /// and returns the node model.
 Map<String, Node> _parseMapNode({
-  required String localeDebug,
+  required I18nLocale locale,
   required String parentPath,
   required String parentRawPath,
   required Map<String, dynamic> curr,
@@ -265,6 +266,7 @@ Map<String, Node> _parseMapNode({
               path: currPath,
               rawPath: currRawPath,
               modifiers: modifiers,
+              locale: locale,
               raw: value.toString(),
               comment: comment,
               shouldEscape: shouldEscapeText,
@@ -275,6 +277,7 @@ Map<String, Node> _parseMapNode({
               path: currPath,
               rawPath: currRawPath,
               modifiers: modifiers,
+              locale: locale,
               raw: value.toString(),
               comment: comment,
               shouldEscape: shouldEscapeText,
@@ -293,7 +296,7 @@ Map<String, Node> _parseMapNode({
           for (int i = 0; i < value.length; i++) i.toString(): value[i],
         };
         children = _parseMapNode(
-          localeDebug: localeDebug,
+          locale: locale,
           parentPath: currPath,
           parentRawPath: currRawPath,
           curr: listAsMap,
@@ -319,7 +322,7 @@ Map<String, Node> _parseMapNode({
       } else {
         // key: { ...value }
         children = _parseMapNode(
-          localeDebug: localeDebug,
+          locale: locale,
           parentPath: currPath,
           parentRawPath: currRawPath,
           curr: value,
@@ -347,7 +350,7 @@ Map<String, Node> _parseMapNode({
           if (children.isEmpty) {
             switch (config.fallbackStrategy) {
               case FallbackStrategy.none:
-                throw '"$currPath" in <$localeDebug> is empty but it is marked for pluralization / context. Define "fallback_strategy: base_locale" to ignore this node.';
+                throw '"$currPath" in <${locale.languageTag}> is empty but it is marked for pluralization / context. Define "fallback_strategy: base_locale" to ignore this node.';
               case FallbackStrategy.baseLocale:
               case FallbackStrategy.baseLocaleEmptyString:
                 return;
@@ -375,7 +378,7 @@ Map<String, Node> _parseMapNode({
           if (rich) {
             // rebuild children as RichText
             digestedMap = _parseMapNode(
-              localeDebug: localeDebug,
+              locale: locale,
               parentPath: currPath,
               parentRawPath: currRawPath,
               curr: {

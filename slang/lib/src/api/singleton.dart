@@ -6,6 +6,7 @@ import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/decoder/base_decoder.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
@@ -227,7 +228,11 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
       map: digestedMap,
       handleLinks: false,
       shouldEscapeText: false,
-      localeDebug: locale.languageTag,
+      locale: I18nLocale(
+        language: locale.languageCode,
+        script: locale.scriptCode,
+        country: locale.countryCode,
+      ),
     );
   }
 }

@@ -12,12 +12,16 @@ class ParseParamResult {
       'ParseParamResult(paramName: $paramName, paramType: $paramType)';
 }
 
+/// Parses a parameter string.
+/// E.g. `p: int` -> `ParseParamResult(paramName: 'p', paramType: 'int')`
 ParseParamResult parseParam({
   required String rawParam,
   required String defaultType,
   required CaseStyle? caseStyle,
 }) {
-  if (rawParam.endsWith(')')) {
+  final colonIndex = rawParam.indexOf(':');
+  final bracketIndex = rawParam.indexOf('(');
+  if (bracketIndex != -1 && (colonIndex == -1 || bracketIndex < colonIndex)) {
     // rich text parameter with default value
     // this will be parsed by parseParamWithArg
     return ParseParamResult(
@@ -25,11 +29,14 @@ ParseParamResult parseParam({
       '',
     );
   }
-  final split = rawParam.split(':');
-  if (split.length == 1) {
-    return ParseParamResult(split[0].toCase(caseStyle), defaultType);
+
+  if (colonIndex == -1) {
+    return ParseParamResult(rawParam.toCase(caseStyle), defaultType);
   }
-  return ParseParamResult(split[0].trim().toCase(caseStyle), split[1].trim());
+  return ParseParamResult(
+    rawParam.substring(0, colonIndex).trim().toCase(caseStyle),
+    rawParam.substring(colonIndex + 1).trim(),
+  );
 }
 
 class ParamWithArg {

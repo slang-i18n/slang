@@ -1,6 +1,8 @@
-import 'package:slang/src/builder/builder/text_parser.dart';
+import 'package:slang/src/builder/builder/text/l10n_parser.dart';
+import 'package:slang/src/builder/builder/text/param_parser.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
@@ -213,6 +215,9 @@ class ContextNode extends Node implements LeafNode {
 }
 
 abstract class TextNode extends Node implements LeafNode {
+  /// The locale of the text node
+  final I18nLocale locale;
+
   /// The original string
   final String raw;
 
@@ -226,6 +231,9 @@ abstract class TextNode extends Node implements LeafNode {
   /// For special cases, i.e. a translation is linked to a plural translation,
   /// the type must be specified and cannot be [Object].
   Map<String, String> get paramTypeMap;
+
+  /// Map of parameters to their format in raw string.
+  Map<String, String> get paramFormatMap;
 
   /// Set of paths to [TextNode]s
   /// Will be used for 2nd round, determining the final set of parameters
@@ -242,6 +250,7 @@ abstract class TextNode extends Node implements LeafNode {
     required super.rawPath,
     required super.modifiers,
     required super.comment,
+    required this.locale,
     required this.raw,
     required this.shouldEscape,
     required this.interpolation,
@@ -278,10 +287,16 @@ class StringTextNode extends TextNode {
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
 
+  final _paramFormatMap = <String, String>{};
+
+  @override
+  Map<String, String> get paramFormatMap => _paramFormatMap;
+
   StringTextNode({
     required super.path,
     required super.rawPath,
     required super.modifiers,
+    required super.locale,
     required super.raw,
     required super.comment,
     required super.shouldEscape,
@@ -290,6 +305,7 @@ class StringTextNode extends TextNode {
     Map<String, Set<String>>? linkParamMap,
   }) {
     final parsedResult = _parseInterpolation(
+      locale: locale,
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
       defaultType: 'Object',
@@ -324,6 +340,7 @@ class StringTextNode extends TextNode {
       path: path,
       rawPath: rawPath,
       modifiers: modifiers,
+      locale: locale,
       raw: raw,
       comment: comment,
       shouldEscape: shouldEscape,
@@ -365,10 +382,16 @@ class RichTextNode extends TextNode {
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
 
+  final _paramFormatMap = <String, String>{};
+
+  @override
+  Map<String, String> get paramFormatMap => _paramFormatMap;
+
   RichTextNode({
     required super.path,
     required super.rawPath,
     required super.modifiers,
+    required super.locale,
     required super.raw,
     required super.comment,
     required super.shouldEscape,
@@ -377,9 +400,11 @@ class RichTextNode extends TextNode {
     Map<String, Set<String>>? linkParamMap,
   }) {
     final rawParsedResult = _parseInterpolation(
+      locale: locale,
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
-      defaultType: 'ignored', // types are ignored
+      defaultType: 'ignored',
+      // types are ignored
       paramCase: null, // param case will be applied later
     );
 
@@ -451,6 +476,7 @@ class RichTextNode extends TextNode {
       path: path,
       rawPath: rawPath,
       modifiers: modifiers,
+      locale: locale,
       raw: raw,
       comment: comment,
       shouldEscape: shouldEscape,
@@ -500,14 +526,22 @@ class _ParseInterpolationResult {
   /// Map of parameter name -> parameter type
   final Map<String, String> params;
 
-  _ParseInterpolationResult(this.parsedContent, this.params);
+  /// Map of parameter name -> parameter format
+  final Map<String, String> formats;
+
+  _ParseInterpolationResult({
+    required this.parsedContent,
+    required this.params,
+    required this.formats,
+  });
 
   @override
   String toString() =>
-      '_ParseInterpolationResult{parsedContent: $parsedContent, params: $params}';
+      '_ParseInterpolationResult(parsedContent: $parsedContent, params: $params, formats: $formats)';
 }
 
 _ParseInterpolationResult _parseInterpolation({
+  required I18nLocale locale,
   required String raw,
   required StringInterpolation interpolation,
   required String defaultType,
@@ -515,6 +549,30 @@ _ParseInterpolationResult _parseInterpolation({
 }) {
   final String parsedContent;
   final params = <String, String>{};
+  final formats = <String, String>{};
+
+  String convertInnerParam(String inner) {
+    final parsedParam = parseParam(
+      rawParam: inner,
+      defaultType: defaultType,
+      caseStyle: paramCase,
+    );
+
+    final parsedL10n = parseL10n(
+      locale: locale,
+      paramName: parsedParam.paramName,
+      type: parsedParam.paramType.replaceAll(r"\'", "'"), // unescape
+    );
+
+    if (parsedL10n != null) {
+      params[parsedParam.paramName] = parsedL10n.paramType;
+      formats[parsedParam.paramName] = parsedL10n.format;
+      return '\${${parsedL10n.format}}';
+    } else {
+      params[parsedParam.paramName] = parsedParam.paramType;
+      return '\${${parsedParam.paramName}}';
+    }
+  }
 
   switch (interpolation) {
     case StringInterpolation.dart:
@@ -522,41 +580,27 @@ _ParseInterpolationResult _parseInterpolation({
         final rawParam = match.startsWith(r'${')
             ? match.substring(2, match.length - 1)
             : match.substring(1, match.length);
-        final parsedParam = parseParam(
-          rawParam: rawParam,
-          defaultType: defaultType,
-          caseStyle: paramCase,
-        );
-        params[parsedParam.paramName] = parsedParam.paramType;
-        return '\${${parsedParam.paramName}}';
+        return convertInnerParam(rawParam);
       });
       break;
     case StringInterpolation.braces:
       parsedContent = raw.replaceBracesInterpolation(replacer: (match) {
         final rawParam = match.substring(1, match.length - 1);
-        final parsedParam = parseParam(
-          rawParam: rawParam,
-          defaultType: defaultType,
-          caseStyle: paramCase,
-        );
-        params[parsedParam.paramName] = parsedParam.paramType;
-        return '\${${parsedParam.paramName}}';
+        return convertInnerParam(rawParam);
       });
       break;
     case StringInterpolation.doubleBraces:
       parsedContent = raw.replaceDoubleBracesInterpolation(replacer: (match) {
         final rawParam = match.substring(2, match.length - 2);
-        final parsedParam = parseParam(
-          rawParam: rawParam,
-          defaultType: defaultType,
-          caseStyle: paramCase,
-        );
-        params[parsedParam.paramName] = parsedParam.paramType;
-        return '\${${parsedParam.paramName}}';
+        return convertInnerParam(rawParam);
       });
   }
 
-  return _ParseInterpolationResult(parsedContent, params);
+  return _ParseInterpolationResult(
+    parsedContent: parsedContent,
+    params: params,
+    formats: formats,
+  );
 }
 
 class _ParseLinksResult {

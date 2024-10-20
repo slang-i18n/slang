@@ -127,6 +127,7 @@ void _generateImports(GenerateConfig config, StringBuffer buffer) {
   buffer.writeln();
   final imports = [
     ...config.imports,
+    'package:intl/intl.dart',
     'package:slang/node.dart',
     if (config.obfuscation.enabled) 'package:slang/secret.dart',
     if (config.translationOverrides) 'package:slang/overrides.dart',

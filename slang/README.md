@@ -64,6 +64,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Pluralization](#-pluralization)
   - [Custom Contexts / Enums](#-custom-contexts--enums)
   - [Typed Parameters](#-typed-parameters)
+  - [L10n](#-l10n)
   - [Interfaces](#-interfaces)
   - [Modifiers](#-modifiers)
   - [Locale Enum](#-locale-enum)
@@ -899,6 +900,59 @@ You can specify the type using the `name: type` syntax to increase type safety.
 ```json
 {
   "greet": "Hello {name: String}, you are {age: int} years old"
+}
+```
+
+### ➤ L10n
+
+To properly display numbers and dates,
+Slang extends the [Typed Parameters](#-typed-parameters) feature
+to support additional types like `currency`, `decimalPattern`, or `jm`.
+
+Internally, it uses the `NumberFormat` and `DateFormat` from [intl](https://pub.dev/packages/intl).
+
+```json
+{
+  "greet": "Hello {name: String}, you have {amount: currency} in your account",
+  "today": "Today is {date: yMd}"
+}
+```
+
+There are several built-in types:
+
+| Long                                 | Short                   | Example 1   | Example 2   |
+|--------------------------------------|-------------------------|-------------|-------------|
+| `NumberFormat.compact`               | `compact`               | 1.2M        | 1,2 M       |
+| `NumberFormat.compactCurrency`       | `compactCurrency`       | $1.2M       | 1,2M €      |
+| `NumberFormat.compactSimpleCurrency` | `compactSimpleCurrency` | $1.2M       | 1,2M €      |
+| `NumberFormat.compactLong`           | `compactLong`           | 1.2 million | 1,2 million |
+| `NumberFormat.currency`              | `currency`              | $1.23       | 1,23 €      |
+| `NumberFormat.decimalPattern`        | `decimalPattern`        | 1,234.56    | 1.234,56    |
+| `NumberFormat.decimalPatternDigits`  | `decimalPatternDigits`  | 1,234.56    | 1.234,56    |
+| `NumberFormat.decimalPercentPattern` | `decimalPercentPattern` | 12.34%      | 12,34%      |
+| `NumberFormat.percentPattern`        | `percentPattern`        | 12.34%      | 12,34%      |
+| `NumberFormat.scientificPattern`     | `scientificPattern`     | 1.23E6      | 1,23E6      |
+| `NumberFormat.simpleCurrency`        | `simpleCurrency`        | $1.23       | 1,23 €      |
+| `DateFormat.yM`                      | `yM`                    | 2023-12     | 12/2023     |
+| `DateFormat.yMd`                     | `yMd`                   | 2023-12-31  | 12/31/2023  |
+| `DateFormat.Hm`                      | `Hm`                    | 14:30       | 14:30       |
+| `DateFormat.Hms`                     | `Hms`                   | 14:30:15    | 14:30:15    |
+| `DateFormat.jm`                      | `jm`                    | 2:30 PM     | 14:30       |
+| `DateFormat.jms`                     | `jms`                   | 2:30:15 PM  | 14:30:15    |
+
+You can also provide custom formats:
+
+```json
+{
+  "today": "Today is {date: DateFormat('yyyy-MM-dd')}"
+}
+```
+
+Or adjust built-in formats:
+
+```json
+{
+  "today": "Today is {date: currency(symbol: 'EUR')}"
 }
 ```
 

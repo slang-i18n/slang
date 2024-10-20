@@ -1,4 +1,4 @@
-import 'package:slang/src/builder/builder/text_parser.dart';
+import 'package:slang/src/builder/builder/text/param_parser.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:test/test.dart';
 

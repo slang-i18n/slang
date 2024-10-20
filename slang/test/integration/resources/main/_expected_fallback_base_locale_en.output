@@ -37,9 +37,9 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final Translations _root = this; // ignore: unused_field
 
 	// Translations
-	late final TranslationsOnboardingEn onboarding = TranslationsOnboardingEn._(_root);
-	late final TranslationsGroupEn group = TranslationsGroupEn._(_root);
-	late final TranslationsEndEn end = TranslationsEndEn._(_root);
+	late final TranslationsOnboardingEn onboarding = TranslationsOnboardingEn.internal(_root);
+	late final TranslationsGroupEn group = TranslationsGroupEn.internal(_root);
+	late final TranslationsEndEn end = TranslationsEndEn.internal(_root);
 	TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 		n: count,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
@@ -56,7 +56,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 // Path: onboarding
 class TranslationsOnboardingEn {
-	TranslationsOnboardingEn._(this._root);
+	TranslationsOnboardingEn.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -105,7 +105,7 @@ class TranslationsOnboardingEn {
 
 // Path: group
 class TranslationsGroupEn {
-	TranslationsGroupEn._(this._root);
+	TranslationsGroupEn.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -119,7 +119,7 @@ class TranslationsGroupEn {
 
 // Path: end
 class TranslationsEndEn with EndData {
-	TranslationsEndEn._(this._root);
+	TranslationsEndEn.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -141,7 +141,7 @@ class TranslationsEndEn with EndData {
 
 // Path: onboarding.pages.0
 class TranslationsOnboarding$pages$0i0$En with PageData {
-	TranslationsOnboarding$pages$0i0$En._(this._root);
+	TranslationsOnboarding$pages$0i0$En.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -152,7 +152,7 @@ class TranslationsOnboarding$pages$0i0$En with PageData {
 
 // Path: onboarding.pages.1
 class TranslationsOnboarding$pages$0i1$En with PageData {
-	TranslationsOnboarding$pages$0i1$En._(this._root);
+	TranslationsOnboarding$pages$0i1$En.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -162,7 +162,7 @@ class TranslationsOnboarding$pages$0i1$En with PageData {
 
 // Path: onboarding.modifierPages.0
 class TranslationsOnboarding$modifierPages$0i0$En with MPage {
-	TranslationsOnboarding$modifierPages$0i0$En._(this._root);
+	TranslationsOnboarding$modifierPages$0i0$En.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -173,7 +173,7 @@ class TranslationsOnboarding$modifierPages$0i0$En with MPage {
 
 // Path: onboarding.modifierPages.1
 class TranslationsOnboarding$modifierPages$0i1$En with MPage {
-	TranslationsOnboarding$modifierPages$0i1$En._(this._root);
+	TranslationsOnboarding$modifierPages$0i1$En.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 

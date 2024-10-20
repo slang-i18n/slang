@@ -288,6 +288,16 @@ void main() {
         expect(node.content, r'${_root.a} ${_root.b(c: c, d: d)}');
         expect(node.params, <String>{'c', 'd'});
       });
+
+      test('with number format', () {
+        final test = r"Your price is ${price: currency(symbol: '€')}";
+        final node = textNode(test, StringInterpolation.dart);
+        expect(
+          node.content,
+          r"Your price is ${NumberFormat.currency(symbol: '€', locale: 'en').format(price)}",
+        );
+        expect(node.params, {'price'});
+      });
     });
 
     group(StringInterpolation.braces, () {

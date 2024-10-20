@@ -1,5 +1,8 @@
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
+
+final _locale = I18nLocale(language: 'en');
 
 StringTextNode textNode(
   String raw,
@@ -11,6 +14,7 @@ StringTextNode textNode(
     path: '',
     rawPath: '',
     modifiers: {},
+    locale: _locale,
     raw: raw,
     comment: null,
     interpolation: interpolation,
@@ -31,6 +35,7 @@ RichTextNode richTextNode(
     rawPath: '',
     modifiers: {},
     comment: null,
+    locale: _locale,
     raw: raw,
     interpolation: interpolation,
     paramCase: paramCase,
