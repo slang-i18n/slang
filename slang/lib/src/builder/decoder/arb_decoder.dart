@@ -38,6 +38,7 @@ class ArbDecoder extends BaseDecoder {
           const _EntryMetadata(
             description: null,
             paramTypeMap: {},
+            paramFormatMap: {},
           );
 
       final value = sourceMap[key];
@@ -86,7 +87,11 @@ void _addEntry({
           map: resultMap,
           destinationPath:
               '$key(${isPlural ? 'plural' : 'context=${variable.toCase(CaseStyle.pascal)}'}, param=$variable).$partName',
-          item: _digestLeafText(partContent, metadata.paramTypeMap),
+          item: _digestLeafText(
+            partContent,
+            metadata.paramTypeMap,
+            metadata.paramFormatMap,
+          ),
         );
       }
       return;
@@ -127,16 +132,44 @@ void _addEntry({
     brackets = BracketsUtils.findTopLevelBrackets(result);
   }
 
-  resultMap[key] = _digestLeafText(result, metadata.paramTypeMap);
+  resultMap[key] = _digestLeafText(
+    result,
+    metadata.paramTypeMap,
+    metadata.paramFormatMap,
+  );
 }
 
 /// Transforms arguments to camel case
 /// Adds 'arg' to every positional argument
-String _digestLeafText(String text, Map<String, String> paramTypeMap) {
+String _digestLeafText(
+  String text,
+  Map<String, String> paramTypeMap,
+  Map<String, _EntryFormat> paramFormatMap,
+) {
   return text.replaceBracesInterpolation(replacer: (match) {
     final param = match.substring(1, match.length - 1);
-    final paramType =
-        paramTypeMap[param] != null ? ': ${paramTypeMap[param]}' : '';
+
+    final paramType = switch (paramFormatMap[param]) {
+      _EntryFormat format => switch (paramTypeMap[param]) {
+          'DateTime' => ': DateFormat("${format.methodName}")',
+          _ => switch (format.parameters.isEmpty) {
+              true => ': NumberFormat.${format.methodName}',
+              false =>
+                ': NumberFormat.${format.methodName}(${format.parameters.entries.map((e) {
+                  final digestedValue = switch (e.value) {
+                    String s => "'$s'",
+                    _ => e.value,
+                  };
+                  return '${e.key}: $digestedValue';
+                }).join(', ')})',
+            },
+        },
+      _ => switch (paramTypeMap[param]) {
+          String type => ': $type',
+          _ => '',
+        },
+    };
+
     final number = int.tryParse(param);
     if (number != null) {
       return '{arg$number$paramType}';
@@ -164,10 +197,12 @@ String _digestPluralKey(String key) {
 class _EntryMetadata {
   final String? description;
   final Map<String, String> paramTypeMap;
+  final Map<String, _EntryFormat> paramFormatMap;
 
   const _EntryMetadata({
     required this.description,
     required this.paramTypeMap,
+    required this.paramFormatMap,
   });
 
   static _EntryMetadata parseEntry(Map<String, dynamic> map) {
@@ -178,6 +213,7 @@ class _EntryMetadata {
       return _EntryMetadata(
         description: description,
         paramTypeMap: {},
+        paramFormatMap: {},
       );
     }
 
@@ -190,11 +226,35 @@ class _EntryMetadata {
       }
     }
 
+    final paramFormatMap = <String, _EntryFormat>{};
+    for (final key in placeholders.keys) {
+      final value = placeholders[key] as Map<String, dynamic>;
+      final format = value['format'] as String?;
+      if (format != null) {
+        final parameters = value['optionalParameters'] as Map<String, dynamic>?;
+        paramFormatMap[key] = _EntryFormat(
+          methodName: format,
+          parameters: parameters ?? {},
+        );
+      }
+    }
+
     return _EntryMetadata(
       description: description,
       paramTypeMap: paramTypeMap,
+      paramFormatMap: paramFormatMap,
     );
   }
+}
+
+class _EntryFormat {
+  final String methodName;
+  final Map<String, dynamic> parameters;
+
+  _EntryFormat({
+    required this.methodName,
+    required this.parameters,
+  });
 }
 
 class _DistinctNameFactory {

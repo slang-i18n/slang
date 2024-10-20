@@ -1,4 +1,5 @@
 import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class ParseL10nResult {
   /// The actual parameter type.
@@ -14,7 +15,7 @@ class ParseL10nResult {
   });
 }
 
-const _numberFormats = {
+const numberFormats = {
   'compact',
   'compactCurrency',
   'compactSimpleCurrency',
@@ -28,17 +29,19 @@ const _numberFormats = {
   'simpleCurrency',
 };
 
-const _numberFormatsWithNamedParameters = {
+const numberFormatsWithNamedParameters = {
+  'NumberFormat.compact',
   'NumberFormat.compactCurrency',
   'NumberFormat.compactSimpleCurrency',
+  'NumberFormat.compactLong',
   'NumberFormat.currency',
   'NumberFormat.decimalPatternDigits',
   'NumberFormat.decimalPercentPattern',
   'NumberFormat.simpleCurrency',
 };
 
-final _numberFormatsWithClass = {
-  for (final format in _numberFormats) 'NumberFormat.$format',
+final numberFormatsWithClass = {
+  for (final format in numberFormats) 'NumberFormat.$format',
   'NumberFormat',
 };
 
@@ -56,40 +59,36 @@ final _dateFormatsWithClass = {
   'DateFormat',
 };
 
-// Parses "currency(symbol: '€')"
-// -> paramType: num, format: NumberFormat.currency(symbol: '€', locale: locale).format(value)
-ParseL10nResult? parseL10n({
-  required I18nLocale locale,
-  required String paramName,
-  required String type,
-}) {
-  final bracketStart = type.indexOf('(');
-
-  // The type without parameters.
-  // E.g. currency(symbol: '€') -> currency
-  final digestedType =
-      bracketStart == -1 ? type : type.substring(0, bracketStart);
-
+class L10nIntermediateResult {
   final String paramType;
-  if (_numberFormats.contains(digestedType) ||
-      _numberFormatsWithClass.contains(digestedType)) {
-    paramType = 'num';
-  } else if (_dateFormats.contains(digestedType) ||
-      _dateFormatsWithClass.contains(digestedType)) {
-    paramType = 'DateTime';
-  } else {
+  final String methodName;
+  final String? arguments;
+
+  L10nIntermediateResult({
+    required this.paramType,
+    required this.methodName,
+    required this.arguments,
+  });
+}
+
+L10nIntermediateResult? parseL10nIntermediate(String type) {
+  final parsed = RegexUtils.formatTypeRegex.firstMatch(type);
+  if (parsed == null) {
     return null;
   }
 
-  String methodName;
-  String arguments;
+  String methodName = parsed.group(1)!;
+  final arguments = parsed.group(2);
 
-  if (bracketStart != -1 && type.endsWith(')')) {
-    methodName = type.substring(0, bracketStart);
-    arguments = type.substring(bracketStart + 1, type.length - 1);
+  final String paramType;
+  if (numberFormats.contains(methodName) ||
+      numberFormatsWithClass.contains(methodName)) {
+    paramType = 'num';
+  } else if (_dateFormats.contains(methodName) ||
+      _dateFormatsWithClass.contains(methodName)) {
+    paramType = 'DateTime';
   } else {
-    methodName = type;
-    arguments = '';
+    return null;
   }
 
   // Prepend class if necessary
@@ -104,11 +103,31 @@ ParseL10nResult? parseL10n({
     }
   }
 
+  return L10nIntermediateResult(
+    paramType: paramType,
+    methodName: methodName,
+    arguments: arguments?.trim(),
+  );
+}
+
+// Parses "currency(symbol: '€')"
+// -> paramType: num, format: NumberFormat.currency(symbol: '€', locale: locale).format(value)
+ParseL10nResult? parseL10n({
+  required I18nLocale locale,
+  required String paramName,
+  required String type,
+}) {
+  final parsed = parseL10nIntermediate(type);
+  if (parsed == null) {
+    return null;
+  }
+
   // Add locale
-  if (paramType == 'num' &&
-      _numberFormatsWithNamedParameters.contains(methodName)) {
+  String arguments = parsed.arguments ?? '';
+  if (parsed.paramType == 'num' &&
+      numberFormatsWithNamedParameters.contains(parsed.methodName)) {
     // add locale as named parameter
-    if (arguments.isEmpty) {
+    if (parsed.arguments == null) {
       arguments = "locale: '${locale.underscoreTag}'";
     } else {
       arguments = "$arguments, locale: '${locale.underscoreTag}'";
@@ -125,7 +144,7 @@ ParseL10nResult? parseL10n({
   }
 
   return ParseL10nResult(
-    paramType: paramType,
-    format: '$methodName($arguments).format($paramName)',
+    paramType: parsed.paramType,
+    format: '${parsed.methodName}($arguments).format($paramName)',
   );
 }

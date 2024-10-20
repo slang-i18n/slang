@@ -1,5 +1,7 @@
+import 'package:slang/src/api/formatter.dart';
 import 'package:slang/src/api/locale.dart';
 import 'package:slang/src/api/pluralization.dart';
+import 'package:slang/src/builder/builder/text/l10n_override_parser.dart';
 import 'package:slang/src/builder/generator/helper.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
@@ -119,14 +121,39 @@ class TranslationOverrides {
 
 extension TranslationOverridesStringExt on String {
   /// Replaces every ${param} with the given parameter
-  String applyParams(Map<String, Object> param) {
+  String applyParams(
+    Map<String, ValueFormatter> existingTypes,
+    String locale,
+    Map<String, Object> param,
+  ) {
     return replaceDartNormalizedInterpolation(replacer: (match) {
       final nodeParam = match.substring(2, match.length - 1);
-      final providedParam = param[nodeParam];
+
+      final colonIndex = nodeParam.indexOf(':');
+      if (colonIndex == -1) {
+        // parameter without type
+        final providedParam = param[nodeParam];
+        if (providedParam == null) {
+          return match; // do not replace, keep as is
+        }
+        return providedParam.toString();
+      }
+
+      final paramName = nodeParam.substring(0, colonIndex).trim();
+      final paramType = nodeParam.substring(colonIndex + 1).trim();
+
+      final providedParam = param[paramName];
       if (providedParam == null) {
         return match; // do not replace, keep as is
       }
-      return providedParam.toString();
+
+      return digestL10nOverride(
+            locale: locale,
+            existingTypes: existingTypes,
+            type: paramType,
+            value: providedParam,
+          ) ??
+          providedParam.toString();
     });
   }
 
@@ -171,6 +198,7 @@ extension TranslationOverridesStringExt on String {
   /// Shortcut to call both at once.
   String applyParamsAndLinks(
       TranslationMetadata meta, Map<String, Object> param) {
-    return applyParams(param).applyLinks(meta, param);
+    return applyParams(meta.types, meta.locale.underscoreTag, param)
+        .applyLinks(meta, param);
   }
 }

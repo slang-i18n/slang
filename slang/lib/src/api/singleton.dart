@@ -227,6 +227,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
       buildConfig: buildConfig!,
       map: digestedMap,
       handleLinks: false,
+      handleTypes: false,
       shouldEscapeText: false,
       locale: I18nLocale(
         language: locale.languageCode,

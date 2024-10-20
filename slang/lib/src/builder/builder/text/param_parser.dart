@@ -20,16 +20,6 @@ ParseParamResult parseParam({
   required CaseStyle? caseStyle,
 }) {
   final colonIndex = rawParam.indexOf(':');
-  final bracketIndex = rawParam.indexOf('(');
-  if (bracketIndex != -1 && (colonIndex == -1 || bracketIndex < colonIndex)) {
-    // rich text parameter with default value
-    // this will be parsed by parseParamWithArg
-    return ParseParamResult(
-      rawParam,
-      '',
-    );
-  }
-
   if (colonIndex == -1) {
     return ParseParamResult(rawParam.toCase(caseStyle), defaultType);
   }
@@ -53,12 +43,18 @@ ParamWithArg parseParamWithArg({
   required String rawParam,
   required CaseStyle? paramCase,
 }) {
-  final end = rawParam.lastIndexOf(')');
-  if (end == -1) {
+  final colonIndex = rawParam.indexOf(':');
+  final start = rawParam.indexOf('(');
+  if (colonIndex != -1 && (start == -1 || colonIndex < start)) {
+    // ignore type for rich text
+    rawParam = rawParam.substring(0, colonIndex);
+  }
+
+  if (start == -1) {
     return ParamWithArg(rawParam.toCase(paramCase), null);
   }
 
-  final start = rawParam.indexOf('(');
+  final end = rawParam.lastIndexOf(')');
   final parameterName = rawParam.substring(0, start).toCase(paramCase);
   return ParamWithArg(parameterName, rawParam.substring(start + 1, end));
 }
