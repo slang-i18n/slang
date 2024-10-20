@@ -246,6 +246,7 @@ abstract class TextNode extends Node implements LeafNode {
   /// Several configs, persisted into node to make it easier to copy
   /// See [updateWithLinkParams]
   final bool shouldEscape;
+  final bool handleTypes;
   final StringInterpolation interpolation;
   final CaseStyle? paramCase;
 
@@ -258,6 +259,7 @@ abstract class TextNode extends Node implements LeafNode {
     required this.types,
     required this.raw,
     required this.shouldEscape,
+    required this.handleTypes,
     required this.interpolation,
     required this.paramCase,
   });
@@ -306,6 +308,7 @@ class StringTextNode extends TextNode {
     required super.raw,
     required super.comment,
     required super.shouldEscape,
+    required super.handleTypes,
     required super.interpolation,
     required super.paramCase,
     Map<String, Set<String>>? linkParamMap,
@@ -317,6 +320,7 @@ class StringTextNode extends TextNode {
       interpolation: interpolation,
       defaultType: 'Object',
       paramCase: paramCase,
+      digestParameter: handleTypes && true,
     );
     _params = parsedResult.params.keys.toSet();
     _paramTypeMap.addAll(parsedResult.params);
@@ -352,6 +356,7 @@ class StringTextNode extends TextNode {
       raw: raw,
       comment: comment,
       shouldEscape: shouldEscape,
+      handleTypes: handleTypes,
       interpolation: interpolation,
       paramCase: paramCase,
       linkParamMap: linkParamMap,
@@ -404,6 +409,7 @@ class RichTextNode extends TextNode {
     required super.raw,
     required super.comment,
     required super.shouldEscape,
+    required super.handleTypes,
     required super.interpolation,
     required super.paramCase,
     Map<String, Set<String>>? linkParamMap,
@@ -416,6 +422,7 @@ class RichTextNode extends TextNode {
       defaultType: 'ignored',
       // types are ignored
       paramCase: null, // param case will be applied later
+      digestParameter: false,
     );
 
     _params = <String>{};
@@ -491,6 +498,7 @@ class RichTextNode extends TextNode {
       raw: raw,
       comment: comment,
       shouldEscape: shouldEscape,
+      handleTypes: handleTypes,
       interpolation: interpolation,
       paramCase: paramCase,
       linkParamMap: linkParamMap,
@@ -558,12 +566,18 @@ _ParseInterpolationResult _parseInterpolation({
   required StringInterpolation interpolation,
   required String defaultType,
   required CaseStyle? paramCase,
+  required bool digestParameter,
 }) {
   final String parsedContent;
   final params = <String, String>{};
   final formats = <String, String>{};
 
   String convertInnerParam(String inner) {
+    if (!digestParameter) {
+      params[inner] = 'is ignored';
+      return '\${$inner}';
+    }
+
     final parsedParam = parseParam(
       rawParam: inner,
       defaultType: defaultType,

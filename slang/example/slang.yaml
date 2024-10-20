@@ -6,3 +6,5 @@
 # input_directory: lib/i18n
 # maps:
 #   - locales
+fallback_strategy: base_locale
+translation_overrides: true

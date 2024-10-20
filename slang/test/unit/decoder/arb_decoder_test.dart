@@ -57,6 +57,68 @@ void main() {
       );
     });
 
+    test('Should decode with DateFormat', () {
+      expect(
+        _decodeArb({
+          'today': 'Today is {date}',
+          '@today': {
+            'placeholders': {
+              'date': {
+                'type': 'DateTime',
+                'format': 'yMd',
+              },
+            },
+          }
+        }),
+        {
+          'today': 'Today is {date: DateFormat("yMd")}',
+        },
+      );
+    });
+
+    test('Should decode with NumberFormat', () {
+      expect(
+        _decodeArb({
+          'price': 'Price: {price}',
+          '@price': {
+            'placeholders': {
+              'price': {
+                'type': 'num',
+                'format': 'currency',
+              },
+            },
+          }
+        }),
+        {
+          'price': 'Price: {price: NumberFormat.currency}',
+        },
+      );
+    });
+
+    test('Should decode with NumberFormat and parameters', () {
+      expect(
+        _decodeArb({
+          'price': 'Price: {price}',
+          '@price': {
+            'placeholders': {
+              'price': {
+                'type': 'num',
+                'format': 'currency',
+                'optionalParameters': {
+                  'symbol': '€',
+                  'decimalDigits': 4,
+                },
+              },
+            },
+          }
+        }),
+        {
+          'price':
+              "Price: {price: NumberFormat.currency(symbol: '€', decimalDigits: 4)}",
+        },
+      );
+    });
+
     test('Should decode plural string identifiers', () {
       expect(
         _decodeArb({

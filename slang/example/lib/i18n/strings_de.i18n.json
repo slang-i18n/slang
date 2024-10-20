@@ -1,15 +1,20 @@
 {
+  "@@types": {
+    "currency": "currency(symbol: 'USD', decimalDigits: 5)",
+    "date": "DateFormat('dd.MM.yyyy')"
+  },
   "mainScreen": {
     "title": "Ein deutscher Titel",
     "counter": {
       "one": "Du hast einmal gedrückt.",
       "other": "Du hast $n mal gedrückt."
     },
-    "tapMe": "Drück mich"
+    "tapMe": "Drück mich",
+    "test": "Test ${cool: currency}"
   },
   "locales(map)": {
     "en": "Englisch",
     "de": "Deutsch",
-    "fr": "Französisch"
+    "fr-FR": "Französisch"
   }
 }

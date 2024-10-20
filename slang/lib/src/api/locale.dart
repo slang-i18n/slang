@@ -123,10 +123,13 @@ class FakeAppLocale extends BaseAppLocale<FakeAppLocale, FakeTranslations> {
   @override
   final String? countryCode;
 
+  final Map<String, ValueFormatter>? types;
+
   FakeAppLocale({
     required this.languageCode,
     this.scriptCode,
     this.countryCode,
+    this.types,
   });
 
   @override
@@ -156,6 +159,7 @@ class FakeAppLocale extends BaseAppLocale<FakeAppLocale, FakeTranslations> {
       overrides: overrides,
       cardinalResolver: cardinalResolver,
       ordinalResolver: ordinalResolver,
+      types: types,
     );
   }
 }
@@ -167,12 +171,14 @@ class FakeTranslations
     Map<String, Node>? overrides,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
+    Map<String, ValueFormatter>? types,
     int? s,
   })  : $meta = TranslationMetadata(
           locale: locale,
           overrides: overrides ?? {},
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
+          types: types ?? {},
           s: s ?? 0,
         ),
         providedNullOverrides = overrides == null;

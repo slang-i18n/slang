@@ -5,6 +5,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   LocaleSettings.useDeviceLocale(); // initialize with the right locale
+  LocaleSettings.overrideTranslationsFromMap(locale: AppLocale.en, isFlatMap: false, map: {
+    'mainScreen': {
+      'linked': "Wow Test \${yay: currency}",
+    }
+  });
   runApp(TranslationProvider(
     // wrap with TranslationProvider
     child: MyApp(),
@@ -84,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }).toList(),
             ),
+            Text(t.mainScreen.linked(yay: 33.4)),
           ],
         ),
       ),

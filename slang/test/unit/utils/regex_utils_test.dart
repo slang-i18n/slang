@@ -185,6 +185,27 @@ void main() {
     });
   });
 
+  group('formatTypeRegex', () {
+    RegExp regex = RegexUtils.formatTypeRegex;
+
+    test('NumberFormat.currency', () {
+      RegExpMatch? match = regex.firstMatch('NumberFormat.currency');
+      expect(match?.group(1), 'NumberFormat.currency');
+      expect(match?.group(2), null);
+    });
+
+    test('NumberFormat.currency(cool: 334)', () {
+      RegExpMatch? match = regex.firstMatch('NumberFormat.currency(cool: 334)');
+      expect(match?.group(1), 'NumberFormat.currency');
+      expect(match?.group(2), 'cool: 334');
+    });
+
+    test('NumberFormat.currency()', () {
+      RegExpMatch? match = regex.firstMatch('NumberFormat.currency()');
+      expect(match, isNull);
+    });
+  });
+
   group('arbComplexNode', () {
     RegExp regex = RegexUtils.arbComplexNode;
 

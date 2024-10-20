@@ -21,6 +21,7 @@ StringTextNode textNode(
     interpolation: interpolation,
     paramCase: paramCase,
     shouldEscape: true,
+    handleTypes: true,
     linkParamMap: linkParamMap,
   );
 }
@@ -42,6 +43,7 @@ RichTextNode richTextNode(
     interpolation: interpolation,
     paramCase: paramCase,
     shouldEscape: true,
+    handleTypes: true,
     linkParamMap: linkParamMap,
   );
 }

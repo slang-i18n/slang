@@ -1,15 +1,23 @@
 {
+  "@@types": {
+    "currency": "currency(symbol: 'USD')",
+    "date": "DateFormat('dd.MM.yyyy')"
+  },
   "mainScreen": {
     "title": "An English Title",
     "counter": {
       "one": "You pressed $n time.",
       "other": "You pressed $n times."
     },
-    "tapMe": "Tap me"
+    "tapMe": "Tap me",
+    "test": "Test ${cool: currency(symbol: 'EUR')}",
+    "test2": "Test ${yay: currency}",
+    "today": "Today is ${date: DateFormat('yyyy-MM-dd')}",
+    "linked": "This is a linked string: @:mainScreen.test2"
   },
   "locales(map)": {
     "en": "English",
     "de": "German",
-    "fr": "French"
+    "fr-FR": "French"
   }
 }

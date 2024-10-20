@@ -33,16 +33,6 @@ void main() {
       expect(result.paramName, 'MyName');
       expect(result.paramType, 'DefaultType');
     });
-
-    test('Should ignore rich text default parameter', () {
-      final result = parseParam(
-        rawParam: 'hello(Hi)',
-        caseStyle: null,
-        defaultType: 'DefaultType',
-      );
-      expect(result.paramName, 'hello(Hi)');
-      expect(result.paramType, '');
-    });
   });
 
   group('parseParamWithArg', () {
