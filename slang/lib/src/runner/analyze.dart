@@ -180,12 +180,25 @@ void _getMissingTranslationsForOneLocaleRecursive({
     final isOutdated = handleOutdated &&
         currChild?.modifiers.containsKey(NodeModifiers.outdated) == true;
     if (isOutdated || !_checkEquality(baseChild, currChild)) {
-      // Add whole base node which is expected
-      _addNodeRecursive(
-        node: baseChild,
-        resultMap: resultMap,
-        addOutdatedModifier: isOutdated,
-      );
+      if (baseChild is ContextNode && currChild is ContextNode) {
+        // Only add missing enums
+        for (final baseEnum in baseChild.entries.keys) {
+          if (!currChild.entries.containsKey(baseEnum)) {
+            _addNodeRecursive(
+              node: baseChild.entries[baseEnum]!,
+              resultMap: resultMap,
+              addOutdatedModifier: isOutdated,
+            );
+          }
+        }
+      } else {
+        // Add whole base node which is expected
+        _addNodeRecursive(
+          node: baseChild,
+          resultMap: resultMap,
+          addOutdatedModifier: isOutdated,
+        );
+      }
     } else if (baseChild is ObjectNode && !baseChild.isMap) {
       // [currChild] passed the previous equality check.
       // In this case, both [baseChild] and [currChild] are ObjectNodes
@@ -282,6 +295,14 @@ bool _checkEquality(Node? a, Node? b) {
   if (a is TextNode &&
       b is TextNode &&
       !_setEquality.equals(a.params, b.params)) {
+    // different params
+    return false;
+  }
+
+  if (a is ContextNode &&
+      b is ContextNode &&
+      !_setEquality.equals(a.entries.keys.toSet(), b.entries.keys.toSet())) {
+    // different enums
     return false;
   }
 
