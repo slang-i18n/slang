@@ -588,28 +588,42 @@ void _generateInterfaces({
     // equals override
     buffer.writeln();
     buffer.writeln('\t@override');
-    buffer.write(
-        '\tbool operator ==(Object other) => other is ${interface.name}');
-    for (final attribute in interface.attributes) {
-      buffer.write(
-          ' && ${attribute.attributeName} == other.${attribute.attributeName}');
-    }
-    buffer.writeln(';');
+    buffer.writeln('\tbool operator ==(Object other) {');
+    buffer.writeln('\t\tif (identical(this, other)) return true;');
+    buffer.writeln('\t\tif (other is! ${interface.name}) return false;');
+
+    buffer.writeln();
+    buffer.writeln('\t\tfinal fields = _fields;');
+    buffer.writeln('\t\tfinal otherFields = other._fields;');
+    buffer.writeln('\t\tfor (int i = 0; i < fields.length; i++) {');
+    buffer.writeln('\t\t\tif (fields[i] != otherFields[i]) return false;');
+    buffer.writeln('\t\t}');
+
+    buffer.writeln();
+    buffer.writeln('\t\treturn true;');
+    buffer.writeln('\t}');
 
     // hashCode override
     buffer.writeln();
     buffer.writeln('\t@override');
-    buffer.write('\tint get hashCode => ');
-    bool multiply = false;
+    buffer.writeln('\tint get hashCode {');
+    buffer.writeln('\t\tfinal fields = _fields;');
+    buffer.writeln('\t\tint result = fields.first.hashCode;');
+    buffer.writeln('\t\tfor (final element in fields.skip(1)) {');
+    buffer.writeln('\t\t\tresult *= element.hashCode;');
+    buffer.writeln('\t\t}');
+
+    buffer.writeln();
+    buffer.writeln('\t\treturn result;');
+    buffer.writeln('\t}');
+
+    // fields
+    buffer.writeln();
+    buffer.writeln('\tList<Object> get _fields => [');
     for (final attribute in interface.attributes) {
-      if (multiply) {
-        buffer.write(' * ');
-      }
-      buffer.write(attribute.attributeName);
-      buffer.write('.hashCode');
-      multiply = true;
+      buffer.writeln('\t\t${attribute.attributeName},');
     }
-    buffer.writeln(';');
+    buffer.writeln('\t];');
 
     buffer.writeln('}');
   }

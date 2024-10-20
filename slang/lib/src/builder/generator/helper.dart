@@ -11,7 +11,7 @@ const String characteristicLinkPrefix = '_root.';
 String getImportName({
   required I18nLocale locale,
 }) {
-  return '_\$${locale.languageTag.replaceAll('-', '_')}';
+  return 'l_${locale.languageTag.replaceAll('-', '_')}';
 }
 
 /// Returns the class name of the root translation class.

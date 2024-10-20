@@ -15,7 +15,7 @@ import 'package:slang/node.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'translations_de.g.dart' deferred as _$de;
+import 'translations_de.g.dart' deferred as l_de;
 part 'translations_en.g.dart';
 
 /// Supported locales.
@@ -52,8 +52,8 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.de:
-				await _$de.loadLibrary();
-				return _$de.TranslationsDe(
+				await l_de.loadLibrary();
+				return l_de.TranslationsDe(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
@@ -75,7 +75,7 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.de:
-				return _$de.TranslationsDe(
+				return l_de.TranslationsDe(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,

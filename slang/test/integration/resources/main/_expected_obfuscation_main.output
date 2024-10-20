@@ -16,7 +16,7 @@ import 'package:slang/secret.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'translations_de.g.dart' deferred as _$de;
+import 'translations_de.g.dart' deferred as l_de;
 part 'translations_en.g.dart';
 
 /// Supported locales.
@@ -53,8 +53,8 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.de:
-				await _$de.loadLibrary();
-				return _$de.TranslationsDe(
+				await l_de.loadLibrary();
+				return l_de.TranslationsDe(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
@@ -76,7 +76,7 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.de:
-				return _$de.TranslationsDe(
+				return l_de.TranslationsDe(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
@@ -194,10 +194,34 @@ mixin PageData {
 	String? get content => null;
 
 	@override
-	bool operator ==(Object other) => other is PageData && title == other.title && content == other.content;
+	bool operator ==(Object other) {
+		if (identical(this, other)) return true;
+		if (other is! PageData) return false;
+
+		final fields = _fields;
+		final otherFields = other._fields;
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i] != otherFields[i]) return false;
+		}
+
+		return true;
+	}
 
 	@override
-	int get hashCode => title.hashCode * content.hashCode;
+	int get hashCode {
+		final fields = _fields;
+		int result = fields.first.hashCode;
+		for (final element in fields.skip(1)) {
+			result *= element.hashCode;
+		}
+
+		return result;
+	}
+
+	List<Object> get _fields => [
+		title,
+		content,
+	];
 }
 
 mixin MPage {
@@ -205,10 +229,34 @@ mixin MPage {
 	String? get content => null;
 
 	@override
-	bool operator ==(Object other) => other is MPage && title == other.title && content == other.content;
+	bool operator ==(Object other) {
+		if (identical(this, other)) return true;
+		if (other is! MPage) return false;
+
+		final fields = _fields;
+		final otherFields = other._fields;
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i] != otherFields[i]) return false;
+		}
+
+		return true;
+	}
 
 	@override
-	int get hashCode => title.hashCode * content.hashCode;
+	int get hashCode {
+		final fields = _fields;
+		int result = fields.first.hashCode;
+		for (final element in fields.skip(1)) {
+			result *= element.hashCode;
+		}
+
+		return result;
+	}
+
+	List<Object> get _fields => [
+		title,
+		content,
+	];
 }
 
 mixin EndData {
@@ -216,8 +264,32 @@ mixin EndData {
 	List<Map<String, String>> get pages;
 
 	@override
-	bool operator ==(Object other) => other is EndData && stringPages == other.stringPages && pages == other.pages;
+	bool operator ==(Object other) {
+		if (identical(this, other)) return true;
+		if (other is! EndData) return false;
+
+		final fields = _fields;
+		final otherFields = other._fields;
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i] != otherFields[i]) return false;
+		}
+
+		return true;
+	}
 
 	@override
-	int get hashCode => stringPages.hashCode * pages.hashCode;
+	int get hashCode {
+		final fields = _fields;
+		int result = fields.first.hashCode;
+		for (final element in fields.skip(1)) {
+			result *= element.hashCode;
+		}
+
+		return result;
+	}
+
+	List<Object> get _fields => [
+		stringPages,
+		pages,
+	];
 }
