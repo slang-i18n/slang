@@ -416,7 +416,7 @@ Map<String, Node> _parseMapNode({
               // split!
               // {one,two: hi} -> {one: hi, two: hi}
               for (final newChild in split) {
-                digestedMap[newChild] = entry.value as StringTextNode;
+                digestedMap[newChild.trim()] = entry.value as StringTextNode;
               }
             }
           }
@@ -464,6 +464,7 @@ Map<String, Node> _parseMapNode({
               final baseContext = baseContexts?[context.enumName];
               if (baseContext != null) {
                 digestedMap = _digestContextEntries(
+                  locale: locale,
                   baseTranslation: baseData!.root,
                   baseContext: baseContext,
                   path: currPath,
@@ -877,6 +878,7 @@ void _fixEmptyLists({
 /// Makes sure that every enum value in [baseContext] is also present in [entries].
 /// If a value is missing, the base translation is used.
 Map<String, TextNode> _digestContextEntries({
+  required I18nLocale locale,
   required ObjectNode baseTranslation,
   required PopulatedContextType baseContext,
   required String path,
@@ -887,8 +889,16 @@ Map<String, TextNode> _digestContextEntries({
       _findContextNode(baseTranslation, path.split('.'));
   return {
     for (final value in baseContext.enumValues)
-      value: entries[value] ?? baseContextNode.entries[value]!,
+      value: entries[value] ??
+          baseContextNode.entries[value] ??
+          _throwError(
+            'In <${locale.languageTag}>, the value for $value in $path is missing (required by ${baseContext.enumName})',
+          ),
   };
+}
+
+Never _throwError(String message) {
+  throw message;
 }
 
 /// Recursively find the [ContextNode] using the given [path].
