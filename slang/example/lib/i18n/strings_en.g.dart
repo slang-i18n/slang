@@ -41,7 +41,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	Map<String, String> get locales => {
 		'en': 'English',
 		'de': 'German',
-		'fr': 'French',
+		'fr-FR': 'French',
 	};
 }
 
@@ -73,7 +73,7 @@ extension on Translations {
 			case 'mainScreen.tapMe': return 'Tap me';
 			case 'locales.en': return 'English';
 			case 'locales.de': return 'German';
-			case 'locales.fr': return 'French';
+			case 'locales.fr-FR': return 'French';
 			default: return null;
 		}
 	}

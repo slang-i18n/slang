@@ -6,18 +6,19 @@
 /// Locales: 3
 /// Strings: 21 (7 per locale)
 ///
-/// Built on 2024-10-18 at 01:08 UTC
+/// Built on 2024-10-20 at 23:01 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:slang/node.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'strings_de.g.dart' deferred as _$de;
-import 'strings_fr_FR.g.dart' deferred as _$fr_FR;
+import 'strings_de.g.dart' deferred as l_de;
+import 'strings_fr_FR.g.dart' deferred as l_fr_FR;
 part 'strings_en.g.dart';
 
 /// Supported locales.
@@ -55,15 +56,15 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.de:
-				await _$de.loadLibrary();
-				return _$de.TranslationsDe(
+				await l_de.loadLibrary();
+				return l_de.TranslationsDe(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.frFr:
-				await _$fr_FR.loadLibrary();
-				return _$fr_FR.TranslationsFrFr(
+				await l_fr_FR.loadLibrary();
+				return l_fr_FR.TranslationsFrFr(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
@@ -85,13 +86,13 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.de:
-				return _$de.TranslationsDe(
+				return l_de.TranslationsDe(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
 				);
 			case AppLocale.frFr:
-				return _$fr_FR.TranslationsFrFr(
+				return l_fr_FR.TranslationsFrFr(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,

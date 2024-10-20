@@ -5,6 +5,7 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:slang/node.dart';
 import 'strings.g.dart';
 
@@ -36,7 +37,7 @@ class TranslationsDe implements Translations {
 	@override Map<String, String> get locales => {
 		'en': 'Englisch',
 		'de': 'Deutsch',
-		'fr': 'Französisch',
+		'fr-FR': 'Französisch',
 	};
 }
 
@@ -68,7 +69,7 @@ extension on TranslationsDe {
 			case 'mainScreen.tapMe': return 'Drück mich';
 			case 'locales.en': return 'Englisch';
 			case 'locales.de': return 'Deutsch';
-			case 'locales.fr': return 'Französisch';
+			case 'locales.fr-FR': return 'Französisch';
 			default: return null;
 		}
 	}
