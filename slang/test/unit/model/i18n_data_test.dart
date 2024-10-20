@@ -17,6 +17,7 @@ I18nData _i18n(String locale, [bool base = false]) {
     ),
     contexts: [],
     interfaces: [],
+    types: {},
   );
 }
 

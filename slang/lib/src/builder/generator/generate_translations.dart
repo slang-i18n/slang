@@ -203,6 +203,15 @@ void _generateClass(
     buffer.writeln('\t\t    overrides: overrides ?? {},');
     buffer.writeln('\t\t    cardinalResolver: cardinalResolver,');
     buffer.writeln('\t\t    ordinalResolver: ordinalResolver,');
+    if (localeData.types.isNotEmpty) {
+      buffer.writeln('\t\t    types: {');
+      for (final entry in localeData.types.entries) {
+        buffer.writeln(
+          '\t\t      \'${entry.key}\': ValueFormatter(() => ${entry.value.substring(0, entry.value.length - 14)}),',
+        );
+      }
+      buffer.writeln('\t\t    },');
+    }
     if (config.obfuscation.enabled) {
       final String method;
       final List<int> parts;

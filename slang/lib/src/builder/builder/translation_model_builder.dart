@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
+import 'package:slang/src/builder/builder/text/l10n_parser.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
@@ -16,11 +17,13 @@ class BuildModelResult {
   final ObjectNode root; // the actual strings
   final List<Interface> interfaces; // detected interfaces
   final List<PopulatedContextType> contexts; // detected context types
+  final Map<String, String> types; // detected types, values are rendered as is
 
   BuildModelResult({
     required this.root,
     required this.interfaces,
     required this.contexts,
+    required this.types,
   });
 }
 
@@ -71,6 +74,28 @@ class TranslationModelBuilder {
         context.enumName: context.toPending(),
     };
 
+    final types = <String, FormatTypeInfo>{};
+    final typesNode = map['@@types'];
+    if (typesNode != null && typesNode is Map<String, dynamic>) {
+      for (final entry in typesNode.entries) {
+        final key = entry.key;
+        final value = entry.value;
+        if (value is String) {
+          final typeInfo = parseL10n(
+            locale: locale,
+            paramName: 'value',
+            type: value,
+          );
+          if (typeInfo != null) {
+            types[key] = FormatTypeInfo(
+              paramType: typeInfo.paramType,
+              implementation: typeInfo.format,
+            );
+          }
+        }
+      }
+    }
+
     // 1st iteration: Build nodes according to given map
     //
     // Linked Translations:
@@ -79,6 +104,7 @@ class TranslationModelBuilder {
     // Reason: Not all TextNodes are built, so final parameters are unknown
     final resultNodeTree = _parseMapNode(
       locale: locale,
+      types: types,
       parentPath: '',
       parentRawPath: '',
       curr: map,
@@ -214,6 +240,10 @@ class TranslationModelBuilder {
                 generateEnum: c.generateEnum,
               ))
           .toList(),
+      types: {
+        for (final entry in types.entries)
+          entry.key: entry.value.implementation,
+      },
     );
   }
 }
@@ -222,6 +252,7 @@ class TranslationModelBuilder {
 /// and returns the node model.
 Map<String, Node> _parseMapNode({
   required I18nLocale locale,
+  required Map<String, FormatTypeInfo> types,
   required String parentPath,
   required String parentRawPath,
   required Map<String, dynamic> curr,
@@ -267,6 +298,7 @@ Map<String, Node> _parseMapNode({
               rawPath: currRawPath,
               modifiers: modifiers,
               locale: locale,
+              types: types,
               raw: value.toString(),
               comment: comment,
               shouldEscape: shouldEscapeText,
@@ -278,6 +310,7 @@ Map<String, Node> _parseMapNode({
               rawPath: currRawPath,
               modifiers: modifiers,
               locale: locale,
+              types: types,
               raw: value.toString(),
               comment: comment,
               shouldEscape: shouldEscapeText,
@@ -297,6 +330,7 @@ Map<String, Node> _parseMapNode({
         };
         children = _parseMapNode(
           locale: locale,
+          types: types,
           parentPath: currPath,
           parentRawPath: currRawPath,
           curr: listAsMap,
@@ -323,6 +357,7 @@ Map<String, Node> _parseMapNode({
         // key: { ...value }
         children = _parseMapNode(
           locale: locale,
+          types: types,
           parentPath: currPath,
           parentRawPath: currRawPath,
           curr: value,
@@ -379,6 +414,7 @@ Map<String, Node> _parseMapNode({
             // rebuild children as RichText
             digestedMap = _parseMapNode(
               locale: locale,
+              types: types,
               parentPath: currPath,
               parentRawPath: currRawPath,
               curr: {
@@ -920,4 +956,14 @@ extension on BuildModelConfig {
       pathInterfaceNameMap: pathInterfaceNameMap,
     );
   }
+}
+
+class FormatTypeInfo {
+  final String paramType; // num or DateTime
+  final String implementation; // raw string that will be rendered as is
+
+  FormatTypeInfo({
+    required this.paramType,
+    required this.implementation,
+  });
 }

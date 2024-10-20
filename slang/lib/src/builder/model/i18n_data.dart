@@ -12,6 +12,7 @@ class I18nData {
   final ObjectNode root; // the actual strings
   final List<PopulatedContextType> contexts; // detected context types
   final List<Interface> interfaces; // detected interfaces
+  final Map<String, String> types; // detected types, values are rendered as is
 
   I18nData({
     required this.base,
@@ -19,6 +20,7 @@ class I18nData {
     required this.root,
     required this.contexts,
     required this.interfaces,
+    required this.types,
   });
 
   /// sorts base locale first, then alphabetically

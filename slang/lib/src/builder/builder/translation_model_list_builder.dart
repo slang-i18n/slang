@@ -42,6 +42,7 @@ class TranslationModelListBuilder {
           root: baseResult.root,
           contexts: baseResult.contexts,
           interfaces: baseResult.interfaces,
+          types: baseResult.types,
         );
       } else {
         final result = TranslationModelBuilder.build(
@@ -57,6 +58,7 @@ class TranslationModelListBuilder {
           root: result.root,
           contexts: result.contexts,
           interfaces: result.interfaces,
+          types: result.types,
         );
       }
     }).toList()

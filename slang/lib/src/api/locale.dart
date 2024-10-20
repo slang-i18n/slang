@@ -1,3 +1,4 @@
+import 'package:slang/src/api/formatter.dart';
 import 'package:slang/src/api/pluralization.dart';
 import 'package:slang/src/builder/model/node.dart';
 
@@ -17,6 +18,7 @@ class TranslationMetadata<E extends BaseAppLocale<E, T>,
   final Map<String, Node> overrides;
   final PluralResolver? cardinalResolver;
   final PluralResolver? ordinalResolver;
+  final Map<String, ValueFormatter> types;
 
   /// The secret.
   /// Used to decrypt obfuscated translation strings.
@@ -29,6 +31,7 @@ class TranslationMetadata<E extends BaseAppLocale<E, T>,
     required this.overrides,
     required this.cardinalResolver,
     required this.ordinalResolver,
+    this.types = const {},
     this.s = 0,
   });
 

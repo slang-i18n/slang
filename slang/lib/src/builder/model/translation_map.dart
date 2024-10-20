@@ -25,6 +25,16 @@ class TranslationMap {
     }
 
     _internalMap[locale]![namespace] = translations;
+
+    // Copy types of each namespace to the global types map,
+    // merging them with existing types.
+    final typesMap = translations['@@types'] as Map<String, dynamic>?;
+    if (typesMap != null) {
+      _internalMap[locale]!['@@types'] = {
+        ...?_internalMap[locale]!['@@types'],
+        ...typesMap,
+      };
+    }
   }
 
   /// Return all locales specified in this map

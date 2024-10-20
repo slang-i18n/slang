@@ -1,5 +1,6 @@
 import 'package:slang/src/builder/builder/text/l10n_parser.dart';
 import 'package:slang/src/builder/builder/text/param_parser.dart';
+import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
@@ -218,6 +219,9 @@ abstract class TextNode extends Node implements LeafNode {
   /// The locale of the text node
   final I18nLocale locale;
 
+  /// User-defined types for the locale
+  final Map<String, FormatTypeInfo> types;
+
   /// The original string
   final String raw;
 
@@ -251,6 +255,7 @@ abstract class TextNode extends Node implements LeafNode {
     required super.modifiers,
     required super.comment,
     required this.locale,
+    required this.types,
     required this.raw,
     required this.shouldEscape,
     required this.interpolation,
@@ -297,6 +302,7 @@ class StringTextNode extends TextNode {
     required super.rawPath,
     required super.modifiers,
     required super.locale,
+    required super.types,
     required super.raw,
     required super.comment,
     required super.shouldEscape,
@@ -306,6 +312,7 @@ class StringTextNode extends TextNode {
   }) {
     final parsedResult = _parseInterpolation(
       locale: locale,
+      types: types,
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
       defaultType: 'Object',
@@ -341,6 +348,7 @@ class StringTextNode extends TextNode {
       rawPath: rawPath,
       modifiers: modifiers,
       locale: locale,
+      types: types,
       raw: raw,
       comment: comment,
       shouldEscape: shouldEscape,
@@ -392,6 +400,7 @@ class RichTextNode extends TextNode {
     required super.rawPath,
     required super.modifiers,
     required super.locale,
+    required super.types,
     required super.raw,
     required super.comment,
     required super.shouldEscape,
@@ -401,6 +410,7 @@ class RichTextNode extends TextNode {
   }) {
     final rawParsedResult = _parseInterpolation(
       locale: locale,
+      types: types,
       raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
       interpolation: interpolation,
       defaultType: 'ignored',
@@ -477,6 +487,7 @@ class RichTextNode extends TextNode {
       rawPath: rawPath,
       modifiers: modifiers,
       locale: locale,
+      types: types,
       raw: raw,
       comment: comment,
       shouldEscape: shouldEscape,
@@ -542,6 +553,7 @@ class _ParseInterpolationResult {
 
 _ParseInterpolationResult _parseInterpolation({
   required I18nLocale locale,
+  required Map<String, FormatTypeInfo> types,
   required String raw,
   required StringInterpolation interpolation,
   required String defaultType,
@@ -557,6 +569,12 @@ _ParseInterpolationResult _parseInterpolation({
       defaultType: defaultType,
       caseStyle: paramCase,
     );
+
+    final existingType = types[parsedParam.paramType];
+    if (existingType != null) {
+      params[parsedParam.paramName] = existingType.paramType;
+      return '\${_root.\$meta.types[\'${parsedParam.paramType}\']!.format(${parsedParam.paramName})}';
+    }
 
     final parsedL10n = parseL10n(
       locale: locale,

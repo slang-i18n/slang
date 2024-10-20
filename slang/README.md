@@ -956,6 +956,27 @@ Or adjust built-in formats:
 }
 ```
 
+To avoid repetition, you can define custom types via `@@types`.
+Please note that the types are locale-specific. If you use [namespaces](#-namespaces), all definitions are merged.
+
+```json
+{
+  "@@types": {
+    "price": "currency(symbol: 'USD')",
+    "dateOnly": "DateFormat('MM/dd/yyyy')"
+  },
+  "account": "You have {amount: price} in your account",
+  "today": "Today is {today: dateOnly}",
+  "tomorrow": "Tomorrow is {tomorrow: dateOnly}"
+}
+```
+
+```dart
+String a = t.account(amount: 1234.56); // You have $1,234.56 in your account
+String b = t.today(today: DateTime(2023, 3, 2)); // Today is 03/02/2023
+String c = t.tomorrow(tomorrow: DateTime(2023, 3, 5)); // Tomorrow is 03/05/2023
+```
+
 ### ➤ Interfaces
 
 Often, multiple objects have the same attributes. You can create a common super class for that.
