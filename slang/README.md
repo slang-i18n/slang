@@ -944,7 +944,8 @@ You can also provide custom formats:
 
 ```json
 {
-  "today": "Today is {date: DateFormat('yyyy-MM-dd')}"
+  "today": "Today is {date: DateFormat('yyyy-MM-dd')}",
+  "number": "The number is {number: NumberFormat('###,###.##')}"
 }
 ```
 
@@ -952,7 +953,7 @@ Or adjust built-in formats:
 
 ```json
 {
-  "today": "Today is {date: currency(symbol: 'EUR')}"
+  "price": "It costs {price: currency(symbol: 'EUR')}"
 }
 ```
 
