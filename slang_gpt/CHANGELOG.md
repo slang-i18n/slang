@@ -1,3 +1,7 @@
+## 0.11.0
+
+- deps: bump slang to 4.0.0
+
 ## 0.10.3
 
 - feat: add `gpt-4o-mini` model
