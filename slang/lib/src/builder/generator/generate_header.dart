@@ -561,6 +561,8 @@ void _generateInterfaces({
     buffer.writeln('// interfaces generated as mixins');
   }
 
+  const fieldsVar = r'$fields';
+
   for (final interface in config.interface) {
     buffer.writeln();
     buffer.writeln('mixin ${interface.name} {');
@@ -593,8 +595,8 @@ void _generateInterfaces({
     buffer.writeln('\t\tif (other is! ${interface.name}) return false;');
 
     buffer.writeln();
-    buffer.writeln('\t\tfinal fields = _fields;');
-    buffer.writeln('\t\tfinal otherFields = other._fields;');
+    buffer.writeln('\t\tfinal fields = $fieldsVar;');
+    buffer.writeln('\t\tfinal otherFields = other.$fieldsVar;');
     buffer.writeln('\t\tfor (int i = 0; i < fields.length; i++) {');
     buffer.writeln('\t\t\tif (fields[i] != otherFields[i]) return false;');
     buffer.writeln('\t\t}');
@@ -607,7 +609,7 @@ void _generateInterfaces({
     buffer.writeln();
     buffer.writeln('\t@override');
     buffer.writeln('\tint get hashCode {');
-    buffer.writeln('\t\tfinal fields = _fields;');
+    buffer.writeln('\t\tfinal fields = $fieldsVar;');
     buffer.writeln('\t\tint result = fields.first.hashCode;');
     buffer.writeln('\t\tfor (final element in fields.skip(1)) {');
     buffer.writeln('\t\t\tresult *= element.hashCode;');
@@ -619,7 +621,7 @@ void _generateInterfaces({
 
     // fields
     buffer.writeln();
-    buffer.writeln('\tList<Object> get _fields => [');
+    buffer.writeln('\tList<Object> get $fieldsVar => [');
     for (final attribute in interface.attributes) {
       buffer.writeln('\t\t${attribute.attributeName},');
     }
