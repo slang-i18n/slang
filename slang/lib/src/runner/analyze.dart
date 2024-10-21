@@ -70,7 +70,7 @@ void runAnalyzeTranslations({
     result: missingTranslationsResult,
   );
 
-  final unusedTranslationsResult = _getUnusedTranslations(
+  final unusedTranslationsResult = getUnusedTranslations(
     rawConfig: rawConfig,
     translations: translationModelList,
     full: full,
@@ -121,6 +121,7 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
       curr: currTranslations.root,
       resultMap: resultMap,
       handleOutdated: true,
+      ignorePaths: const {},
     );
     result[currTranslations.locale] = resultMap;
   }
@@ -128,7 +129,7 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
   return result;
 }
 
-Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
+Map<I18nLocale, Map<String, dynamic>> getUnusedTranslations({
   required RawConfig rawConfig,
   required List<I18nData> translations,
   required bool full,
@@ -150,11 +151,16 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations({
     }
 
     final resultMap = <String, dynamic>{};
+    final linkedPaths = <String>{};
+    _getReferredPaths(localeData.root, linkedPaths);
+
+    // { } = localeData - baseTranslations
     _getMissingTranslationsForOneLocaleRecursive(
       baseNode: localeData.root,
       curr: baseTranslations.root,
       resultMap: resultMap,
       handleOutdated: false,
+      ignorePaths: linkedPaths,
     );
     result[localeData.locale] = resultMap;
   }
@@ -169,17 +175,21 @@ void _getMissingTranslationsForOneLocaleRecursive({
   required ObjectNode curr,
   required Map<String, dynamic> resultMap,
   required bool handleOutdated,
+  required Set<String> ignorePaths,
 }) {
   for (final baseEntry in baseNode.entries.entries) {
     final baseChild = baseEntry.value;
-    if (baseChild.modifiers.containsKey(NodeModifiers.ignoreMissing)) {
+    if (baseChild.modifiers.containsKey(NodeModifiers.ignoreMissing) ||
+        ignorePaths.contains(baseChild.path)) {
       continue;
     }
 
     final currChild = curr.entries[baseEntry.key];
     final isOutdated = handleOutdated &&
         currChild?.modifiers.containsKey(NodeModifiers.outdated) == true;
-    if (isOutdated || !_checkEquality(baseChild, currChild)) {
+    if (isOutdated ||
+        currChild == null ||
+        !_checkEquality(baseChild, currChild)) {
       if (baseChild is ContextNode && currChild is ContextNode) {
         // Only add missing enums
         for (final baseEnum in baseChild.entries.keys) {
@@ -208,6 +218,7 @@ void _getMissingTranslationsForOneLocaleRecursive({
         curr: currChild as ObjectNode,
         resultMap: resultMap,
         handleOutdated: handleOutdated,
+        ignorePaths: ignorePaths,
       );
     }
   }
@@ -287,7 +298,7 @@ void _addNodeRecursive({
 
 /// Both nodes are considered the same
 /// when they have the same type and the same parameters.
-bool _checkEquality(Node? a, Node? b) {
+bool _checkEquality(Node a, Node b) {
   if (a.runtimeType != b.runtimeType) {
     return false;
   }
@@ -400,6 +411,32 @@ I18nData _findBaseTranslations(RawConfig rawConfig, List<I18nData> i18nData) {
     throw 'There are no base translations. Could not found ${rawConfig.baseLocale.languageTag} in ${i18nData.map((e) => e.locale.languageTag)}';
   }
   return baseTranslations;
+}
+
+/// Populates [paths] with all paths that are referred in
+/// linked translations.
+void _getReferredPaths(ObjectNode root, Set<String> paths) {
+  for (final entry in root.entries.entries) {
+    final child = entry.value;
+    switch (child) {
+      case ObjectNode() when !child.isMap:
+        _getReferredPaths(child, paths);
+        break;
+      case PluralNode():
+        for (final quantity in child.quantities.values) {
+          paths.addAll(quantity.links);
+        }
+        break;
+      case ContextNode():
+        for (final context in child.entries.values) {
+          paths.addAll(context.links);
+        }
+        break;
+      case TextNode():
+        paths.addAll(child.links);
+        break;
+    }
+  }
 }
 
 void _writeMap({
