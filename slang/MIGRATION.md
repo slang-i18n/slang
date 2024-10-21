@@ -1,5 +1,33 @@
 # Migration Guides
 
+## slang 3.0 to 4.0
+
+### Lazy Loading
+
+The 4.0 release expects the translations to be loaded asynchronously by default.
+This makes it easy to support lazy loading of translations on Web.
+
+If you don't want to load translations asynchronously, you can set `lazy: false` in the `slang.yaml` or `build.yaml`.
+Then, you are able to call `LocaleSettings.setLocaleSync`, `LocaleSettings.setLocaleRawSync` (and other sync methods) without any issues.
+
+### Context Type conversion
+
+Previously, context types are converted to pascal case. This is no longer the case.
+
+```yaml
+contexts:
+  gender_context: # Previously, converted to GenderContext
+    default_parameter: gender
+```
+
+Now, you should use the exact context type.
+
+```yaml
+contexts:
+  GenderContext:
+    default_parameter: gender
+```
+
 ## Use context modifier (since 3.19.0)
 
 Since 3.19, slang supports context enum inference (i.e. you don't need to specify the exact enum values in the config).

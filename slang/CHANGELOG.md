@@ -1,8 +1,9 @@
 ## 4.0.0
 
-**DateFormat, NumberFormat and Lazy loading**
+**DateFormat, NumberFormat, and Lazy loading**
 
-Format translations with `DateFormat` and `NumberFormat`: `Hello {name}, today is {today: yMd}. You have {money: currency(symbol: '€')}.`
+Format translations with `DateFormat` and `NumberFormat`:
+`Hello {name}, today is {today: yMd}. You have {money: currency(symbol: '€')}.`
 
 On web, [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-library) is used to reduce initial load time.
 
@@ -12,11 +13,14 @@ On web, [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-
 - fix: `slang analyze` should detect missing enums
 - fix: trim enum keys in compressed format while parsing (e.g. `"male, female": "..."` to `"male,female": "..."`)
 - fix: compilation error on web when using large interfaces
+- **Breaking:** Require Dart 3.3 and Flutter 3.19
 - **Breaking:** `setLocale`, `setLocaleRaw`, and `useDeviceLocale` returns a Future, use `-Sync` suffix for synchronous calls
 - **Breaking:** `output_format` removed, always generates multiple files now
 - **Breaking:** deprecated functions in `LocaleSettings` (`supportedLocales`, `supportedLocalesRaw`) removed
 - **Breaking:** defining contexts (enums) is no longer allowed in `build.yaml` or `slang.yaml` (deprecated in v3.19.0)
 - **Breaking:** enums specified in `context` are no longer transformed into pascal case keeping the original case
+
+You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md).
 
 ## 3.32.0
 
