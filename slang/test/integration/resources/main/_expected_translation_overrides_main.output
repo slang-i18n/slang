@@ -245,7 +245,7 @@ mixin PageData {
 		return result;
 	}
 
-	List<Object> get $fields => [
+	List<Object?> get $fields => [
 		title,
 		content,
 	];
@@ -280,7 +280,7 @@ mixin MPage {
 		return result;
 	}
 
-	List<Object> get $fields => [
+	List<Object?> get $fields => [
 		title,
 		content,
 	];
@@ -315,7 +315,7 @@ mixin EndData {
 		return result;
 	}
 
-	List<Object> get $fields => [
+	List<Object?> get $fields => [
 		stringPages,
 		pages,
 	];

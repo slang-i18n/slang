@@ -621,7 +621,7 @@ void _generateInterfaces({
 
     // fields
     buffer.writeln();
-    buffer.writeln('\tList<Object> get $fieldsVar => [');
+    buffer.writeln('\tList<Object?> get $fieldsVar => [');
     for (final attribute in interface.attributes) {
       buffer.writeln('\t\t${attribute.attributeName},');
     }
