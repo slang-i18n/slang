@@ -167,6 +167,12 @@ void main() {
       expect(match?.group(2), 'abc');
     });
 
+    test('some-key(abc)', () {
+      RegExpMatch? match = regex.firstMatch('some-key(abc)');
+      expect(match?.group(1), 'some-key');
+      expect(match?.group(2), 'abc');
+    });
+
     test('myKey(cool_parameter)', () {
       RegExpMatch? match = regex.firstMatch('myKey(cool_parameter)');
       expect(match?.group(1), 'myKey');

@@ -3,16 +3,18 @@
 **DateFormat, NumberFormat, and Lazy loading**
 
 Format translations with `DateFormat` and `NumberFormat`:
+
 `Hello {name}, today is {today: yMd}. You have {money: currency(symbol: '€')}.`
 
 On web, [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-library) is used to reduce initial load time.
 
-- feat: add `DateFormat` and `NumberFormat` support
-- feat: add `lazy: true` config which is enabled by default
-- fix: `slang analyze` should not treat translations as unused if they are used in linked translations
-- fix: `slang analyze` should detect missing enums
-- fix: trim enum keys in compressed format while parsing (e.g. `"male, female": "..."` to `"male,female": "..."`)
-- fix: compilation error on web when using large interfaces
+- feat: add `DateFormat` and `NumberFormat` support (#112)
+- feat: add `lazy: true` config which is enabled by default (#135)
+- fix: `slang analyze` should not treat translations as unused if they are used in linked translations (#231)
+- fix: `slang analyze` should detect missing enums (#234)
+- fix: trim enum keys in compressed format while parsing (e.g. `"male, female": "..."` to `"male,female": "..."`) (#247)
+- fix: compilation error on web when using large interfaces (#251)
+- fix: correctly transform keys with modifiers when `key_case` is set (#253)
 - **Breaking:** Require Dart 3.3 and Flutter 3.19
 - **Breaking:** `setLocale`, `setLocaleRaw`, and `useDeviceLocale` returns a Future, use `-Sync` suffix for synchronous calls
 - **Breaking:** `output_format` removed, always generates multiple files now

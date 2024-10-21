@@ -58,7 +58,7 @@ class RegexUtils {
   /// greet(plural, param=gender)
   /// 1 - greet
   /// 2 - plural, param=gender
-  static final RegExp modifierRegex = RegExp(r'^(\w+)\((.+)\)$');
+  static final RegExp modifierRegex = RegExp(r'^([\w-]+)\((.+)\)$');
 
   /// Matches a format type expression with optional parameters
   ///
