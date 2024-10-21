@@ -1,4 +1,5 @@
 import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
+import 'package:slang/src/builder/model/i18n_data.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
@@ -58,8 +59,92 @@ void main() {
     });
   });
 
+  group('getMissingTranslations', () {
+    test('Should find missing translations', () {
+      final result = _getMissingTranslations({
+        'en': {
+          'a': 'A',
+          'b': 'B',
+        },
+        'de': {
+          'a': 'A',
+        },
+      });
+
+      expect(result[I18nLocale(language: 'de')], {'b': 'B'});
+    });
+
+    test('Should respect ignoreMissing flag', () {
+      final result = _getMissingTranslations({
+        'en': {
+          'a': 'A',
+          'b(ignoreMissing)': 'B',
+        },
+        'de': {
+          'a': 'A',
+        },
+      });
+
+      expect(result[I18nLocale(language: 'de')], isEmpty);
+    });
+
+    test('Should respect OUTDATED flag', () {
+      final result = _getMissingTranslations({
+        'en': {
+          'a': 'A EN',
+        },
+        'de': {
+          'a(OUTDATED)': 'A DE',
+        },
+      });
+
+      expect(result[I18nLocale(language: 'de')], {'a(OUTDATED)': 'A EN'});
+    });
+
+    test('Should ignore ignoreUnused flag', () {
+      final result = _getMissingTranslations({
+        'en': {
+          'a': 'A',
+          'b(ignoreUnused)': 'B',
+        },
+        'de': {
+          'a': 'A',
+        },
+      });
+
+      expect(result[I18nLocale(language: 'de')], {'b(ignoreUnused)': 'B'});
+    });
+
+    test('Should find missing enum', () {
+      final result = _getMissingTranslations({
+        'en': {
+          'a': 'A',
+          'greet(context=Gender)': {
+            'male': 'Hello Mr',
+            'female': 'Hello Mrs',
+          },
+        },
+        'de': {
+          'a': 'A',
+          'greet(context=Gender)': {
+            'male': 'Hello Herr',
+          },
+        },
+      });
+
+      expect(
+        result[I18nLocale(language: 'de')],
+        {
+          'greet(context=Gender)': {
+            'female': 'Hello Mrs',
+          },
+        },
+      );
+    });
+  });
+
   group('getUnusedTranslations', () {
-    test('Should find unused but translations', () {
+    test('Should find unused translations', () {
       final result = _getUnusedTranslations({
         'en': {
           'a': 'A',
@@ -71,6 +156,34 @@ void main() {
       });
 
       expect(result[I18nLocale(language: 'de')], {'b': 'B'});
+    });
+
+    test('Should respect ignoreUnused flag', () {
+      final result = _getUnusedTranslations({
+        'en': {
+          'a': 'A',
+        },
+        'de': {
+          'a': 'A',
+          'b(ignoreUnused)': 'B',
+        },
+      });
+
+      expect(result[I18nLocale(language: 'de')], isEmpty);
+    });
+
+    test('Should ignore ignoreMissing flag', () {
+      final result = _getUnusedTranslations({
+        'en': {
+          'a': 'A',
+        },
+        'de': {
+          'a': 'A',
+          'b(ignoreMissing)': 'B',
+        },
+      });
+
+      expect(result[I18nLocale(language: 'de')], {'b(ignoreMissing)': 'B'});
     });
 
     test('Should ignore unused but linked translations', () {
@@ -89,9 +202,27 @@ void main() {
   });
 }
 
+Map<I18nLocale, Map<String, dynamic>> _getMissingTranslations(
+  Map<String, Map<String, dynamic>> translations,
+) {
+  return getMissingTranslations(
+    rawConfig: RawConfig.defaultConfig,
+    translations: _buildTranslations(translations),
+  );
+}
+
 Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations(
   Map<String, Map<String, dynamic>> translations,
 ) {
+  return getUnusedTranslations(
+    rawConfig: RawConfig.defaultConfig,
+    translations: _buildTranslations(translations),
+    full: false,
+  );
+}
+
+List<I18nData> _buildTranslations(
+    Map<String, Map<String, dynamic>> translations) {
   final map = TranslationMap();
   for (final entry in translations.entries) {
     map.addTranslations(
@@ -100,12 +231,8 @@ Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations(
     );
   }
 
-  return getUnusedTranslations(
-    rawConfig: RawConfig.defaultConfig,
-    translations: TranslationModelListBuilder.build(
-      RawConfig.defaultConfig,
-      map,
-    ),
-    full: false,
+  return TranslationModelListBuilder.build(
+    RawConfig.defaultConfig,
+    map,
   );
 }

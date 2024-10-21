@@ -121,6 +121,7 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
       curr: currTranslations.root,
       resultMap: resultMap,
       handleOutdated: true,
+      ignoreModifierFlag: NodeModifiers.ignoreMissing,
       ignorePaths: const {},
     );
     result[currTranslations.locale] = resultMap;
@@ -160,6 +161,7 @@ Map<I18nLocale, Map<String, dynamic>> getUnusedTranslations({
       curr: baseTranslations.root,
       resultMap: resultMap,
       handleOutdated: false,
+      ignoreModifierFlag: NodeModifiers.ignoreUnused,
       ignorePaths: linkedPaths,
     );
     result[localeData.locale] = resultMap;
@@ -175,11 +177,12 @@ void _getMissingTranslationsForOneLocaleRecursive({
   required ObjectNode curr,
   required Map<String, dynamic> resultMap,
   required bool handleOutdated,
+  required String ignoreModifierFlag,
   required Set<String> ignorePaths,
 }) {
   for (final baseEntry in baseNode.entries.entries) {
     final baseChild = baseEntry.value;
-    if (baseChild.modifiers.containsKey(NodeModifiers.ignoreMissing) ||
+    if (baseChild.modifiers.containsKey(ignoreModifierFlag) ||
         ignorePaths.contains(baseChild.path)) {
       continue;
     }
@@ -218,6 +221,7 @@ void _getMissingTranslationsForOneLocaleRecursive({
         curr: currChild as ObjectNode,
         resultMap: resultMap,
         handleOutdated: handleOutdated,
+        ignoreModifierFlag: ignoreModifierFlag,
         ignorePaths: ignorePaths,
       );
     }
