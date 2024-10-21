@@ -6,7 +6,7 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:slang/node.dart';
+import 'package:slang/generated.dart';
 import 'package:slang/overrides.dart';
 import 'translations.cgm.dart';
 

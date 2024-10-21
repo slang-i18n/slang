@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:slang/slang.dart';
-import 'package:slang/node.dart';
+import 'package:slang/generated.dart';
 import 'package:slang/overrides.dart';
 // ignore: implementation_imports
 import 'package:slang/src/builder/model/pluralization.dart';

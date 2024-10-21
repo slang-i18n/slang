@@ -5,7 +5,7 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
-import 'package:slang/node.dart';
+import 'package:slang/generated.dart';
 import 'strings_b.g.dart';
 
 // Path: <root>

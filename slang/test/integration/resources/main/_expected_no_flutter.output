@@ -10,7 +10,7 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'package:intl/intl.dart';
-import 'package:slang/node.dart';
+import 'package:slang/generated.dart';
 import 'package:slang/slang.dart';
 export 'package:slang/slang.dart';
 

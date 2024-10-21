@@ -6,14 +6,14 @@
 /// Locales: 3
 /// Strings: 21 (7 per locale)
 ///
-/// Built on 2024-10-20 at 23:01 UTC
+/// Built on 2024-10-21 at 12:02 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:slang/node.dart';
+import 'package:slang/generated.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 

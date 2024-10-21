@@ -1,6 +1,6 @@
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:slang/node.dart';
+import 'package:slang/generated.dart';
 import 'package:slang/src/api/locale.dart';
 import 'package:slang/src/api/singleton.dart';
 import 'package:slang/src/api/translation_overrides.dart';

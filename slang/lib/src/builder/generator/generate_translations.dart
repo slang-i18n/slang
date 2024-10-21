@@ -41,7 +41,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
       config.outputFileName,
       ...config.imports,
       'package:intl/intl.dart',
-      'package:slang/node.dart',
+      'package:slang/generated.dart',
       if (config.obfuscation.enabled) 'package:slang/secret.dart',
       if (config.translationOverrides) 'package:slang/overrides.dart',
       if (config.flutterIntegration) 'package:flutter/widgets.dart',
