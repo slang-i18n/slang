@@ -514,7 +514,14 @@ void _generateMap({
           childName: key,
           locale: locale,
         );
-        buffer.writeln('\'$key\': $childClassWithLocale._(_root),');
+
+        buffer.write('\'$key\': ');
+        if (base &&
+            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+          buffer.writeln('$childClassWithLocale.internal(_root),');
+        } else {
+          buffer.writeln('$childClassWithLocale._(_root),');
+        }
       }
     } else if (value is PluralNode) {
       buffer.write('\'$key\': ');
@@ -630,7 +637,13 @@ void _generateList({
           childName: key,
           locale: locale,
         );
-        buffer.writeln('$childClassWithLocale._(_root),');
+
+        if (base &&
+            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+          buffer.writeln('$childClassWithLocale.internal(_root),');
+        } else {
+          buffer.writeln('$childClassWithLocale._(_root),');
+        }
       }
     } else if (value is PluralNode) {
       _addPluralCall(

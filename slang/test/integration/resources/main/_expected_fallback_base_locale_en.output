@@ -74,12 +74,12 @@ class TranslationsOnboardingEn {
 		TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
 	]);
 	List<PageData> get pages => [
-		TranslationsOnboarding$pages$0i0$En._(_root),
-		TranslationsOnboarding$pages$0i1$En._(_root),
+		TranslationsOnboarding$pages$0i0$En.internal(_root),
+		TranslationsOnboarding$pages$0i1$En.internal(_root),
 	];
 	List<MPage> get modifierPages => [
-		TranslationsOnboarding$modifierPages$0i0$En._(_root),
-		TranslationsOnboarding$modifierPages$0i1$En._(_root),
+		TranslationsOnboarding$modifierPages$0i0$En.internal(_root),
+		TranslationsOnboarding$modifierPages$0i1$En.internal(_root),
 	];
 	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
