@@ -264,7 +264,7 @@ void _generateEnum({
     buffer.writeln();
     buffer.writeln('\t@override');
     buffer.writeln(
-        '\t${sync ? 'Translations' : 'Future<Translations>'} build${sync ? 'Sync' : ''}({');
+        '\t${sync ? config.className : 'Future<${config.className}>'} build${sync ? 'Sync' : ''}({');
     buffer.writeln('\t\tMap<String, Node>? overrides,');
     buffer.writeln('\t\tPluralResolver? cardinalResolver,');
     buffer.writeln('\t\tPluralResolver? ordinalResolver,');
@@ -437,7 +437,7 @@ void _generateLocaleSettings({
   }
 
   buffer.writeln(
-      '\tstatic Future<void> setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
+      '\tstatic Future<void> setPluralResolver({String? language, $enumName? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(');
   buffer.writeln('\t\tlanguage: language,');
   buffer.writeln('\t\tlocale: locale,');
   buffer.writeln('\t\tcardinalResolver: cardinalResolver,');
@@ -445,9 +445,9 @@ void _generateLocaleSettings({
   buffer.writeln('\t);');
   if (config.translationOverrides) {
     buffer.writeln(
-        '\tstatic Future<void> overrideTranslations({required AppLocale locale, required FileType fileType, required String content}) => instance.overrideTranslations(locale: locale, fileType: fileType, content: content);');
+        '\tstatic Future<void> overrideTranslations({required $enumName locale, required FileType fileType, required String content}) => instance.overrideTranslations(locale: locale, fileType: fileType, content: content);');
     buffer.writeln(
-        '\tstatic Future<void> overrideTranslationsFromMap({required AppLocale locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMap(locale: locale, isFlatMap: isFlatMap, map: map);');
+        '\tstatic Future<void> overrideTranslationsFromMap({required $enumName locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMap(locale: locale, isFlatMap: isFlatMap, map: map);');
   }
 
   // sync versions
@@ -463,7 +463,7 @@ void _generateLocaleSettings({
   }
 
   buffer.writeln(
-      '\tstatic void setPluralResolverSync({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolverSync(');
+      '\tstatic void setPluralResolverSync({String? language, $enumName? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolverSync(');
   buffer.writeln('\t\tlanguage: language,');
   buffer.writeln('\t\tlocale: locale,');
   buffer.writeln('\t\tcardinalResolver: cardinalResolver,');
@@ -472,9 +472,9 @@ void _generateLocaleSettings({
 
   if (config.translationOverrides) {
     buffer.writeln(
-        '\tstatic void overrideTranslationsSync({required AppLocale locale, required FileType fileType, required String content}) => instance.overrideTranslationsSync(locale: locale, fileType: fileType, content: content);');
+        '\tstatic void overrideTranslationsSync({required $enumName locale, required FileType fileType, required String content}) => instance.overrideTranslationsSync(locale: locale, fileType: fileType, content: content);');
     buffer.writeln(
-        '\tstatic void overrideTranslationsFromMapSync({required AppLocale locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMapSync(locale: locale, isFlatMap: isFlatMap, map: map);');
+        '\tstatic void overrideTranslationsFromMapSync({required $enumName locale, required bool isFlatMap, required Map map}) => instance.overrideTranslationsFromMapSync(locale: locale, isFlatMap: isFlatMap, map: map);');
   }
 
   buffer.writeln('}');
@@ -519,13 +519,13 @@ void _generateUtil({
       '\tstatic List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;');
   if (config.translationOverrides) {
     buffer.writeln(
-        '\tstatic Future<${config.className}> buildWithOverrides({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic Future<${config.className}> buildWithOverrides({required $enumName locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverrides(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln(
-        '\tstatic Future<${config.className}> buildWithOverridesFromMap({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic Future<${config.className}> buildWithOverridesFromMap({required $enumName locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln(
-        '\tstatic ${config.className} buildWithOverridesSync({required AppLocale locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesSync(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic ${config.className} buildWithOverridesSync({required $enumName locale, required FileType fileType, required String content, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesSync(locale: locale, fileType: fileType, content: content, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
     buffer.writeln(
-        '\tstatic ${config.className} buildWithOverridesFromMapSync({required AppLocale locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMapSync(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
+        '\tstatic ${config.className} buildWithOverridesFromMapSync({required $enumName locale, required bool isFlatMap, required Map map, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.buildWithOverridesFromMapSync(locale: locale, isFlatMap: isFlatMap, map: map, cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver);');
   }
 
   buffer.writeln('}');
