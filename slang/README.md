@@ -28,14 +28,15 @@ String a = t.mainScreen.title;                         // simple use case
 String b = t.game.end.highscore(score: 32.6);          // with parameters
 String c = t.items(n: 2);                              // with pluralization
 String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
-String e = t.intro.step[4];                            // with index
-String f = t.error.type['WARNING'];                    // with dynamic key
-String g = t['mainScreen.title'];                      // with fully dynamic key
-TextSpan h = t.greet(name: TextSpan(text: 'Tom'));     // with RichText
+String e = t.greet(today: DateTime.now());             // with L10n
+String f = t.intro.step[4];                            // with index
+String g = t.error.type['WARNING'];                    // with dynamic key
+String h = t['mainScreen.title'];                      // with fully dynamic key
+TextSpan i = t.greet(name: TextSpan(text: 'Tom'));     // with RichText
 
 PageData page0 = t.onboarding.pages[0];                // with interfaces
 PageData page1 = t.onboarding.pages[1];
-String i = page1.title; // type-safe call
+String j = page1.title; // type-safe call
 ```
 
 An extensive CLI will help you to manage the translations:
