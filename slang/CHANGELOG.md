@@ -1,5 +1,6 @@
-## 4.0.1
+## 4.1.0
 
+- feat: add `format` config to automatically format generated files (#184)
 - fix: correctly generate with `enum_name` and `class_name` different from `AppLocale` / `Translations` (#254)
 
 ## 4.0.0

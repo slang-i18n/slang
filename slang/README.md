@@ -80,6 +80,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Comments](#-comments)
   - [Recasing](#-recasing)
   - [Obfuscation](#-obfuscation)
+  - [Formatting](#-formatting)
   - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
@@ -332,6 +333,9 @@ interfaces:
 obfuscation:
   enabled: false
   secret: somekey
+format:
+  enabled: true
+  width: 150
 imports:
   - 'package:my_package/path_to_enum.dart'
 ```
@@ -398,6 +402,9 @@ targets:
           obfuscation:
             enabled: false
             secret: somekey
+          format:
+            enabled: true
+            width: 150
           imports:
             - 'package:my_package/path_to_enum.dart'
 ```
@@ -438,6 +445,8 @@ targets:
 | `children of interfaces`            | `Pairs of Alias:Path`                             | alias interfaces [(i)](#-interfaces)                         | `null`         |
 | `obfuscation`/`enabled`             | `Boolean`                                         | enable obfuscation [(i)](#-obfuscation)                      | `false`        |
 | `obfuscation`/`secret`              | `String`                                          | obfuscation secret (random if null) [(i)](#-obfuscation)     | `null`         |
+| `format`/`enabled`                  | `Boolean`                                         | enable auto format [(i)](#-formatting)                       | `false`        |
+| `format`/`width`                    | `String`                                          | set line length / characters per line [(i)](#-formatting)    | `null`         |
 | `imports`                           | `List<String>`                                    | generate import statements                                   | `[]`           |
 
 ## Main Features
@@ -1444,6 +1453,19 @@ XOR is used for encryption to keep your app (nearly) as fast as before.
 Keep in mind that this only prevents simple string searches of the binary.
 
 An experienced reverse engineer can still find the strings given enough time.
+
+### ➤ Formatting
+
+The generated code is not formatted by default to keep the algorithm fast and efficient.
+
+You can enable it:
+
+```yaml
+# Config
+format:
+  enabled: true
+  width: 150 # optional
+```
 
 ### ➤ Dart Only
 

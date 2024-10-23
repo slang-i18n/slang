@@ -1,5 +1,6 @@
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/format_config.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/obfuscation_config.dart';
@@ -39,6 +40,10 @@ class RawConfig {
   static const List<InterfaceConfig> defaultInterfaces = <InterfaceConfig>[];
   static final ObfuscationConfig defaultObfuscationConfig =
       ObfuscationConfig.disabled();
+  static const FormatConfig defaultFormatConfig = FormatConfig(
+    enabled: FormatConfig.defaultEnabled,
+    width: FormatConfig.defaultWidth,
+  );
   static const List<String> defaultImports = <String>[];
 
   final FileType fileType;
@@ -72,6 +77,7 @@ class RawConfig {
   final List<ContextType> contexts;
   final List<InterfaceConfig> interfaces;
   final ObfuscationConfig obfuscation;
+  final FormatConfig format;
   final List<String> imports;
 
   /// Used by external tools to access the raw config. (e.g. slang_gpt)
@@ -108,6 +114,7 @@ class RawConfig {
     required this.contexts,
     required this.interfaces,
     required this.obfuscation,
+    required this.format,
     required this.imports,
     required this.rawMap,
   })  : fileType = _determineFileType(inputFilePattern),
@@ -139,6 +146,7 @@ class RawConfig {
     List<ContextType>? contexts,
     List<InterfaceConfig>? interfaces,
     ObfuscationConfig? obfuscation,
+    FormatConfig? format,
   }) {
     return RawConfig(
       baseLocale: baseLocale ?? this.baseLocale,
@@ -172,6 +180,7 @@ class RawConfig {
       contexts: contexts ?? this.contexts,
       interfaces: interfaces ?? this.interfaces,
       obfuscation: obfuscation ?? this.obfuscation,
+      format: format ?? this.format,
       imports: imports,
       rawMap: rawMap,
     );
@@ -249,6 +258,8 @@ class RawConfig {
       }
     }
     print(' -> obfuscation: ${obfuscation.enabled ? 'enabled' : 'disabled'}');
+    print(
+        ' -> format: ${format.enabled ? 'enabled (width=${format.width})' : 'disabled'}');
     print(' -> imports: $imports');
   }
 
@@ -285,6 +296,7 @@ class RawConfig {
     contexts: RawConfig.defaultContexts,
     interfaces: RawConfig.defaultInterfaces,
     obfuscation: RawConfig.defaultObfuscationConfig,
+    format: RawConfig.defaultFormatConfig,
     imports: RawConfig.defaultImports,
     className: RawConfig.defaultClassName,
     rawMap: {},

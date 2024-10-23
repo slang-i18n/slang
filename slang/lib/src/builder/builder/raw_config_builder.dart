@@ -1,5 +1,6 @@
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/format_config.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/obfuscation_config.dart';
@@ -113,6 +114,8 @@ class RawConfigBuilder {
       obfuscation: (map['obfuscation'] as Map<String, dynamic>?)
               ?.toObfuscationConfig() ??
           RawConfig.defaultObfuscationConfig,
+      format: (map['format'] as Map<String, dynamic>?)?.toFormatConfig() ??
+          RawConfig.defaultFormatConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
       rawMap: map,
     );
@@ -216,6 +219,14 @@ extension on Map<String, dynamic> {
     return ObfuscationConfig.fromSecretString(
       enabled: this['enabled'] ?? ObfuscationConfig.defaultEnabled,
       secret: this['secret'],
+    );
+  }
+
+  /// Parses the 'format' config
+  FormatConfig toFormatConfig() {
+    return FormatConfig(
+      enabled: this['enabled'],
+      width: this['width'],
     );
   }
 }

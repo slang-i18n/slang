@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 // ignore: implementation_imports
 import 'package:slang/src/builder/builder/raw_config_builder.dart';
@@ -81,10 +82,15 @@ class I18nBuilder implements Builder {
     // STEP 4: write output to hard drive
     FileUtils.createMissingFolders(filePath: outputFilePath);
 
+    final formatter = DartFormatter(
+      pageWidth: config.format.width,
+    );
+
     FileUtils.writeFile(
       path: BuildResultPaths.mainPath(outputFilePath),
-      content: result.main,
+      content: result.main.formatted(config, formatter),
     );
+
     for (final entry in result.translations.entries) {
       final locale = entry.key;
       final localeTranslations = entry.value;
@@ -93,7 +99,7 @@ class I18nBuilder implements Builder {
           outputPath: outputFilePath,
           locale: locale,
         ),
-        content: localeTranslations,
+        content: localeTranslations.formatted(config, formatter),
       );
     }
   }
@@ -108,5 +114,13 @@ extension on String {
   /// converts /some/path/file.i18n.json to i18n.json
   String getFileExtension() {
     return PathUtils.getFileExtension(this);
+  }
+
+  /// Conditionally formats the string using the provided [formatter].
+  String formatted(RawConfig config, DartFormatter formatter) {
+    return switch (config.format.enabled) {
+      true => formatter.format(this),
+      false => this,
+    };
   }
 }

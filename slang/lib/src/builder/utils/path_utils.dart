@@ -39,6 +39,15 @@ class PathUtils {
     return segments[segments.length - 2];
   }
 
+  /// Converts /a/b/file.json to /a/b
+  static String? getParentPath(String path) {
+    final segments = getPathSegments(path);
+    if (segments.length == 1) {
+      return null;
+    }
+    return segments.sublist(0, segments.length - 1).join('/');
+  }
+
   /// finds locale in directory path
   /// eg. /en-US/b/file.json will result in en-US
   static I18nLocale? findDirectoryLocale(

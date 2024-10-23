@@ -14,6 +14,7 @@ import 'package:slang/src/runner/edit.dart';
 import 'package:slang/src/runner/migrate.dart';
 import 'package:slang/src/runner/normalize.dart';
 import 'package:slang/src/runner/stats.dart';
+import 'package:slang/src/runner/utils/format.dart';
 import 'package:watcher/watcher.dart';
 
 /// Determines what the runner will do
@@ -348,12 +349,31 @@ Future<void> generateTranslations({
         locale: locale,
       )}');
     }
-    print('');
+  }
 
-    if (stopwatch != null) {
-      print(
-          '${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
+  if (fileCollection.config.format.enabled) {
+    final formatDir = PathUtils.getParentPath(outputFilePath)!;
+    Stopwatch? formatStopwatch;
+    if (verbose) {
+      print('');
+      print('Formatting "$formatDir" ...');
+      if (stopwatch != null) {
+        formatStopwatch = Stopwatch()..start();
+      }
     }
+    await runDartFormat(
+      dir: formatDir,
+      width: fileCollection.config.format.width,
+    );
+    if (verbose && formatStopwatch != null) {
+      print('Format done. ${formatStopwatch.elapsedSeconds}');
+    }
+  }
+
+  if (verbose && stopwatch != null) {
+    print('');
+    print(
+        '${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
   }
 }
 
