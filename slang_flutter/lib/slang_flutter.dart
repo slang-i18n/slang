@@ -145,7 +145,7 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
     final E localeTyped = widget.settings.utils.parseAppLocale(locale);
     await widget.settings.loadLocale(localeTyped);
     setState(() {
-      this.translations = widget.settings.translationMap[localeTyped]!;
+      this.translations = widget.settings.translationMap[localeTyped];
     });
   }
 
