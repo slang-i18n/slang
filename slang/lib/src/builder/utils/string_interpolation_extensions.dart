@@ -75,8 +75,7 @@ extension StringInterpolationExtensions on String {
   String replaceDartNormalizedInterpolation({
     required String Function(String match) replacer,
   }) {
-    return _replaceBetween(
-      input: this,
+    return replaceBetween(
       startCharacter: r'${',
       endCharacter: '}',
       replacer: replacer,
@@ -87,8 +86,7 @@ extension StringInterpolationExtensions on String {
   String replaceBracesInterpolation({
     required String Function(String match) replacer,
   }) {
-    return _replaceBetween(
-      input: this,
+    return replaceBetween(
       startCharacter: '{',
       endCharacter: '}',
       replacer: replacer,
@@ -99,73 +97,71 @@ extension StringInterpolationExtensions on String {
   String replaceDoubleBracesInterpolation({
     required String Function(String match) replacer,
   }) {
-    return _replaceBetween(
-      input: this,
+    return replaceBetween(
       startCharacter: '{{',
       endCharacter: '}}',
       replacer: replacer,
     );
   }
-}
 
-String _replaceBetween({
-  required String input,
-  required String startCharacter,
-  required String endCharacter,
-  required String Function(String match) replacer,
-}) {
-  String curr = input;
-  final buffer = StringBuffer();
-  final startCharacterLength = startCharacter.length;
-  final endCharacterLength = endCharacter.length;
+  String replaceBetween({
+    required String startCharacter,
+    required String endCharacter,
+    required String Function(String match) replacer,
+  }) {
+    String curr = this;
+    final buffer = StringBuffer();
+    final startCharacterLength = startCharacter.length;
+    final endCharacterLength = endCharacter.length;
 
-  do {
-    int startIndex = curr.indexOf(startCharacter);
-    if (startIndex == -1) {
-      buffer.write(curr);
-      break;
-    }
-    if (startIndex >= 1 && curr[startIndex - 1] == '\\') {
-      // ignore because of preceding \
-      buffer.write(curr.substring(0, startIndex - 1)); // do not include \
-      buffer.write(startCharacter);
-      if (startIndex + 1 < curr.length) {
-        curr = curr.substring(startIndex + startCharacterLength);
-        continue;
-      } else {
+    do {
+      int startIndex = curr.indexOf(startCharacter);
+      if (startIndex == -1) {
+        buffer.write(curr);
         break;
       }
-    }
+      if (startIndex >= 1 && curr[startIndex - 1] == '\\') {
+        // ignore because of preceding \
+        buffer.write(curr.substring(0, startIndex - 1)); // do not include \
+        buffer.write(startCharacter);
+        if (startIndex + 1 < curr.length) {
+          curr = curr.substring(startIndex + startCharacterLength);
+          continue;
+        } else {
+          break;
+        }
+      }
 
-    if (startIndex >= 2 &&
-        curr[startIndex - 1] == ':' &&
-        curr[startIndex - 2] == '@') {
-      // ignore because of preceding @: which indicates an escaped, linked translation
-      buffer.write(curr.substring(0, startIndex + 1));
-      if (startIndex + 1 < curr.length) {
-        curr = curr.substring(startIndex + startCharacterLength);
-        continue;
-      } else {
+      if (startIndex >= 2 &&
+          curr[startIndex - 1] == ':' &&
+          curr[startIndex - 2] == '@') {
+        // ignore because of preceding @: which indicates an escaped, linked translation
+        buffer.write(curr.substring(0, startIndex + 1));
+        if (startIndex + 1 < curr.length) {
+          curr = curr.substring(startIndex + startCharacterLength);
+          continue;
+        } else {
+          break;
+        }
+      }
+
+      if (startIndex != 0) {
+        // add prefix
+        buffer.write(curr.substring(0, startIndex));
+      }
+
+      int endIndex =
+          curr.indexOf(endCharacter, startIndex + startCharacterLength);
+      if (endIndex == -1) {
+        buffer.write(curr.substring(startIndex));
         break;
       }
-    }
 
-    if (startIndex != 0) {
-      // add prefix
-      buffer.write(curr.substring(0, startIndex));
-    }
+      buffer.write(
+          replacer(curr.substring(startIndex, endIndex + endCharacterLength)));
+      curr = curr.substring(endIndex + endCharacterLength);
+    } while (curr.isNotEmpty);
 
-    int endIndex =
-        curr.indexOf(endCharacter, startIndex + startCharacterLength);
-    if (endIndex == -1) {
-      buffer.write(curr.substring(startIndex));
-      break;
-    }
-
-    buffer.write(
-        replacer(curr.substring(startIndex, endIndex + endCharacterLength)));
-    curr = curr.substring(endIndex + endCharacterLength);
-  } while (curr.isNotEmpty);
-
-  return buffer.toString();
+    return buffer.toString();
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:slang/src/api/formatter.dart';
 import 'package:slang/src/builder/builder/text/l10n_parser.dart';
+import 'package:slang/src/builder/utils/parameter_string_ext.dart';
 
 class L10nOverrideResult {
   final String methodName;
@@ -62,16 +63,17 @@ String? digestL10nOverride({
     };
 
     final formatter = Function.apply(formatterBuilder, [], {
-      ...arguments,
       #locale: locale,
+      ...arguments,
     });
 
     return formatter.format(value);
   } else {
     // positional arguments
-    final argument = switch (parsed.arguments) {
-      String args => parseSinglePositionalArgument(args),
-      null => null,
+    final arguments = switch (parsed.arguments) {
+      String args =>
+        args.splitParameters().map((s) => parseSinglePositionalArgument(s)),
+      null => const [],
     };
     final Function formatterBuilder = switch (parsed.methodName) {
       'NumberFormat.decimalPattern' => NumberFormat.decimalPattern,
@@ -88,11 +90,14 @@ String? digestL10nOverride({
       _ => throw UnimplementedError('Unknown formatter: ${parsed.methodName}'),
     };
 
+    final has2Arguments = positionalWith2Arguments.contains(parsed.methodName);
     final formatter = Function.apply(
       formatterBuilder,
       [
-        if (argument != null) argument,
-        locale,
+        ...arguments,
+        if ((has2Arguments && arguments.length < 2) ||
+            (!has2Arguments && arguments.isEmpty))
+          locale,
       ],
     );
     return formatter.format(value);
@@ -101,7 +106,7 @@ String? digestL10nOverride({
 
 Map<Symbol, Object> parseArguments(String arguments) {
   final result = <Symbol, Object>{};
-  final parts = arguments.split(',');
+  final parts = arguments.splitParameters();
   for (final part in parts) {
     final keyValue = part.split(':');
     if (keyValue.length != 2) {

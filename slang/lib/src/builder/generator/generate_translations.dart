@@ -206,6 +206,9 @@ void _generateClass(
     if (localeData.types.isNotEmpty) {
       buffer.writeln('\t\t    types: {');
       for (final entry in localeData.types.entries) {
+        // trim NumberFormat.currency(symbol: '€', locale: 'en').format(value)
+        // to NumberFormat.currency(symbol: '€', locale: 'en')
+        // removing 14 characters
         buffer.writeln(
           '\t\t      \'${entry.key}\': ValueFormatter(() => ${entry.value.substring(0, entry.value.length - 14)}),',
         );

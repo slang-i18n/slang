@@ -76,4 +76,34 @@ void main() {
     );
     expect(p!, '2021-12-31');
   });
+
+  test('Should keep locale in positional argument', () {
+    final p = digestL10nOverride(
+      existingTypes: {},
+      locale: 'en',
+      type: 'NumberFormat("000.00", "de")',
+      value: 33.4,
+    );
+    expect(p!, '033,40');
+  });
+
+  test('Should keep locale in single positional argument', () {
+    final p = digestL10nOverride(
+      existingTypes: {},
+      locale: 'en',
+      type: 'yMd("de")',
+      value: DateTime(2021, 12, 31),
+    );
+    expect(p!, '31.12.2021');
+  });
+
+  test('Should keep locale in named argument', () {
+    final p = digestL10nOverride(
+      existingTypes: {},
+      locale: 'en',
+      type: 'currency(symbol: "€", locale: "de")',
+      value: 33.4,
+    );
+    expect(p!, '33,40 €');
+  });
 }

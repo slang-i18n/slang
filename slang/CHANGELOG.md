@@ -1,3 +1,7 @@
+## 4.1.1
+
+- fix: do not override `locale` in L10n format definition
+
 ## 4.1.0
 
 - feat: add `format` config to automatically format generated files (#184)

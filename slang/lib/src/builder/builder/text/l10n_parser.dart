@@ -1,4 +1,5 @@
 import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/utils/parameter_string_ext.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class ParseL10nResult {
@@ -52,6 +53,11 @@ const _dateFormats = {
   'Hms',
   'jm',
   'jms',
+};
+
+const positionalWith2Arguments = {
+  'DateFormat',
+  'NumberFormat',
 };
 
 final _dateFormatsWithClass = {
@@ -127,14 +133,24 @@ ParseL10nResult? parseL10n({
   if (parsed.paramType == 'num' &&
       numberFormatsWithNamedParameters.contains(parsed.methodName)) {
     // add locale as named parameter
-    if (parsed.arguments == null) {
-      arguments = "locale: '${locale.underscoreTag}'";
-    } else {
-      arguments = "$arguments, locale: '${locale.underscoreTag}'";
+    if (!arguments.contains('locale')) {
+      if (parsed.arguments == null) {
+        arguments = "locale: '${locale.underscoreTag}'";
+      } else {
+        arguments = "$arguments, locale: '${locale.underscoreTag}'";
+      }
     }
   } else {
     // add locale as positional parameter
-    if (!arguments.contains('locale:')) {
+    final has2Arguments = positionalWith2Arguments.contains(parsed.methodName);
+    final containsLocale = switch (has2Arguments) {
+      // If there is only 1 argument, then it is the locale
+      false => arguments.trim().isNotEmpty,
+      // If there are 2 arguments, then the locale is the second one
+      true => arguments.splitParameters().length >= 2,
+    };
+
+    if (!containsLocale) {
       if (arguments.isEmpty) {
         arguments = "'${locale.underscoreTag}'";
       } else {
