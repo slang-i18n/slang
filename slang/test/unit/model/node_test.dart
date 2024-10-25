@@ -1,3 +1,4 @@
+import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:test/test.dart';
@@ -295,6 +296,25 @@ void main() {
         expect(
           node.content,
           r"Your price is ${NumberFormat.currency(symbol: '€', locale: 'en').format(price)}",
+        );
+        expect(node.params, {'price'});
+      });
+
+      test('with predefined format', () {
+        final test = r'Your price is ${price: eur}';
+        final node = textNode(
+          test,
+          StringInterpolation.dart,
+          formatters: {
+            'eur': FormatTypeInfo(
+              paramType: 'NumberFormat',
+              implementation: 'currency(symbol: "EUR")',
+            ),
+          },
+        );
+        expect(
+          node.content,
+          r"Your price is ${_root.$meta.types['eur']!.format(price)}",
         );
         expect(node.params, {'price'});
       });

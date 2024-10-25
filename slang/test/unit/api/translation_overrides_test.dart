@@ -91,6 +91,20 @@ void main() {
     test('Should return string with predefined type', () {
       final meta = _buildMetaWithOverrides({
         'aboutPage.title': r'About ${date: predefined}',
+      }, formatters: {
+        'predefined': ValueFormatter(() => DateFormat('yyyy')),
+      });
+      final parsed = TranslationOverrides.string(meta, 'aboutPage.title', {
+        'date': DateTime(2022, 3, 12),
+      });
+      expect(parsed, 'About 2022');
+    });
+
+    test('Should prefer predefined type over built-in type', () {
+      final meta = _buildMetaWithOverrides({
+        'aboutPage.title': r'About ${date: yMd}',
+      }, formatters: {
+        'yMd': ValueFormatter(() => DateFormat('yyyy')),
       });
       final parsed = TranslationOverrides.string(meta, 'aboutPage.title', {
         'date': DateTime(2022, 3, 12),
@@ -145,12 +159,14 @@ void main() {
 TranslationMetadata<FakeAppLocale, FakeTranslations> _buildMetaWithOverrides(
   Map<String, dynamic> overrides, {
   String? locale,
+  Map<String, ValueFormatter> formatters = const {},
 }) {
   final utils = _Utils();
   final translations = utils.buildWithOverridesFromMapSync(
-    locale: FakeAppLocale(languageCode: locale ?? 'en', types: {
-      'predefined': ValueFormatter(() => DateFormat('yyyy')),
-    }),
+    locale: FakeAppLocale(
+      languageCode: locale ?? 'en',
+      types: formatters,
+    ),
     isFlatMap: false,
     map: overrides,
   );

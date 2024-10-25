@@ -236,9 +236,6 @@ abstract class TextNode extends Node implements LeafNode {
   /// the type must be specified and cannot be [Object].
   Map<String, String> get paramTypeMap;
 
-  /// Map of parameters to their format in raw string.
-  Map<String, String> get paramFormatMap;
-
   /// Set of paths to [TextNode]s
   /// Will be used for 2nd round, determining the final set of parameters
   Set<String> get links;
@@ -293,11 +290,6 @@ class StringTextNode extends TextNode {
 
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
-
-  final _paramFormatMap = <String, String>{};
-
-  @override
-  Map<String, String> get paramFormatMap => _paramFormatMap;
 
   StringTextNode({
     required super.path,
@@ -394,11 +386,6 @@ class RichTextNode extends TextNode {
 
   @override
   Map<String, String> get paramTypeMap => _paramTypeMap;
-
-  final _paramFormatMap = <String, String>{};
-
-  @override
-  Map<String, String> get paramFormatMap => _paramFormatMap;
 
   RichTextNode({
     required super.path,

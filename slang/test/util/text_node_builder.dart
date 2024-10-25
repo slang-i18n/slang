@@ -1,3 +1,4 @@
+import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
@@ -9,13 +10,14 @@ StringTextNode textNode(
   StringInterpolation interpolation, {
   CaseStyle? paramCase,
   Map<String, Set<String>>? linkParamMap,
+  Map<String, FormatTypeInfo> formatters = const {},
 }) {
   return StringTextNode(
     path: '',
     rawPath: '',
     modifiers: {},
     locale: _locale,
-    types: {},
+    types: formatters,
     raw: raw,
     comment: null,
     interpolation: interpolation,
