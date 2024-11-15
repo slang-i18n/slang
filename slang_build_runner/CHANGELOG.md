@@ -1,3 +1,7 @@
+## 4.2.0
+
+- bump `slang` to `4.2.0`
+
 ## 4.1.0
 
 - feat: add `dart_style` dependency to auto format generated files

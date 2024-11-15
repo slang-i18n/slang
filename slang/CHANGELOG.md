@@ -1,5 +1,6 @@
-## 4.1.1
+## 4.2.0
 
+- feat: automatically sanitize invalid keys (e.g. `continue`, `123`) (#257)
 - fix: do not override `locale` in L10n format definition
 
 ## 4.1.0
