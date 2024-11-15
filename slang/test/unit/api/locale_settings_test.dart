@@ -3,6 +3,7 @@ import 'package:slang/src/api/singleton.dart';
 import 'package:slang/src/api/state.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/sanitization_config.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -62,6 +63,11 @@ class _AppLocaleUtils
             keyCase: null,
             keyMapCase: null,
             paramCase: null,
+            sanitization: SanitizationConfig(
+              enabled: true,
+              prefix: 'k',
+              caseStyle: CaseStyle.camel,
+            ),
             stringInterpolation: StringInterpolation.braces,
             maps: [],
             pluralAuto: PluralAuto.cardinal,

@@ -3,6 +3,8 @@ onboarding.welcomeAlias,@:onboarding.welcome
 onboarding.welcomeOnlyParam,{firstName}
 onboarding.bye,Tschüss {firstName}
 onboarding.@bye,Bye text
+onboarding.continue,Weiter
+onboarding.linkContinue,@:onboarding.kContinue
 onboarding.hi(rich),Hi {name} und @:onboarding.greet
 onboarding.pages.0.title,Erste Seite
 onboarding.pages.0.content,Erster Seiteninhalt

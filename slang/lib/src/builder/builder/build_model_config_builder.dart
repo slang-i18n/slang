@@ -8,6 +8,7 @@ extension BuildModelConfigBuilder on RawConfig {
       keyCase: keyCase,
       keyMapCase: keyMapCase,
       paramCase: paramCase,
+      sanitization: sanitization,
       stringInterpolation: stringInterpolation,
       maps: maps,
       pluralAuto: pluralAuto,

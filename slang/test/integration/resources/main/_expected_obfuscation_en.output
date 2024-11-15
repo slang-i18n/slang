@@ -69,6 +69,8 @@ class TranslationsOnboardingEn {
 	/// Bye text
 	String bye({required Object firstName}) => _root.$meta.d([25, 34, 62, 123]) + firstName.toString();
 
+	String get kContinue => _root.$meta.d([24, 52, 53, 47, 50, 53, 46, 62]);
+	String get linkContinue => _root.onboarding.kContinue;
 	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		TextSpan(text: _root.$meta.d([19, 50, 123])),
 		name,
@@ -191,6 +193,8 @@ extension on Translations {
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => firstName.toString();
 			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([25, 34, 62, 123]) + firstName.toString();
+			case 'onboarding.kContinue': return _root.$meta.d([24, 52, 53, 47, 50, 53, 46, 62]);
+			case 'onboarding.linkContinue': return _root.onboarding.kContinue;
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				TextSpan(text: _root.$meta.d([19, 50, 123])),
 				name,

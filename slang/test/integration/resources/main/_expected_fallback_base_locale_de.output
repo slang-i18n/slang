@@ -66,6 +66,8 @@ class _TranslationsOnboardingDe extends TranslationsOnboardingEn {
 	/// Bye text
 	@override String bye({required Object firstName}) => 'Tschüss ${firstName}';
 
+	@override String get kContinue => 'Weiter';
+	@override String get linkContinue => _root.onboarding.kContinue;
 	@override TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		const TextSpan(text: 'Hi '),
 		name,
@@ -188,6 +190,8 @@ extension on TranslationsDe {
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => '${firstName}';
 			case 'onboarding.bye': return ({required Object firstName}) => 'Tschüss ${firstName}';
+			case 'onboarding.kContinue': return 'Weiter';
+			case 'onboarding.linkContinue': return _root.onboarding.kContinue;
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
 				name,

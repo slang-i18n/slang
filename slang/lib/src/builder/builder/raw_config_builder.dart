@@ -5,6 +5,7 @@ import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/obfuscation_config.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/sanitization_config.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_extensions.dart';
@@ -54,6 +55,9 @@ class RawConfigBuilder {
       );
     }
 
+    final keyCase =
+        (map['key_case'] as String?)?.toCaseStyle() ?? RawConfig.defaultKeyCase;
+
     return RawConfig(
       baseLocale: I18nLocale.fromString(
           map['base_locale'] ?? RawConfig.defaultBaseLocale),
@@ -82,12 +86,19 @@ class RawConfigBuilder {
           (map['translation_class_visibility'] as String?)
                   ?.toTranslationClassVisibility() ??
               RawConfig.defaultTranslationClassVisibility,
-      keyCase: (map['key_case'] as String?)?.toCaseStyle() ??
-          RawConfig.defaultKeyCase,
+      keyCase: keyCase,
       keyMapCase: (map['key_map_case'] as String?)?.toCaseStyle() ??
           RawConfig.defaultKeyMapCase,
       paramCase: (map['param_case'] as String?)?.toCaseStyle() ??
           RawConfig.defaultParamCase,
+      sanitization: (map['sanitization'] as Map<String, dynamic>?)
+              ?.toSanitizationConfig(
+                  keyCase ?? SanitizationConfig.defaultCaseStyle) ??
+          SanitizationConfig(
+            enabled: SanitizationConfig.defaultEnabled,
+            prefix: SanitizationConfig.defaultPrefix,
+            caseStyle: keyCase ?? SanitizationConfig.defaultCaseStyle,
+          ),
       stringInterpolation:
           (map['string_interpolation'] as String?)?.toStringInterpolation() ??
               RawConfig.defaultStringInterpolation,
@@ -227,6 +238,19 @@ extension on Map<String, dynamic> {
     return FormatConfig(
       enabled: this['enabled'],
       width: this['width'],
+    );
+  }
+
+  /// Parses the 'sanitization' config
+  SanitizationConfig toSanitizationConfig(CaseStyle fallbackCase) {
+    return SanitizationConfig(
+      enabled: this['enabled'] ?? SanitizationConfig.defaultEnabled,
+      prefix: this['prefix'] ?? SanitizationConfig.defaultPrefix,
+      caseStyle: switch (this['case'] as String?) {
+        String s => s.toCaseStyle() ?? fallbackCase,
+        // explicit null or not present
+        null => containsKey('case') ? null : fallbackCase,
+      },
     );
   }
 }

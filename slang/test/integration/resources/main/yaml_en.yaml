@@ -3,6 +3,8 @@ onboarding:
   welcomeAlias: "@:onboarding.welcome"
   welcomeOnlyParam: "{firstName}"
   bye: Bye {firstName}
+  continue: Continue
+  linkContinue: "@:onboarding.kContinue"
   "@bye": Bye text
   hi(rich): Hi {name} and @:onboarding.greet
   pages:

@@ -80,6 +80,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Lazy Loading](#-lazy-loading)
   - [Comments](#-comments)
   - [Recasing](#-recasing)
+  - [Sanitization](#-sanitization)
   - [Obfuscation](#-obfuscation)
   - [Formatting](#-formatting)
   - [Dart Only](#-dart-only)
@@ -302,6 +303,10 @@ translation_class_visibility: private
 key_case: snake
 key_map_case: camel
 param_case: pascal
+sanitization:
+  enabled: true
+  prefix: k
+  case: camel
 string_interpolation: double_braces
 flat_map: false
 translation_overrides: false
@@ -371,6 +376,10 @@ targets:
           key_case: snake
           key_map_case: camel
           param_case: pascal
+          sanitization:
+            enabled: true
+            prefix: k
+            case: camel
           string_interpolation: double_braces
           flat_map: false
           translation_overrides: false
@@ -431,6 +440,9 @@ targets:
 | `key_case`                          | `null`, `camel`, `pascal`, `snake`                | transform keys (optional) [(i)](#-recasing)                  | `null`         |
 | `key_map_case`                      | `null`, `camel`, `pascal`, `snake`                | transform keys for maps (optional) [(i)](#-recasing)         | `null`         |
 | `param_case`                        | `null`, `camel`, `pascal`, `snake`                | transform parameters (optional) [(i)](#-recasing)            | `null`         |
+| `sanitization`/`enabled`            | `Boolean`                                         | enable sanitization [(i)](#-sanitization)                    | `true`         |
+| `sanitization`/`prefix`             | `String`                                          | prefix for sanitization [(i)](#-sanitization)                | `k`            |
+| `sanitization`/`case`               | `null`, `camel`, `pascal`, `snake`                | case style for sanitization [(i)](#-sanitization)            | `camel`        |
 | `string_interpolation`              | `dart`, `braces`, `double_braces`                 | string interpolation mode [(i)](#-string-interpolation)      | `dart`         |
 | `flat_map`                          | `Boolean`                                         | generate flat map [(i)](#-dynamic-keys--flat-map)            | `true`         |
 | `translation_overrides`             | `Boolean`                                         | enable translation overrides [(i)](#-translation-overrides)  | `false`        |
@@ -1419,6 +1431,40 @@ key_case: camel
 maps:
    - myMap # all paths must be cased accordingly
 ```
+
+### ➤ Sanitization
+
+All keys must be valid Dart identifiers. Slang will automatically sanitize them.
+
+By default, the prefix `k` is added if the key is one of the [reserved words](https://dart.dev/language/keywords) or starts with a number.
+
+As always, you can configure this behavior.
+
+```yaml
+# Config
+sanitization:
+  enabled: true
+  prefix: k
+  case: camel
+```
+
+Now the following key:
+
+```json
+{
+  "continue": "Continue"
+}
+```
+
+will be sanitized to:
+
+```dart
+String get kContinue => 'Continue';
+```
+
+**Note:**
+Sanitization is happening before resolving [Linked Translations](#-linked-translations).
+Therefore, you need to use the sanitized key (e.g. `@:kContinue`).
 
 ### ➤ Obfuscation
 

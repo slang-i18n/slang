@@ -11,7 +11,7 @@ import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
-import 'package:slang/src/builder/utils/string_extensions.dart';
+import 'package:slang/src/builder/utils/reserved_keyword_sanitizer.dart';
 
 class BuildModelResult {
   final ObjectNode root; // the actual strings
@@ -122,6 +122,7 @@ class TranslationModelBuilder {
       baseContexts: baseContexts,
       shouldEscapeText: shouldEscapeText,
       handleTypes: handleTypes,
+      sanitizeKey: true,
     );
 
     // 2nd iteration: Handle parameterized linked translations
@@ -271,6 +272,7 @@ Map<String, Node> _parseMapNode({
   required Map<String, PopulatedContextType>? baseContexts,
   required bool shouldEscapeText,
   required bool handleTypes,
+  required bool sanitizeKey,
 }) {
   final Map<String, Node> resultNodeTree = {};
 
@@ -283,7 +285,13 @@ Map<String, Node> _parseMapNode({
     final originalKey = key;
 
     final nodePathInfo = NodeUtils.parseModifiers(originalKey);
-    key = nodePathInfo.path.toCase(keyCase);
+    key = sanitizeReservedKeyword(
+      name: nodePathInfo.path,
+      prefix: config.sanitization.prefix,
+      sanitizeCaseStyle: config.sanitization.caseStyle,
+      defaultCaseStyle: keyCase,
+      sanitize: sanitizeKey && config.sanitization.enabled,
+    );
     final modifiers = nodePathInfo.modifiers;
     final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;
     final currRawPath =
@@ -352,6 +360,7 @@ Map<String, Node> _parseMapNode({
           baseContexts: baseContexts,
           shouldEscapeText: shouldEscapeText,
           handleTypes: handleTypes,
+          sanitizeKey: false,
         );
 
         // finally only take their values, ignoring keys
@@ -384,6 +393,7 @@ Map<String, Node> _parseMapNode({
           baseContexts: baseContexts,
           shouldEscapeText: shouldEscapeText,
           handleTypes: handleTypes,
+          sanitizeKey: true,
         );
 
         final Node finalNode;
@@ -441,6 +451,7 @@ Map<String, Node> _parseMapNode({
               baseContexts: baseContexts,
               shouldEscapeText: shouldEscapeText,
               handleTypes: handleTypes,
+              sanitizeKey: false,
             ).cast<String, RichTextNode>();
           }
 

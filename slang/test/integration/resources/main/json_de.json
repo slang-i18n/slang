@@ -4,6 +4,8 @@
     "welcomeAlias": "@:onboarding.welcome",
     "welcomeOnlyParam": "{firstName}",
     "bye": "Tschüss {firstName}",
+    "continue": "Weiter",
+    "linkContinue": "@:onboarding.kContinue",
     "@bye": "Bye text",
     "hi(rich)": "Hi {name} und @:onboarding.greet",
     "pages": [

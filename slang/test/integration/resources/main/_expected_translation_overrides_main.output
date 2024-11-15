@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
-/// Strings: 58 (29 per locale)
+/// Strings: 62 (31 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
@@ -27,6 +27,7 @@ final _buildConfig = BuildModelConfig(
 	keyCase: null,
 	keyMapCase: null,
 	paramCase: null,
+	sanitization: SanitizationConfig(enabled: true, prefix: 'k', caseStyle: CaseStyle.camel),
 	stringInterpolation: StringInterpolation.braces,
 	maps: ['end.pages.0', 'end.pages.1'],
 	pluralAuto: PluralAuto.cardinal,

@@ -4,6 +4,7 @@ import 'package:slang/src/builder/model/format_config.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/obfuscation_config.dart';
+import 'package:slang/src/builder/model/sanitization_config.dart';
 
 /// represents a build.yaml or a slang.yaml file
 class RawConfig {
@@ -25,6 +26,11 @@ class RawConfig {
   static const CaseStyle? defaultKeyCase = null;
   static const CaseStyle? defaultKeyMapCase = null;
   static const CaseStyle? defaultParamCase = null;
+  static const SanitizationConfig defaultSanitization = SanitizationConfig(
+    enabled: SanitizationConfig.defaultEnabled,
+    prefix: SanitizationConfig.defaultPrefix,
+    caseStyle: SanitizationConfig.defaultCaseStyle,
+  );
   static const StringInterpolation defaultStringInterpolation =
       StringInterpolation.dart;
   static const bool defaultRenderFlatMap = true;
@@ -64,6 +70,7 @@ class RawConfig {
   final CaseStyle? keyCase;
   final CaseStyle? keyMapCase;
   final CaseStyle? paramCase;
+  final SanitizationConfig sanitization;
   final StringInterpolation stringInterpolation;
   final bool renderFlatMap;
   final bool translationOverrides;
@@ -101,6 +108,7 @@ class RawConfig {
     required this.keyCase,
     required this.keyMapCase,
     required this.paramCase,
+    required this.sanitization,
     required StringInterpolation stringInterpolation,
     required this.renderFlatMap,
     required this.translationOverrides,
@@ -135,6 +143,7 @@ class RawConfig {
     TranslationClassVisibility? translationClassVisibility,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
+    CaseStyle? paramCase,
     bool? renderFlatMap,
     bool? translationOverrides,
     bool? renderTimestamp,
@@ -166,7 +175,8 @@ class RawConfig {
           translationClassVisibility ?? this.translationClassVisibility,
       keyCase: keyCase ?? this.keyCase,
       keyMapCase: keyMapCase ?? this.keyMapCase,
-      paramCase: paramCase,
+      paramCase: paramCase ?? this.paramCase,
+      sanitization: sanitization,
       stringInterpolation: stringInterpolation,
       renderFlatMap: renderFlatMap ?? this.renderFlatMap,
       translationOverrides: translationOverrides ?? this.translationOverrides,
@@ -228,6 +238,8 @@ class RawConfig {
         ' -> keyCase (for maps): ${keyMapCase != null ? keyMapCase?.name : 'null (no change)'}');
     print(
         ' -> paramCase: ${paramCase != null ? paramCase?.name : 'null (no change)'}');
+    print(
+        ' -> sanitization: ${sanitization.enabled ? 'enabled' : 'disabled'} / \'${sanitization.prefix}\' / caseStyle: ${sanitization.caseStyle},');
     print(' -> stringInterpolation: ${stringInterpolation.name}');
     print(' -> renderFlatMap: $renderFlatMap');
     print(' -> translationOverrides: $translationOverrides');
@@ -283,6 +295,7 @@ class RawConfig {
     keyCase: RawConfig.defaultKeyCase,
     keyMapCase: RawConfig.defaultKeyMapCase,
     paramCase: RawConfig.defaultParamCase,
+    sanitization: RawConfig.defaultSanitization,
     stringInterpolation: RawConfig.defaultStringInterpolation,
     renderFlatMap: RawConfig.defaultRenderFlatMap,
     translationOverrides: RawConfig.defaultTranslationOverrides,

@@ -102,4 +102,8 @@ class RegexUtils {
   /// 3 - json
   static final RegExp analysisFileRegex = RegExp(
       r'^_(missing_translations|unused_translations)(?:_(.*))?\.(json|yaml|csv)$');
+
+  /// Matches if the string starts with a number.
+  /// Example: 1hello, 2world
+  static final RegExp startsWithNumber = RegExp(r'^\d');
 }

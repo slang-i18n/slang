@@ -66,6 +66,8 @@ class _TranslationsOnboardingDe implements TranslationsOnboardingEn {
 	/// Bye text
 	@override String bye({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123]) + firstName.toString();
 
+	@override String get kContinue => _root.$meta.d([12, 62, 50, 47, 62, 41]);
+	@override String get linkContinue => _root.onboarding.kContinue;
 	@override TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		TextSpan(text: _root.$meta.d([19, 50, 123])),
 		name,
@@ -188,6 +190,8 @@ extension on TranslationsDe {
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => firstName.toString();
 			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123]) + firstName.toString();
+			case 'onboarding.kContinue': return _root.$meta.d([12, 62, 50, 47, 62, 41]);
+			case 'onboarding.linkContinue': return _root.onboarding.kContinue;
 			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				TextSpan(text: _root.$meta.d([19, 50, 123])),
 				name,

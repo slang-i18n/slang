@@ -2,6 +2,8 @@ onboarding.welcome,Welcome {fullName}
 onboarding.welcomeAlias,@:onboarding.welcome
 onboarding.welcomeOnlyParam,{firstName}
 onboarding.bye,Bye {firstName}
+onboarding.continue,Continue
+onboarding.linkContinue,@:onboarding.kContinue
 onboarding.@bye,Bye text
 onboarding.hi(rich),Hi {name} and @:onboarding.greet
 onboarding.pages.0.title,First Page

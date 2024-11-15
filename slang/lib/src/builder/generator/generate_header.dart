@@ -187,6 +187,8 @@ void _generateBuildConfig({
   buffer.writeln(
       '\tparamCase: ${config.paramCase != null ? 'CaseStyle.${config.paramCase!.name}' : 'null'},');
   buffer.writeln(
+      '\tsanitization: SanitizationConfig(enabled: ${config.sanitization.enabled}, prefix: \'${config.sanitization.prefix}\', caseStyle: ${config.sanitization.caseStyle}),');
+  buffer.writeln(
       '\tstringInterpolation: StringInterpolation.${config.stringInterpolation.name},');
   buffer.writeln('\tmaps: [${config.maps.map((m) => "'$m'").join(', ')}],');
   buffer.writeln('\tpluralAuto: PluralAuto.${config.pluralAuto.name},');

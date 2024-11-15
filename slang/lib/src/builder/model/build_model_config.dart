@@ -2,6 +2,7 @@ import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/sanitization_config.dart';
 
 /// Config to generate the model.
 /// A subset of [RawConfig].
@@ -10,6 +11,7 @@ class BuildModelConfig {
   final CaseStyle? keyCase;
   final CaseStyle? keyMapCase;
   final CaseStyle? paramCase;
+  final SanitizationConfig sanitization;
   final StringInterpolation stringInterpolation;
   final List<String> maps;
   final PluralAuto pluralAuto;
@@ -24,6 +26,7 @@ class BuildModelConfig {
     required this.keyCase,
     required this.keyMapCase,
     required this.paramCase,
+    required this.sanitization,
     required this.stringInterpolation,
     required this.maps,
     required this.pluralAuto,
