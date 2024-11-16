@@ -55,6 +55,35 @@ void main() {
       expect((mapNode.entries['my_value 3'] as StringTextNode).content, 'cool');
     });
 
+    test('Should sanitize reserved keyword', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'continue': 'Continue',
+        },
+      );
+
+      expect(result.root.entries['continue'], isNull);
+      expect(result.root.entries['kContinue'], isA<StringTextNode>());
+    });
+
+    test('Should not sanitize keys in maps', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'a(map)': {
+            'continue': 'Continue',
+          },
+        },
+      );
+
+      final mapNode = result.root.entries['a'] as ObjectNode;
+      expect(mapNode.entries['continue'], isA<StringTextNode>());
+      expect(mapNode.entries['kContinue'], isNull);
+    });
+
     test('one link no parameters', () {
       final result = TranslationModelBuilder.build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),

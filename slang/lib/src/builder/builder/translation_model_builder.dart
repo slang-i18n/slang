@@ -374,6 +374,12 @@ Map<String, Node> _parseMapNode({
         _setParent(node, children.values);
         resultNodeTree[key] = node;
       } else {
+        _DetectionResult? detectedType =
+            modifiers.keys.contains(NodeModifiers.map) ||
+                    config.maps.contains(currPath)
+                ? const _DetectionResult(_DetectionType.map)
+                : null;
+
         // key: { ...value }
         children = _parseMapNode(
           locale: locale,
@@ -393,12 +399,13 @@ Map<String, Node> _parseMapNode({
           baseContexts: baseContexts,
           shouldEscapeText: shouldEscapeText,
           handleTypes: handleTypes,
-          sanitizeKey: true,
+          sanitizeKey: detectedType == null,
         );
 
-        final Node finalNode;
-        final detectedType =
+        detectedType ??=
             _determineNodeType(config, currPath, modifiers, children);
+
+        final Node finalNode;
 
         // split by comma if necessary
         if (detectedType.nodeType == _DetectionType.context ||
@@ -572,6 +579,7 @@ void _setParent(Node parent, Iterable<Node> children) {
   }
 }
 
+// Note: We already detected the map type, no need to check for it again
 _DetectionResult _determineNodeType(
   BuildModelConfig config,
   String nodePath,
@@ -579,10 +587,7 @@ _DetectionResult _determineNodeType(
   Map<String, Node> children,
 ) {
   final modifierFlags = modifiers.keys.toSet();
-  if (modifierFlags.contains(NodeModifiers.map) ||
-      config.maps.contains(nodePath)) {
-    return _DetectionResult(_DetectionType.map);
-  } else if (modifierFlags.contains(NodeModifiers.plural) ||
+  if (modifierFlags.contains(NodeModifiers.plural) ||
       modifierFlags.contains(NodeModifiers.cardinal) ||
       config.pluralCardinal.contains(nodePath)) {
     return _DetectionResult(_DetectionType.pluralCardinal);
@@ -940,7 +945,7 @@ class _DetectionResult {
   final _DetectionType nodeType;
   final String? contextHint;
 
-  _DetectionResult(this.nodeType, [this.contextHint]);
+  const _DetectionResult(this.nodeType, [this.contextHint]);
 }
 
 class _InterfaceAttributesResult {

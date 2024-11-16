@@ -1,3 +1,7 @@
+## 4.2.1
+
+- fix: do not sanitize keys in maps
+
 ## 4.2.0
 
 - feat: automatically sanitize invalid keys (e.g. `continue`, `123`) (#257)
