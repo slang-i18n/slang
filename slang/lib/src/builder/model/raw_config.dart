@@ -239,7 +239,7 @@ class RawConfig {
     print(
         ' -> paramCase: ${paramCase != null ? paramCase?.name : 'null (no change)'}');
     print(
-        ' -> sanitization: ${sanitization.enabled ? 'enabled' : 'disabled'} / \'${sanitization.prefix}\' / caseStyle: ${sanitization.caseStyle},');
+        ' -> sanitization: ${sanitization.enabled ? 'enabled' : 'disabled'} / \'${sanitization.prefix}\' / caseStyle: ${sanitization.caseStyle}');
     print(' -> stringInterpolation: ${stringInterpolation.name}');
     print(' -> renderFlatMap: $renderFlatMap');
     print(' -> translationOverrides: $translationOverrides');
