@@ -44,6 +44,7 @@ An extensive CLI will help you to manage the translations:
 ```bash
 dart run slang                               # generate dart file
 dart run slang analyze                       # unused and missing translations
+dart run slang normalize                     # sort translations according to base locale
 dart run slang edit move loginPage authPage  # move or rename translations
 dart run slang migrate arb src.arb dest.json # migrate arb to json
 ```
