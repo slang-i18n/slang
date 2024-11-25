@@ -2031,6 +2031,7 @@ The second one always returns a new instance.
 
 - [Medium (English)](https://medium.com/swlh/flutter-i18n-made-easy-1fd9ccd82cb3)
 - [Medium (English)](https://maruf-hassan.medium.com/handling-flutter-internationalization-like-a-pro-699ac2f6d856)
+- [Medium (Turkish)](https://medium.com/@speedev/flutterda-lokalizasyon-i18n-nas%C4%B1l-yap%C4%B1l%C4%B1r-ad%C4%B1m-ad%C4%B1m-0c438fcb8537)
 - [Хабр (Russian)](https://habr.com/ru/post/718310/)
 - [Qiita (Japanese)](https://qiita.com/popy1017/items/3495be9fdc028161bef9)
 - [okaryo (Japanese)](https://blog.okaryo.io/20230104-split-and-manage-arb-files-for-internationalized-flutter-app-in-yaml-format)
