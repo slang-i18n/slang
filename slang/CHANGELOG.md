@@ -1,3 +1,13 @@
+## 4.3.0
+
+- feat: simplify file names without namespaces (#267)
+- **DEPRECATED:** Do not use namespaces in file names when namespaces are disabled: `strings_de.json` -> `de.json`
+- **DEPRECATED:** Always specify the locale in the file name (namespace enabled): `strings.json` -> `strings_en.json`, except the locale is specified in the directory name
+
+Note: This might make the files order in your IDE less pleasant if input and output files are in the same directory.
+You can specify the output directory to a subdirectory to avoid this.
+For example, `output_directory: lib/i18n/gen`
+
 ## 4.2.1
 
 - fix: do not sanitize keys in maps

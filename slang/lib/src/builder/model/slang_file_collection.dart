@@ -51,6 +51,8 @@ class SlangFileCollection {
 }
 
 class TranslationFile extends PlainTranslationFile {
+  static const DEFAULT_NAMESPACE = r'$default$';
+
   /// The inferred locale of this file (by file name, directory name, or config)
   final I18nLocale locale;
 

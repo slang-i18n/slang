@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:slang/src/builder/builder/raw_config_builder.dart';
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
@@ -71,7 +72,9 @@ class SlangFileCollectionBuilder {
   static SlangFileCollection fromFileModel({
     required RawConfig config,
     required Iterable<PlainTranslationFile> files,
+    bool showWarning = true,
   }) {
+    // True, if (1) namespaces are enabled and (2) directory locale is used
     final includeUnderscore = config.namespaces &&
         files.any((f) {
           final fileNameNoExtension = PathUtils.getFileNameNoExtension(f.path);
@@ -95,11 +98,31 @@ class SlangFileCollectionBuilder {
           .map((f) {
             final fileNameNoExtension =
                 PathUtils.getFileNameNoExtension(f.path);
+
+            if (!config.namespaces) {
+              final localeMatch =
+                  RegexUtils.localeRegex.firstMatch(fileNameNoExtension);
+              if (localeMatch != null) {
+                final locale = I18nLocale(
+                  language: localeMatch.group(1)!,
+                  script: localeMatch.group(2),
+                  country: localeMatch.group(3),
+                );
+
+                return TranslationFile(
+                  path: f.path,
+                  locale: locale,
+                  namespace: TranslationFile.DEFAULT_NAMESPACE,
+                  read: f.read,
+                );
+              }
+            }
+
             final baseFileMatch =
                 RegexUtils.baseFileRegex.firstMatch(fileNameNoExtension);
             if (includeUnderscore || baseFileMatch != null) {
-              // base file (file without locale, may be multiples due to namespaces!)
-              // could also be a non-base locale when directory name is a locale
+              // base file (file without locale)
+              // could also be a non-base locale when directory name is a locale (namespace only)
 
               // directory name could be a locale
               I18nLocale? directoryLocale;
@@ -108,41 +131,69 @@ class SlangFileCollectionBuilder {
                   filePath: f.path,
                   inputDirectory: config.inputDirectory,
                 );
+
+                if (showWarning && directoryLocale == null) {
+                  _baseLocaleDeprecationWarning(
+                    fileName: PathUtils.getFileName(f.path),
+                    replacement:
+                        '${fileNameNoExtension}_${config.baseLocale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
+                  );
+                }
+              }
+
+              if (showWarning &&
+                  !config.namespaces &&
+                  config.fileType != FileType.csv) {
+                // Note: Compact CSV files are still allowed to have a file name without locale.
+                _namespaceDeprecationWarning(
+                  fileName: PathUtils.getFileName(f.path),
+                  replacement:
+                      '${config.baseLocale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
+                );
               }
 
               return TranslationFile(
                 path: f.path,
                 locale: directoryLocale ?? config.baseLocale,
-                namespace: fileNameNoExtension,
+                namespace: config.namespaces
+                    ? fileNameNoExtension
+                    : TranslationFile.DEFAULT_NAMESPACE,
                 read: f.read,
               );
-            } else {
-              // secondary files (strings_x)
-              final match = RegexUtils.fileWithLocaleRegex
-                  .firstMatch(fileNameNoExtension);
-              if (match != null) {
-                final namespace = match.group(1)!;
-                final locale = I18nLocale(
-                  language: match.group(2)!,
-                  script: match.group(3),
-                  country: match.group(4),
-                );
+            }
 
-                return TranslationFile(
-                  path: f.path,
-                  locale: locale,
-                  namespace: namespace,
-                  read: f.read,
+            // secondary files (strings_x)
+            final match =
+                RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
+            if (match != null) {
+              final namespace = match.group(1)!;
+              final locale = I18nLocale(
+                language: match.group(2)!,
+                script: match.group(3),
+                country: match.group(4),
+              );
+
+              if (showWarning && !config.namespaces) {
+                _namespaceDeprecationWarning(
+                  fileName: PathUtils.getFileName(f.path),
+                  replacement:
+                      '${locale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
                 );
               }
+
+              return TranslationFile(
+                path: f.path,
+                locale: locale,
+                namespace: config.namespaces
+                    ? namespace
+                    : TranslationFile.DEFAULT_NAMESPACE,
+                read: f.read,
+              );
             }
 
             return null;
           })
-          // We cannot use "nonNulls" because this requires Dart 3.0
-          // and slang currently supports Dart 2.17
-          // ignore: deprecated_member_use
-          .whereNotNull()
+          .nonNulls
           .sortedBy((file) => '${file.locale}-${file.namespace}'),
     );
   }
@@ -243,4 +294,22 @@ extension on String {
   String getFileName() {
     return PathUtils.getFileName(this);
   }
+}
+
+void _namespaceDeprecationWarning({
+  required String fileName,
+  required String replacement,
+}) {
+  print(
+    'DEPRECATED(v4.3.0): Do not use namespaces in file names when namespaces are disabled: "$fileName" -> "$replacement"',
+  );
+}
+
+void _baseLocaleDeprecationWarning({
+  required String fileName,
+  required String replacement,
+}) {
+  print(
+    'DEPRECATED(v4.3.0): Always specify locale: "$fileName" -> "$replacement"',
+  );
 }

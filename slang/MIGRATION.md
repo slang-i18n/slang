@@ -1,5 +1,49 @@
 # Migration Guides
 
+## slang 4.0 to 5.0
+
+### Remove namespace in file name
+
+When namespaces are disabled, remove the namespace in the file name.
+
+Before:
+```text
+lib/
+ └── i18n/
+      └── strings.i18n.json
+      └── strings_de.i18n.json
+```
+
+After:
+```text
+lib/
+ └── i18n/
+      └── en.i18n.json
+      └── de.i18n.json
+```
+
+### Add locale in file name
+
+When namespaces are enabled, always specify the locale in the file name.
+
+Before:
+```text
+i18n/
+ └── widgets.i18n.json
+ └── widgets_fr.i18n.json
+ └── errorDialogs.i18n.json
+ └── errorDialogs_fr.i18n.json
+```
+
+After:
+```text
+i18n/
+ └── widgets_en.i18n.json
+ └── widgets_fr.i18n.json
+ └── errorDialogs_en.i18n.json
+ └── errorDialogs_fr.i18n.json
+```
+
 ## slang 3.0 to 4.0
 
 ### Lazy Loading

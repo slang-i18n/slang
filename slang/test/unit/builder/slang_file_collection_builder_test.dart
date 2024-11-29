@@ -10,20 +10,45 @@ PlainTranslationFile _file(String path) {
 
 void main() {
   group('SlangFileCollectionBuilder.fromFileModel', () {
-    test('should find base locale', () {
+    test('should find locales', () {
+      final model = SlangFileCollectionBuilder.fromFileModel(
+        config: RawConfig.defaultConfig
+            .copyWith(baseLocale: I18nLocale(language: 'de')),
+        files: [
+          _file('lib/i18n/en.i18n.json'),
+          _file('lib/i18n/de.i18n.json'),
+          _file('lib/i18n/fr_FR.i18n.json'),
+          _file('lib/i18n/zh-CN.i18n.json'),
+        ],
+      );
+
+      expect(model.files.length, 4);
+      expect(
+        model.files.map((f) => f.locale.languageTag).toList(),
+        [
+          'de',
+          'en',
+          'fr-FR',
+          'zh-CN',
+        ],
+      );
+    });
+
+    test('should find base locale (legacy)', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
         config: RawConfig.defaultConfig
             .copyWith(baseLocale: I18nLocale(language: 'de')),
         files: [
           _file('lib/i18n/strings.i18n.json'),
         ],
+        showWarning: false,
       );
 
       expect(model.files.length, 1);
       expect(model.files.first.locale.language, 'de');
     });
 
-    test('should find locale in file names', () {
+    test('should find locale in file names (legacy)', () {
       final model = SlangFileCollectionBuilder.fromFileModel(
         config: RawConfig.defaultConfig
             .copyWith(baseLocale: I18nLocale(language: 'en')),
@@ -32,6 +57,7 @@ void main() {
           _file('lib/i18n/strings_de.i18n.json'),
           _file('lib/i18n/strings-fr-FR.i18n.json'),
         ],
+        showWarning: false,
       );
 
       expect(model.files.length, 3);
@@ -50,6 +76,7 @@ void main() {
         files: [
           _file('lib/i18n/dialogs.i18n.json'),
         ],
+        showWarning: false,
       );
 
       expect(model.files.length, 1);

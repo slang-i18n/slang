@@ -133,10 +133,8 @@ dev_dependencies:
 
 Format:
 ```text
-<namespace>_<locale?>.<extension>
+<locale>.<extension>
 ```
-
-You can ignore the [namespace](#-namespaces) for this basic example, so just use a generic name like `strings`.
 
 Most common i18n directories are `assets/i18n` and `lib/i18n`. (see [Assets](#-assets)).
 
@@ -144,13 +142,13 @@ Example:
 ```text
 lib/
  └── i18n/
-      └── strings.i18n.json
-      └── strings_de.i18n.json
-      └── strings_zh-CN.i18n.json <-- example for country code
+      └── en.i18n.json
+      └── de.i18n.json
+      └── zh-CN.i18n.json <-- example for country code
 ```
 
 ```json5
-// File: strings.i18n.json (mandatory, base locale)
+// File: en.i18n.json
 {
   "hello": "Hello $name",
   "save": "Save",
@@ -162,7 +160,7 @@ lib/
 ```
 
 ```json5
-// File: strings_de.i18n.json
+// File: de.i18n.json
 {
   "hello": "Hallo $name",
   "save": "Speichern",
@@ -1220,14 +1218,14 @@ output_file_name: translations.g.dart # set file name (mandatory)
 Let's create two namespaces called `widgets` and `errorDialogs`. Please use camel case for multiple words.
 
 ```text
-<namespace>_<locale?>.<extension>
+<namespace>_<locale>.<extension>
 ```
 
 ```text
 i18n/
- └── widgets.i18n.json
+ └── widgets_en.i18n.json
  └── widgets_fr.i18n.json
- └── errorDialogs.i18n.json <-- camel case for multiple words
+ └── errorDialogs_en.i18n.json <-- camel case for multiple words
  └── errorDialogs_fr.i18n.json
 ```
 
