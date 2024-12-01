@@ -28,6 +28,8 @@ class BuildModelResult {
 }
 
 class TranslationModelBuilder {
+  TranslationModelBuilder._();
+
   /// Builds the i18n model for ONE locale
   ///
   /// The [map] must be of type Map<String, dynamic> and all children may of type
@@ -381,7 +383,7 @@ Map<String, Node> _parseMapNode({
                 : null;
 
         // key: { ...value }
-        children = _parseMapNode(
+        final tempChildren = _parseMapNode(
           locale: locale,
           types: types,
           parentPath: currPath,
@@ -401,6 +403,19 @@ Map<String, Node> _parseMapNode({
           handleTypes: handleTypes,
           sanitizeKey: detectedType == null,
         );
+
+        if (detectedType?.nodeType == _DetectionType.map &&
+            baseData != null &&
+            modifiers.containsKey(NodeModifiers.fallback)) {
+          children = _digestMapEntries(
+            locale: locale,
+            baseTranslation: baseData.root,
+            path: currPath,
+            entries: tempChildren,
+          );
+        } else {
+          children = tempChildren;
+        }
 
         detectedType ??=
             _determineNodeType(config, currPath, modifiers, children);
@@ -902,14 +917,34 @@ Map<String, TextNode> _digestContextEntries({
 }) {
   // Using "late" keyword because we are optimistic that all values are present
   late ContextNode baseContextNode =
-      _findContextNode(baseTranslation, path.split('.'));
+      _findNode<ContextNode>(baseTranslation, path.split('.'));
   return {
     for (final value in baseContext.enumValues)
       value: entries[value] ??
-          baseContextNode.entries[value] ??
+          baseContextNode.entries[value]
+              ?.clone(keepParent: false, locale: locale) ??
           _throwError(
             'In <${locale.languageTag}>, the value for $value in $path is missing (required by ${baseContext.enumName})',
           ),
+  };
+}
+
+/// Makes sure that every map entry in [baseTranslation] is also present in [entries].
+/// If a value is missing, the base translation is used.
+Map<String, Node> _digestMapEntries({
+  required I18nLocale locale,
+  required ObjectNode baseTranslation,
+  required String path,
+  required Map<String, Node> entries,
+}) {
+  // Using "late" keyword because we are optimistic that all values are present
+  late ObjectNode baseMapNode =
+      _findNode<ObjectNode>(baseTranslation, path.split('.'));
+  return {
+    for (final entry in baseMapNode.entries.entries)
+      entry.key: entries[entry.key] ??
+          baseMapNode.entries[entry.key]!
+              .clone(keepParent: false, locale: locale),
   };
 }
 
@@ -917,19 +952,19 @@ Never _throwError(String message) {
   throw message;
 }
 
-/// Recursively find the [ContextNode] using the given [path].
-ContextNode _findContextNode(ObjectNode node, List<String> path) {
+/// Recursively find the [Node] using the given [path].
+T _findNode<T extends Node>(ObjectNode node, List<String> path) {
   final child = node.entries[path[0]];
   if (path.length == 1) {
-    if (child is ContextNode) {
+    if (child is T) {
       return child;
     } else {
-      throw 'Parent node is not a ContextNode but a ${node.runtimeType} at path $path';
+      throw 'Parent node is not a $T but a ${node.runtimeType} at path $path';
     }
   } else if (child is ObjectNode) {
-    return _findContextNode(child, path.sublist(1));
+    return _findNode(child, path.sublist(1));
   } else {
-    throw 'Cannot find base ContextNode';
+    throw 'Cannot find base $T';
   }
 }
 

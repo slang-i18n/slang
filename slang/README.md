@@ -1088,6 +1088,7 @@ Available Modifiers:
 |----------------------------|-----------------------------------------------|---------------------------------|
 | `(rich)`                   | This is a rich text.                          | Leaves, Maps (Plural / Context) |
 | `(map)`                    | This is a map / dictionary (and not a class). | Maps                            |
+| `(fallback)`               | Should fallback. `(map)` required.            | Maps                            |
 | `(plural)`                 | This is a plural (type: cardinal)             | Maps                            |
 | `(cardinal)`               | This is a plural (type: cardinal)             | Maps                            |
 | `(ordinal)`                | This is a plural (type: ordinal)              | Maps                            |
@@ -1300,6 +1301,14 @@ By default, you must provide all translations for all locales. Otherwise, you ca
 
 In case of rapid development, you can turn off this feature. Missing translations will fall back to base locale.
 
+The following configurations are available:
+
+| Fallback Strategy          | Description                                                       |
+|----------------------------|-------------------------------------------------------------------|
+| `none`                     | Don't fallback (default).                                         |
+| `base_locale`              | Fallback to the base locale.                                      |
+| `base_locale_empty_string` | Fallback to the base locale. Also treat empty strings as missing. |
+
 ```yaml
 # Config
 base_locale: en
@@ -1322,7 +1331,18 @@ fallback_strategy: base_locale # add this
 }
 ```
 
-To also treat empty strings as missing translations, set `fallback_strategy: base_locale_empty_string`.
+By default, entries inside `(map)` are not affected by the fallback strategy.
+This allows you to provide different map entries for each locale.
+To still apply the fallback strategy to maps, add the `(fallback)` modifier.
+
+```json5
+{
+  "myMap(map, fallback)": {
+    "someKey": "Some value",
+    // missing keys will fallback to the base locale
+  }
+}
+```
 
 ### ➤ Lazy Loading
 
