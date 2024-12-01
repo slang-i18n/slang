@@ -10,17 +10,44 @@ import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
 class NodeModifiers {
+  /// Flag. Mark a node as rich text
   static const rich = 'rich';
+
+  /// Flag. Mark a node as a map
   static const map = 'map';
+
+  /// Flag. Missing keys should fallback to base map.
+  /// Only relevant when fallback_strategy is configured.
+  static const fallback = 'fallback';
+
+  /// Flag. Mark a plural as plural
   static const plural = 'plural';
+
+  /// Flag. Mark a plural as cardinal
   static const cardinal = 'cardinal';
+
+  /// Flag. Mark a plural as ordinal
   static const ordinal = 'ordinal';
+
+  /// Parameter. Set context name.
   static const context = 'context';
+
+  /// Parameter. Set a parameter name for a plural or context
   static const param = 'param';
+
+  /// Flag. Mark all children of an interface as descendants of an interface
   static const interface = 'interface';
+
+  /// Flag. Mark a single JSON object as a descendant of an interface
   static const singleInterface = 'singleInterface';
+
+  /// Analysis flag. Ignore during missing translation analysis
   static const ignoreMissing = 'ignoreMissing';
+
+  /// Analysis flag. Ignore during unused translation analysis
   static const ignoreUnused = 'ignoreUnused';
+
+  /// Analysis flag. Translation is outdated
   static const outdated = 'OUTDATED';
 }
 
@@ -47,13 +74,19 @@ abstract class Node {
     assert(_parent == null);
     _parent = parent;
   }
+
+  /// Deep clones the node.
+  Node clone({
+    required bool keepParent,
+    I18nLocale? locale,
+  });
 }
 
 /// Flag for leaves
-/// Leaves are: TextNode, PluralNode and ContextNode
-abstract class LeafNode {}
+/// Leaves are: [TextNode], [PluralNode] and [ContextNode]
+abstract interface class LeafNode {}
 
-/// the super class for list and object nodes
+/// The super class for [ListNode] and [ObjectNode]
 abstract class IterableNode extends Node {
   /// The generic type of the container, i.e. Map<String, T> or List<T>
   String _genericType;
@@ -104,6 +137,31 @@ class ObjectNode extends IterableNode {
 
   @override
   String toString() => entries.toString();
+
+  @override
+  ObjectNode clone({required bool keepParent, I18nLocale? locale}) {
+    final node = ObjectNode(
+      path: path,
+      rawPath: rawPath,
+      modifiers: modifiers,
+      comment: comment,
+      entries: entries.map(
+        (key, value) => MapEntry(
+          key,
+          value.clone(keepParent: keepParent, locale: locale),
+        ),
+      ),
+      isMap: isMap,
+    );
+    if (keepParent && parent != null) {
+      node.setParent(parent!);
+    }
+    node.setGenericType(genericType);
+    if (interface != null) {
+      node.setInterface(interface!);
+    }
+    return node;
+  }
 }
 
 class ListNode extends IterableNode {
@@ -122,6 +180,27 @@ class ListNode extends IterableNode {
 
   @override
   String toString() => entries.toString();
+
+  @override
+  ListNode clone({required bool keepParent, I18nLocale? locale}) {
+    final node = ListNode(
+      path: path,
+      rawPath: rawPath,
+      modifiers: modifiers,
+      comment: comment,
+      entries: entries
+          .map((e) => e.clone(keepParent: keepParent, locale: locale))
+          .toList(),
+    );
+
+    if (keepParent && parent != null) {
+      node.setParent(parent!);
+    }
+
+    node.setGenericType(genericType);
+
+    return node;
+  }
 }
 
 enum PluralType {
@@ -172,6 +251,32 @@ class PluralNode extends Node implements LeafNode {
 
   @override
   String toString() => quantities.toString();
+
+  @override
+  PluralNode clone({required bool keepParent, I18nLocale? locale}) {
+    final node = PluralNode(
+      path: path,
+      rawPath: rawPath,
+      modifiers: modifiers,
+      comment: comment,
+      pluralType: pluralType,
+      quantities: quantities.map(
+        (key, value) => MapEntry(
+          key,
+          value.clone(keepParent: keepParent, locale: locale),
+        ),
+      ),
+      paramName: paramName,
+      paramType: paramType,
+      rich: rich,
+    );
+
+    if (keepParent && parent != null) {
+      node.setParent(parent!);
+    }
+
+    return node;
+  }
 }
 
 class ContextNode extends Node implements LeafNode {
@@ -213,6 +318,31 @@ class ContextNode extends Node implements LeafNode {
 
   @override
   String toString() => entries.toString();
+
+  @override
+  ContextNode clone({required bool keepParent, I18nLocale? locale}) {
+    final node = ContextNode(
+      path: path,
+      rawPath: rawPath,
+      modifiers: modifiers,
+      comment: comment,
+      context: context,
+      entries: entries.map(
+        (key, value) => MapEntry(
+          key,
+          value.clone(keepParent: keepParent, locale: locale),
+        ),
+      ),
+      paramName: paramName,
+      rich: rich,
+    );
+
+    if (keepParent && parent != null) {
+      node.setParent(parent!);
+    }
+
+    return node;
+  }
 }
 
 abstract class TextNode extends Node implements LeafNode {
@@ -266,6 +396,12 @@ abstract class TextNode extends Node implements LeafNode {
   void updateWithLinkParams({
     required Map<String, Set<String>> linkParamMap,
     required Map<String, String> paramTypeMap,
+  });
+
+  @override
+  TextNode clone({
+    required bool keepParent,
+    I18nLocale? locale,
   });
 }
 
@@ -365,6 +501,29 @@ class StringTextNode extends TextNode {
       return '$params => $content';
     }
   }
+
+  @override
+  StringTextNode clone({required bool keepParent, I18nLocale? locale}) {
+    final node = StringTextNode(
+      path: path,
+      rawPath: rawPath,
+      modifiers: modifiers,
+      locale: locale ?? this.locale,
+      types: types,
+      raw: raw,
+      comment: comment,
+      shouldEscape: shouldEscape,
+      handleTypes: handleTypes,
+      interpolation: interpolation,
+      paramCase: paramCase,
+    );
+
+    if (keepParent && parent != null) {
+      node.setParent(parent!);
+    }
+
+    return node;
+  }
 }
 
 class RichTextNode extends TextNode {
@@ -408,7 +567,8 @@ class RichTextNode extends TextNode {
       interpolation: interpolation,
       defaultType: 'ignored',
       // types are ignored
-      paramCase: null, // param case will be applied later
+      paramCase: null,
+      // param case will be applied later
       digestParameter: false,
     );
 
@@ -492,6 +652,29 @@ class RichTextNode extends TextNode {
     );
 
     _spans = temp.spans;
+  }
+
+  @override
+  RichTextNode clone({required bool keepParent, I18nLocale? locale}) {
+    final node = RichTextNode(
+      path: path,
+      rawPath: rawPath,
+      modifiers: modifiers,
+      locale: locale ?? this.locale,
+      types: types,
+      raw: raw,
+      comment: comment,
+      shouldEscape: shouldEscape,
+      handleTypes: handleTypes,
+      interpolation: interpolation,
+      paramCase: paramCase,
+    );
+
+    if (keepParent && parent != null) {
+      node.setParent(parent!);
+    }
+
+    return node;
   }
 }
 

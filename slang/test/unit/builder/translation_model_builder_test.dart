@@ -11,19 +11,19 @@ import 'package:test/test.dart';
 final _locale = I18nLocale(language: 'en');
 
 void main() {
-  group('TranslationModelBuilder.build', () {
-    test('1 StringTextNode', () {
-      final result = TranslationModelBuilder.build(
-        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
-        locale: _locale,
-        map: {
-          'test': 'a',
-        },
-      );
-      final map = result.root.entries;
-      expect((map['test'] as StringTextNode).content, 'a');
-    });
+  test('1 StringTextNode', () {
+    final result = TranslationModelBuilder.build(
+      buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+      locale: _locale,
+      map: {
+        'test': 'a',
+      },
+    );
+    final map = result.root.entries;
+    expect((map['test'] as StringTextNode).content, 'a');
+  });
 
+  group('Recasing', () {
     test('keyCase=snake and keyMapCase=camel', () {
       final result = TranslationModelBuilder.build(
         buildConfig: RawConfig.defaultConfig.copyWith(
@@ -54,36 +54,9 @@ void main() {
       final mapNode = result.root.entries['my_map'] as ObjectNode;
       expect((mapNode.entries['my_value 3'] as StringTextNode).content, 'cool');
     });
+  });
 
-    test('Should sanitize reserved keyword', () {
-      final result = TranslationModelBuilder.build(
-        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
-        locale: _locale,
-        map: {
-          'continue': 'Continue',
-        },
-      );
-
-      expect(result.root.entries['continue'], isNull);
-      expect(result.root.entries['kContinue'], isA<StringTextNode>());
-    });
-
-    test('Should not sanitize keys in maps', () {
-      final result = TranslationModelBuilder.build(
-        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
-        locale: _locale,
-        map: {
-          'a(map)': {
-            'continue': 'Continue',
-          },
-        },
-      );
-
-      final mapNode = result.root.entries['a'] as ObjectNode;
-      expect(mapNode.entries['continue'], isA<StringTextNode>());
-      expect(mapNode.entries['kContinue'], isNull);
-    });
-
+  group('Linked Translations', () {
     test('one link no parameters', () {
       final result = TranslationModelBuilder.build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
@@ -187,7 +160,29 @@ void main() {
       expect(textNode.paramTypeMap, {'p1': 'Object', 'gender': 'GenderCon'});
       expect(textNode.content, r'Hello ${_root.a(p1: p1, gender: gender)}');
     });
+  });
 
+  group('Context Type', () {
+    test('Should not include context type if values are unspecified', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
+          ContextType(
+            enumName: 'GenderCon',
+            defaultParameter: 'gender',
+            generateEnum: true,
+          ),
+        ]).toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'a': 'b',
+        },
+      );
+
+      expect(result.contexts, []);
+    });
+  });
+
+  group('Interface', () {
     test('empty lists should take generic type of interface', () {
       final result = TranslationModelBuilder.build(
         buildConfig: RawConfig.defaultConfig.copyWith(interfaces: [
@@ -236,24 +231,6 @@ void main() {
           .entries['child'] as ObjectNode;
       expect(
           (objectNode2.entries['myList'] as ListNode).genericType, 'MyType2');
-    });
-
-    test('Should not include context type if values are unspecified', () {
-      final result = TranslationModelBuilder.build(
-        buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
-          ContextType(
-            enumName: 'GenderCon',
-            defaultParameter: 'gender',
-            generateEnum: true,
-          ),
-        ]).toBuildModelConfig(),
-        locale: _locale,
-        map: {
-          'a': 'b',
-        },
-      );
-
-      expect(result.contexts, []);
     });
 
     test('Should handle nested interfaces specified via modifier', () {
@@ -331,6 +308,202 @@ void main() {
       );
 
       _checkInterfaceResult(resultUsingConfig);
+    });
+  });
+
+  group('Sanitization', () {
+    test('Should sanitize reserved keyword', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'continue': 'Continue',
+        },
+      );
+
+      expect(result.root.entries['continue'], isNull);
+      expect(result.root.entries['kContinue'], isA<StringTextNode>());
+    });
+
+    test('Should not sanitize keys in maps', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'a(map)': {
+            'continue': 'Continue',
+          },
+        },
+      );
+
+      final mapNode = result.root.entries['a'] as ObjectNode;
+      expect(mapNode.entries['continue'], isA<StringTextNode>());
+      expect(mapNode.entries['kContinue'], isNull);
+    });
+  });
+
+  group('Fallback', () {
+    test('Should fallback context type cases', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig
+            .copyWith(
+              fallbackStrategy: FallbackStrategy.baseLocale,
+            )
+            .toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'hello(context=GenderCon)': {
+            'a': 'A',
+            'c': 'C',
+          }
+        },
+        baseData: TranslationModelBuilder.build(
+          buildConfig: RawConfig.defaultConfig.copyWith(
+            contexts: [
+              ContextType(
+                enumName: 'GenderCon',
+                defaultParameter: 'default',
+                generateEnum: true,
+              ),
+            ],
+          ).toBuildModelConfig(),
+          locale: _locale,
+          map: {
+            'hello(context=GenderCon)': {
+              'a': 'Base A',
+              'b': 'Base B',
+              'c': 'Base C',
+            },
+          },
+        ),
+      );
+
+      final textNode = result.root.entries['hello'] as ContextNode;
+      expect(textNode.entries.length, 3);
+      expect(
+        textNode.entries.values.map((e) => (e as StringTextNode).content),
+        [
+          'A',
+          'Base B',
+          'C',
+        ],
+      );
+    });
+
+    test('Should not fallback map entry by default', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig
+            .copyWith(
+              fallbackStrategy: FallbackStrategy.baseLocale,
+            )
+            .toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'myMap(map)': {
+            'a': 'A',
+            'c': 'C',
+          }
+        },
+        baseData: TranslationModelBuilder.build(
+          buildConfig: RawConfig.defaultConfig.copyWith().toBuildModelConfig(),
+          locale: _locale,
+          map: {
+            'myMap(map)': {
+              'a': 'Base A',
+              'b': 'Base B',
+              'c': 'Base C',
+            },
+          },
+        ),
+      );
+
+      final textNode = result.root.entries['myMap'] as ObjectNode;
+      expect(textNode.entries.length, 2);
+      expect(
+        textNode.entries.values.map((e) => (e as StringTextNode).content),
+        [
+          'A',
+          'C',
+        ],
+      );
+    });
+
+    test('Should fallback map entry when fallback modifier is added', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig
+            .copyWith(
+              fallbackStrategy: FallbackStrategy.baseLocale,
+            )
+            .toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'myMap(map, fallback)': {
+            'a': 'A',
+            'c': 'C',
+          }
+        },
+        baseData: TranslationModelBuilder.build(
+          buildConfig: RawConfig.defaultConfig.copyWith().toBuildModelConfig(),
+          locale: _locale,
+          map: {
+            'myMap(map, fallback)': {
+              'a': 'Base A',
+              'b': 'Base B',
+              'c': 'Base C',
+            },
+          },
+        ),
+      );
+
+      final textNode = result.root.entries['myMap'] as ObjectNode;
+      expect(textNode.entries.length, 3);
+      expect(
+        textNode.entries.values.map((e) => (e as StringTextNode).content),
+        [
+          'A',
+          'Base B',
+          'C',
+        ],
+      );
+    });
+
+    test('Should respect base_locale_empty_string in fallback map', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig
+            .copyWith(
+              fallbackStrategy: FallbackStrategy.baseLocaleEmptyString,
+            )
+            .toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'myMap(map, fallback)': {
+            'a': 'A',
+            'c': '',
+          }
+        },
+        baseData: TranslationModelBuilder.build(
+          buildConfig: RawConfig.defaultConfig.copyWith().toBuildModelConfig(),
+          locale: _locale,
+          map: {
+            'myMap(map, fallback)': {
+              'a': 'Base A',
+              'b': 'Base B',
+              'c': 'Base C',
+            },
+          },
+        ),
+      );
+
+      final textNode = result.root.entries['myMap'] as ObjectNode;
+      expect(textNode.entries.length, 3);
+      expect(
+        textNode.entries.values.map((e) => (e as StringTextNode).content),
+        [
+          'A',
+          'Base B',
+          'Base C',
+        ],
+      );
     });
   });
 }
