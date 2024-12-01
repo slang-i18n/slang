@@ -304,7 +304,8 @@ Map<String, Node> _parseMapNode({
       // leaf
       // key: 'value'
 
-      if (config.fallbackStrategy == FallbackStrategy.baseLocaleEmptyString &&
+      if (baseData != null &&
+          config.fallbackStrategy == FallbackStrategy.baseLocaleEmptyString &&
           value is String &&
           value.isEmpty) {
         return;

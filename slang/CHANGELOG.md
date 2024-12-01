@@ -1,6 +1,7 @@
 ## 4.4.0
 
 - feat: add `(fallback)` modifier to fallback entries within a map (#268)
+- fix: empty strings in base translations should not be removed when using `fallback_strategy: base_locale_empty_string`
 
 ## 4.3.0
 
