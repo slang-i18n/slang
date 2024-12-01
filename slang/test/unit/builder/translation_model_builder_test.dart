@@ -343,6 +343,22 @@ void main() {
   });
 
   group('Fallback', () {
+    test('base_locale_empty_string: Do not remove empty strings in base locale',
+        () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig
+            .copyWith(
+              fallbackStrategy: FallbackStrategy.baseLocaleEmptyString,
+            )
+            .toBuildModelConfig(),
+        locale: _locale,
+        map: {'hello': ''},
+      );
+
+      expect(result.root.entries['hello'], isA<StringTextNode>());
+      expect((result.root.entries['hello'] as StringTextNode).content, '');
+    });
+
     test('Should fallback context type cases', () {
       final result = TranslationModelBuilder.build(
         buildConfig: RawConfig.defaultConfig
