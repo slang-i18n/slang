@@ -14,22 +14,15 @@ extension StringExtensions on String {
   /// transforms the string to the specified case
   /// if case is null, then no transformation will be applied
   String toCase(CaseStyle? style) {
-    switch (style) {
-      case CaseStyle.camel:
-        return getWords()
-            .mapIndexed((index, word) =>
-                index == 0 ? word.toLowerCase() : word.capitalize())
-            .join('');
-      case CaseStyle.pascal:
-        return getWords().map((word) => word.capitalize()).join('');
-      case CaseStyle.snake:
-        return getWords().map((word) => word.toLowerCase()).join('_');
-      case null:
-        return this;
-      default:
-        print('Unknown case: $style');
-        return this;
-    }
+    return switch (style) {
+      CaseStyle.camel => getWords()
+          .mapIndexed((index, word) =>
+              index == 0 ? word.toLowerCase() : word.capitalize())
+          .join(''),
+      CaseStyle.pascal => getWords().map((word) => word.capitalize()).join(''),
+      CaseStyle.snake => getWords().map((word) => word.toLowerCase()).join('_'),
+      null => this,
+    };
   }
 
   /// de-DE will be interpreted as [de,DE]
@@ -42,9 +35,9 @@ extension StringExtensions on String {
   /// assume that words are separated by special characters or by camel case
   List<String> getWords() {
     final input = this;
-    final StringBuffer buffer = StringBuffer();
-    final List<String> words = [];
-    final bool isAllCaps = input.toUpperCase() == input;
+    final buffer = StringBuffer();
+    final words = <String>[];
+    final isAllCaps = input.toUpperCase() == input;
 
     for (int i = 0; i < input.length; i++) {
       final String currChar = input[i];
@@ -70,5 +63,5 @@ extension StringExtensions on String {
   }
 }
 
-final RegExp _upperAlphaRegex = RegExp(r'[A-Z]');
-final Set<String> _symbolSet = {' ', '.', '_', '-', '/', '\\'};
+final _upperAlphaRegex = RegExp(r'[A-Z]');
+final _symbolSet = <String>{' ', '.', '_', '-', '/', '\\'};

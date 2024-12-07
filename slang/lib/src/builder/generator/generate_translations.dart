@@ -320,7 +320,9 @@ void _generateClass(
     if (!localeData.base ||
         node.interface?.attributes
                 .any((attribute) => attribute.attributeName == key) ==
-            true) buffer.write('@override ');
+            true) {
+      buffer.write('@override ');
+    }
 
     // even if this attribute exist, it has to satisfy the same signature as
     // specified in the interface

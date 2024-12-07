@@ -26,5 +26,5 @@ dependencies:
 
 dev_dependencies:
   expect_error: ^1.0.7
-  lints: ^2.0.0
+  lints: any
   test: ^1.21.0
