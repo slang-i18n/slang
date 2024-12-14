@@ -32,8 +32,8 @@ class TranslationModelBuilder {
 
   /// Builds the i18n model for ONE locale
   ///
-  /// The [map] must be of type Map<String, dynamic> and all children may of type
-  /// String, num, List<dynamic> or Map<String, dynamic>.
+  /// The [map] must be of type `Map<String, dynamic>` and all children may of type
+  /// `String`, `num`, `List<dynamic>` or `Map<String, dynamic>`.
   ///
   /// If [baseData] is set and [BuildModelConfig.fallbackStrategy] is [FallbackStrategy.baseLocale],
   /// then the base translations will be added to contexts where the translation is missing.
@@ -889,8 +889,8 @@ Set<InterfaceAttribute> _parseAttributes(ObjectNode node) {
 
 /// Applies the generic type defined in the interface for all empty lists.
 ///
-/// By default, empty lists are considered to be List<String>
-/// But when interfaces are used, it can differ: e.g. List<MyType>
+/// By default, empty lists are considered to be `List<String>`
+/// But when interfaces are used, it can differ: e.g. `List<MyType>`
 void _fixEmptyLists({
   required ObjectNode node,
   required Interface interface,

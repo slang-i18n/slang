@@ -157,7 +157,7 @@ extension TranslationOverridesStringExt on String {
     });
   }
 
-  /// Replaces every ${_root.<path>} with the real string
+  /// Replaces every `${_root.<path>}` with the real string
   String applyLinks(TranslationMetadata meta, Map<String, Object> param) {
     return replaceDartNormalizedInterpolation(replacer: (match) {
       final nodeParam = match.substring(2, match.length - 1);

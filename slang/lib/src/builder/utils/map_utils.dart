@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 
 class MapUtils {
-  /// converts Map<dynamic, dynamic> to Map<String, dynamic> for all children
+  /// converts `Map<dynamic, dynamic>` to `Map<String, dynamic>` for all children
   /// forcing all keys to be strings
   static Map<String, dynamic> deepCast(Map<dynamic, dynamic> source) {
     return source.map((key, value) {

@@ -50,7 +50,7 @@ class RegexUtils {
       RegExp(r'^((\w|\<|\>|,)+)(\?)? (\w+)(\(.+\))?$');
 
   /// Matches the generic of the list
-  /// List<MyGeneric>
+  /// `List<MyGeneric>`
   /// 1 - MyGeneric
   static final RegExp genericRegex = RegExp(r'^List<((?:\w| |<|>)+)>$');
 

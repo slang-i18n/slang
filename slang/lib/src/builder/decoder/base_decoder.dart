@@ -6,9 +6,9 @@ import 'package:slang/src/builder/model/enums.dart';
 
 abstract class BaseDecoder {
   /// Transforms the raw string (json, yaml, csv)
-  /// to a standardized map structure of Map<String, dynamic>
+  /// to a standardized map structure of `Map<String, dynamic>`
   ///
-  /// Children are Map<String, dynamic>, List<dynamic> or String
+  /// Children are `Map<String, dynamic>`, `List<dynamic>` or `String`
   ///
   /// No case transformations, etc! Only the raw data represented as a tree.
   Map<String, dynamic> decode(String raw);

@@ -608,12 +608,7 @@ void _generateList({
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      // ignore: prefer_interpolation_to_compose_strings
-      final String key = r'$' '${listName ?? ''}\$' +
-          depth.toString() +
-          'i' +
-          i.toString() +
-          r'$';
+      final key = '\$${listName ?? ''}\$${depth.toString()}i${i.toString()}\$';
       final String childClassNoLocale = getClassName(
           base: base,
           visibility: config.translationClassVisibility,

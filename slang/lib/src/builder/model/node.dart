@@ -88,7 +88,7 @@ abstract interface class LeafNode {}
 
 /// The super class for [ListNode] and [ObjectNode]
 abstract class IterableNode extends Node {
-  /// The generic type of the container, i.e. Map<String, T> or List<T>
+  /// The generic type of the container, i.e. `Map<String, T>` or `List<T>`
   String _genericType;
 
   String get genericType => _genericType;
