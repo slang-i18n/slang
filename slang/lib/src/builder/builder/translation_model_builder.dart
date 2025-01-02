@@ -293,6 +293,7 @@ Map<String, Node> _parseMapNode({
       sanitizeCaseStyle: config.sanitization.caseStyle,
       defaultCaseStyle: keyCase,
       sanitize: sanitizeKey && config.sanitization.enabled,
+      root: parentPath.isEmpty,
     );
     final modifiers = nodePathInfo.modifiers;
     final currPath = parentPath.isNotEmpty ? '$parentPath.$key' : key;

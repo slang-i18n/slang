@@ -11,9 +11,12 @@ String sanitizeReservedKeyword({
   required CaseStyle? sanitizeCaseStyle,
   required CaseStyle? defaultCaseStyle,
   bool sanitize = true,
+  bool root = false,
 }) {
   if (sanitize &&
-      (_reservedKeyWords.contains(name) ||
+      ((root
+              ? _reservedRootKeyWords.contains(name)
+              : _reservedKeyWords.contains(name)) ||
           RegexUtils.startsWithNumber.hasMatch(name))) {
     if (sanitizeCaseStyle != null) {
       // need to add space so that it treats the prefix as a separate word
@@ -63,4 +66,9 @@ const _reservedKeyWords = {
   'void',
   'with',
   'while',
+};
+
+const _reservedRootKeyWords = {
+  ..._reservedKeyWords,
+  'of',
 };
