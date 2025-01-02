@@ -1,3 +1,7 @@
+## 4.4.1
+
+- fix: also sanitize `of` when used as root key
+
 ## 4.4.0
 
 - feat: add `(fallback)` modifier to fallback entries within a map (#268)
