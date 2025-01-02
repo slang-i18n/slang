@@ -1156,7 +1156,7 @@ LocaleSettings.overrideTranslations(
   content: r'''
 onboarding
   title: 'Welcome {name}'
-  '''
+  ''',
 );
 
 // access
@@ -1169,6 +1169,21 @@ A few remarks:
 2. Overriding a second time reverts the last override.
 3. New translations will be parsed but have no effect.
 4. New parameters stay unparsed. (i.e. `{name}` stays `{name}`)
+
+If you use dependency injection, then you can create a new overridden instance using `AppLocaleUtils`:
+
+```dart
+Translations t2 = AppLocaleUtils.buildWithOverridesSync(
+  locale: AppLocale.en,
+  fileType: FileType.yaml,
+  content: r'''
+onboarding
+  title: 'Welcome {name}'
+  ''',
+);
+
+String a = t2.onboarding.title(name: 'Tom'); // "Welcome Tom"
+```
 
 ### ➤ Dependency Injection
 
