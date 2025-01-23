@@ -1,3 +1,7 @@
+## 4.4.1
+
+- deps: compatible with latest `dart_style` version (`v3`)
+
 ## 4.4.0
 
 - bump `slang` to `4.4.0`
