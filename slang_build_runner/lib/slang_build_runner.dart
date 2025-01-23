@@ -83,6 +83,7 @@ class I18nBuilder implements Builder {
     FileUtils.createMissingFolders(filePath: outputFilePath);
 
     final formatter = DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
       pageWidth: config.format.width,
     );
 
