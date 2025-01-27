@@ -2104,11 +2104,17 @@ Closed source:
 
 Feel free to extend this list :)
 
+## Slang ports
+
+Slang is also available for other platforms:
+
+- [Slang for .NET](https://www.nuget.org/packages/Slang.Net)
+
 ## License
 
 MIT License
 
-Copyright (c) 2020-2024 Tien Do Nam
+Copyright (c) 2020-2025 Tien Do Nam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
