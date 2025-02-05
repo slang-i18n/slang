@@ -217,6 +217,33 @@ final Map<String, _Resolvers> _resolverMap = {
       return other!;
     },
   ),
+  // Ukrainian
+  'uk': _Resolvers(
+    cardinal: (n, {zero, one, two, few, many, other}) {
+      if (n == 0) {
+        return zero ?? other!;
+      }
+
+      final fr10 = n % 10;
+      final fr100 = n % 100;
+
+      if (fr10 == 1 && fr100 != 11) {
+        return one ?? other!;
+      }
+      if (fr10.clamp(2, 4) == fr10 && fr100.clamp(12, 14) != fr100) {
+        return few ?? other!;
+      }
+      if (fr10 == 0 ||
+          fr10.clamp(5, 9) == fr10 ||
+          fr100.clamp(11, 14) == fr100) {
+        return many ?? other!;
+      }
+      return other!;
+    },
+    ordinal: (n, {zero, one, two, few, many, other}) {
+      return other!;
+    },
+  ),
   // Vietnamese
   'vi': _Resolvers(
     cardinal: (n, {zero, one, two, few, many, other}) {
