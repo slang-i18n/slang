@@ -104,10 +104,12 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Multiple Packages](#-multiple-packages)
 - [Integrations](#integrations)
   - [slang x riverpod](#-slang-x-riverpod)
+  - [slang x Weblate](#-slang-x-weblate)
 - [FAQ](#faq)
 - [Further Reading](#further-reading)
 - [Ecosystem](#ecosystem)
 - [Slang in production](#slang-in-production)
+- [Slang ports](#slang-ports)
 
 ## Getting Started
 
@@ -535,7 +537,11 @@ String interpolation is fixed to `braces` mode.
 
 ### ➤ String Interpolation
 
-Translations often have a dynamic parameter. There are multiple ways to define them.
+Translations often have a dynamic parameter.
+
+By default, this library uses the Dart string interpolation syntax `$name`.
+
+Update `string_interpolation` to change the syntax.
 
 ```yaml
 # Config
@@ -544,20 +550,11 @@ string_interpolation: dart # change to braces or double_braces
 
 You can always escape them by adding a backslash, e.g. `\{notAnArgument}`.
 
-**dart (default)**
-```text
-Hello $name. I am ${height}m.
-```
-
-**braces**
-```text
-Hello {name}
-```
-
-**double_braces**
-```text
-Hello {{name}}
-```
+| Mode             | Example                         |
+|------------------|---------------------------------|
+| `dart` (default) | `Hello $name. I am ${height}m.` |
+| `braces`         | `Hello {name}`                  |
+| `double_braces`  | `Hello {{name}}`                |
 
 ### ➤ RichText
 
@@ -1204,8 +1201,8 @@ translation_class_visibility: public
 Example using the `riverpod` library:
 
 ```dart
-final english = AppLocale.en.build(cardinalResolver: myEnResolver);
-final german = AppLocale.de.build(cardinalResolver: myDeResolver);
+final english = AppLocale.en.buildSync();
+final german = AppLocale.de.buildSync();
 final translationProvider = StateProvider<Translations>((ref) => german); // set it
 
 // access the current instance
@@ -1955,6 +1952,16 @@ final localeProvider = StreamProvider((ref) => LocaleSettings.getLocaleStream())
 
 Checkout [Dependency Injection](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md).
 
+### ➤ slang x Weblate
+
+[Weblate](https://weblate.org) is a web-based translation tool with tight Git integration.
+
+Below are recommended settings and addons for a smooth integration.
+
+![settings](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/weblate/settings.png)
+
+![addons](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/weblate/addons.png)
+
 ## FAQ
 
 **Translations don't update when device locale changes**
@@ -2083,6 +2090,7 @@ Feel free to extend this list :)
 ## Ecosystem
 
 - [slang_gpt](https://pub.dev/packages/slang_gpt) - Use GPT to internationalize your app with context-aware translations.
+- [SlangMate](https://plugins.jetbrains.com/plugin/26502-slangmate) - IntelliJ IDEA / Android Studio plugin for Slang.
 - [Apparencekit](https://apparencekit.dev/docs/other/internationalization/) - Boilerplate solution
 
 ## Slang in production
