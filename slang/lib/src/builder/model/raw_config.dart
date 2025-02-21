@@ -51,6 +51,7 @@ class RawConfig {
     width: FormatConfig.defaultWidth,
   );
   static const List<String> defaultImports = <String>[];
+  static const bool defaultGenerateEnum = true;
 
   final FileType fileType;
   final I18nLocale baseLocale;
@@ -86,6 +87,7 @@ class RawConfig {
   final ObfuscationConfig obfuscation;
   final FormatConfig format;
   final List<String> imports;
+  final bool generateEnum;
 
   /// Used by external tools to access the raw config. (e.g. slang_gpt)
   final Map<String, dynamic> rawMap;
@@ -124,6 +126,7 @@ class RawConfig {
     required this.obfuscation,
     required this.format,
     required this.imports,
+    required this.generateEnum,
     required this.rawMap,
   })  : fileType = _determineFileType(inputFilePattern),
         stringInterpolation =
@@ -156,6 +159,7 @@ class RawConfig {
     List<InterfaceConfig>? interfaces,
     ObfuscationConfig? obfuscation,
     FormatConfig? format,
+    bool? generateEnum,
   }) {
     return RawConfig(
       baseLocale: baseLocale ?? this.baseLocale,
@@ -192,6 +196,7 @@ class RawConfig {
       obfuscation: obfuscation ?? this.obfuscation,
       format: format ?? this.format,
       imports: imports,
+      generateEnum: generateEnum ?? this.generateEnum,
       rawMap: rawMap,
     );
   }
@@ -273,6 +278,7 @@ class RawConfig {
     print(
         ' -> format: ${format.enabled ? 'enabled (width=${format.width})' : 'disabled'}');
     print(' -> imports: $imports');
+    print(' -> generateEnum: $generateEnum');
   }
 
   static final defaultLocale =
@@ -312,6 +318,7 @@ class RawConfig {
     format: RawConfig.defaultFormatConfig,
     imports: RawConfig.defaultImports,
     className: RawConfig.defaultClassName,
+    generateEnum: RawConfig.defaultGenerateEnum,
     rawMap: {},
   );
 }

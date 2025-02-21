@@ -486,7 +486,7 @@ Map<String, Node> _parseMapNode({
               context = PendingContextType(
                 enumName: enumName,
                 defaultParameter: ContextType.DEFAULT_PARAMETER,
-                generateEnum: ContextType.defaultGenerateEnum,
+                generateEnum: config.generateEnum,
               );
               contextCollection[context.enumName] = context;
             }
