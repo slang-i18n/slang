@@ -204,6 +204,7 @@ void _generateBuildConfig({
   }
   buffer.writeln('],');
   buffer.writeln('\tinterfaces: [], // currently not supported');
+  buffer.writeln('\tgenerateEnum: ${config.generateEnum},');
   buffer.writeln(');');
 }
 

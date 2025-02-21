@@ -17,6 +17,7 @@ extension BuildModelConfigBuilder on RawConfig {
       pluralOrdinal: pluralOrdinal,
       contexts: contexts,
       interfaces: interfaces,
+      generateEnum: generateEnum,
     );
   }
 }
