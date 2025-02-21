@@ -128,6 +128,7 @@ class RawConfigBuilder {
       format: (map['format'] as Map<String, dynamic>?)?.toFormatConfig() ??
           RawConfig.defaultFormatConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
+      generateEnum: map['generate_enum'] ?? RawConfig.defaultGenerateEnum,
       rawMap: map,
     );
   }
