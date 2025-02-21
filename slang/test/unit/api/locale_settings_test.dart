@@ -76,6 +76,7 @@ class _AppLocaleUtils
             pluralOrdinal: [],
             contexts: [],
             interfaces: [],
+            generateEnum: true,
           ),
         );
 }

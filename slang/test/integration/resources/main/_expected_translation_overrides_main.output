@@ -36,6 +36,7 @@ final _buildConfig = BuildModelConfig(
 	pluralOrdinal: [],
 	contexts: [],
 	interfaces: [], // currently not supported
+	generateEnum: true,
 );
 
 /// Supported locales.
