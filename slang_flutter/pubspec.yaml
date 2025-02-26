@@ -17,5 +17,6 @@ dependencies:
   slang: '>=4.5.0 <4.6.0'
 
 dev_dependencies:
+  intl: any
   flutter_test:
     sdk: flutter
