@@ -345,6 +345,7 @@ format:
   width: 150
 imports:
   - 'package:my_package/path_to_enum.dart'
+generate_enum: true
 ```
 
 </details>
@@ -418,6 +419,7 @@ targets:
             width: 150
           imports:
             - 'package:my_package/path_to_enum.dart'
+          generate_enum: true
 ```
 
 </details>
@@ -454,14 +456,15 @@ targets:
 | `pluralization`/`default_parameter` | `String`                                          | default plural parameter [(i)](#-pluralization)              | `n`            |
 | `pluralization`/`cardinal`          | `List<String>`                                    | entries which have cardinals                                 | `[]`           |
 | `pluralization`/`ordinal`           | `List<String>`                                    | entries which have ordinals                                  | `[]`           |
-| `<context>`/`default_parameter`     | `String`                                          | default parameter name                                       | `context`      |
-| `<context>`/`generate_enum`         | `Boolean`                                         | generate enum                                                | `true`         |
+| `<context>`/`default_parameter`     | `String`                                          | default parameter name [(i)](#-custom-contexts--enums)       | `context`      |
+| `<context>`/`generate_enum`         | `Boolean`                                         | generate enum [(i)](#-custom-contexts--enums)                | `true`         |
 | `children of interfaces`            | `Pairs of Alias:Path`                             | alias interfaces [(i)](#-interfaces)                         | `null`         |
 | `obfuscation`/`enabled`             | `Boolean`                                         | enable obfuscation [(i)](#-obfuscation)                      | `false`        |
 | `obfuscation`/`secret`              | `String`                                          | obfuscation secret (random if null) [(i)](#-obfuscation)     | `null`         |
 | `format`/`enabled`                  | `Boolean`                                         | enable auto format [(i)](#-formatting)                       | `false`        |
 | `format`/`width`                    | `String`                                          | set line length / characters per line [(i)](#-formatting)    | `null`         |
 | `imports`                           | `List<String>`                                    | generate import statements                                   | `[]`           |
+| `generate_enum`                     | `Boolean`                                         | global `generate_enum` [(i)](#-custom-contexts--enums)       | `true`         |
 
 ## Main Features
 
@@ -907,6 +910,15 @@ imports:
 contexts:
   UserType:
     generate_enum: false # turn off enum generation
+```
+
+There is also a global `generate_enum` option that applies to all contexts.
+
+```yaml
+# Config
+imports:
+  - 'package:my_package/path_to_enum.dart' # define where your enum is
+generate_enum: false # turn off enum generation for all contexts
 ```
 
 ### ➤ Typed Parameters

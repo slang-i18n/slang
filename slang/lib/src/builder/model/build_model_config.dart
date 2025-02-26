@@ -5,7 +5,10 @@ import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/sanitization_config.dart';
 
 /// Config to generate the model.
-/// A subset of [RawConfig].
+/// A subset of [RawConfig] where:
+/// - file type
+/// - input/output paths
+/// are already resolved and not needed anymore.
 class BuildModelConfig {
   final FallbackStrategy fallbackStrategy;
   final CaseStyle? keyCase;
