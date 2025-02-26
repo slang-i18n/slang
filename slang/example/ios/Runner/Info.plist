@@ -44,10 +44,11 @@
 
 	<!-- Add these lines -->
 	<key>CFBundleLocalizations</key>
-    <array>
-       <string>en</string>
-       <string>de</string>
-    </array>
+	<array>
+		<string>de</string>
+		<string>en</string>
+		<string>fr-FR</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

@@ -45,6 +45,7 @@ An extensive CLI will help you to manage the translations:
 dart run slang                               # generate dart file
 dart run slang analyze                       # unused and missing translations
 dart run slang normalize                     # sort translations according to base locale
+dart run slang configure                     # automatically update CFBundleLocalizations
 dart run slang edit move loginPage authPage  # move or rename translations
 dart run slang migrate arb src.arb dest.json # migrate arb to json
 ```
@@ -87,6 +88,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Dart Only](#-dart-only)
 - [Tools](#tools)
   - [Main Command](#-main-command)
+  - [Update configuration](#-update-configuration)
   - [Analyze Translations](#-analyze-translations)
   - [Clean Translations](#-clean-translations)
   - [Apply Translations](#-apply-translations)
@@ -265,6 +267,12 @@ File: ios/Runner/Info.plist
    <string>en</string>
    <string>de</string>
 </array>
+```
+
+For convenience, you can also run:
+
+```bash
+dart run slang configure
 ```
 
 **Step 5: Use your translations**
@@ -819,7 +827,7 @@ LocaleSettings.setPluralResolver(
 );
 ```
 
-By default, the parameter name is `n`. You can change that by adding a modifier.
+By default, the parameter name is `n`. You can change that by adding the `param` modifier.
 
 ```json
 {
@@ -877,7 +885,7 @@ In contrast to pluralization, you **must** provide all forms. Collapse it to sav
 }
 ```
 
-Similarly to plurals, the parameter name is `context` by default. You can change that by adding a modifier.
+Similarly to plurals, the parameter name is `context` by default. You can change that by adding the `param` modifier.
 
 ```json
 {
@@ -1580,6 +1588,16 @@ The main command to generate dart files from translation resources.
 
 ```sh
 dart run slang
+```
+
+### ➤ Update configuration
+
+If you have many locales, it might be frustrating to keep `CFBundleLocalizations` (for iOS and macOS) up to date.
+
+This command will care about all configuration files for you.
+
+```sh
+dart run slang configure
 ```
 
 ### ➤ Analyze Translations

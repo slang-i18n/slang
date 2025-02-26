@@ -10,6 +10,7 @@ import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/apply.dart';
 import 'package:slang/src/runner/clean.dart';
+import 'package:slang/src/runner/configure.dart';
 import 'package:slang/src/runner/edit.dart';
 import 'package:slang/src/runner/migrate.dart';
 import 'package:slang/src/runner/normalize.dart';
@@ -21,6 +22,7 @@ import 'package:watcher/watcher.dart';
 enum RunnerMode {
   generate, // default
   watch, // generate on change
+  configure, // update configuration files
   stats, // print translation stats
   analyze, // generate missing translations
   apply, // apply translations from analyze
@@ -44,6 +46,9 @@ void main(List<String> arguments) async {
     switch (arguments[0]) {
       case 'watch':
         mode = RunnerMode.watch;
+        break;
+      case 'configure':
+        mode = RunnerMode.configure;
         break;
       case 'stats':
         mode = RunnerMode.stats;
@@ -90,6 +95,9 @@ void main(List<String> arguments) async {
     case RunnerMode.watch:
       print('Generating translations...\n');
       break;
+    case RunnerMode.configure:
+      print('Configuring...\n');
+      break;
     case RunnerMode.stats:
     case RunnerMode.analyze:
       print('Scanning translations...\n');
@@ -134,6 +142,9 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.watch:
       await watchTranslations(fileCollection.config);
+      break;
+    case RunnerMode.configure:
+      runConfigure(fileCollection);
       break;
     case RunnerMode.generate:
     case RunnerMode.stats:
