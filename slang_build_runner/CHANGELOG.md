@@ -1,3 +1,7 @@
+## 4.5.0
+
+- bump `slang` to `4.5.0`
+
 ## 4.4.2
 
 - deps: fix `dart_style` bounds to `>=2.3.7 <4.0.0`
