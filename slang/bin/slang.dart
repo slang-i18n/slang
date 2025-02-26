@@ -12,6 +12,7 @@ import 'package:slang/src/runner/apply.dart';
 import 'package:slang/src/runner/clean.dart';
 import 'package:slang/src/runner/configure.dart';
 import 'package:slang/src/runner/edit.dart';
+import 'package:slang/src/runner/help.dart';
 import 'package:slang/src/runner/migrate.dart';
 import 'package:slang/src/runner/normalize.dart';
 import 'package:slang/src/runner/stats.dart';
@@ -43,6 +44,11 @@ void main(List<String> arguments) async {
   final RunnerMode mode;
   final bool verbose;
   if (arguments.isNotEmpty) {
+    if (const {'-h', '--help', 'help'}.contains(arguments[0])) {
+      printHelp();
+      return;
+    }
+
     switch (arguments[0]) {
       case 'watch':
         mode = RunnerMode.watch;

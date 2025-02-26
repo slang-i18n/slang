@@ -1,6 +1,7 @@
 ## 4.5.0
 
 - feat: add `dart run slang configure` to configure `CFBundleLocalizations` in `Info.plist` based on existing translation files
+- feat: add `-h / --help / help` command
 - feat: add global `generate_enum` config (#283)
 - fix: add `unused_element_parameter` to avoid warnings in Dart 3.7 (#282)
 
