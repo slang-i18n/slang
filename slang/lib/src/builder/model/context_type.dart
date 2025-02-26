@@ -2,7 +2,6 @@
 /// Enum values may be null. In this case, they will be inferred during model build step.
 class ContextType {
   static const String DEFAULT_PARAMETER = 'context';
-  static const bool defaultGenerateEnum = true;
 
   final String enumName;
   final String defaultParameter;

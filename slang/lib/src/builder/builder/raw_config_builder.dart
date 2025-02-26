@@ -58,6 +58,8 @@ class RawConfigBuilder {
     final keyCase =
         (map['key_case'] as String?)?.toCaseStyle() ?? RawConfig.defaultKeyCase;
 
+    final generateEnum = map['generate_enum'] ?? RawConfig.defaultGenerateEnum;
+
     return RawConfig(
       baseLocale: I18nLocale.fromString(
           map['base_locale'] ?? RawConfig.defaultBaseLocale),
@@ -117,7 +119,8 @@ class RawConfigBuilder {
           RawConfig.defaultCardinal,
       pluralOrdinal: map['pluralization']?['ordinal']?.cast<String>() ??
           RawConfig.defaultOrdinal,
-      contexts: (map['contexts'] as Map<String, dynamic>?)?.toContextTypes() ??
+      contexts: (map['contexts'] as Map<String, dynamic>?)
+              ?.toContextTypes(generateEnum) ??
           RawConfig.defaultContexts,
       interfaces:
           (map['interfaces'] as Map<String, dynamic>?)?.toInterfaces() ??
@@ -128,7 +131,7 @@ class RawConfigBuilder {
       format: (map['format'] as Map<String, dynamic>?)?.toFormatConfig() ??
           RawConfig.defaultFormatConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
-      generateEnum: map['generate_enum'] ?? RawConfig.defaultGenerateEnum,
+      generateEnum: generateEnum,
       rawMap: map,
     );
   }
@@ -136,17 +139,16 @@ class RawConfigBuilder {
 
 extension on Map<String, dynamic> {
   /// Parses the 'contexts' config
-  List<ContextType> toContextTypes() {
+  List<ContextType> toContextTypes(bool defaultGenerateEnum) {
     return entries.map((e) {
       final enumName = e.key;
-      final config = e.value as Map<String, dynamic>;
+      final config = e.value as Map<String, dynamic>? ?? const {};
 
       return ContextType(
         enumName: enumName,
         defaultParameter:
             config['default_parameter'] ?? ContextType.DEFAULT_PARAMETER,
-        generateEnum:
-            config['generate_enum'] ?? ContextType.defaultGenerateEnum,
+        generateEnum: config['generate_enum'] ?? defaultGenerateEnum,
       );
     }).toList();
   }

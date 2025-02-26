@@ -27,17 +27,11 @@ void main() {
   });
 
   group('RawConfigBuilder.fromMap', () {
-    test('context gender default', () {
+    test('Should use default context options', () {
       final result = RawConfigBuilder.fromMap(
         {
           'contexts': {
-            'GenderContext': {
-              'enum': [
-                'male',
-                'female',
-                'neutral',
-              ],
-            },
+            'GenderContext': null,
           },
         },
       );
@@ -45,6 +39,42 @@ void main() {
       expect(result.contexts.length, 1);
       expect(result.contexts.first.enumName, 'GenderContext');
       expect(result.contexts.first.defaultParameter, 'context');
+      expect(result.contexts.first.generateEnum, isTrue);
+    });
+
+    test('Should respect global generate_enum', () {
+      final result = RawConfigBuilder.fromMap(
+        {
+          'generate_enum': false,
+          'contexts': {
+            'GenderContext': {
+              'default_parameter': 'gender',
+            },
+          },
+        },
+      );
+
+      expect(result.contexts.length, 1);
+      expect(result.contexts.first.enumName, 'GenderContext');
+      expect(result.contexts.first.defaultParameter, 'gender');
+      expect(result.contexts.first.generateEnum, isFalse);
+    });
+
+    test('Should override with context generate_enum', () {
+      final result = RawConfigBuilder.fromMap(
+        {
+          'generate_enum': false,
+          'contexts': {
+            'GenderContext': {
+              'generate_enum': true,
+            },
+          },
+        },
+      );
+
+      expect(result.contexts.length, 1);
+      expect(result.contexts.first.enumName, 'GenderContext');
+      expect(result.contexts.first.generateEnum, isTrue);
     });
 
     test('Should remove trailing slash', () {
