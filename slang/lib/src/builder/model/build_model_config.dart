@@ -20,6 +20,7 @@ class BuildModelConfig {
   final List<String> pluralOrdinal;
   final List<ContextType> contexts;
   final List<InterfaceConfig> interfaces;
+  final bool generateEnum;
 
   BuildModelConfig({
     required this.fallbackStrategy,
@@ -35,5 +36,6 @@ class BuildModelConfig {
     required this.pluralOrdinal,
     required this.contexts,
     required this.interfaces,
+    required this.generateEnum,
   });
 }
