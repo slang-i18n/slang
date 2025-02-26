@@ -1,3 +1,8 @@
+## 4.5.0
+
+- feat: add global `generate_enum` config (#283)
+- fix: add `unused_element_parameter` to avoid warnings in Dart 3.7 (#282)
+
 ## 4.4.1
 
 - fix: also sanitize `of` when used as root key

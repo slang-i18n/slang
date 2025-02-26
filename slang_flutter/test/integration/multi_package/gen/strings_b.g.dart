@@ -10,11 +10,12 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:slang/generated.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'strings_b_de.g.dart' deferred as _$de;
+import 'strings_b_de.g.dart' deferred as l_de;
 part 'strings_b_en.g.dart';
 
 /// Supported locales.
@@ -29,8 +30,8 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 
   const AppLocale({
     required this.languageCode,
-    this.scriptCode, // ignore: unused_element
-    this.countryCode, // ignore: unused_element
+    this.scriptCode, // ignore: unused_element, unused_element_parameter
+    this.countryCode, // ignore: unused_element, unused_element_parameter
   });
 
   @override
@@ -54,8 +55,8 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
           ordinalResolver: ordinalResolver,
         );
       case AppLocale.de:
-        await _$de.loadLibrary();
-        return _$de.TranslationsDe(
+        await l_de.loadLibrary();
+        return l_de.TranslationsDe(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
@@ -77,7 +78,7 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
           ordinalResolver: ordinalResolver,
         );
       case AppLocale.de:
-        return _$de.TranslationsDe(
+        return l_de.TranslationsDe(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,

@@ -5,6 +5,7 @@
 // ignore_for_file: type=lint, unused_import
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:slang/generated.dart';
 import 'strings_a.g.dart';
 

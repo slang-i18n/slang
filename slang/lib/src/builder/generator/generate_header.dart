@@ -253,8 +253,12 @@ void _generateEnum({
   buffer.writeln();
   buffer.writeln('\tconst $enumName({');
   buffer.writeln('\t\trequired this.languageCode,');
-  buffer.writeln('\t\tthis.scriptCode, // ignore: unused_element');
-  buffer.writeln('\t\tthis.countryCode, // ignore: unused_element');
+  buffer.writeln(
+    '\t\tthis.scriptCode, // ignore: unused_element, unused_element_parameter',
+  );
+  buffer.writeln(
+    '\t\tthis.countryCode, // ignore: unused_element, unused_element_parameter',
+  );
   buffer.writeln('\t});');
 
   buffer.writeln();
