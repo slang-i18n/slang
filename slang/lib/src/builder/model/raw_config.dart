@@ -52,6 +52,7 @@ class RawConfig {
   );
   static const List<String> defaultImports = <String>[];
   static const bool defaultGenerateEnum = true;
+  static const bool defaultCopyWithMeta = false;
 
   final FileType fileType;
   final I18nLocale baseLocale;
@@ -88,6 +89,7 @@ class RawConfig {
   final FormatConfig format;
   final List<String> imports;
   final bool generateEnum;
+  final bool copyWithMeta;
 
   /// Used by external tools to access the raw config. (e.g. slang_gpt)
   final Map<String, dynamic> rawMap;
@@ -128,6 +130,7 @@ class RawConfig {
     required this.imports,
     required this.generateEnum,
     required this.rawMap,
+    required this.copyWithMeta,
   })  : fileType = _determineFileType(inputFilePattern),
         stringInterpolation =
             _determineFileType(inputFilePattern) == FileType.arb
@@ -160,6 +163,7 @@ class RawConfig {
     ObfuscationConfig? obfuscation,
     FormatConfig? format,
     bool? generateEnum,
+    bool? copyWithMeta,
   }) {
     return RawConfig(
       baseLocale: baseLocale ?? this.baseLocale,
@@ -198,6 +202,7 @@ class RawConfig {
       imports: imports,
       generateEnum: generateEnum ?? this.generateEnum,
       rawMap: rawMap,
+      copyWithMeta: copyWithMeta ?? this.copyWithMeta,
     );
   }
 
@@ -319,6 +324,7 @@ class RawConfig {
     imports: RawConfig.defaultImports,
     className: RawConfig.defaultClassName,
     generateEnum: RawConfig.defaultGenerateEnum,
+    copyWithMeta: RawConfig.defaultCopyWithMeta,
     rawMap: {},
   );
 }

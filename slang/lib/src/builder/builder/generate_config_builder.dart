@@ -27,6 +27,7 @@ class GenerateConfigBuilder {
       translationClassVisibility: config.translationClassVisibility,
       renderFlatMap: config.renderFlatMap,
       translationOverrides: config.translationOverrides,
+      copyWithMeta: config.copyWithMeta,
       renderTimestamp: config.renderTimestamp,
       renderStatistics: config.renderStatistics,
       contexts: contexts,

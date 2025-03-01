@@ -132,6 +132,7 @@ class RawConfigBuilder {
           RawConfig.defaultFormatConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
       generateEnum: generateEnum,
+      copyWithMeta: map['copy_with_meta'] ?? RawConfig.defaultCopyWithMeta,
       rawMap: map,
     );
   }
