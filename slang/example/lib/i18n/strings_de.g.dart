@@ -13,9 +13,9 @@ import 'strings.g.dart';
 class TranslationsDe implements Translations {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	TranslationsDe({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+	TranslationsDe({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<AppLocale, Translations>? meta,})
 		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
-		  $meta = TranslationMetadata(
+		  $meta = meta ?? TranslationMetadata(
 		    locale: AppLocale.de,
 		    overrides: overrides ?? {},
 		    cardinalResolver: cardinalResolver,
@@ -39,6 +39,9 @@ class TranslationsDe implements Translations {
 		'de': 'Deutsch',
 		'fr-FR': 'Französisch',
 	};
+
+	@override 
+	TranslationsDe $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsDe(meta: meta ?? this.$meta);
 }
 
 // Path: mainScreen
