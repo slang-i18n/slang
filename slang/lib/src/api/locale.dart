@@ -39,6 +39,10 @@ class TranslationMetadata<E extends BaseAppLocale<E, T>,
     _flatMapFunction = func;
   }
 
+  Node? getOverride(String path) {
+    return overrides[path];
+  }
+
   /// Decrypts the given [chars] by XOR-ing them with the secret [s].
   ///
   /// Keep in mind that this is not a secure encryption method.

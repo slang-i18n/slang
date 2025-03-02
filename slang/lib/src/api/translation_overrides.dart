@@ -13,7 +13,7 @@ import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 class TranslationOverrides {
   static String? string(
       TranslationMetadata meta, String path, Map<String, Object> param) {
-    final node = meta.overrides[path];
+    final node = meta.getOverride(path);
     if (node == null) {
       return null;
     }
@@ -27,7 +27,7 @@ class TranslationOverrides {
 
   static String? plural(
       TranslationMetadata meta, String path, Map<String, Object> param) {
-    final node = meta.overrides[path];
+    final node = meta.getOverride(path);
     if (node == null) {
       return null;
     }
@@ -61,7 +61,7 @@ class TranslationOverrides {
 
   static String? context(
       TranslationMetadata meta, String path, Map<String, Object> param) {
-    final node = meta.overrides[path];
+    final node = meta.getOverride(path);
     if (node == null) {
       return null;
     }
@@ -80,7 +80,7 @@ class TranslationOverrides {
   }
 
   static Map<String, String>? map(TranslationMetadata meta, String path) {
-    final node = meta.overrides[path];
+    final node = meta.getOverride(path);
     if (node == null) {
       return null;
     }
@@ -100,7 +100,7 @@ class TranslationOverrides {
   }
 
   static List<String>? list(TranslationMetadata meta, String path) {
-    final node = meta.overrides[path];
+    final node = meta.getOverride(path);
     if (node == null) {
       return null;
     }
