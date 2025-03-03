@@ -190,7 +190,7 @@ void _generateClass(
     }
 
     buffer.write(
-        '\t$finalClassName({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<${config.enumName}, ${config.className}>? meta,');
+        '\t$finalClassName({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<${config.enumName}, ${config.className}>? meta');
 
     buffer.writeln('})');
     if (!config.translationOverrides) {
@@ -300,6 +300,15 @@ void _generateClass(
     buffer.write('final $rootClassName _root;');
   }
   buffer.writeln(' // ignore: unused_field');
+
+  if (root) {
+    buffer.writeln();
+    if (!localeData.base) {
+      buffer.writeln('\t@override ');
+    }
+    buffer.writeln(
+        '\t$rootClassName \$copyWith({TranslationMetadata<${config.enumName}, ${config.className}>? meta}) => $rootClassName(meta: meta ?? this.\$meta);');
+  }
 
   buffer.writeln();
   buffer.writeln('\t// Translations');
@@ -442,15 +451,6 @@ void _generateClass(
       );
     }
   });
-
-  if (root) {
-    buffer.writeln();
-    if (!localeData.base) {
-      buffer.writeln('\t@override ');
-    }
-    buffer.writeln(
-        '\t$rootClassName \$copyWith({TranslationMetadata<${config.enumName}, ${config.className}>? meta}) => $rootClassName(meta: meta ?? this.\$meta);');
-  }
 
   buffer.writeln('}');
 }

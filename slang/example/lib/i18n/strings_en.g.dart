@@ -17,7 +17,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
-	Translations({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<AppLocale, Translations>? meta,})
+	Translations({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<AppLocale, Translations>? meta})
 		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
 		  $meta = meta ?? TranslationMetadata(
 		    locale: AppLocale.en,
@@ -36,6 +36,8 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 	late final Translations _root = this; // ignore: unused_field
 
+	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
+
 	// Translations
 	late final TranslationsMainScreenEn mainScreen = TranslationsMainScreenEn._(_root);
 	Map<String, String> get locales => {
@@ -43,8 +45,6 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		'de': 'German',
 		'fr-FR': 'French',
 	};
-
-	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
 }
 
 // Path: mainScreen
