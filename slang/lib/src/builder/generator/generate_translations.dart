@@ -189,15 +189,19 @@ void _generateClass(
           '\t/// [AppLocaleUtils.buildWithOverrides] is recommended for overriding.');
     }
 
-    buffer.writeln(
-        '\t$finalClassName({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})');
+    buffer.write(
+        '\t$finalClassName({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<${config.enumName}, ${config.className}>? meta,');
+
+    buffer.writeln('})');
     if (!config.translationOverrides) {
       buffer.write(
           '\t\t: assert(overrides == null, \'Set "translation_overrides: true" in order to enable this feature.\'),\n\t\t  ');
     } else {
       buffer.write('\t\t: ');
     }
-    buffer.writeln('\$meta = TranslationMetadata(');
+
+    buffer.writeln('\$meta = meta ?? TranslationMetadata(');
+
     buffer.writeln(
         '\t\t    locale: ${config.enumName}.${localeData.locale.enumConstant},');
     buffer.writeln('\t\t    overrides: overrides ?? {},');
@@ -438,6 +442,15 @@ void _generateClass(
       );
     }
   });
+
+  if (root) {
+    buffer.writeln();
+    if (!localeData.base) {
+      buffer.writeln('\t@override ');
+    }
+    buffer.writeln(
+        '\t$rootClassName \$copyWith({TranslationMetadata<${config.enumName}, ${config.className}>? meta}) => $rootClassName(meta: meta ?? this.\$meta);');
+  }
 
   buffer.writeln('}');
 }
