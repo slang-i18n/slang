@@ -2134,6 +2134,8 @@ Open source:
 - [Boorusphere (booru viewer)](https://github.com/nullxception/boorusphere)
 - [Alist Helper](https://github.com/Xmarmalade/alisthelper)
 - [Digitale Ehrenamtskarte (German volunteer app)](https://github.com/digitalfabrik/entitlementcard)
+- [Grüne App (German political app)](https://github.com/verdigado/gruene-app)
+- [OllamaTalk (Ollama Frontend)](https://github.com/shinhyo/OllamaTalk)
 - [Flutter Advanced Boilerplate (boilerplate project)](https://github.com/fikretsengul/flutter_advanced_boilerplate)
 
 Closed source:
