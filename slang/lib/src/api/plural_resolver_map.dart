@@ -138,6 +138,11 @@ final Map<String, _Resolvers> _resolverMap = {
       return other!;
     },
   ),
+  // Japanese
+  'ja': _Resolvers(
+    cardinal: (n, {few, many, one, other, two, zero}) => other!,
+    ordinal: (n, {few, many, one, other, two, zero}) => other!,
+  ),
   // Polish
   'pl': _Resolvers(
     cardinal: (n, {zero, one, two, few, many, other}) {
