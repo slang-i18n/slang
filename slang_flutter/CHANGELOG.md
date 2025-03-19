@@ -1,3 +1,7 @@
+## 4.6.0
+
+- bump `slang` to `4.6.0`
+
 ## 4.5.0
 
 - bump `slang` to `4.5.0`

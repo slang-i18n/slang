@@ -1,3 +1,8 @@
+## 4.6.0
+
+- feat: add `Translations.$copyWith()` and `TranslationMetadata.getOverride` to allow adding custom behavior (#287)
+- feat: add Japanese plural resolver (#289)
+
 ## 4.5.0
 
 - feat: add `dart run slang configure` to configure `CFBundleLocalizations` in `Info.plist` based on existing translation files
