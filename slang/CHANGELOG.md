@@ -1,3 +1,7 @@
+## 4.6.1
+
+- fix: automatically initialize the locale when overriding an uninitialized locale (#294)
+
 ## 4.6.0
 
 - feat: add `Translations.$copyWith()` and `TranslationMetadata.getOverride` to allow adding custom behavior (#287)

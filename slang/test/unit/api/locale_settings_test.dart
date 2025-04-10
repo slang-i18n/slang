@@ -25,7 +25,7 @@ void main() {
       expect(localeSettings.currentTranslations.providedNullOverrides, true);
     });
 
-    test('should keep overrides when it is previously not empty', () async {
+    test('should keep overrides when calling setPluralResolver', () async {
       final localeSettings = _LocaleSettings();
 
       await localeSettings.overrideTranslationsFromMap(
@@ -47,17 +47,80 @@ void main() {
         ['hello'],
       );
     });
+
+    test('should initialize locale when overriding', () async {
+      final localeSettings = _LocaleSettings();
+
+      await localeSettings.overrideTranslations(
+        locale: _localeA,
+        fileType: FileType.yaml,
+        content: 'keyA: valueA',
+      );
+
+      expect(
+        localeSettings.translationMap[_localeA]!.$meta.overrides.keys,
+        ['keyA'],
+      );
+
+      await localeSettings.overrideTranslationsFromMap(
+        locale: _localeB,
+        isFlatMap: false,
+        map: {'keyB': 'valueB'},
+      );
+
+      expect(
+        localeSettings.translationMap[_localeB]!.$meta.overrides.keys,
+        ['keyB'],
+      );
+    });
+
+    test('should keep plural resolver when overriding', () async {
+      final localeSettings = _LocaleSettings();
+
+      await localeSettings.setPluralResolver(
+        locale: _localeA,
+        cardinalResolver: (n, {zero, one, two, few, many, other}) {
+          return 'CUSTOM-CARDINAL';
+        },
+      );
+
+      await localeSettings.overrideTranslations(
+        locale: _localeA,
+        fileType: FileType.yaml,
+        content: 'keyA: valueA',
+      );
+
+      expect(
+        localeSettings.translationMap[_localeA]!.$meta.overrides.keys,
+        ['keyA'],
+      );
+
+      expect(
+        localeSettings.translationMap[_localeA]!.$meta.cardinalResolver!(
+          1,
+          zero: 'zero',
+          one: 'one',
+          two: 'two',
+          few: 'few',
+          many: 'many',
+          other: 'other',
+        ),
+        'CUSTOM-CARDINAL',
+      );
+    });
   });
 }
 
 final _baseLocale = FakeAppLocale(languageCode: 'und');
+final _localeA = FakeAppLocale(languageCode: 'aa');
+final _localeB = FakeAppLocale(languageCode: 'bb');
 
 class _AppLocaleUtils
     extends BaseAppLocaleUtils<FakeAppLocale, FakeTranslations> {
   _AppLocaleUtils()
       : super(
           baseLocale: _baseLocale,
-          locales: [_baseLocale],
+          locales: [_baseLocale, _localeA, _localeB],
           buildConfig: BuildModelConfig(
             fallbackStrategy: FallbackStrategy.none,
             keyCase: null,
@@ -83,5 +146,5 @@ class _AppLocaleUtils
 
 class _LocaleSettings
     extends BaseLocaleSettings<FakeAppLocale, FakeTranslations> {
-  _LocaleSettings() : super(utils: _AppLocaleUtils(), lazy: false);
+  _LocaleSettings() : super(utils: _AppLocaleUtils(), lazy: true);
 }

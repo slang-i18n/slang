@@ -254,13 +254,21 @@ abstract class BaseLocaleSettings<E extends BaseAppLocale<E, T>,
   /// Internal: Reference to utils instance
   final BaseAppLocaleUtils<E, T> utils;
 
+  /// If true, then only the base locale is loaded initially.
+  /// Secondary locales are loaded on demand:
+  /// - when explicitly calling [loadLocale] or [loadAllLocales]
+  /// - when calling [setLocale] or [setLocaleRaw]
+  /// - when calling [setPluralResolver]
+  /// - when calling [overrideTranslations]
+  final bool lazy;
+
   /// If true, then [TranslationProvider] will trigger [setLocale] on
   /// device locale change (e.g. due to user interaction in device settings).
   bool listenToDeviceLocale = false;
 
   BaseLocaleSettings({
     required this.utils,
-    required bool lazy,
+    required this.lazy,
   }) : translationMap = lazy
             ? {
                 utils.baseLocale: utils.baseLocale.buildSync(),
@@ -377,7 +385,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
   /// and [TranslationProvider] is used. If null, then the last state is used.
   /// By default, calling this method disables the listener.
   Future<E> setLocale(E locale, {bool? listenToDeviceLocale = false}) async {
-    await loadLocale(locale);
+    if (lazy) {
+      await loadLocale(locale);
+    }
     return _setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);
   }
 
@@ -434,7 +444,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
     // update translation instances
     for (final curr in targetLocales) {
-      await loadLocale(curr);
+      if (lazy) {
+        await loadLocale(curr);
+      }
       final overrides = translationMap[curr]!.$meta.overrides;
       translationMap[curr] = await curr.build(
         // keep old overrides
@@ -459,7 +471,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
 
     // update translation instances
     for (final curr in targetLocales) {
-      loadLocaleSync(curr);
+      if (lazy) {
+        loadLocaleSync(curr);
+      }
       final overrides = translationMap[curr]!.$meta.overrides;
       translationMap[curr] = curr.buildSync(
         // keep old overrides
@@ -501,6 +515,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
     required FileType fileType,
     required String content,
   }) async {
+    if (lazy) {
+      await loadLocale(locale);
+    }
     final currentMetadata = translationMap[locale]!.$meta;
     translationMap[locale] = await utils.buildWithOverrides(
       locale: locale,
@@ -520,6 +537,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
     required FileType fileType,
     required String content,
   }) {
+    if (lazy) {
+      loadLocaleSync(locale);
+    }
     final currentMetadata = translationMap[locale]!.$meta;
     translationMap[locale] = utils.buildWithOverridesSync(
       locale: locale,
@@ -547,6 +567,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
     required bool isFlatMap,
     required Map map,
   }) async {
+    if (lazy) {
+      await loadLocale(locale);
+    }
     final currentMetadata = translationMap[locale]!.$meta;
     translationMap[locale] = await utils.buildWithOverridesFromMap(
       locale: locale,
@@ -566,6 +589,9 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
     required bool isFlatMap,
     required Map map,
   }) {
+    if (lazy) {
+      loadLocaleSync(locale);
+    }
     final currentMetadata = translationMap[locale]!.$meta;
     translationMap[locale] = utils.buildWithOverridesFromMapSync(
       locale: locale,
