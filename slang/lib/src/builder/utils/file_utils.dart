@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:json2yaml/json2yaml.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/utils/yaml_writer.dart';
 
 const String INFO_KEY = '@@info';
 
@@ -34,15 +34,7 @@ class FileUtils {
         // this encoder does not append \n automatically
         return '${JsonEncoder.withIndent('  ').convert(content)}\n';
       case FileType.yaml:
-        if (content.containsKey(INFO_KEY)) {
-          // workaround
-          // https://github.com/alexei-sintotski/json2yaml/issues/23
-          content = {
-            '"$INFO_KEY"': content[INFO_KEY],
-            ...content..remove(INFO_KEY),
-          };
-        }
-        return json2yaml(content, yamlStyle: YamlStyle.generic);
+        return convertToYaml(content);
       case FileType.csv:
         String escapeRow(String value) {
           final escaped = value.replaceAll('"', '""');

@@ -5,6 +5,10 @@ import 'package:yaml/yaml.dart';
 class YamlDecoder extends BaseDecoder {
   @override
   Map<String, dynamic> decode(String raw) {
-    return MapUtils.deepCast(loadYaml(raw));
+    final converted = loadYaml(raw);
+    if (converted == null) {
+      throw Exception('Failed to decode YAML:\n${raw.substring(0, 200)}');
+    }
+    return MapUtils.deepCast(converted);
   }
 }

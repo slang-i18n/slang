@@ -1,3 +1,7 @@
+## 4.7.0
+
+- feat: remove `json2yaml` dependency, reimplement a simple opinionated YAML writer
+
 ## 4.6.1
 
 - fix: automatically initialize the locale when overriding an uninitialized locale (#294)
