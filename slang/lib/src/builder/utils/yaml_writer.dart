@@ -49,7 +49,8 @@ String _formatScalarValue(dynamic value) {
     if (value.contains('\n')) {
       // Using pipe notation for multiline strings
       final lines = value.split('\n');
-      final buffer = StringBuffer('|\n');
+      final endsWithNewline = value.endsWith('\n');
+      final buffer = StringBuffer(endsWithNewline ? '|\n' : '|-\n');
       for (final line in lines) {
         buffer.write('  $line\n');
       }
@@ -65,12 +66,29 @@ String _formatScalarValue(dynamic value) {
 /// Sanitizes a string value for YAML formatting.
 /// Optionally adds quotes to the string.
 String _sanitizeStringValue(String value) {
-  if (value.contains(':') ||
-      value.isEmpty ||
+  if (value.isEmpty ||
+      value.contains(':') ||
+      value.contains(' #') ||
       _hasLeadingOrTrailingWhitespace(value) ||
+      value.startsWith('"') ||
+      value.startsWith("'") ||
       value.startsWith('@') ||
-      value.startsWith('&')) {
-    return '"${value.replaceAll('"', '\\"')}"';
+      value.startsWith('&') ||
+      value.startsWith('|') ||
+      value.startsWith('>') ||
+      value.startsWith('!') ||
+      value.startsWith('?') ||
+      value.startsWith('*') ||
+      value.startsWith('%') ||
+      value.startsWith('`') ||
+      value.startsWith('-') ||
+      value.startsWith('.') ||
+      value.startsWith(',') ||
+      value.startsWith('{') ||
+      value.startsWith('}') ||
+      value.startsWith('[') ||
+      value.startsWith(']')) {
+    return '"${value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"';
   }
 
   return value;

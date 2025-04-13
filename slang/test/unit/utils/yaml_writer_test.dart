@@ -44,19 +44,29 @@ nullable: null
       final input = {
         'special': {
           'empty': '',
+          'with_question': '? a',
           'with:colon': 'inner spaces',
-          'with_spaces': '  padded  ',
+          'with_spaces': r'  padded  "\ ',
           'with_at': '@username',
           'with_ampersand': '&reference',
+          'empty_map': '{}',
+          'empty_list': '[]',
+          'json_like': '{"name": "value"}',
+          'array_like': '[1, 2, 3]',
           'normal': 'normal'
         }
       };
-      final expected = '''special: 
+      final expected = r'''special: 
   empty: ""
+  with_question: "? a"
   "with:colon": inner spaces
-  with_spaces: "  padded  "
+  with_spaces: "  padded  \"\\ "
   with_at: "@username"
   with_ampersand: "&reference"
+  empty_map: "{}"
+  empty_list: "[]"
+  json_like: "{\"name\": \"value\"}"
+  array_like: "[1, 2, 3]"
   normal: normal
 ''';
       expect(convertToYaml(input), equals(expected));
@@ -64,12 +74,17 @@ nullable: null
 
     test('should format multiline strings with pipe notation', () {
       final input = {
-        'description': 'This is a\nmultiline string\n with several lines',
+        'without_nl': 'This is a\nmultiline string\n with several lines',
+        'with_nl': 'This is a\nmultiline string\n with newline\n',
       };
-      final expected = '''description: |
+      final expected = '''without_nl: |-
   This is a
   multiline string
    with several lines
+with_nl: |
+  This is a
+  multiline string
+   with newline
 ''';
       expect(convertToYaml(input), equals(expected));
     });

@@ -1,3 +1,7 @@
+## 4.7.1
+
+- fix: handle more edge cases in the YAML writer
+
 ## 4.7.0
 
 - feat: remove `json2yaml` dependency, reimplement a simple opinionated YAML writer
