@@ -40,6 +40,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
     final imports = [
       config.outputFileName,
       ...config.imports,
+      'package:flutter/gestures.dart',
       'package:intl/intl.dart',
       'package:slang/generated.dart',
       if (config.obfuscation.enabled) 'package:slang/secret.dart',
