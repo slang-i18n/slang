@@ -6,11 +6,12 @@
 /// Locales: 3
 /// Strings: 21 (7 per locale)
 ///
-/// Built on 2025-05-20 at 13:10 UTC
+/// Built on 2025-05-20 at 13:17 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:slang/generated.dart';

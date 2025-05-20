@@ -129,6 +129,7 @@ void _generateImports(GenerateConfig config, StringBuffer buffer) {
     ...config.imports,
     'package:intl/intl.dart',
     'package:slang/generated.dart',
+    'package:flutter/gestures.dart',
     if (config.obfuscation.enabled) 'package:slang/secret.dart',
     if (config.translationOverrides) 'package:slang/overrides.dart',
     if (config.flutterIntegration) ...[

@@ -872,9 +872,9 @@ void _addRichTextCall({
   }
   _addTabs(buffer, depth + 1);
   if (depth == 0 || forceSemicolon) {
-    buffer.writeln(', style: style, recognizer: recognizer]);');
+    buffer.writeln('], style: style, recognizer: recognizer);');
   } else {
-    buffer.writeln(', style: style, recognizer: recognizer]),');
+    buffer.writeln('], style: style, recognizer: recognizer),');
   }
 }
 
