@@ -488,7 +488,7 @@ void main() {
       expect(node.spans.length, 1);
       expect(node.spans.first, isA<LiteralSpan>());
       expect((node.spans.first as LiteralSpan).literal, 'No arguments');
-      expect(node.params, <String>{});
+      expect(node.params, <String>{'style', 'recognizer'});
     });
 
     group(StringInterpolation.dart, () {
@@ -501,7 +501,7 @@ void main() {
         expect((node.spans[1] as VariableSpan).variableName, 'yey');
         expect((node.spans[2] as LiteralSpan).literal, '!');
         expect((node.spans[2] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
 
       test('with default text', () {
@@ -517,8 +517,10 @@ void main() {
         expect((node.spans[3] as FunctionSpan).arg, 'hi !>');
         expect((node.spans[4] as LiteralSpan).literal, '!');
         expect((node.spans[4] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey', 'underline'});
+        expect(node.params, {'style', 'recognizer', 'yey', 'underline'});
         expect(node.paramTypeMap, {
+          'style': 'TextStyle?',
+          'recognizer': 'GestureRecognizer?',
           'yey': 'InlineSpan',
           'underline': 'InlineSpanBuilder',
         });
@@ -534,7 +536,7 @@ void main() {
         expect((node.spans[2] as LiteralSpan).literal, ' \${_root.myLink}!');
         expect((node.spans[2] as LiteralSpan).isConstant, false);
         expect(node.links, {'myLink'});
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
 
       test('with links and params', () {
@@ -552,7 +554,7 @@ void main() {
             (node.spans[2] as LiteralSpan).literal, r' ${_root.b(c: c, d: d)}');
         expect((node.spans[2] as LiteralSpan).isConstant, false);
         expect(node.links, {'a', 'b'});
-        expect(node.params, <String>{'yey', 'c', 'd'});
+        expect(node.params, <String>{'style', 'recognizer', 'yey', 'c', 'd'});
       });
     });
 
@@ -566,7 +568,7 @@ void main() {
         expect((node.spans[1] as VariableSpan).variableName, 'yey');
         expect((node.spans[2] as LiteralSpan).literal, '!');
         expect((node.spans[2] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
 
       test('one argument with default text', () {
@@ -579,7 +581,7 @@ void main() {
         expect((node.spans[1] as FunctionSpan).arg, 'my text');
         expect((node.spans[2] as LiteralSpan).literal, '!');
         expect((node.spans[2] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
     });
 
@@ -593,7 +595,7 @@ void main() {
         expect((node.spans[1] as VariableSpan).variableName, 'yey');
         expect((node.spans[2] as LiteralSpan).literal, '!');
         expect((node.spans[2] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
 
       test('two arguments with default text and param case', () {
@@ -611,7 +613,7 @@ void main() {
         expect((node.spans[2] as FunctionSpan).arg, 'Default Text');
         expect((node.spans[3] as LiteralSpan).literal, '!');
         expect((node.spans[3] as LiteralSpan).isConstant, true);
-        expect(node.params, {'my_first_span', 'my_span'});
+        expect(node.params, {'style', 'recognizer', 'my_first_span', 'my_span'});
       });
 
       test('one argument with default text having special chars', () {
@@ -624,7 +626,7 @@ void main() {
         expect((node.spans[1] as FunctionSpan).arg, 'my -Text!>');
         expect((node.spans[2] as LiteralSpan).literal, '!');
         expect((node.spans[2] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
 
       test('one argument with default text having a link', () {
@@ -640,7 +642,7 @@ void main() {
         );
         expect((node.spans[2] as LiteralSpan).literal, '!');
         expect((node.spans[2] as LiteralSpan).isConstant, true);
-        expect(node.params, {'yey'});
+        expect(node.params, {'style', 'recognizer', 'yey'});
       });
     });
   });

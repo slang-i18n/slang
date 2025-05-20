@@ -573,6 +573,8 @@ class RichTextNode extends TextNode {
     );
 
     _params = <String>{};
+    _paramTypeMap['style'] = 'TextStyle?';
+    _paramTypeMap['recognizer'] = 'GestureRecognizer?';
     for (final key in rawParsedResult.params.keys) {
       final parsedParam = parseParamWithArg(
         rawParam: key,
@@ -586,6 +588,8 @@ class RichTextNode extends TextNode {
     if (linkParamMap != null) {
       _params.addAll(linkParamMap.values.expand((e) => e));
     }
+
+    _params.addAll(['style', 'recognizer']);
 
     _links = {};
     _spans = _splitWithMatchAndNonMatch(

@@ -698,7 +698,9 @@ String _toParameterList(Set<String> params, Map<String, String> paramTypeMap) {
   bool first = true;
   for (final param in params) {
     if (!first) buffer.write(', ');
-    buffer.write('required ${paramTypeMap[param] ?? 'Object'} ');
+    final paramType = paramTypeMap[param] ?? 'Object';
+
+    buffer.write('${paramType.endsWith("?") ? " " : " required "}$paramType ');
     buffer.write(param);
     first = false;
   }
@@ -870,9 +872,9 @@ void _addRichTextCall({
   }
   _addTabs(buffer, depth + 1);
   if (depth == 0 || forceSemicolon) {
-    buffer.writeln(']);');
+    buffer.writeln(', style: style, recognizer: recognizer]);');
   } else {
-    buffer.writeln(']),');
+    buffer.writeln(', style: style, recognizer: recognizer]),');
   }
 }
 
