@@ -76,6 +76,10 @@ nullable: null
       final input = {
         'without_nl': 'This is a\nmultiline string\n with several lines',
         'with_nl': 'This is a\nmultiline string\n with newline\n',
+        'indented': {
+          'with_nl': 'This is a\nmultiline string\n with newline\n',
+          'without_nl': 'This is a\nmultiline string\n with several lines'
+        }
       };
       final expected = '''without_nl: |-
   This is a
@@ -85,6 +89,15 @@ with_nl: |
   This is a
   multiline string
    with newline
+indented: 
+  with_nl: |
+    This is a
+    multiline string
+     with newline
+  without_nl: |-
+    This is a
+    multiline string
+     with several lines
 ''';
       expect(convertToYaml(input), equals(expected));
     });
