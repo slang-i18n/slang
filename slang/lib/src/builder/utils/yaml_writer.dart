@@ -16,7 +16,7 @@ String _convertMapToYaml(Map<String, dynamic> map, int indent) {
       buffer.writeln();
       buffer.write(_convertListToYaml(value, indent + 1));
     } else {
-      buffer.writeln(_formatScalarValue(value));
+      buffer.writeln(_formatScalarValue(value, indent + 1));
     }
   });
 
@@ -37,22 +37,24 @@ String _convertListToYaml(List list, int indent) {
       buffer.writeln();
       buffer.write(_convertListToYaml(item, indent + 1));
     } else {
-      buffer.writeln(_formatScalarValue(item));
+      buffer.writeln(_formatScalarValue(item, indent + 1));
     }
   }
 
   return buffer.toString();
 }
 
-String _formatScalarValue(dynamic value) {
+String _formatScalarValue(dynamic value, int indent) {
   if (value is String) {
     if (value.contains('\n')) {
       // Using pipe notation for multiline strings
       final lines = value.split('\n');
       final endsWithNewline = value.endsWith('\n');
       final buffer = StringBuffer(endsWithNewline ? '|\n' : '|-\n');
+      final indentStr = '  ' * indent;
       for (final line in lines) {
-        buffer.write('  $line\n');
+        buffer.write(indentStr);
+        buffer.writeln(line);
       }
       return buffer.toString().trimRight();
     } else {
