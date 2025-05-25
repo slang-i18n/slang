@@ -397,7 +397,7 @@ extension LocaleSettingsExt<E extends BaseAppLocale<E, T>,
     return _setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);
   }
 
-  E _setLocale(locale, {required bool? listenToDeviceLocale}) {
+  E _setLocale(E locale, {required bool? listenToDeviceLocale}) {
     GlobalLocaleState.instance.setLocale(locale);
     updateProviderState(locale);
     if (listenToDeviceLocale != null) {

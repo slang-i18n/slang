@@ -30,7 +30,7 @@ String generateTranslationMap(
   return buffer.toString();
 }
 
-_generateTranslationMapRecursive({
+void _generateTranslationMapRecursive({
   required StringBuffer buffer,
   required Node curr,
   required GenerateConfig config,
