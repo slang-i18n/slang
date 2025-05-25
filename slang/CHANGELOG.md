@@ -1,3 +1,7 @@
+## 4.7.2
+
+- fix: indentation of YAML output when using multiline strings (#299)
+
 ## 4.7.1
 
 - fix: handle more edge cases in the YAML writer
