@@ -143,7 +143,7 @@ class SlangFileCollectionBuilder {
 
               if (showWarning &&
                   !config.namespaces &&
-                  config.fileType != FileType.csv) {
+                  config.fileTypeEnum != FileType.csv) {
                 // Note: Compact CSV files are still allowed to have a file name without locale.
                 _namespaceDeprecationWarning(
                   fileName: PathUtils.getFileName(f.path),

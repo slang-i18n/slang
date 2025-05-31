@@ -53,7 +53,11 @@ class RawConfig {
   static const List<String> defaultImports = <String>[];
   static const bool defaultGenerateEnum = true;
 
-  final FileType fileType;
+  final String fileType;
+  late FileType fileTypeEnum = FileType.values.firstWhere(
+    (e) => e.name == fileType,
+    orElse: () => FileType.json,
+  );
   final I18nLocale baseLocale;
   final FallbackStrategy fallbackStrategy;
   final String? inputDirectory;
@@ -129,10 +133,9 @@ class RawConfig {
     required this.generateEnum,
     required this.rawMap,
   })  : fileType = _determineFileType(inputFilePattern),
-        stringInterpolation =
-            _determineFileType(inputFilePattern) == FileType.arb
-                ? StringInterpolation.braces
-                : stringInterpolation;
+        stringInterpolation = _determineFileType(inputFilePattern) == 'arb'
+            ? StringInterpolation.braces
+            : stringInterpolation;
 
   RawConfig copyWith({
     I18nLocale? baseLocale,
@@ -207,22 +210,17 @@ class RawConfig {
     }
   }
 
-  static FileType _determineFileType(String extension) {
-    if (extension.endsWith('.json')) {
-      return FileType.json;
-    } else if (extension.endsWith('.yaml')) {
-      return FileType.yaml;
-    } else if (extension.endsWith('.csv')) {
-      return FileType.csv;
-    } else if (extension.endsWith('.arb')) {
-      return FileType.arb;
-    } else {
-      throw 'Input file pattern must end with .json, .yaml, .csv, or .arb (Input: $extension)';
+  static String _determineFileType(String extension) {
+    final extAfterLastDot = extension.lastIndexOf('.');
+    if (extAfterLastDot == -1) {
+      throw 'Input file pattern must contain a file extension (Input: $extension)';
     }
+
+    return extension.substring(extAfterLastDot).toLowerCase();
   }
 
   void printConfig() {
-    print(' -> fileType: ${fileType.name}');
+    print(' -> fileType: $fileType');
     print(' -> baseLocale: ${baseLocale.languageTag}');
     print(' -> fallbackStrategy: ${fallbackStrategy.name}');
     print(' -> inputDirectory: ${inputDirectory ?? 'null (everywhere)'}');

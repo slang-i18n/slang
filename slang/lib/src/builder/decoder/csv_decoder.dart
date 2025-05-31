@@ -12,7 +12,9 @@ final _csvConverter = CsvToListConverter(
   ),
 );
 
-class CsvDecoder extends BaseDecoder {
+class CsvDecoder implements BaseDecoder {
+  const CsvDecoder();
+
   // If this csv is a compact csv, then the root keys represents the locale names
   @override
   Map<String, dynamic> decode(String raw) {

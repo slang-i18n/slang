@@ -27,7 +27,7 @@ Future<void> runEdit({
 }) async {
   final config = fileCollection.config;
 
-  if (!_supportedFiles.contains(config.fileType)) {
+  if (!_supportedFiles.contains(config.fileTypeEnum)) {
     throw '${config.fileType} is not supported. Supported: $_supportedFiles';
   }
 
@@ -162,7 +162,7 @@ Future<void> _moveEntry({
       continue;
     }
 
-    final origMap = await origFile.readAndParse(config.fileType);
+    final origMap = await origFile.readAndParse(config.fileTypeEnum);
 
     final originValue = MapUtils.getValueAtPath(
       map: origMap,
@@ -188,7 +188,7 @@ Future<void> _moveEntry({
       );
 
       FileUtils.writeFileOfType(
-        fileType: config.fileType,
+        fileType: config.fileTypeEnum,
         path: origFile.path,
         content: origMap,
       );
@@ -214,12 +214,12 @@ Future<void> _moveEntry({
         );
 
         FileUtils.writeFileOfType(
-          fileType: config.fileType,
+          fileType: config.fileTypeEnum,
           path: origFile.path,
           content: origMap,
         );
 
-        final destMap = await destFile.readAndParse(config.fileType);
+        final destMap = await destFile.readAndParse(config.fileTypeEnum);
 
         print('[${destFile.path}] Add "$destinationPath"');
         MapUtils.addItemToMap(
@@ -231,7 +231,7 @@ Future<void> _moveEntry({
         );
 
         FileUtils.writeFileOfType(
-          fileType: config.fileType,
+          fileType: config.fileTypeEnum,
           path: destFile.path,
           content: destMap,
         );
@@ -268,7 +268,7 @@ Future<void> _copyEntry({
       continue;
     }
 
-    final origMap = await origFile.readAndParse(config.fileType);
+    final origMap = await origFile.readAndParse(config.fileTypeEnum);
 
     final originValue = MapUtils.getValueAtPath(
       map: origMap,
@@ -291,7 +291,7 @@ Future<void> _copyEntry({
         continue;
       }
 
-      final destMap = await destFile.readAndParse(config.fileType);
+      final destMap = await destFile.readAndParse(config.fileTypeEnum);
 
       print('[${destFile.path}] Add "$destinationPath"');
       MapUtils.addItemToMap(
@@ -303,7 +303,7 @@ Future<void> _copyEntry({
       );
 
       FileUtils.writeFileOfType(
-        fileType: config.fileType,
+        fileType: config.fileTypeEnum,
         path: destFile.path,
         content: destMap,
       );
@@ -334,7 +334,7 @@ Future<void> _deleteEntry({
 
     print('Deleting "$path" in ${file.path}...');
 
-    final map = await file.readAndParse(config.fileType);
+    final map = await file.readAndParse(config.fileTypeEnum);
 
     MapUtils.deleteEntry(
       path: config.namespaces ? pathList.skip(1).join('.') : path,
@@ -342,7 +342,7 @@ Future<void> _deleteEntry({
     );
 
     FileUtils.writeFileOfType(
-      fileType: config.fileType,
+      fileType: config.fileTypeEnum,
       path: file.path,
       content: map,
     );
@@ -372,7 +372,7 @@ Future<void> _outdatedEntry({
     print('Adding flag to <${file.locale.languageTag}> in ${file.path}...');
 
     final Map<String, dynamic> parsedContent =
-        await file.readAndParse(config.fileType);
+        await file.readAndParse(config.fileTypeEnum);
 
     MapUtils.updateEntry(
       path: config.namespaces ? pathList.skip(1).join('.') : path,
@@ -386,7 +386,7 @@ Future<void> _outdatedEntry({
     );
 
     FileUtils.writeFileOfType(
-      fileType: config.fileType,
+      fileType: config.fileTypeEnum,
       path: file.path,
       content: parsedContent,
     );
@@ -426,7 +426,7 @@ Future<void> _addEntry({
         'Adding translation to <${file.locale.languageTag}> in ${file.path}...');
 
     final Map<String, dynamic> oldMap =
-        await file.readAndParse(config.fileType);
+        await file.readAndParse(config.fileTypeEnum);
 
     final Map<String, dynamic> newMap = {};
     MapUtils.addItemToMap(
@@ -443,7 +443,7 @@ Future<void> _addEntry({
     );
 
     FileUtils.writeFileOfType(
-      fileType: config.fileType,
+      fileType: config.fileTypeEnum,
       path: file.path,
       content: appliedTranslations,
     );

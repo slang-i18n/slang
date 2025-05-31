@@ -52,7 +52,7 @@ void runAnalyzeTranslations({
   _writeMap(
     outDir: outDir,
     fileNamePrefix: '_missing_translations',
-    fileType: rawConfig.fileType,
+    fileType: rawConfig.fileTypeEnum,
     exitIfChanged: exitIfChanged,
     split: splitMissing,
     info: (locale, localeMap) {
@@ -79,7 +79,7 @@ void runAnalyzeTranslations({
   _writeMap(
     outDir: outDir,
     fileNamePrefix: '_unused_translations',
-    fileType: rawConfig.fileType,
+    fileType: rawConfig.fileTypeEnum,
     exitIfChanged: exitIfChanged,
     split: splitUnused,
     info: (locale, localeMap) {

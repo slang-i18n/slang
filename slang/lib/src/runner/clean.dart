@@ -95,7 +95,7 @@ Future<void> _deleteEntriesForLocale({
         continue;
       }
 
-      final map = await file.readAndParse(config.fileType);
+      final map = await file.readAndParse(config.fileTypeEnum);
       outputMap[targetNamespace] = map;
       fileMap[targetNamespace] = file;
       intermediateMap = map;
@@ -118,7 +118,7 @@ Future<void> _deleteEntriesForLocale({
       MapUtils.clearEmptyMaps(map);
 
       FileUtils.writeFileOfType(
-        fileType: config.fileType,
+        fileType: config.fileTypeEnum,
         path: file.path,
         content: map,
       );
@@ -134,7 +134,7 @@ Future<void> _deleteEntriesForLocale({
     MapUtils.clearEmptyMaps(map);
 
     FileUtils.writeFileOfType(
-      fileType: config.fileType,
+      fileType: config.fileTypeEnum,
       path: file.path,
       content: map,
     );

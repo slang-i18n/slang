@@ -2,20 +2,28 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/decoder/base_decoder.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/model/i18n_locale.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/model/slang_file_collection.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/utils/file_utils.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/utils/map_utils.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/builder/utils/path_utils.dart';
+
 // ignore: implementation_imports
 import 'package:slang/src/runner/apply.dart';
 import 'package:slang_gpt/model/gpt_config.dart';
@@ -101,7 +109,7 @@ Future<void> runGpt(List<String> arguments) async {
     final Map<String, dynamic> originalTranslations;
     try {
       originalTranslations =
-          BaseDecoder.decodeWithFileType(fileCollection.config.fileType, raw);
+          DefaultDecoder.instance.decode(raw, fileCollection.config.fileType);
     } on FormatException catch (e) {
       throw 'File: ${file.path}\n$e';
     }
@@ -218,8 +226,8 @@ Future<TranslateMetrics> _translate({
           destFile.locale == targetLocale) {
         final raw = await destFile.read();
         try {
-          existingTranslations = BaseDecoder.decodeWithFileType(
-              fileCollection.config.fileType, raw);
+          existingTranslations = DefaultDecoder.instance
+              .decode(raw, fileCollection.config.fileType);
           targetPath = destFile.path;
           print(' -> With partial translations from ${destFile.path}');
         } on FormatException catch (e) {
@@ -324,7 +332,7 @@ Future<TranslateMetrics> _translate({
   );
 
   FileUtils.writeFileOfType(
-    fileType: fileCollection.config.fileType,
+    fileType: fileCollection.config.fileTypeEnum,
     path: targetPath,
     content: result,
   );

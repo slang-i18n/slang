@@ -58,7 +58,7 @@ Map<I18nLocale, Map<String, dynamic>> readAnalysis({
 
     final Map<String, dynamic> parsedContent;
     try {
-      parsedContent = BaseDecoder.decodeWithFileType(fileType, content);
+      parsedContent = DefaultDecoder.instance.decode(content, fileType.name);
     } on FormatException catch (e) {
       print('');
       throw 'File: ${file.path}\n$e';

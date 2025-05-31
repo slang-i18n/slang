@@ -15,6 +15,7 @@ class TranslationMapBuilder {
   static Future<TranslationMap> build({
     required SlangFileCollection fileCollection,
     required bool verbose,
+    DecoderHandler decoder = const DefaultDecoder(),
   }) async {
     final rawConfig = fileCollection.config;
     final translationMap = TranslationMap();
@@ -31,7 +32,7 @@ class TranslationMapBuilder {
       final Map<String, dynamic> translations;
       try {
         translations =
-            BaseDecoder.decodeWithFileType(rawConfig.fileType, content);
+            decoder.decode(content, rawConfig.fileType);
       } on FormatException catch (e) {
         if (verbose) {
           print('');
@@ -39,7 +40,7 @@ class TranslationMapBuilder {
         throw 'File: ${file.path}\n$e';
       }
 
-      if (rawConfig.fileType == FileType.csv &&
+      if (rawConfig.fileTypeEnum == FileType.csv &&
           CsvDecoder.isCompactCSV(content)) {
         // compact csv
 

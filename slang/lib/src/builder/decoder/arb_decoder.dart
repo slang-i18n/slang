@@ -8,7 +8,9 @@ import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_extensions.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 
-class ArbDecoder extends BaseDecoder {
+class ArbDecoder implements BaseDecoder {
+  const ArbDecoder();
+
   @override
   Map<String, dynamic> decode(String raw) {
     final sourceMap = json.decode(raw) as Map<String, dynamic>;

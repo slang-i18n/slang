@@ -81,7 +81,7 @@ class PlainTranslationFile {
   Future<Map<String, dynamic>> readAndParse(FileType fileType) async {
     try {
       final content = await read();
-      return BaseDecoder.decodeWithFileType(fileType, content);
+      return DefaultDecoder.instance.decode(content, fileType.name);
     } on FormatException catch (e) {
       print('');
       throw 'File: $path\n$e';

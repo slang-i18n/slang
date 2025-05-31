@@ -130,7 +130,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
     return await buildWithOverridesFromMap(
       locale: locale,
       isFlatMap: false,
-      map: BaseDecoder.decodeWithFileType(fileType, content),
+      map: DefaultDecoder.instance.decode(content, fileType.name),
       cardinalResolver: cardinalResolver,
       ordinalResolver: ordinalResolver,
     );
@@ -147,7 +147,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
     return buildWithOverridesFromMapSync(
       locale: locale,
       isFlatMap: false,
-      map: BaseDecoder.decodeWithFileType(fileType, content),
+      map: DefaultDecoder.instance.decode(content, fileType.name),
       cardinalResolver: cardinalResolver,
       ordinalResolver: ordinalResolver,
     );
