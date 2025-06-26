@@ -1,6 +1,6 @@
 # slang_openai
 
-Use Use any OpenAI compatible API to automatically translate your app at compile time.
+Use any OpenAI compatible API to automatically translate your app at compile time.
 
 This is library is intended to be used with [slang](https://pub.dev/packages/slang).
 
