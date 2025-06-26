@@ -1,0 +1,9 @@
+# https://dart.dev/guides/libraries/private-files
+# Created by `dart pub`
+.dart_tool/
+run.sh
+
+i18n/*
+!i18n/en.i18n.json
+
+.env

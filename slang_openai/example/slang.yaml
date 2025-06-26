@@ -1,0 +1,19 @@
+input_directory: i18n
+openai:
+  # OpenAI API
+  model: gpt-4.1-mini
+
+  # OpenRouter API
+  # url: https://openrouter.ai/api/v1/chat/completions
+  # model: google/gemini-2.5-flash
+
+  # Ollama API
+  # url: http://localhost:11434/v1/chat/completions
+  # model: gemma3:4b
+
+  # temperature: 0.7
+  description: |
+    "River Adventure" is a game where you need to cross a river by jumping on stones.
+    The game is over when you either fall into the water or reach the other side.
+  excludes:
+    - 'fr'
