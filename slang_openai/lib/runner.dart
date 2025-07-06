@@ -24,6 +24,7 @@ import 'package:slang_openai/model/openai_prompt.dart';
 import 'package:slang_openai/model/openai_response.dart';
 import 'package:slang_openai/model/provider.dart';
 import 'package:slang_openai/prompt/prompt.dart';
+import 'package:slang_openai/util/env.dart';
 import 'package:slang_openai/util/locales.dart';
 import 'package:slang_openai/util/logger.dart';
 import 'package:slang_openai/util/maps.dart';
@@ -33,6 +34,9 @@ const _errorKey = '!error';
 /// Runs the Openai translation script.
 Future<void> runOpenai(List<String> arguments) async {
   print('Calling OpenAI API for slang...');
+
+  // Load environment variables
+  Env.load();
 
   // Parse command line arguments
   Provider? provider;
@@ -88,6 +92,8 @@ Future<void> runOpenai(List<String> arguments) async {
         print('Using OpenAI preset.');
       }
 
+      // Try to load API key from environment variables if not provided
+      apiKey ??= Env.openAiApiKey;
     case Provider.openrouter:
       // Set fallback URL to OpenRouter URL
       fallbackUrl = kOpenrouterUrl;
@@ -99,6 +105,9 @@ Future<void> runOpenai(List<String> arguments) async {
       } else {
         print('Using OpenRouter preset.');
       }
+
+      // Try to load API key from environment variables if not provided
+      apiKey ??= Env.openrouterApiKey;
     case Provider.ollama:
       // Set fallback URL to Ollama URL
       fallbackUrl = kOllamaUrl;

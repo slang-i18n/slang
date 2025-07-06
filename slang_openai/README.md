@@ -64,7 +64,7 @@ dart run slang_openai --target=fr --api-key=<api-key>
 |------------------|--------------------------|----------|------------------------| ---------------------------|
 | `--provider=`    | Provider preset          | NO       |                        | openai, openrouter, ollama |
 | `--target=`      | Target language          | NO       | (all existing locales) |                            |
-| `--api-key=`     | API key                  | NO*      |                        |                            |
+| `--api-key=`     | API key                  | NO*      | (read from .env)       |                            |
 | `-f` / `--full`  | Skip partial translation | NO       | (partial translation)  |                            |
 | `-d` / `--debug` | Write chat to file       | NO       | (no chat output)       |                            |
 | `--outdir=`      | Output directory         | NO*      | (using config)         |                            |
