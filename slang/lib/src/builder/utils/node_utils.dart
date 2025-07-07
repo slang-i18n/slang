@@ -9,7 +9,10 @@ class NodeUtils {
   static NodePathInfo parseModifiers(String originalKey) {
     final match = RegexUtils.modifierRegex.firstMatch(originalKey);
     if (match == null) {
-      return NodePathInfo(path: originalKey, modifiers: {});
+      return NodePathInfo(
+        path: originalKey,
+        modifiers: {},
+      );
     }
 
     final modifiers = match.group(2)!.split(',');
