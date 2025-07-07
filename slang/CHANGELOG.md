@@ -1,3 +1,8 @@
+## 4.7.3
+
+- fix: add `override` to reserved keywords so it will be sanitized as well (#303)
+- fix: do not generate empty classes (#305)
+
 ## 4.7.2
 
 - fix: indentation of YAML output when using multiline strings (#299)
