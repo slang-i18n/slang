@@ -23,6 +23,22 @@ void main() {
     expect((map['test'] as StringTextNode).content, 'a');
   });
 
+  group('ObjectNode', () {
+    test('Should not generate empty ObjectNodes', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'empty': <String, dynamic>{},
+          'nestedEmpty': {
+            'empty': <String, dynamic>{},
+          },
+        },
+      );
+      expect(result.root.entries, isEmpty);
+    });
+  });
+
   group('Recasing', () {
     test('keyCase=snake and keyMapCase=camel', () {
       final result = TranslationModelBuilder.build(

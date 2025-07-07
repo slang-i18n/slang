@@ -375,7 +375,11 @@ Map<String, Node> _parseMapNode({
           modifiers: modifiers,
           entries: children.values.toList(),
         );
-        _setParent(node, children.values);
+
+        _setParentForChildren(
+          parent: node,
+          children: children.values,
+        );
         resultNodeTree[key] = node;
       } else {
         _DetectionResult? detectedType =
@@ -419,6 +423,13 @@ Map<String, Node> _parseMapNode({
           children = tempChildren;
         }
 
+        if (children.isEmpty) {
+          // We do not want to generate empty nodes:
+          // (1) Not really useful
+          // (2) Can cause issues in combination with fallbacks (https://github.com/slang-i18n/slang/issues/305)
+          return;
+        }
+
         detectedType ??=
             _determineNodeType(config, currPath, modifiers, children);
 
@@ -428,16 +439,6 @@ Map<String, Node> _parseMapNode({
         if (detectedType.nodeType == _DetectionType.context ||
             detectedType.nodeType == _DetectionType.pluralCardinal ||
             detectedType.nodeType == _DetectionType.pluralOrdinal) {
-          if (children.isEmpty) {
-            switch (config.fallbackStrategy) {
-              case FallbackStrategy.none:
-                throw '"$currPath" in <${locale.languageTag}> is empty but it is marked for pluralization / context. Define "fallback_strategy: base_locale" to ignore this node.';
-              case FallbackStrategy.baseLocale:
-              case FallbackStrategy.baseLocaleEmptyString:
-                return;
-            }
-          }
-
           // split children by comma for plurals and contexts
           Map<String, TextNode> digestedMap = <String, StringTextNode>{};
           final entries = children.entries.toList();
@@ -562,7 +563,10 @@ Map<String, Node> _parseMapNode({
           );
         }
 
-        _setParent(finalNode, children.values);
+        _setParentForChildren(
+          parent: finalNode,
+          children: children.values,
+        );
         resultNodeTree[key] = finalNode;
         if (finalNode is PluralNode || finalNode is ContextNode) {
           leavesMap[currPath] = finalNode as LeafNode;
@@ -590,7 +594,10 @@ String? _parseCommentNode(dynamic node) {
   }
 }
 
-void _setParent(Node parent, Iterable<Node> children) {
+void _setParentForChildren({
+  required Node parent,
+  required Iterable<Node> children,
+}) {
   for (final child in children) {
     child.setParent(parent);
   }
