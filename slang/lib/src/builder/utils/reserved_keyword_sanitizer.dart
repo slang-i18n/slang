@@ -54,6 +54,7 @@ const _reservedKeyWords = {
   'is',
   'new',
   'null',
+  'override',
   'rethrow',
   'return',
   'super',
