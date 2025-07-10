@@ -1597,7 +1597,17 @@ If you have many locales, it might be frustrating to keep `CFBundleLocalizations
 This command will care about all configuration files for you.
 
 ```sh
-dart run slang configure
+dart run slang configure [--source-dirs=dir1,dir2]
+```
+
+| Argument              | Usage                                                      |
+|-----------------------|------------------------------------------------------------|
+| `--source-dirs=<dirs>`| Comma-separated list of source directories to search in    |
+
+You can also specify additional arguments, for example to set the source directories:
+
+```sh
+dart run slang configure --source-dirs=dir1,dir2
 ```
 
 ### ➤ Analyze Translations

@@ -150,7 +150,10 @@ void main(List<String> arguments) async {
       await watchTranslations(fileCollection.config);
       break;
     case RunnerMode.configure:
-      runConfigure(fileCollection);
+      runConfigure(
+        fileCollection,
+        arguments: filteredArguments,
+      );
       break;
     case RunnerMode.generate:
     case RunnerMode.stats:
