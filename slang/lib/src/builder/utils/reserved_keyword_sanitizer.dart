@@ -42,6 +42,7 @@ const _reservedKeyWords = {
   'continue',
   'default',
   'do',
+  'dynamic',
   'else',
   'enum',
   'extends',
