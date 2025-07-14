@@ -69,7 +69,9 @@ const _reservedKeyWords = {
   'while',
 };
 
+/// Some keywords are generally allowed except in the root class.
 const _reservedRootKeyWords = {
   ..._reservedKeyWords,
+  'dynamic',
   'of',
 };
