@@ -21,11 +21,19 @@ void runAnalyzeTranslations({
   required List<String> arguments,
 }) {
   String? outDir;
+  List<String>? sourceDirs;
+
   for (final a in arguments) {
     if (a.startsWith('--outdir=')) {
       outDir = a.substring(9);
     }
+    if (a.startsWith('--source-dirs=')) {
+      sourceDirs = a.substring(14).split(',').map((s) => s.trim()).toList();
+    }
   }
+
+  sourceDirs ??= ['lib'];
+
   if (outDir == null) {
     outDir = rawConfig.inputDirectory;
     if (outDir == null) {
@@ -74,6 +82,7 @@ void runAnalyzeTranslations({
     rawConfig: rawConfig,
     translations: translationModelList,
     full: full,
+    sourceDirs: sourceDirs,
   );
 
   _writeMap(
@@ -83,14 +92,15 @@ void runAnalyzeTranslations({
     exitIfChanged: exitIfChanged,
     split: splitUnused,
     info: (locale, localeMap) {
+      final sourceDirsList = sourceDirs!.map((dir) => '\'$dir/\'').join(', ');
       return [
         if (locale == null) ...[
           'Here are translations that exist in secondary locales but not in <${rawConfig.baseLocale.languageTag}>.',
           if (full)
-            '[--full enabled] Furthermore, translations not used in \'lib/\' according to the \'${rawConfig.translateVar}.<path>\' pattern are written into <${rawConfig.baseLocale.languageTag}>.',
+            '[--full enabled] Furthermore, translations not used in $sourceDirsList according to the \'${rawConfig.translateVar}.<path>\' pattern are written into <${rawConfig.baseLocale.languageTag}>.',
         ] else ...[
           if (locale == rawConfig.baseLocale)
-            '[--full enabled] Here are translations not used in \'lib/\' according to the \'${rawConfig.translateVar}.<path>\' pattern'
+            '[--full enabled] Here are translations not used in $sourceDirsList according to the \'${rawConfig.translateVar}.<path>\' pattern'
           else
             'Here are translations that exist in <${locale.languageTag}> but not in <${rawConfig.baseLocale.languageTag}>.',
         ],
@@ -134,6 +144,7 @@ Map<I18nLocale, Map<String, dynamic>> getUnusedTranslations({
   required RawConfig rawConfig,
   required List<I18nData> translations,
   required bool full,
+  List<String>? sourceDirs,
 }) {
   final baseTranslations = _findBaseTranslations(rawConfig, translations);
 
@@ -146,6 +157,7 @@ Map<I18nLocale, Map<String, dynamic>> getUnusedTranslations({
         result[localeData.locale] = _getUnusedTranslationsInSourceCode(
           translateVar: rawConfig.translateVar,
           baseModel: localeData,
+          sourceDirs: sourceDirs ?? ['lib'],
         );
       }
       continue;
@@ -328,14 +340,23 @@ bool _checkEquality(Node a, Node b) {
 Map<String, dynamic> _getUnusedTranslationsInSourceCode({
   required String translateVar,
   required I18nData baseModel,
+  required List<String> sourceDirs,
 }) {
   final resultMap = <String, dynamic>{};
 
-  final files = Directory('lib')
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.dart'))
-      .toList();
+  final files = <File>[];
+  for (final sourceDir in sourceDirs) {
+    final dir = Directory(sourceDir);
+    if (dir.existsSync()) {
+      files.addAll(
+        dir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))
+            .toList(),
+      );
+    }
+  }
 
   _getUnusedTranslationsInSourceCodeRecursive(
     sourceCode: loadSourceCode(files),
