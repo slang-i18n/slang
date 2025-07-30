@@ -28,6 +28,7 @@ class GenerateConfig {
   final List<Interface> interface; // may include more than in build config
   final ObfuscationConfig obfuscation;
   final List<String> imports;
+  final List<String> documentationComments;
 
   GenerateConfig({
     required this.buildConfig,
@@ -50,5 +51,6 @@ class GenerateConfig {
     required this.interface,
     required this.obfuscation,
     required this.imports,
+    required this.documentationComments,
   });
 }

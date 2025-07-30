@@ -14,7 +14,8 @@ class Generator {
     return BuildResult(
       main: generateHeader(config, translations),
       translations: {
-        for (final t in translations) t.locale: generateTranslations(config, t),
+        for (final t in translations)
+          t.locale: generateTranslations(config, t, translations),
       },
     );
   }

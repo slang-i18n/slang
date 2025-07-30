@@ -132,6 +132,8 @@ class RawConfigBuilder {
           RawConfig.defaultFormatConfig,
       imports: map['imports']?.cast<String>() ?? RawConfig.defaultImports,
       generateEnum: generateEnum,
+      documentationComments: map['documentation_comments']?.cast<String>() ??
+          RawConfig.defaultDocumentationComments,
       rawMap: map,
     );
   }

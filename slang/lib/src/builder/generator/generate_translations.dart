@@ -22,7 +22,8 @@ class ClassTask {
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-String generateTranslations(GenerateConfig config, I18nData localeData) {
+String generateTranslations(GenerateConfig config, I18nData localeData,
+    List<I18nData>? allTranslations) {
   final queue = Queue<ClassTask>();
   final buffer = StringBuffer();
 
@@ -73,6 +74,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
       task.className,
       task.node,
       root,
+      allTranslations ?? <I18nData>[],
     );
 
     root = false;
@@ -96,6 +98,7 @@ void _generateClass(
   String className,
   ObjectNode node,
   bool root,
+  List<I18nData> allTranslations,
 ) {
   buffer.writeln();
 
@@ -315,19 +318,47 @@ void _generateClass(
 
   bool prevHasComment = false;
   node.entries.forEach((key, value) {
-    // comment handling
+    bool hasComment = false;
+    // comment handling (when documentation comments are not enabled)
     if (value.comment != null) {
       // add comment add on the line above
       buffer.writeln();
       buffer.writeln('\t/// ${value.comment}');
-      prevHasComment = true;
-    } else {
-      if (prevHasComment) {
-        // add a new line to separate from previous entry with comment
-        buffer.writeln();
-      }
-      prevHasComment = false;
+      hasComment = true;
     }
+
+    // Generate documentation comments if enabled
+    if (config.documentationComments.isNotEmpty && localeData.base) {
+      // Show translations for all specified locales (only for StringTextNode)
+      if (value is StringTextNode) {
+        if (!(value.content.startsWith(r'${') &&
+            value.content.indexOf('}') == value.content.length - 1 &&
+            value.links.length == 1)) {
+          if (hasComment) {
+            buffer.writeln('\t///');
+          } else {
+            buffer.writeln();
+          }
+          for (final localeCode in config.documentationComments) {
+            final targetLocale = allTranslations.firstWhere(
+              (locale) => locale.locale.languageTag == localeCode,
+            );
+            final translation =
+                _getTranslationForPath(targetLocale.root, value.path);
+            if (translation != null) {
+              buffer.writeln('\t/// In $localeCode: \'$translation\'');
+            }
+          }
+          hasComment = true;
+        }
+      }
+    }
+
+    if (!hasComment && prevHasComment) {
+      // add a new line to separate from previous entry with comment
+      buffer.writeln();
+    }
+    prevHasComment = hasComment;
 
     buffer.write('\t');
     if (!localeData.base ||
@@ -978,4 +1009,24 @@ void _addTabs(StringBuffer buffer, int count) {
   for (int i = 0; i < count; i++) {
     buffer.write('\t');
   }
+}
+
+/// Gets the translation string for a given path
+String? _getTranslationForPath(ObjectNode root, String path) {
+  final parts = path.split('.');
+  Node? current = root;
+
+  for (final part in parts) {
+    if (current is ObjectNode) {
+      current = current.entries[part];
+    } else {
+      return null;
+    }
+  }
+
+  if (current is StringTextNode) {
+    return current.content;
+  }
+
+  return null;
 }

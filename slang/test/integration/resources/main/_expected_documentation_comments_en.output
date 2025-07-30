@@ -1,0 +1,91 @@
+///
+/// Generated file. Do not edit.
+///
+// coverage:ignore-file
+// ignore_for_file: type=lint, unused_import
+
+part of 'strings.g.dart';
+
+// Path: <root>
+typedef TranslationsEn = Translations; // ignore: unused_element
+class Translations implements BaseTranslations<AppLocale, Translations> {
+	/// Returns the current translations of the given [context].
+	///
+	/// Usage:
+	/// final t = Translations.of(context);
+	static Translations of(BuildContext context) => InheritedLocaleData.of<AppLocale, Translations>(context).translations;
+
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	Translations({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<AppLocale, Translations>? meta})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = meta ?? TranslationMetadata(
+		    locale: AppLocale.en,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <en>.
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
+
+	/// Access flat map
+	dynamic operator[](String key) => $meta.getTranslation(key);
+
+	late final Translations _root = this; // ignore: unused_field
+
+	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
+
+	// Translations
+
+	/// A simple greeting
+	///
+	/// In en: 'Hello World'
+	/// In de: 'Hallo Welt'
+	String get hello => 'Hello World';
+
+	String get helloAlias => _root.hello;
+	late final TranslationsGreetingEn greeting = TranslationsGreetingEn._(_root);
+	String counter({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'You have {n} item',
+		other: 'You have {n} items',
+	);
+}
+
+// Path: greeting
+class TranslationsGreetingEn {
+	TranslationsGreetingEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// In en: 'Good Morning'
+	/// In de: 'Guten Morgen'
+	String get morning => 'Good Morning';
+
+	/// In en: 'Good Evening'
+	/// In de: 'Guten Abend'
+	String get evening => 'Good Evening';
+}
+
+/// Flat map(s) containing all translations.
+/// Only for edge cases! For simple maps, use the map function of this library.
+extension on Translations {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'hello': return 'Hello World';
+			case 'helloAlias': return _root.hello;
+			case 'greeting.morning': return 'Good Morning';
+			case 'greeting.evening': return 'Good Evening';
+			case 'counter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'You have {n} item',
+				other: 'You have {n} items',
+			);
+			default: return null;
+		}
+	}
+}
+
