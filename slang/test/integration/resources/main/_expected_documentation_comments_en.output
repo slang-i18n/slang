@@ -43,6 +43,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	/// A simple greeting
 	///
 	/// In en: 'Hello World'
+	///
 	/// In de: 'Hallo Welt'
 	String get hello => 'Hello World';
 
@@ -63,10 +64,12 @@ class TranslationsGreetingEn {
 	// Translations
 
 	/// In en: 'Good Morning'
+	///
 	/// In de: 'Guten Morgen'
 	String get morning => 'Good Morning';
 
 	/// In en: 'Good Evening'
+	///
 	/// In de: 'Guten Abend'
 	String get evening => 'Good Evening';
 }

@@ -339,6 +339,7 @@ void _generateClass(
           } else {
             buffer.writeln();
           }
+          bool hasDocumentationComments = false;
           for (final localeCode in config.documentationComments) {
             final targetLocale = allTranslations.firstWhere(
               (locale) => locale.locale.languageTag == localeCode,
@@ -346,7 +347,11 @@ void _generateClass(
             final translation =
                 _getTranslationForPath(targetLocale.root, value.path);
             if (translation != null) {
+              if (hasDocumentationComments) {
+                buffer.writeln('\t///');
+              }
               buffer.writeln('\t/// In $localeCode: \'$translation\'');
+              hasDocumentationComments = true;
             }
           }
           hasComment = true;
