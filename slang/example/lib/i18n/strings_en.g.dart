@@ -54,11 +54,17 @@ class TranslationsMainScreenEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'An English Title'
 	String get title => 'An English Title';
+
+	/// en: '(one) {You pressed $n time.} (other) {You pressed $n times.}'
 	String counter({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		one: 'You pressed ${n} time.',
 		other: 'You pressed ${n} times.',
 	);
+
+	/// en: 'Tap me'
 	String get tapMe => 'Tap me';
 }
 
