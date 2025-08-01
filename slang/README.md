@@ -1462,7 +1462,7 @@ String get button => 'Submit';
 
 Besides the custom comments you provide, Slang will also generate comments (documentation) for you.
 
-By default, it will only generate comments for the base locale.
+By default, the translation of the base locale is added.
 
 ```dart
 /// en: 'An English Title'
@@ -1475,7 +1475,7 @@ You can configure this feature under `autodoc`.
 # Config
 autodoc:
   enabled: true # enable this feature
-  locales: # only generate comments for these locales
+  locales: # only generate these locales
     - en 
     - de
 ```
