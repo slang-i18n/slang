@@ -1,7 +1,10 @@
 ## 4.8.0
 
 - feat: add `autodoc` feature enabled by default that generates the base translation as documentation for the translation keys (#218)
-- deps: loosen `build` constraint in `slang_build_runner`
+- feat: `slang analyze` supports `--source-dirs` (#309) @khoadng
+- feat: `slang configure` supports `--source-dirs` (#308) @khoadng
+- fix: correctly preserve identation of YAML output (#299) @adil192
+- deps: loosen `build` constraint in `slang_build_runner` (#314)
 
 ## 4.7.3
 
