@@ -1,3 +1,8 @@
+## 4.8.0
+
+- feat: add `autodoc` feature enabled by default that generates the base translation as documentation for the translation keys (#218)
+- deps: loosen `build` constraint in `slang_build_runner`
+
 ## 4.7.3
 
 - fix: add `override` to reserved keywords so it will be sanitized as well (#303)
