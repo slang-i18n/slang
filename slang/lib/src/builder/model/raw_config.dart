@@ -51,8 +51,7 @@ class RawConfig {
     enabled: FormatConfig.defaultEnabled,
     width: FormatConfig.defaultWidth,
   );
-  static const AutodocConfig defaultAutodocConfig =
-      AutodocConfig(
+  static const AutodocConfig defaultAutodocConfig = AutodocConfig(
     enabled: AutodocConfig.defaultEnabled,
     locales: AutodocConfig.defaultLocales,
   );
@@ -287,7 +286,8 @@ class RawConfig {
     print(' -> obfuscation: ${obfuscation.enabled ? 'enabled' : 'disabled'}');
     print(
         ' -> format: ${format.enabled ? 'enabled (width=${format.width})' : 'disabled'}');
-    print(' -> autodoc: ${autodoc.enabled ? 'enabled (${autodoc.locales.join(', ')})' : 'disabled'}');
+    print(
+        ' -> autodoc: ${autodoc.enabled ? 'enabled (${autodoc.locales.join(', ')})' : 'disabled'}');
     print(' -> imports: $imports');
     print(' -> generateEnum: $generateEnum');
   }
