@@ -23,7 +23,7 @@ class ClassTask {
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
 String generateTranslations(GenerateConfig config, I18nData localeData,
-    List<I18nData>? allTranslations) {
+    [List<I18nData> allTranslations = const []]) {
   final queue = Queue<ClassTask>();
   final buffer = StringBuffer();
 
@@ -74,7 +74,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData,
       task.className,
       task.node,
       root,
-      allTranslations ?? <I18nData>[],
+      allTranslations,
     );
 
     root = false;
