@@ -339,9 +339,9 @@ void _generateClass(
 
         for (int i = 0; i < config.autodoc.locales.length; i++) {
           final locale = config.autodoc.locales[i];
-          final LeafNode? node;
+          final String? autodoc;
           if (locale == AutodocConfig.base) {
-            node = value as LeafNode;
+            autodoc = localeData.getAutodoc('', value as LeafNode);
           } else {
             final localeData = allTranslations.firstWhereOrNull(
               (l) => l.locale.languageTag == locale,
@@ -351,28 +351,16 @@ void _generateClass(
               throw 'Locale "$locale" not found in translations.';
             }
 
-            node = localeData.getNodeByPath(value.path) as LeafNode?;
+            autodoc = localeData.getAutodoc(value.path, null);
           }
 
-          if (node != null) {
-            final content = switch (node) {
-              TextNode textNode => "'${textNode.raw}'",
-              PluralNode pluralNode => pluralNode.quantities.entries
-                  .map((e) => "(${e.key.name}) '${e.value.raw}'")
-                  .join('; '),
-              ContextNode contextNode => contextNode.entries.entries
-                  .map((e) => "(${e.key}) '${e.value.raw}'")
-                  .join('; '),
-              _ =>
-                throw 'Unsupported node type for documentation: ${node.runtimeType}',
-            };
-
+          if (autodoc != null) {
             if (i != 0) {
               buffer.writeln('\t///');
             }
 
             buffer.writeln(
-              '\t/// ${locale == AutodocConfig.base ? localeData.locale.languageTag : locale}: $content',
+              "\t/// ${locale == AutodocConfig.base ? localeData.locale.languageTag : locale}: '$autodoc'",
             );
             prevHasComment = true;
           }

@@ -40,7 +40,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 	// Translations
 
-	/// en: (male) 'Hello Mr'; (female) 'Hello Mrs'
+	/// en: '(male) {Hello Mr} (female) {Hello Mrs}'
 	String greet({required Gender context}) {
 		switch (context) {
 			case Gender.male:

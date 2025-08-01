@@ -63,31 +63,31 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		param('Hello'),
 	]);
 
-	/// en: 'Rich ${param(@:simple)}'
+	/// en: 'Rich ${param(Simple)}'
 	TextSpan richDefaultLinkedParam({required InlineSpanBuilder param}) => TextSpan(children: [
 		const TextSpan(text: 'Rich '),
 		param(_root.simple),
 	]);
 
-	/// en: 'Rich ${param(@:simpleParam)}'
+	/// en: 'Rich ${param(Simple ${simpleParam})}'
 	TextSpan richDefaultLinkedParamTransitiveParam({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [
 		const TextSpan(text: 'Rich '),
 		param(_root.simpleParam(simpleParam: simpleParam)),
 	]);
 
-	/// en: (one) 'one item'; (other) 'multiple items'
+	/// en: '(one) {one item} (other) {multiple items}'
 	String simplePlural({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		one: 'one item',
 		other: 'multiple items',
 	);
 
-	/// en: (one) 'one item'; (other) '$n items'
+	/// en: '(one) {one item} (other) {$n items}'
 	String pluralWithParameter({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		one: 'one item',
 		other: '${n} items',
 	);
 
-	/// en: (one) 'one item'; (other) 'multiple items'
+	/// en: '(one) {one item} (other) {multiple items}'
 	TextSpan simpleRichPlural({required num n}) => RichPluralResolvers.bridge(
 		n: n,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
@@ -99,7 +99,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		]),
 	);
 
-	/// en: (one) 'one item'; (other) '$n items'
+	/// en: '(one) {one item} (other) {$n items}'
 	TextSpan richPluralWithParameter({required num n, required InlineSpan Function(num) nBuilder}) => RichPluralResolvers.bridge(
 		n: n,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
@@ -112,7 +112,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		]),
 	);
 
-	/// en: (cat) 'Miaw'; (dog) 'Woof'
+	/// en: '(cat) {Miaw} (dog) {Woof}'
 	String simpleContext({required Animal context}) {
 		switch (context) {
 			case Animal.cat:
@@ -122,7 +122,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		}
 	}
 
-	/// en: (cat) 'Miaw'; (dog) 'Woof $context'
+	/// en: '(cat) {Miaw} (dog) {Woof $context}'
 	String contextWithParameter({required Animal context}) {
 		switch (context) {
 			case Animal.cat:
@@ -132,7 +132,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		}
 	}
 
-	/// en: (cat) 'Miaw'; (dog) 'Woof'
+	/// en: '(cat) {Miaw} (dog) {Woof}'
 	TextSpan simpleRichContext({required Animal context}) {
 		switch (context) {
 			case Animal.cat:
@@ -146,7 +146,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 		}
 	}
 
-	/// en: (cat) 'Miaw'; (dog) 'Woof $context'
+	/// en: '(cat) {Miaw} (dog) {Woof $context}'
 	TextSpan richContextWithParameter({required Animal context, required InlineSpan Function(Animal) contextBuilder}) {
 		switch (context) {
 			case Animal.cat:

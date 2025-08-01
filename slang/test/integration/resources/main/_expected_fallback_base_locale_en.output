@@ -43,7 +43,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsGroupEn group = TranslationsGroupEn.internal(_root);
 	late final TranslationsEndEn end = TranslationsEndEn.internal(_root);
 
-	/// en: (one) 'One'; (other) 'Other {count}, @:onboarding.greet2'
+	/// en: '(one) {One} (other) {Other {count}, (male) {Hello Mr} (female) {Hello Ms}}'
 	TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 		n: count,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
@@ -69,7 +69,7 @@ class TranslationsOnboardingEn {
 	/// en: 'Welcome {fullName}'
 	String welcome({required Object fullName}) => 'Welcome ${fullName}';
 
-	/// en: '@:onboarding.welcome'
+	/// en: 'Welcome {fullName}'
 	String welcomeAlias({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
 
 	/// en: '{firstName}'
@@ -83,10 +83,10 @@ class TranslationsOnboardingEn {
 	/// en: 'Continue'
 	String get kContinue => 'Continue';
 
-	/// en: '@:onboarding.kContinue'
+	/// en: 'Continue'
 	String get linkContinue => _root.onboarding.kContinue;
 
-	/// en: 'Hi {name} and @:onboarding.greet'
+	/// en: 'Hi {name} and (male) {Hello Mr {lastName} and Welcome {fullName}} (female) {Hello Ms {lastName} and Bye {firstName}}'
 	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		const TextSpan(text: 'Hi '),
 		name,
@@ -102,7 +102,7 @@ class TranslationsOnboardingEn {
 		TranslationsOnboarding$modifierPages$0i1$En.internal(_root),
 	];
 
-	/// en: (male) 'Hello Mr {lastName} and @:onboarding.welcome'; (female) 'Hello Ms {lastName} and @:onboarding.bye'
+	/// en: '(male) {Hello Mr {lastName} and Welcome {fullName}} (female) {Hello Ms {lastName} and Bye {firstName}}'
 	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
 			case GenderContext.male:
@@ -112,7 +112,7 @@ class TranslationsOnboardingEn {
 		}
 	}
 
-	/// en: (male) 'Hello Mr'; (female) 'Hello Ms'
+	/// en: '(male) {Hello Mr} (female) {Hello Ms}'
 	String greet2({required GenderContext gender}) {
 		switch (gender) {
 			case GenderContext.male:
@@ -122,16 +122,16 @@ class TranslationsOnboardingEn {
 		}
 	}
 
-	/// en: '@:onboarding.greet, @:onboarding.greet2'
+	/// en: '(male) {Hello Mr {lastName} and Welcome {fullName}} (female) {Hello Ms {lastName} and Bye {firstName}}, (male) {Hello Mr} (female) {Hello Ms}'
 	String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
 
-	/// en: 'Hello @:group.users'
+	/// en: 'Hello (zero) {No Users and Welcome {fullName}} (one) {One User} (other) {{n} Users and Bye {firstName}}'
 	String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => 'Hello ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
 
-	/// en: 'Hello @:onboarding.greet'
+	/// en: 'Hello (male) {Hello Mr {lastName} and Welcome {fullName}} (female) {Hello Ms {lastName} and Bye {firstName}}'
 	String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 
-	/// en: 'Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext'
+	/// en: 'Ultimate Hello (zero) {No Users and Welcome {fullName}} (one) {One User} (other) {{n} Users and Bye {firstName}} and Hello (male) {Hello Mr {lastName} and Welcome {fullName}} (female) {Hello Ms {lastName} and Bye {firstName}}'
 	String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 }
 
@@ -143,7 +143,7 @@ class TranslationsGroupEn {
 
 	// Translations
 
-	/// en: (zero) 'No Users and @:onboarding.welcome'; (one) 'One User'; (other) '{n} Users and @:onboarding.bye'
+	/// en: '(zero) {No Users and Welcome {fullName}} (one) {One User} (other) {{n} Users and Bye {firstName}}'
 	String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'One User',

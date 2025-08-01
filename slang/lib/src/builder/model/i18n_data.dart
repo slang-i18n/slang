@@ -2,6 +2,7 @@ import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/node.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 typedef I18nDataComparator = int Function(I18nData a, I18nData b);
 
@@ -48,5 +49,33 @@ class I18nData {
     }
 
     return current;
+  }
+
+  String? getAutodoc(String path, LeafNode? node) {
+    final foundNode = node ?? getNodeByPath(path) as LeafNode?;
+    if (foundNode == null) {
+      return null;
+    }
+
+    return switch (foundNode) {
+      TextNode textNode => '${textNode.raw.digest(this)}',
+      PluralNode pluralNode => pluralNode.quantities.entries
+          .map((e) => '(${e.key.name}) {${e.value.raw.digest(this)}}')
+          .join(' '),
+      ContextNode contextNode => contextNode.entries.entries
+          .map((e) => '(${e.key}) {${e.value.raw.digest(this)}}')
+          .join(' '),
+      _ =>
+        throw 'Unsupported node type for documentation: ${foundNode.runtimeType}',
+    };
+  }
+}
+
+extension on String {
+  String? digest(I18nData data) {
+    return replaceAllMapped(RegexUtils.linkedRegex, (match) {
+      final linkedPath = (match.group(1) ?? match.group(2))!;
+      return data.getAutodoc(linkedPath, null) ?? match.group(0)!;
+    });
   }
 }
