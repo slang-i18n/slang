@@ -81,6 +81,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Fallback](#-fallback)
   - [Lazy Loading](#-lazy-loading)
   - [Comments](#-comments)
+  - [Auto Generated Comments](#-auto-generated-comments)
   - [Recasing](#-recasing)
   - [Sanitization](#-sanitization)
   - [Obfuscation](#-obfuscation)
@@ -351,6 +352,11 @@ obfuscation:
 format:
   enabled: true
   width: 150
+autodoc:
+  enabled: true
+  locales:
+    - en
+    - fr
 imports:
   - 'package:my_package/path_to_enum.dart'
 generate_enum: true
@@ -425,6 +431,11 @@ targets:
           format:
             enabled: true
             width: 150
+          autodoc:
+            enabled: true
+            locales:
+              - en
+              - fr
           imports:
             - 'package:my_package/path_to_enum.dart'
           generate_enum: true
@@ -471,6 +482,8 @@ targets:
 | `obfuscation`/`secret`              | `String`                                          | obfuscation secret (random if null) [(i)](#-obfuscation)     | `null`         |
 | `format`/`enabled`                  | `Boolean`                                         | enable auto format [(i)](#-formatting)                       | `false`        |
 | `format`/`width`                    | `String`                                          | set line length / characters per line [(i)](#-formatting)    | `null`         |
+| `autodoc`/`enabled`                 | `Boolean`                                         | enable autodoc [(i)](#-auto-generated-comments)              | `true`         |
+| `autodoc`/`locales`                 | `List<String>`                                    | list of locales to generate [(i)](#-auto-generated-comments) | `$BASE$`       |
 | `imports`                           | `List<String>`                                    | generate import statements                                   | `[]`           |
 | `generate_enum`                     | `Boolean`                                         | global `generate_enum` [(i)](#-custom-contexts--enums)       | `true`         |
 
@@ -1443,6 +1456,28 @@ mainScreen.content,,Content,Inhalt,
 ```dart
 /// The submit button shown at the bottom
 String get button => 'Submit';
+```
+
+### ➤ Auto Generated Comments
+
+Besides the custom comments you provide, Slang will also generate comments (documentation) for you.
+
+By default, it will only generate comments for the base locale.
+
+```dart
+/// en: 'An English Title'
+String get title => 'An English Title';
+```
+
+You can configure this feature under `autodoc`.
+
+```yaml
+# Config
+autodoc:
+  enabled: true # enable this feature
+  locales: # only generate comments for these locales
+    - en 
+    - de
 ```
 
 ### ➤ Recasing

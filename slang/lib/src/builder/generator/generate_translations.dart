@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:slang/src/builder/generator/helper.dart';
+import 'package:slang/src/builder/model/autodoc_config.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/generate_config.dart';
 import 'package:slang/src/builder/model/i18n_data.dart';
@@ -22,7 +24,8 @@ class ClassTask {
 /// generates all classes of one locale
 /// all non-default locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-String generateTranslations(GenerateConfig config, I18nData localeData) {
+String generateTranslations(GenerateConfig config, I18nData localeData,
+    List<I18nData> allTranslations) {
   final queue = Queue<ClassTask>();
   final buffer = StringBuffer();
 
@@ -73,6 +76,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData) {
       task.className,
       task.node,
       root,
+      allTranslations,
     );
 
     root = false;
@@ -96,6 +100,7 @@ void _generateClass(
   String className,
   ObjectNode node,
   bool root,
+  List<I18nData> allTranslations,
 ) {
   buffer.writeln();
 
@@ -316,10 +321,63 @@ void _generateClass(
   bool prevHasComment = false;
   node.entries.forEach((key, value) {
     // comment handling
-    if (value.comment != null) {
-      // add comment add on the line above
-      buffer.writeln();
-      buffer.writeln('\t/// ${value.comment}');
+    final generateAutodoc =
+        localeData.base && config.autodoc.enabled && value is LeafNode;
+    if (value.comment != null || generateAutodoc) {
+      if (value.comment != null) {
+        // add comment add on the line above
+        buffer.writeln();
+        buffer.writeln('\t/// ${value.comment}');
+      }
+
+      if (generateAutodoc) {
+        if (value.comment != null) {
+          buffer.writeln('\t///');
+        } else {
+          buffer.writeln();
+        }
+
+        for (int i = 0; i < config.autodoc.locales.length; i++) {
+          final locale = config.autodoc.locales[i];
+          final LeafNode? node;
+          if (locale == AutodocConfig.base) {
+            node = value as LeafNode;
+          } else {
+            final localeData = allTranslations.firstWhereOrNull(
+              (l) => l.locale.languageTag == locale,
+            );
+
+            if (localeData == null) {
+              throw 'Locale "$locale" not found in translations.';
+            }
+
+            node = localeData.getNodeByPath(value.path) as LeafNode?;
+          }
+
+          if (node != null) {
+            final content = switch (node) {
+              TextNode textNode => "'${textNode.raw}'",
+              PluralNode pluralNode => pluralNode.quantities.entries
+                  .map((e) => "(${e.key.name}) '${e.value.raw}'")
+                  .join('; '),
+              ContextNode contextNode => contextNode.entries.entries
+                  .map((e) => "(${e.key}) '${e.value.raw}'")
+                  .join('; '),
+              _ =>
+                throw 'Unsupported node type for documentation: ${node.runtimeType}',
+            };
+
+            if (i != 0) {
+              buffer.writeln('\t///');
+            }
+
+            buffer.writeln(
+              '\t/// ${locale == AutodocConfig.base ? localeData.locale.languageTag : locale}: $content',
+            );
+            prevHasComment = true;
+          }
+        }
+      }
       prevHasComment = true;
     } else {
       if (prevHasComment) {

@@ -61,7 +61,7 @@ class MapUtils {
       } else {
         if (currValue is! Map<String, dynamic>) {
           // The leaf cannot be updated because "currEntry" is not a map.
-          return false;
+          return null;
         }
         currMap = currValue;
       }

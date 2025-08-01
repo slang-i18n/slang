@@ -42,6 +42,8 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsOnboardingEn onboarding = TranslationsOnboardingEn.internal(_root);
 	late final TranslationsGroupEn group = TranslationsGroupEn.internal(_root);
 	late final TranslationsEndEn end = TranslationsEndEn.internal(_root);
+
+	/// en: (one) 'One'; (other) 'Other {count}, @:onboarding.greet2'
 	TextSpan advancedPlural({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 		n: count,
 		resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
@@ -63,20 +65,34 @@ class TranslationsOnboardingEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'Welcome {fullName}'
 	String welcome({required Object fullName}) => 'Welcome ${fullName}';
+
+	/// en: '@:onboarding.welcome'
 	String welcomeAlias({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+
+	/// en: '{firstName}'
 	String welcomeOnlyParam({required Object firstName}) => '${firstName}';
 
 	/// Bye text
+	///
+	/// en: 'Bye {firstName}'
 	String bye({required Object firstName}) => 'Bye ${firstName}';
 
+	/// en: 'Continue'
 	String get kContinue => 'Continue';
+
+	/// en: '@:onboarding.kContinue'
 	String get linkContinue => _root.onboarding.kContinue;
+
+	/// en: 'Hi {name} and @:onboarding.greet'
 	TextSpan hi({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 		const TextSpan(text: 'Hi '),
 		name,
 		TextSpan(text: ' and ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
 	]);
+
 	List<PageData> get pages => [
 		TranslationsOnboarding$pages$0i0$En.internal(_root),
 		TranslationsOnboarding$pages$0i1$En.internal(_root),
@@ -85,6 +101,8 @@ class TranslationsOnboardingEn {
 		TranslationsOnboarding$modifierPages$0i0$En.internal(_root),
 		TranslationsOnboarding$modifierPages$0i1$En.internal(_root),
 	];
+
+	/// en: (male) 'Hello Mr {lastName} and @:onboarding.welcome'; (female) 'Hello Ms {lastName} and @:onboarding.bye'
 	String greet({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 		switch (context) {
 			case GenderContext.male:
@@ -93,6 +111,8 @@ class TranslationsOnboardingEn {
 				return 'Hello Ms ${lastName} and ${_root.onboarding.bye(firstName: firstName)}';
 		}
 	}
+
+	/// en: (male) 'Hello Mr'; (female) 'Hello Ms'
 	String greet2({required GenderContext gender}) {
 		switch (gender) {
 			case GenderContext.male:
@@ -101,9 +121,17 @@ class TranslationsOnboardingEn {
 				return 'Hello Ms';
 		}
 	}
+
+	/// en: '@:onboarding.greet, @:onboarding.greet2'
 	String greetCombination({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+
+	/// en: 'Hello @:group.users'
 	String welcomeLinkedPlural({required num n, required Object fullName, required Object firstName}) => 'Hello ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
+
+	/// en: 'Hello @:onboarding.greet'
 	String welcomeLinkedContext({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hello ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+
+	/// en: 'Ultimate @:onboarding.welcomeLinkedPlural and @:onboarding.welcomeLinkedContext'
 	String welcomeFullLink({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimate ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
 }
 
@@ -114,6 +142,8 @@ class TranslationsGroupEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: (zero) 'No Users and @:onboarding.welcome'; (one) 'One User'; (other) '{n} Users and @:onboarding.bye'
 	String users({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		zero: 'No Users and ${_root.onboarding.welcome(fullName: fullName)}',
 		one: 'One User',
@@ -150,7 +180,11 @@ class TranslationsOnboarding$pages$0i0$En with PageData {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'First Page'
 	@override String get title => 'First Page';
+
+	/// en: 'First Page Content'
 	@override String? get content => 'First Page Content';
 }
 
@@ -161,6 +195,8 @@ class TranslationsOnboarding$pages$0i1$En with PageData {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'Second Page'
 	@override String get title => 'Second Page';
 }
 
@@ -171,7 +207,11 @@ class TranslationsOnboarding$modifierPages$0i0$En with MPage {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'First Modifier Page'
 	@override String get title => 'First Modifier Page';
+
+	/// en: 'First Page Content'
 	@override String? get content => 'First Page Content';
 }
 
@@ -182,6 +222,8 @@ class TranslationsOnboarding$modifierPages$0i1$En with MPage {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'Second Modifier Page'
 	@override String get title => 'Second Modifier Page';
 }
 

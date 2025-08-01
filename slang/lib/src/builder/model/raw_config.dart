@@ -1,3 +1,4 @@
+import 'package:slang/src/builder/model/autodoc_config.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/format_config.dart';
@@ -50,6 +51,11 @@ class RawConfig {
     enabled: FormatConfig.defaultEnabled,
     width: FormatConfig.defaultWidth,
   );
+  static const AutodocConfig defaultAutodocConfig =
+      AutodocConfig(
+    enabled: AutodocConfig.defaultEnabled,
+    locales: AutodocConfig.defaultLocales,
+  );
   static const List<String> defaultImports = <String>[];
   static const bool defaultGenerateEnum = true;
 
@@ -86,6 +92,7 @@ class RawConfig {
   final List<InterfaceConfig> interfaces;
   final ObfuscationConfig obfuscation;
   final FormatConfig format;
+  final AutodocConfig autodoc;
   final List<String> imports;
   final bool generateEnum;
 
@@ -125,6 +132,7 @@ class RawConfig {
     required this.interfaces,
     required this.obfuscation,
     required this.format,
+    required this.autodoc,
     required this.imports,
     required this.generateEnum,
     required this.rawMap,
@@ -159,6 +167,7 @@ class RawConfig {
     List<InterfaceConfig>? interfaces,
     ObfuscationConfig? obfuscation,
     FormatConfig? format,
+    AutodocConfig? autodoc,
     bool? generateEnum,
   }) {
     return RawConfig(
@@ -195,6 +204,7 @@ class RawConfig {
       interfaces: interfaces ?? this.interfaces,
       obfuscation: obfuscation ?? this.obfuscation,
       format: format ?? this.format,
+      autodoc: autodoc ?? this.autodoc,
       imports: imports,
       generateEnum: generateEnum ?? this.generateEnum,
       rawMap: rawMap,
@@ -277,6 +287,7 @@ class RawConfig {
     print(' -> obfuscation: ${obfuscation.enabled ? 'enabled' : 'disabled'}');
     print(
         ' -> format: ${format.enabled ? 'enabled (width=${format.width})' : 'disabled'}');
+    print(' -> autodoc: ${autodoc.enabled ? 'enabled (${autodoc.locales.join(', ')})' : 'disabled'}');
     print(' -> imports: $imports');
     print(' -> generateEnum: $generateEnum');
   }
@@ -316,6 +327,7 @@ class RawConfig {
     interfaces: RawConfig.defaultInterfaces,
     obfuscation: RawConfig.defaultObfuscationConfig,
     format: RawConfig.defaultFormatConfig,
+    autodoc: RawConfig.defaultAutodocConfig,
     imports: RawConfig.defaultImports,
     className: RawConfig.defaultClassName,
     generateEnum: RawConfig.defaultGenerateEnum,

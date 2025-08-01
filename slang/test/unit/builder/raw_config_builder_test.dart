@@ -141,5 +141,16 @@ void main() {
       expect(result.sanitization.prefix, 'k_');
       expect(result.sanitization.caseStyle, isNull);
     });
+
+    test('Should use base locale', () {
+      final result = RawConfigBuilder.fromMap(
+        {
+          'base_locale': 'it',
+        },
+      );
+
+      expect(result.autodoc.enabled, true);
+      expect(result.autodoc.locales, const [r'$BASE$']);
+    });
   });
 }

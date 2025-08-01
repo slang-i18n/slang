@@ -39,6 +39,8 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
 
 	// Translations
+
+	/// en: (male) 'Hello Mr'; (female) 'Hello Mrs'
 	String greet({required Gender context}) {
 		switch (context) {
 			case Gender.male:

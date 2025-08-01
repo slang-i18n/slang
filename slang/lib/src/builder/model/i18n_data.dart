@@ -33,4 +33,20 @@ class I18nData {
       return -1; // move base to the left
     }
   };
+
+  /// Gets the node for a given path
+  Node? getNodeByPath(String path) {
+    final parts = path.split('.');
+    Node? current = root;
+
+    for (final part in parts) {
+      if (current is ObjectNode) {
+        current = current.entries[part];
+      } else {
+        return null;
+      }
+    }
+
+    return current;
+  }
 }

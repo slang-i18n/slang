@@ -1,3 +1,4 @@
+import 'package:slang/src/builder/model/autodoc_config.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
@@ -27,6 +28,7 @@ class GenerateConfig {
   final List<PopulatedContextType> contexts;
   final List<Interface> interface; // may include more than in build config
   final ObfuscationConfig obfuscation;
+  final AutodocConfig autodoc;
   final List<String> imports;
 
   GenerateConfig({
@@ -49,6 +51,7 @@ class GenerateConfig {
     required this.contexts,
     required this.interface,
     required this.obfuscation,
+    required this.autodoc,
     required this.imports,
   });
 }
