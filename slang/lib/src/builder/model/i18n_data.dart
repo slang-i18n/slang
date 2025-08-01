@@ -71,11 +71,13 @@ class I18nData {
   }
 }
 
+final _whitespaceRegex = RegExp(r'\s+');
+
 extension on String {
   String? digest(I18nData data) {
     return replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = (match.group(1) ?? match.group(2))!;
       return data.getAutodoc(linkedPath, null) ?? match.group(0)!;
-    });
+    }).replaceAll(_whitespaceRegex, ' ');
   }
 }

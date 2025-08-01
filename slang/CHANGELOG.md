@@ -1,3 +1,7 @@
+## 4.8.1
+
+- fix: remove new line in autodoc output
+
 ## 4.8.0
 
 - feat: add `autodoc` feature enabled by default that generates the base translation as documentation for the translation keys (#218)
