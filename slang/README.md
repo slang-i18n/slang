@@ -8,6 +8,9 @@
 
 Type-safe i18n solution using JSON, YAML, CSV, or ARB files.
 
+#### Powered by
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
+
 ## About this library
 
 - 🚀 Minimal setup, create JSON files and get started! No configuration needed.
