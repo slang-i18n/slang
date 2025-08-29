@@ -6,6 +6,7 @@ import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/runner/apply.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -29,7 +30,7 @@ Future<void> runNormalize({
   final baseTranslationMap = translationMap[fileCollection.config.baseLocale]!;
 
   if (targetLocale != null) {
-    print('Target: <${targetLocale.languageTag}>');
+    log.info('Target: <${targetLocale.languageTag}>');
 
     await _normalizeLocale(
       fileCollection: fileCollection,
@@ -37,7 +38,7 @@ Future<void> runNormalize({
       baseTranslations: baseTranslationMap,
     );
   } else {
-    print('Target: all locales');
+    log.info('Target: all locales');
 
     for (final locale in translationMap.getLocales()) {
       if (locale == fileCollection.config.baseLocale) {
@@ -52,7 +53,7 @@ Future<void> runNormalize({
     }
   }
 
-  print('Normalization finished!');
+  log.info('Normalization finished!');
 }
 
 /// Normalizes all files for the given [locale].

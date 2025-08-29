@@ -1,3 +1,5 @@
+import 'package:slang/src/utils/log.dart' as log;
+
 part 'plural_resolver_map.dart';
 
 /// Selects the correct string depending on [n]
@@ -31,7 +33,7 @@ class PluralResolvers {
   static _Resolvers _getResolvers(String language) {
     final resolvers = _resolverMap[language];
     if (resolvers == null) {
-      print(
+      log.error(
           'Resolver for <lang = $language> not specified! Please configure it via LocaleSettings.setPluralResolver. A fallback is used now.');
       return _defaultResolver;
     }

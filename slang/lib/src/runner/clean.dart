@@ -5,6 +5,7 @@ import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/runner/utils/read_analysis_file.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 /// Reads the "_unused_translations" file and removes the specified keys
 /// from the translation files.
@@ -45,9 +46,9 @@ Future<void> runClean({
 
     final entries = MapUtils.getFlatMap(map);
 
-    print(' -> Cleaning <${locale.languageTag}>...');
+    log.info(' -> Cleaning <${locale.languageTag}>...');
     for (final entry in entries) {
-      print('   - $entry');
+      log.verbose('   - $entry');
     }
 
     await _deleteEntriesForLocale(
@@ -57,7 +58,7 @@ Future<void> runClean({
     );
   }
 
-  print('Done.');
+  log.info('Done.');
 }
 
 /// Deletes the specified entries from the translation files

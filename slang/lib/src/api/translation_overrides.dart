@@ -8,6 +8,7 @@ import 'package:slang/src/builder/model/pluralization.dart';
 import 'package:slang/src/builder/utils/reflection_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 /// Utility class handling overridden translations
 class TranslationOverrides {
@@ -18,7 +19,7 @@ class TranslationOverrides {
       return null;
     }
     if (node is! StringTextNode) {
-      print(
+      log.error(
           'Overridden $path is not a StringTextNode but a ${node.runtimeType}.');
       return null;
     }
@@ -32,7 +33,7 @@ class TranslationOverrides {
       return null;
     }
     if (node is! PluralNode) {
-      print('Overridden $path is not a PluralNode but a ${node.runtimeType}.');
+      log.error('Overridden $path is not a PluralNode but a ${node.runtimeType}.');
       return null;
     }
 
@@ -66,7 +67,7 @@ class TranslationOverrides {
       return null;
     }
     if (node is! ContextNode) {
-      print('Overridden $path is not a ContextNode but a ${node.runtimeType}.');
+      log.error('Overridden $path is not a ContextNode but a ${node.runtimeType}.');
       return null;
     }
     final context = param[node.paramName];
@@ -85,11 +86,11 @@ class TranslationOverrides {
       return null;
     }
     if (node is! ObjectNode) {
-      print('Overridden $path is not an ObjectNode but a ${node.runtimeType}.');
+      log.error('Overridden $path is not an ObjectNode but a ${node.runtimeType}.');
       return null;
     }
     if (!node.isMap || node.genericType != 'String') {
-      print('Overridden $path can only be a map containing plain Strings.');
+      log.error('Overridden $path can only be a map containing plain Strings.');
       return null;
     }
 
@@ -105,11 +106,11 @@ class TranslationOverrides {
       return null;
     }
     if (node is! ListNode) {
-      print('Overridden $path is not a ListNode but a ${node.runtimeType}.');
+      log.error('Overridden $path is not a ListNode but a ${node.runtimeType}.');
       return null;
     }
     if (node.genericType != 'String') {
-      print('Overridden $path can only contain plain Strings.');
+      log.error('Overridden $path can only contain plain Strings.');
       return null;
     }
 

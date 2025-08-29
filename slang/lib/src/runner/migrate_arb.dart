@@ -9,6 +9,7 @@ import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_extensions.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 final _setEquality = SetEquality();
 
@@ -16,7 +17,7 @@ Future<void> migrateArbRunner({
   required String sourcePath,
   required String destinationPath,
 }) async {
-  print('Migrating ARB to JSON...');
+  log.info('Migrating ARB to JSON...');
 
   final source = await File(sourcePath).readAsString();
   final resultMap = migrateArb(source);
@@ -27,11 +28,11 @@ Future<void> migrateArbRunner({
     content: JsonEncoder.withIndent('  ').convert(resultMap),
   );
 
-  print('');
-  print(
+  log.info('');
+  log.info(
       'Please don\'t forget to configure the correct string_interpolation in build.yaml');
-  print('');
-  print('File generated: $destinationPath');
+  log.info('');
+  log.info('File generated: $destinationPath');
 }
 
 Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
@@ -97,8 +98,8 @@ Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
   });
 
   if (verbose && detectedContexts.isNotEmpty) {
-    print('');
-    print('Detected contexts (please define them in build.yaml):');
+    log.info('');
+    log.info('Detected contexts (please define them in build.yaml):');
     const suffixes = ['Context', 'Type'];
     for (int i = 0; i < detectedContexts.length; i++) {
       final contextName = detectedContextNames[i].toCase(CaseStyle.pascal);
@@ -112,15 +113,15 @@ Map<String, dynamic> migrateArb(String raw, [bool verbose = true]) {
               .map((suffix) => _contextNameWithSuffix(contextName, suffix))
               .toList();
 
-      print('');
+      log.info('');
       if (additionalNames.isEmpty) {
-        print('[$contextName]');
+        log.info('[$contextName]');
       } else {
-        print('[$contextName] ... or ${additionalNames.join(', ')}');
+        log.info('[$contextName] ... or ${additionalNames.join(', ')}');
       }
 
       for (final enumValue in detectedContexts[i]) {
-        print(' - $enumValue');
+        log.info(' - $enumValue');
       }
     }
   }

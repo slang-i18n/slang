@@ -4,6 +4,7 @@ import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 StatsResult getStats({
   required RawConfig rawConfig,
@@ -55,17 +56,18 @@ class StatsResult {
   void printResult() {
     final specialCharacters = ',.?!\'¿¡';
     localeStats.forEach((locale, stats) {
-      print('[${locale.languageTag}]');
-      print(' - ${stats.keyCount} keys (including intermediate keys)');
-      print(' - ${stats.translationCount} translations (leaves only)');
-      print(' - ${stats.wordCount} words');
-      print(' - ${stats.characterCount} characters (ex. [$specialCharacters])');
+      log.info('[${locale.languageTag}]');
+      log.info(' - ${stats.keyCount} keys (including intermediate keys)');
+      log.info(' - ${stats.translationCount} translations (leaves only)');
+      log.info(' - ${stats.wordCount} words');
+      log.info(
+          ' - ${stats.characterCount} characters (ex. [$specialCharacters])');
     });
-    print('[total]');
-    print(' - ${globalStats.keyCount} keys (including intermediate keys)');
-    print(' - ${globalStats.translationCount} translations (leaves only)');
-    print(' - ${globalStats.wordCount} words');
-    print(
+    log.info('[total]');
+    log.info(' - ${globalStats.keyCount} keys (including intermediate keys)');
+    log.info(' - ${globalStats.translationCount} translations (leaves only)');
+    log.info(' - ${globalStats.wordCount} words');
+    log.info(
         ' - ${globalStats.characterCount} characters (ex. [$specialCharacters])');
   }
 }

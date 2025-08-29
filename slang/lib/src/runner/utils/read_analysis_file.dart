@@ -8,6 +8,7 @@ import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/runner/apply.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -60,7 +61,7 @@ Map<I18nLocale, Map<String, dynamic>> readAnalysis({
     try {
       parsedContent = BaseDecoder.decodeWithFileType(fileType, content);
     } on FormatException catch (e) {
-      print('');
+      log.verbose('');
       throw 'File: ${file.path}\n$e';
     }
 
@@ -94,5 +95,5 @@ Map<I18nLocale, Map<String, dynamic>> readAnalysis({
 }
 
 void _printReading(I18nLocale locale, File file) {
-  print(' -> Reading <${locale.languageTag}> from ${file.path}');
+  log.verbose(' -> Reading <${locale.languageTag}> from ${file.path}');
 }

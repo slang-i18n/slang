@@ -12,6 +12,7 @@ import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/utils/read_analysis_file.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -42,7 +43,7 @@ Future<void> runApplyTranslations({
     verbose: false,
   );
 
-  print('Looking for missing translations files in $outDir');
+  log.info('Looking for missing translations files in $outDir');
   final files =
       Directory(outDir).listSync(recursive: true).whereType<File>().toList();
   final missingTranslationsMap = readAnalysis(
@@ -54,8 +55,8 @@ Future<void> runApplyTranslations({
   if (targetLocales == null) {
     // If no locales are specified, then we only apply changed files
     // To know what has been changed, we need to regenerate the analysis
-    print('');
-    print('Regenerating analysis...');
+    log.info('');
+    log.info('Regenerating analysis...');
     final analysis = getMissingTranslations(
       rawConfig: rawConfig,
       translations: TranslationModelListBuilder.build(
@@ -85,23 +86,23 @@ Future<void> runApplyTranslations({
     }
 
     if (ignoreBecauseMissing.isNotEmpty) {
-      print(
+      log.info(
           ' -> Ignoring because missing in new analysis: ${ignoreBecauseMissing.joinedAsString}');
     }
     if (ignoreBecauseEqual.isNotEmpty) {
-      print(
+      log.info(
           ' -> Ignoring because no changes: ${ignoreBecauseEqual.joinedAsString}');
     }
   }
 
   if (missingTranslationsMap.isEmpty) {
-    print('');
-    print('No changes');
+    log.info('');
+    log.info('No changes');
     return;
   }
 
-  print('');
-  print(
+  log.info('');
+  log.info(
       'Applying: ${missingTranslationsMap.keys.map((l) => '<${l.languageTag}>').join(' ')}');
 
   // We need to read the base translations to determine
@@ -113,7 +114,7 @@ Future<void> runApplyTranslations({
     final locale = entry.key;
     final missingTranslations = entry.value;
 
-    print(' -> Apply <${locale.languageTag}>');
+    log.info(' -> Apply <${locale.languageTag}>');
     await _applyTranslationsForOneLocale(
       fileCollection: fileCollection,
       applyLocale: locale,
@@ -339,14 +340,14 @@ class FileTypeNotSupportedError extends UnsupportedError {
 }
 
 void _printApplyingDestination(TranslationFile file) {
-  print('    -> Update ${file.path}');
+  log.verbose('    -> Update ${file.path}');
 }
 
 void _printAdding(String path, Object value) {
   if (value is Map) {
     return;
   }
-  print('    -> Set [$path]: "$value"');
+  log.verbose('    -> Set [$path]: "$value"');
 }
 
 extension on List<I18nLocale> {

@@ -12,6 +12,7 @@ import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 final _setEquality = SetEquality();
 
@@ -506,7 +507,7 @@ void _writeMap({
         path: path,
         content: fileContent,
       );
-      print(' -> $path');
+      log.info(' -> $path');
     }
   } else {
     // join to one single file
@@ -539,6 +540,6 @@ void _writeMap({
       path: path,
       content: fileContent,
     );
-    print(' -> $path');
+    log.info(' -> $path');
   }
 }

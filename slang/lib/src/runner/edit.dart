@@ -10,6 +10,7 @@ import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/runner/apply.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 const _supportedFiles = [FileType.json, FileType.yaml];
 
@@ -86,7 +87,7 @@ Future<void> runEdit({
 
   switch (operation) {
     case EditOperation.move:
-      print('Moving translations...\n');
+      log.info('Moving translations...\n');
       if (destinationPath == null) {
         throw 'Missing destination path.';
       }
@@ -97,7 +98,7 @@ Future<void> runEdit({
       );
       break;
     case EditOperation.copy:
-      print('Copying translations...\n');
+      log.info('Copying translations...\n');
       if (destinationPath == null) {
         throw 'Missing destination path.';
       }
@@ -108,18 +109,18 @@ Future<void> runEdit({
       );
       break;
     case EditOperation.delete:
-      print('Deleting translations...\n');
+      log.info('Deleting translations...\n');
       await _deleteEntry(
         fileCollection: fileCollection,
         path: originPath,
       );
       break;
     case EditOperation.outdated:
-      print('Adding outdated flags...\n');
+      log.info('Adding outdated flags...\n');
       await _outdatedEntry(fileCollection: fileCollection, path: arguments[1]);
       break;
     case EditOperation.add:
-      print('Adding translation...\n');
+      log.info('Adding translation...\n');
       if (arguments.length != 4 && arguments.length != 3) {
         throw 'Invalid arguments. Expected: dart run slang add myLocale myNamespace.my.path.to.key "My value" (or without locale)';
       }
@@ -151,8 +152,8 @@ Future<void> _moveEntry({
               .take(max(destinationPathList.length - 1, 0))
               .toList());
 
-  print('Operation: $originPath -> $destinationPath (rename: $rename)');
-  print('');
+  log.info('Operation: $originPath -> $destinationPath (rename: $rename)');
+  log.info('');
 
   bool found = false;
   for (final origFile in fileCollection.files) {
@@ -175,7 +176,7 @@ Future<void> _moveEntry({
 
     // Find the destination node
     if (rename) {
-      print('[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
+      log.verbose('[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
       MapUtils.updateEntry(
         map: origMap,
         path: config.namespaces ? originPathList.skip(1).join('.') : originPath,
@@ -206,7 +207,7 @@ Future<void> _moveEntry({
           continue;
         }
 
-        print('[${origFile.path}] Delete "$originPath"');
+        log.verbose('[${origFile.path}] Delete "$originPath"');
         MapUtils.deleteEntry(
           map: origMap,
           path:
@@ -221,7 +222,7 @@ Future<void> _moveEntry({
 
         final destMap = await destFile.readAndParse(config.fileType);
 
-        print('[${destFile.path}] Add "$destinationPath"');
+        log.verbose('[${destFile.path}] Add "$destinationPath"');
         MapUtils.addItemToMap(
           map: destMap,
           destinationPath: config.namespaces
@@ -242,7 +243,7 @@ Future<void> _moveEntry({
   }
 
   if (!found) {
-    print('No origin values found.');
+    log.info('No origin values found.');
   }
 }
 
@@ -257,8 +258,8 @@ Future<void> _copyEntry({
   final destinationPathList = destinationPath.split('.');
   final destinationNamespace = destinationPathList.first;
 
-  print('Operation: $originPath -> $destinationPath');
-  print('');
+  log.info('Operation: $originPath -> $destinationPath');
+  log.info('');
 
   bool found = false;
   for (final origFile in fileCollection.files) {
@@ -293,7 +294,7 @@ Future<void> _copyEntry({
 
       final destMap = await destFile.readAndParse(config.fileType);
 
-      print('[${destFile.path}] Add "$destinationPath"');
+      log.verbose('[${destFile.path}] Add "$destinationPath"');
       MapUtils.addItemToMap(
         map: destMap,
         destinationPath: config.namespaces
@@ -313,7 +314,7 @@ Future<void> _copyEntry({
   }
 
   if (!found) {
-    print('No origin values found.');
+    log.info('No origin values found.');
   }
 }
 
@@ -332,7 +333,7 @@ Future<void> _deleteEntry({
       continue;
     }
 
-    print('Deleting "$path" in ${file.path}...');
+    log.info('Deleting "$path" in ${file.path}...');
 
     final map = await file.readAndParse(config.fileType);
 
@@ -369,7 +370,7 @@ Future<void> _outdatedEntry({
       continue;
     }
 
-    print('Adding flag to <${file.locale.languageTag}> in ${file.path}...');
+    log.info('Adding flag to <${file.locale.languageTag}> in ${file.path}...');
 
     final Map<String, dynamic> parsedContent =
         await file.readAndParse(config.fileType);
@@ -422,7 +423,7 @@ Future<void> _addEntry({
       continue;
     }
 
-    print(
+    log.info(
         'Adding translation to <${file.locale.languageTag}> in ${file.path}...');
 
     final Map<String, dynamic> oldMap =
