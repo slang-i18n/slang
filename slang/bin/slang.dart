@@ -417,9 +417,9 @@ String? _lastPrint;
 
 void _printDynamicLastLine(String output) {
   if (_lastPrint == null) {
-    log.write('\r$output$_RESET');
+    stdout.write('\r$output$_RESET');
   } else {
-    log.write('\r${output.padRight(_lastPrint!.length, ' ')}$_RESET');
+    stdout.write('\r${output.padRight(_lastPrint!.length, ' ')}$_RESET');
   }
   _lastPrint = output;
 }

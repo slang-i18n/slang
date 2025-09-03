@@ -1,5 +1,3 @@
-import 'dart:io';
-
 /// Logging levels for the CLI output
 enum Level {
   /// Normal logging, default level
@@ -34,9 +32,4 @@ void verbose(String message) {
   if (_level == Level.verbose) {
     print(message);
   }
-}
-
-/// Write to stdout
-void write(String message) {
-  stdout.write(message);
 }
