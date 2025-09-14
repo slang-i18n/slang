@@ -1,13 +1,13 @@
 name: slang_build_runner
 description: build_runner integration for slang. This library ensures that slang is recognized by build_runner.
-version: 4.8.0
+version: 4.8.1
 repository: https://github.com/slang-i18n/slang
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
-  build: '>=2.2.1 <4.0.0'
+  build: '>=2.2.1 <5.0.0'
   dart_style: '>=2.3.7 <4.0.0'
   glob: ^2.0.2
 
