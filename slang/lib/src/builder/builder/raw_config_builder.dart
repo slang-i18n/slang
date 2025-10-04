@@ -10,6 +10,7 @@ import 'package:slang/src/builder/model/sanitization_config.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_extensions.dart';
+import 'package:slang/src/utils/log.dart' as log;
 import 'package:yaml/yaml.dart';
 
 class RawConfigBuilder {
@@ -51,7 +52,7 @@ class RawConfigBuilder {
   /// Parses the config entry
   static RawConfig fromMap(Map<String, dynamic> map) {
     if (map['output_format'] != null) {
-      print(
+      log.error(
         'The "output_format" key is no longer supported since slang v4. Always generates multiple files now.',
       );
     }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 void runConfigure(
   SlangFileCollection fileCollection, {
@@ -16,14 +17,14 @@ void runConfigure(
   for (final path in plistPaths) {
     final file = File(path);
     if (!file.existsSync()) {
-      print('File not found: $path');
+      log.error('File not found: $path');
       continue;
     }
 
     final updated =
         updatePlist(locales: locales, content: file.readAsStringSync());
     file.writeAsStringSync(updated);
-    print('Updated: $path');
+    log.info('Updated: $path');
   }
 }
 

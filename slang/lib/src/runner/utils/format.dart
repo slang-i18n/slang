@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:slang/src/utils/log.dart' as log;
+
 /// Formats a given directory by running a separate dart format process.
 Future<void> runDartFormat({
   required String dir,
@@ -20,6 +22,6 @@ Future<void> runDartFormat({
   );
 
   if (status.exitCode != 0) {
-    print('Dart format failed with exit code ${status.exitCode}');
+    log.error('Dart format failed with exit code ${status.exitCode}');
   }
 }

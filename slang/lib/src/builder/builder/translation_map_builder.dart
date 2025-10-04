@@ -4,6 +4,7 @@ import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
+import 'package:slang/src/utils/log.dart' as log;
 
 class TranslationMapBuilder {
   /// This method transforms files to an intermediate model [TranslationMap].
@@ -34,7 +35,7 @@ class TranslationMapBuilder {
             BaseDecoder.decodeWithFileType(rawConfig.fileType, content);
       } on FormatException catch (e) {
         if (verbose) {
-          print('');
+          log.verbose('');
         }
         throw 'File: ${file.path}\n$e';
       }
@@ -58,7 +59,7 @@ class TranslationMapBuilder {
             final baseStr = locale == rawConfig.baseLocale ? '(base) ' : '';
             final namespaceStr =
                 rawConfig.namespaces ? '(${file.namespace}) ' : '';
-            print(
+            log.verbose(
                 '${('$baseStr$namespaceStr${locale.languageTag}').padLeft(padLeft)} -> ${file.path}');
           }
         }
@@ -75,7 +76,7 @@ class TranslationMapBuilder {
           final baseLog = file.locale == rawConfig.baseLocale ? '(base) ' : '';
           final namespaceLog =
               rawConfig.namespaces ? '(${file.namespace}) ' : '';
-          print(
+          log.verbose(
               '${'$baseLog$namespaceLog${file.locale.languageTag}'.padLeft(padLeft)} -> ${file.path}');
         }
       }
@@ -85,7 +86,7 @@ class TranslationMapBuilder {
         .getLocales()
         .every((locale) => locale != rawConfig.baseLocale)) {
       if (verbose) {
-        print('');
+        log.verbose('');
       }
       throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
     }

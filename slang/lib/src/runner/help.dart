@@ -1,5 +1,7 @@
+import 'package:slang/src/utils/log.dart' as log;
+
 void printHelp() {
-  print('''
+  log.info('''
 Slang: Type-safe i18n for Dart and Flutter.
 
 Main command:
