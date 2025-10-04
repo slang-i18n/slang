@@ -33,7 +33,8 @@ class TranslationOverrides {
       return null;
     }
     if (node is! PluralNode) {
-      log.error('Overridden $path is not a PluralNode but a ${node.runtimeType}.');
+      log.error(
+          'Overridden $path is not a PluralNode but a ${node.runtimeType}.');
       return null;
     }
 
@@ -67,7 +68,8 @@ class TranslationOverrides {
       return null;
     }
     if (node is! ContextNode) {
-      log.error('Overridden $path is not a ContextNode but a ${node.runtimeType}.');
+      log.error(
+          'Overridden $path is not a ContextNode but a ${node.runtimeType}.');
       return null;
     }
     final context = param[node.paramName];
@@ -86,7 +88,8 @@ class TranslationOverrides {
       return null;
     }
     if (node is! ObjectNode) {
-      log.error('Overridden $path is not an ObjectNode but a ${node.runtimeType}.');
+      log.error(
+          'Overridden $path is not an ObjectNode but a ${node.runtimeType}.');
       return null;
     }
     if (!node.isMap || node.genericType != 'String') {
@@ -106,7 +109,8 @@ class TranslationOverrides {
       return null;
     }
     if (node is! ListNode) {
-      log.error('Overridden $path is not a ListNode but a ${node.runtimeType}.');
+      log.error(
+          'Overridden $path is not a ListNode but a ${node.runtimeType}.');
       return null;
     }
     if (node.genericType != 'String') {

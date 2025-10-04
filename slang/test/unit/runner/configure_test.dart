@@ -1,6 +1,7 @@
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/runner/configure.dart';
 import 'package:test/test.dart';
 
@@ -10,7 +11,7 @@ void main() {
       file(String locale) => TranslationFile(
             path: '',
             locale: I18nLocale(language: locale),
-            namespace: TranslationFile.DEFAULT_NAMESPACE,
+            namespace: RegexUtils.DEFAULT_NAMESPACE,
             read: () async => '',
           );
 

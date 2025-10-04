@@ -3,6 +3,7 @@ import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/model/i18n_data.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class TranslationModelListBuilder {
   /// Combine all namespaces and build the internal model
@@ -25,7 +26,7 @@ class TranslationModelListBuilder {
     final namespaces = baseEntry.value;
     final baseResult = TranslationModelBuilder.build(
       buildConfig: buildConfig,
-      map: rawConfig.namespaces ? namespaces : namespaces.values.first,
+      map: rawConfig.namespaces ? namespaces.digest() : namespaces.values.first,
       locale: baseEntry.key,
     );
 
@@ -47,7 +48,9 @@ class TranslationModelListBuilder {
       } else {
         final result = TranslationModelBuilder.build(
           buildConfig: buildConfig,
-          map: rawConfig.namespaces ? namespaces : namespaces.values.first,
+          map: rawConfig.namespaces
+              ? namespaces.digest()
+              : namespaces.values.first,
           baseData: baseResult,
           locale: locale,
         );
@@ -63,5 +66,22 @@ class TranslationModelListBuilder {
       }
     }).toList()
       ..sort(I18nData.generationComparator);
+  }
+}
+
+extension on Map<String, Map<String, dynamic>> {
+  Map<String, dynamic> digest() {
+    if (length > 1 && containsKey(RegexUtils.DEFAULT_NAMESPACE)) {
+      return {
+        ...this[RegexUtils.DEFAULT_NAMESPACE]!,
+        ...{
+          for (final entry in entries)
+            if (entry.key != RegexUtils.DEFAULT_NAMESPACE)
+              entry.key: entry.value,
+        },
+      };
+    }
+
+    return this;
   }
 }

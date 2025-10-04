@@ -113,7 +113,7 @@ class SlangFileCollectionBuilder {
                 return TranslationFile(
                   path: f.path,
                   locale: locale,
-                  namespace: TranslationFile.DEFAULT_NAMESPACE,
+                  namespace: RegexUtils.DEFAULT_NAMESPACE,
                   read: f.read,
                 );
               }
@@ -158,7 +158,7 @@ class SlangFileCollectionBuilder {
                 locale: directoryLocale ?? config.baseLocale,
                 namespace: config.namespaces
                     ? fileNameNoExtension
-                    : TranslationFile.DEFAULT_NAMESPACE,
+                    : RegexUtils.DEFAULT_NAMESPACE,
                 read: f.read,
               );
             }
@@ -187,7 +187,7 @@ class SlangFileCollectionBuilder {
                 locale: locale,
                 namespace: config.namespaces
                     ? namespace
-                    : TranslationFile.DEFAULT_NAMESPACE,
+                    : RegexUtils.DEFAULT_NAMESPACE,
                 read: f.read,
               );
             }

@@ -1300,7 +1300,7 @@ i18n/
       └── error_dialogs.i18n.json <-- directory locale will be used
 ```
 
-If you use directory locales, then you may use underscores as namespace.
+If you use directory locales, then you may use underscores as namespace, but it is recommended to use camel case.
 
 Now access the translations:
 
@@ -1308,6 +1308,22 @@ Now access the translations:
 // t.<namespace>.<path>
 String a = t.widgets.welcomeCard.title;
 String b = t.errorDialogs.login.wrongPassword;
+```
+
+To put translations into the root namespace, use the `_default` namespace.
+This allows you to combine namespaced and non-namespaced translations.
+
+```text
+i18n/
+ └── _default_en.i18n.json
+ └── _default_fr.i18n.json
+ └── widgets_en.i18n.json
+ └── widgets_fr.i18n.json
+```
+
+```dart
+String a = t.appName; // from _default namespace
+String b = t.widgets.welcomeCard.title; // from widgets namespace
 ```
 
 ### ➤ Compact CSV

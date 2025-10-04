@@ -1,4 +1,5 @@
 import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 
 /// Contains ALL translations of ALL locales
 /// Represented as pure maps without modifications
@@ -16,22 +17,26 @@ class TranslationMap {
   /// Namespace may be ignored if this feature is not used
   void addTranslations({
     required I18nLocale locale,
-    String namespace = 'not relevant',
+    String namespace = RegexUtils.DEFAULT_NAMESPACE,
     required Map<String, dynamic> translations,
   }) {
-    if (!_internalMap.containsKey(locale)) {
+    final Map<String, Map<String, dynamic>> namespaceMap;
+    if (_internalMap.containsKey(locale)) {
+      namespaceMap = _internalMap[locale]!;
+    } else {
       // ensure that the locale exists
-      _internalMap[locale] = {};
+      namespaceMap = {};
+      _internalMap[locale] = namespaceMap;
     }
 
-    _internalMap[locale]![namespace] = translations;
+    namespaceMap[namespace] = translations;
 
     // Copy types of each namespace to the global types map,
     // merging them with existing types.
     final typesMap = translations['@@types'] as Map<String, dynamic>?;
     if (typesMap != null) {
-      _internalMap[locale]!['@@types'] = {
-        ...?_internalMap[locale]!['@@types'],
+      namespaceMap['@@types'] = {
+        ...?namespaceMap['@@types'],
         ...typesMap,
       };
     }

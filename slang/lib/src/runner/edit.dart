@@ -176,7 +176,8 @@ Future<void> _moveEntry({
 
     // Find the destination node
     if (rename) {
-      log.verbose('[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
+      log.verbose(
+          '[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
       MapUtils.updateEntry(
         map: origMap,
         path: config.namespaces ? originPathList.skip(1).join('.') : originPath,
