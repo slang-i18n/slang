@@ -1,3 +1,7 @@
+## 4.9.0
+
+- bump `slang` to `4.9.0`
+
 ## 4.8.1
 
 - deps: loosen `build` dependency to `>=2.2.1 <5.0.0`

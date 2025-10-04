@@ -1,3 +1,8 @@
+## 4.9.0
+
+- feat: combine namespaced and non-namespaced translations (#311)
+- feat: reduce CLI logging (#315)
+
 ## 4.8.1
 
 - fix: remove new line in autodoc output
