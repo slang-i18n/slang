@@ -405,7 +405,6 @@ Future<void> _addEntry({
 
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
-    verbose: false,
   );
   final config = fileCollection.config;
   final baseTranslationMap = config.namespaces

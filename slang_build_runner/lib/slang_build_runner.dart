@@ -69,7 +69,6 @@ class I18nBuilder implements Builder {
     // STEP 2: scan translations
     final translationMap = await TranslationMapBuilder.build(
       fileCollection: fileCollection,
-      verbose: false,
     );
 
     // STEP 3: generate .g.dart content

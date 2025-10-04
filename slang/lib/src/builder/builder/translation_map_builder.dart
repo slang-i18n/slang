@@ -15,11 +15,10 @@ class TranslationMapBuilder {
   /// The resulting map is in a unmodified state, so no actual i18n handling (plural, rich text) has been applied.
   static Future<TranslationMap> build({
     required SlangFileCollection fileCollection,
-    required bool verbose,
   }) async {
     final rawConfig = fileCollection.config;
     final translationMap = TranslationMap();
-    final padLeft = verbose
+    final padLeft = log.level == log.Level.verbose
         ? _getPadLeft(
             files: fileCollection.files,
             baseLocale: rawConfig.baseLocale.languageTag,
@@ -34,9 +33,7 @@ class TranslationMapBuilder {
         translations =
             BaseDecoder.decodeWithFileType(rawConfig.fileType, content);
       } on FormatException catch (e) {
-        if (verbose) {
-          log.verbose('');
-        }
+        log.verbose('');
         throw 'File: ${file.path}\n$e';
       }
 
@@ -55,7 +52,7 @@ class TranslationMapBuilder {
             translations: localeTranslations,
           );
 
-          if (verbose) {
+          if (log.level == log.Level.verbose) {
             final baseStr = locale == rawConfig.baseLocale ? '(base) ' : '';
             final namespaceStr =
                 rawConfig.namespaces ? '(${file.namespace}) ' : '';
@@ -72,7 +69,7 @@ class TranslationMapBuilder {
           translations: translations,
         );
 
-        if (verbose) {
+        if (log.level == log.Level.verbose) {
           final baseLog = file.locale == rawConfig.baseLocale ? '(base) ' : '';
           final namespaceLog =
               rawConfig.namespaces ? '(${file.namespace}) ' : '';
@@ -85,9 +82,7 @@ class TranslationMapBuilder {
     if (translationMap
         .getLocales()
         .every((locale) => locale != rawConfig.baseLocale)) {
-      if (verbose) {
-        log.verbose('');
-      }
+      log.verbose('');
       throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
     }
 

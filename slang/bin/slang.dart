@@ -167,7 +167,6 @@ void main(List<String> arguments) async {
       await generateTranslations(
         mode: mode,
         fileCollection: fileCollection,
-        verbose: verbose,
         stopwatch: stopwatch,
         arguments: filteredArguments,
       );
@@ -266,7 +265,6 @@ Future<void> _generateTranslationsFromWatch({
         config: config,
         files: newFiles,
       ),
-      verbose: false,
     );
   } catch (e) {
     success = false;
@@ -293,7 +291,6 @@ Future<void> _generateTranslationsFromWatch({
 Future<void> generateTranslations({
   required RunnerMode mode,
   required SlangFileCollection fileCollection,
-  required bool verbose,
   Stopwatch? stopwatch,
   List<String>? arguments,
 }) async {
@@ -306,13 +303,10 @@ Future<void> generateTranslations({
   final outputFilePath = fileCollection.determineOutputPath();
 
   // STEP 2: scan translations
-  if (verbose) {
-    log.verbose('Scanning translations...\n');
-  }
+  log.verbose('Scanning translations...\n');
 
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
-    verbose: verbose,
   );
 
   if (mode == RunnerMode.stats) {
@@ -362,7 +356,7 @@ Future<void> generateTranslations({
     );
   }
 
-  if (verbose) {
+  if (log.level == log.Level.verbose) {
     log.verbose('\nOutput:');
     log.verbose(' -> $outputFilePath');
     for (final locale in result.translations.keys) {
@@ -376,7 +370,7 @@ Future<void> generateTranslations({
   if (fileCollection.config.format.enabled) {
     final formatDir = PathUtils.getParentPath(outputFilePath)!;
     Stopwatch? formatStopwatch;
-    if (verbose) {
+    if (log.level == log.Level.verbose) {
       log.verbose('\nFormatting "$formatDir" ...');
       if (stopwatch != null) {
         formatStopwatch = Stopwatch()..start();
@@ -386,15 +380,15 @@ Future<void> generateTranslations({
       dir: formatDir,
       width: fileCollection.config.format.width,
     );
-    if (verbose && formatStopwatch != null) {
+    if (formatStopwatch != null) {
       log.verbose('Format done. ${formatStopwatch.elapsedSeconds}');
     }
   }
 
-  if (verbose && stopwatch != null) {
-    log.verbose(
-        '\n${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
-  } else if (stopwatch != null) {
+  if (stopwatch != null) {
+    if (log.level == log.Level.verbose) {
+      log.verbose('');
+    }
     log.info(
         '${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
   }

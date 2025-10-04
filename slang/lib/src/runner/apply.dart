@@ -40,7 +40,6 @@ Future<void> runApplyTranslations({
 
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
-    verbose: false,
   );
 
   log.info('Looking for missing translations files in $outDir');

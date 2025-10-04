@@ -24,7 +24,6 @@ Future<void> runNormalize({
 
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
-    verbose: false,
   );
 
   final baseTranslationMap = translationMap[fileCollection.config.baseLocale]!;
