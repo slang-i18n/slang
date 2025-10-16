@@ -184,29 +184,38 @@ class _TranslationsOnboarding$modifierPages$0i1$De extends TranslationsOnboardin
 	@override String get title => 'Zweite Modifier Seite';
 }
 
-/// Flat map(s) containing all translations.
+/// The flat map containing all translations for locale <de>.
 /// Only for edge cases! For simple maps, use the map function of this library.
+/// Note: We use a HashMap because Dart seems to be unable to compile large switch statements.
+Map<String, dynamic>? _map;
+
 extension on TranslationsDe {
 	dynamic _flatMapFunction(String path) {
-		switch (path) {
-			case 'onboarding.welcome': return ({required Object fullName}) => 'Willkommen ${fullName}';
-			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
-			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => '${firstName}';
-			case 'onboarding.bye': return ({required Object firstName}) => 'Tschüss ${firstName}';
-			case 'onboarding.kContinue': return 'Weiter';
-			case 'onboarding.linkContinue': return _root.onboarding.kContinue;
-			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		final map = _map ?? _initFlatMap();
+		return map[path];
+	}
+
+	/// Initializes the flat map and returns it.
+	Map<String, dynamic> _initFlatMap() {
+		final map = <String, dynamic>{};
+		map['onboarding.welcome'] = ({required Object fullName}) => 'Willkommen ${fullName}';
+		map['onboarding.welcomeAlias'] = ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+		map['onboarding.welcomeOnlyParam'] = ({required Object firstName}) => '${firstName}';
+		map['onboarding.bye'] = ({required Object firstName}) => 'Tschüss ${firstName}';
+		map['onboarding.kContinue'] = 'Weiter';
+		map['onboarding.linkContinue'] = _root.onboarding.kContinue;
+		map['onboarding.hi'] = ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				const TextSpan(text: 'Hi '),
 				name,
 				TextSpan(text: ' und ${_root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)}'),
 			]);
-			case 'onboarding.pages.0.title': return 'Erste Seite';
-			case 'onboarding.pages.0.content': return 'Erster Seiteninhalt';
-			case 'onboarding.pages.1.title': return 'Zweite Seite';
-			case 'onboarding.modifierPages.0.title': return 'Erste Modifier Seite';
-			case 'onboarding.modifierPages.0.content': return 'Erster Seiteninhalt';
-			case 'onboarding.modifierPages.1.title': return 'Zweite Modifier Seite';
-			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+		map['onboarding.pages.0.title'] = 'Erste Seite';
+		map['onboarding.pages.0.content'] = 'Erster Seiteninhalt';
+		map['onboarding.pages.1.title'] = 'Zweite Seite';
+		map['onboarding.modifierPages.0.title'] = 'Erste Modifier Seite';
+		map['onboarding.modifierPages.0.content'] = 'Erster Seiteninhalt';
+		map['onboarding.modifierPages.1.title'] = 'Zweite Modifier Seite';
+		map['onboarding.greet'] = ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
 					case GenderContext.male:
 						return 'Hallo Herr ${lastName} und ${_root.onboarding.welcome(fullName: fullName)}';
@@ -214,7 +223,7 @@ extension on TranslationsDe {
 						return 'Hallo Frau ${lastName} und ${_root.onboarding.bye(firstName: firstName)}';
 				}
 			};
-			case 'onboarding.greet2': return ({required GenderContext gender}) {
+		map['onboarding.greet2'] = ({required GenderContext gender}) {
 				switch (gender) {
 					case GenderContext.male:
 						return 'Hallo Herr';
@@ -222,21 +231,21 @@ extension on TranslationsDe {
 						return 'Hallo Frau';
 				}
 			};
-			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
-			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
-			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
-			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+		map['onboarding.greetCombination'] = ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => '${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}, ${_root.onboarding.greet2(gender: gender)}';
+		map['onboarding.welcomeLinkedPlural'] = ({required num n, required Object fullName, required Object firstName}) => 'Hallo ${_root.group.users(n: n, fullName: fullName, firstName: firstName)}';
+		map['onboarding.welcomeLinkedContext'] = ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => 'Hallo ${_root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+		map['onboarding.welcomeFullLink'] = ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => 'Ultimative ${_root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName)} and ${_root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context)}';
+		map['group.users'] = ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 				zero: 'Keine Nutzer und ${_root.onboarding.welcome(fullName: fullName)}',
 				one: 'Ein Nutzer',
 				other: '${n} Nutzer und ${_root.onboarding.bye(firstName: firstName)}',
 			);
-			case 'end.stringPages.0': return '1. Seite';
-			case 'end.stringPages.1': return '2. Seite';
-			case 'end.pages.0.unknown': return 'Unbekannter\nFehler';
-			case 'end.pages.1.with space': return 'Ein Fehler';
-			case 'end.pages.1.with second space': return 'Ein 2. Fehler';
-			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		map['end.stringPages.0'] = '1. Seite';
+		map['end.stringPages.1'] = '2. Seite';
+		map['end.pages.0.unknown'] = 'Unbekannter\nFehler';
+		map['end.pages.1.with space'] = 'Ein Fehler';
+		map['end.pages.1.with second space'] = 'Ein 2. Fehler';
+		map['advancedPlural'] = ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 				n: count,
 				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
 				one: () => TextSpan(children: [
@@ -248,8 +257,9 @@ extension on TranslationsDe {
 					TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
 				]),
 			);
-			default: return null;
-		}
+
+		_map = map;
+		return map;
 	}
 }
 

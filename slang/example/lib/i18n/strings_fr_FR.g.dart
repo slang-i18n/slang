@@ -59,22 +59,32 @@ class _TranslationsMainScreenFrFr implements TranslationsMainScreenEn {
 	@override String get tapMe => 'Appuyez-moi';
 }
 
-/// Flat map(s) containing all translations.
+/// The flat map containing all translations for locale <fr-FR>.
 /// Only for edge cases! For simple maps, use the map function of this library.
+/// Note: We use a HashMap because Dart seems to be unable to compile large switch statements.
+Map<String, dynamic>? _map;
+
 extension on TranslationsFrFr {
 	dynamic _flatMapFunction(String path) {
-		switch (path) {
-			case 'mainScreen.title': return 'Le titre français';
-			case 'mainScreen.counter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		final map = _map ?? _initFlatMap();
+		return map[path];
+	}
+
+	/// Initializes the flat map and returns it.
+	Map<String, dynamic> _initFlatMap() {
+		final map = <String, dynamic>{};
+		map['mainScreen.title'] = 'Le titre français';
+		map['mainScreen.counter'] = ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
 				one: 'Vous avez appuyé une fois.',
 				other: 'Vous avez appuyé ${n} fois.',
 			);
-			case 'mainScreen.tapMe': return 'Appuyez-moi';
-			case 'locales.en': return 'Anglais';
-			case 'locales.de': return 'Allemand';
-			case 'locales.fr-FR': return 'Français';
-			default: return null;
-		}
+		map['mainScreen.tapMe'] = 'Appuyez-moi';
+		map['locales.en'] = 'Anglais';
+		map['locales.de'] = 'Allemand';
+		map['locales.fr-FR'] = 'Français';
+
+		_map = map;
+		return map;
 	}
 }
 

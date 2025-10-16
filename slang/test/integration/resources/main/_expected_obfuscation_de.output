@@ -184,29 +184,38 @@ class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements Transla
 	@override String get title => _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
 }
 
-/// Flat map(s) containing all translations.
+/// The flat map containing all translations for locale <de>.
 /// Only for edge cases! For simple maps, use the map function of this library.
+/// Note: We use a HashMap because Dart seems to be unable to compile large switch statements.
+Map<String, dynamic>? _map;
+
 extension on TranslationsDe {
 	dynamic _flatMapFunction(String path) {
-		switch (path) {
-			case 'onboarding.welcome': return ({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123]) + fullName.toString();
-			case 'onboarding.welcomeAlias': return ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
-			case 'onboarding.welcomeOnlyParam': return ({required Object firstName}) => firstName.toString();
-			case 'onboarding.bye': return ({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123]) + firstName.toString();
-			case 'onboarding.kContinue': return _root.$meta.d([12, 62, 50, 47, 62, 41]);
-			case 'onboarding.linkContinue': return _root.onboarding.kContinue;
-			case 'onboarding.hi': return ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
+		final map = _map ?? _initFlatMap();
+		return map[path];
+	}
+
+	/// Initializes the flat map and returns it.
+	Map<String, dynamic> _initFlatMap() {
+		final map = <String, dynamic>{};
+		map['onboarding.welcome'] = ({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123]) + fullName.toString();
+		map['onboarding.welcomeAlias'] = ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName);
+		map['onboarding.welcomeOnlyParam'] = ({required Object firstName}) => firstName.toString();
+		map['onboarding.bye'] = ({required Object firstName}) => _root.$meta.d([15, 40, 56, 51, 167, 40, 40, 123]) + firstName.toString();
+		map['onboarding.kContinue'] = _root.$meta.d([12, 62, 50, 47, 62, 41]);
+		map['onboarding.linkContinue'] = _root.onboarding.kContinue;
+		map['onboarding.hi'] = ({required InlineSpan name, required Object lastName, required GenderContext context, required Object fullName, required Object firstName}) => TextSpan(children: [
 				TextSpan(text: _root.$meta.d([19, 50, 123])),
 				name,
 				TextSpan(text: _root.$meta.d([123, 46, 53, 63, 123]) + _root.onboarding.greet(lastName: lastName, context: context, fullName: fullName, firstName: firstName)),
 			]);
-			case 'onboarding.pages.0.title': return _root.$meta.d([30, 41, 40, 47, 62, 123, 8, 62, 50, 47, 62]);
-			case 'onboarding.pages.0.content': return _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
-			case 'onboarding.pages.1.title': return _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 8, 62, 50, 47, 62]);
-			case 'onboarding.modifierPages.0.title': return _root.$meta.d([30, 41, 40, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
-			case 'onboarding.modifierPages.0.content': return _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
-			case 'onboarding.modifierPages.1.title': return _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
-			case 'onboarding.greet': return ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
+		map['onboarding.pages.0.title'] = _root.$meta.d([30, 41, 40, 47, 62, 123, 8, 62, 50, 47, 62]);
+		map['onboarding.pages.0.content'] = _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
+		map['onboarding.pages.1.title'] = _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 8, 62, 50, 47, 62]);
+		map['onboarding.modifierPages.0.title'] = _root.$meta.d([30, 41, 40, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
+		map['onboarding.modifierPages.0.content'] = _root.$meta.d([30, 41, 40, 47, 62, 41, 123, 8, 62, 50, 47, 62, 53, 50, 53, 51, 58, 55, 47]);
+		map['onboarding.modifierPages.1.title'] = _root.$meta.d([1, 44, 62, 50, 47, 62, 123, 22, 52, 63, 50, 61, 50, 62, 41, 123, 8, 62, 50, 47, 62]);
+		map['onboarding.greet'] = ({required GenderContext context, required Object lastName, required Object fullName, required Object firstName}) {
 				switch (context) {
 					case GenderContext.male:
 						return _root.$meta.d([19, 58, 55, 55, 52, 123, 19, 62, 41, 41, 123]) + lastName.toString() + _root.$meta.d([123, 46, 53, 63, 123]) + _root.onboarding.welcome(fullName: fullName);
@@ -214,7 +223,7 @@ extension on TranslationsDe {
 						return _root.$meta.d([19, 58, 55, 55, 52, 123, 29, 41, 58, 46, 123]) + lastName.toString() + _root.$meta.d([123, 46, 53, 63, 123]) + _root.onboarding.bye(firstName: firstName);
 				}
 			};
-			case 'onboarding.greet2': return ({required GenderContext gender}) {
+		map['onboarding.greet2'] = ({required GenderContext gender}) {
 				switch (gender) {
 					case GenderContext.male:
 						return _root.$meta.d([19, 58, 55, 55, 52, 123, 19, 62, 41, 41]);
@@ -222,21 +231,21 @@ extension on TranslationsDe {
 						return _root.$meta.d([19, 58, 55, 55, 52, 123, 29, 41, 58, 46]);
 				}
 			};
-			case 'onboarding.greetCombination': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => _root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context) + _root.$meta.d([119, 123]) + _root.onboarding.greet2(gender: gender);
-			case 'onboarding.welcomeLinkedPlural': return ({required num n, required Object fullName, required Object firstName}) => _root.$meta.d([19, 58, 55, 55, 52, 123]) + _root.group.users(n: n, fullName: fullName, firstName: firstName);
-			case 'onboarding.welcomeLinkedContext': return ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => _root.$meta.d([19, 58, 55, 55, 52, 123]) + _root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context);
-			case 'onboarding.welcomeFullLink': return ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => _root.$meta.d([14, 55, 47, 50, 54, 58, 47, 50, 45, 62, 123]) + _root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName) + _root.$meta.d([123, 58, 53, 63, 123]) + _root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context);
-			case 'group.users': return ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
+		map['onboarding.greetCombination'] = ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context, required GenderContext gender}) => _root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context) + _root.$meta.d([119, 123]) + _root.onboarding.greet2(gender: gender);
+		map['onboarding.welcomeLinkedPlural'] = ({required num n, required Object fullName, required Object firstName}) => _root.$meta.d([19, 58, 55, 55, 52, 123]) + _root.group.users(n: n, fullName: fullName, firstName: firstName);
+		map['onboarding.welcomeLinkedContext'] = ({required Object lastName, required Object fullName, required Object firstName, required GenderContext context}) => _root.$meta.d([19, 58, 55, 55, 52, 123]) + _root.onboarding.greet(lastName: lastName, fullName: fullName, firstName: firstName, context: context);
+		map['onboarding.welcomeFullLink'] = ({required num n, required Object fullName, required Object firstName, required Object lastName, required GenderContext context}) => _root.$meta.d([14, 55, 47, 50, 54, 58, 47, 50, 45, 62, 123]) + _root.onboarding.welcomeLinkedPlural(n: n, fullName: fullName, firstName: firstName) + _root.$meta.d([123, 58, 53, 63, 123]) + _root.onboarding.welcomeLinkedContext(lastName: lastName, fullName: fullName, firstName: firstName, context: context);
+		map['group.users'] = ({required num n, required Object fullName, required Object firstName}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
 				zero: _root.$meta.d([16, 62, 50, 53, 62, 123, 21, 46, 47, 33, 62, 41, 123, 46, 53, 63, 123]) + _root.onboarding.welcome(fullName: fullName),
 				one: _root.$meta.d([30, 50, 53, 123, 21, 46, 47, 33, 62, 41]),
 				other: n.toString() + _root.$meta.d([123, 21, 46, 47, 33, 62, 41, 123, 46, 53, 63, 123]) + _root.onboarding.bye(firstName: firstName),
 			);
-			case 'end.stringPages.0': return _root.$meta.d([106, 117, 123, 8, 62, 50, 47, 62]);
-			case 'end.stringPages.1': return _root.$meta.d([105, 117, 123, 8, 62, 50, 47, 62]);
-			case 'end.pages.0.unknown': return _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 81, 29, 62, 51, 55, 62, 41]);
-			case 'end.pages.1.with space': return _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]);
-			case 'end.pages.1.with second space': return _root.$meta.d([30, 50, 53, 123, 105, 117, 123, 29, 62, 51, 55, 62, 41]);
-			case 'advancedPlural': return ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
+		map['end.stringPages.0'] = _root.$meta.d([106, 117, 123, 8, 62, 50, 47, 62]);
+		map['end.stringPages.1'] = _root.$meta.d([105, 117, 123, 8, 62, 50, 47, 62]);
+		map['end.pages.0.unknown'] = _root.$meta.d([14, 53, 57, 62, 48, 58, 53, 53, 47, 62, 41, 81, 29, 62, 51, 55, 62, 41]);
+		map['end.pages.1.with space'] = _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]);
+		map['end.pages.1.with second space'] = _root.$meta.d([30, 50, 53, 123, 105, 117, 123, 29, 62, 51, 55, 62, 41]);
+		map['advancedPlural'] = ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge(
 				n: count,
 				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'),
 				one: () => TextSpan(children: [
@@ -248,8 +257,9 @@ extension on TranslationsDe {
 					TextSpan(text: _root.$meta.d([119, 123]) + _root.onboarding.greet2(gender: gender)),
 				]),
 			);
-			default: return null;
-		}
+
+		_map = map;
+		return map;
 	}
 }
 

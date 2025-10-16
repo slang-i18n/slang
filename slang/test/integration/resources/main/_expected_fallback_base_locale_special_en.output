@@ -51,12 +51,21 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	}
 }
 
-/// Flat map(s) containing all translations.
+/// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
+/// Note: We use a HashMap because Dart seems to be unable to compile large switch statements.
+Map<String, dynamic>? _map;
+
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
-		switch (path) {
-			case 'greet': return ({required Gender context}) {
+		final map = _map ?? _initFlatMap();
+		return map[path];
+	}
+
+	/// Initializes the flat map and returns it.
+	Map<String, dynamic> _initFlatMap() {
+		final map = <String, dynamic>{};
+		map['greet'] = ({required Gender context}) {
 				switch (context) {
 					case Gender.male:
 						return 'Hello Mr';
@@ -64,8 +73,9 @@ extension on Translations {
 						return 'Hello Mrs';
 				}
 			};
-			default: return null;
-		}
+
+		_map = map;
+		return map;
 	}
 }
 
