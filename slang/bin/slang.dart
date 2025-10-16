@@ -245,7 +245,7 @@ Future<void> _generateTranslationsFromWatch({
   required String fileName,
 }) async {
   final stopwatch = Stopwatch()..start();
-  _printDynamicLastLine('\r[$currentTime] $_YELLOW#$counter Generating...');
+  _printDynamicLastLine('\r[$currentTime] $_yellow#$counter Generating...');
 
   final newFiles = inputDirectory
       .listSync(recursive: true)
@@ -270,17 +270,17 @@ Future<void> _generateTranslationsFromWatch({
     success = false;
     log.error('\n${e.toString()}');
     _printDynamicLastLine(
-      '\r[$currentTime] $_RED#$counter Error ${stopwatch.elapsedSeconds}',
+      '\r[$currentTime] $_red#$counter Error ${stopwatch.elapsedSeconds}',
     );
   }
 
   if (success) {
     if (counter == 1) {
       _printDynamicLastLine(
-          '\r[$currentTime] $_GREEN#1 Init ${stopwatch.elapsedSeconds}');
+          '\r[$currentTime] $_green#1 Init ${stopwatch.elapsedSeconds}');
     } else {
       _printDynamicLastLine(
-        '\r[$currentTime] $_GREEN#$counter Update $fileName ${stopwatch.elapsedSeconds}',
+        '\r[$currentTime] $_green#$counter Update $fileName ${stopwatch.elapsedSeconds}',
       );
     }
   }
@@ -390,7 +390,7 @@ Future<void> generateTranslations({
       log.verbose('');
     }
     log.info(
-        '${_GREEN}Translations generated successfully. ${stopwatch.elapsedSeconds}$_RESET');
+        '${_green}Translations generated successfully. ${stopwatch.elapsedSeconds}$_reset');
   }
 }
 
@@ -411,17 +411,17 @@ String? _lastPrint;
 
 void _printDynamicLastLine(String output) {
   if (_lastPrint == null) {
-    stdout.write('\r$output$_RESET');
+    stdout.write('\r$output$_reset');
   } else {
-    stdout.write('\r${output.padRight(_lastPrint!.length, ' ')}$_RESET');
+    stdout.write('\r${output.padRight(_lastPrint!.length, ' ')}$_reset');
   }
   _lastPrint = output;
 }
 
-const _GREEN = '\x1B[32m';
-const _YELLOW = '\x1B[33m';
-const _RED = '\x1B[31m';
-const _RESET = '\x1B[0m';
+const _green = '\x1B[32m';
+const _yellow = '\x1B[33m';
+const _red = '\x1B[31m';
+const _reset = '\x1B[0m';
 
 extension on Stopwatch {
   String get elapsedSeconds {

@@ -4,7 +4,7 @@ import 'package:slang/src/builder/utils/string_extensions.dart';
 
 /// own Locale type to decouple from dart:ui package
 class I18nLocale {
-  static const String UNDEFINED_LANGUAGE = 'und';
+  static const String undefinedLanguage = 'und';
 
   final String language;
   final String? script;

@@ -52,7 +52,7 @@ String getClassName({
   return parentName + childName.toCase(CaseStyle.pascal) + languageTag;
 }
 
-const _NULL_FLAG = '\u0000';
+const _nullFlag = '\u0000';
 
 /// Either returns the plain string or the obfuscated one.
 /// Whenever translation strings gets rendered, this method must be called.
@@ -81,13 +81,13 @@ String getStringLiteral(String value, int linkCount, ObfuscationConfig config) {
 
       interpolations.add(actualMatch);
       links.add(actualMatch.startsWith(characteristicLinkPrefix));
-      return _NULL_FLAG; // replace interpolation with a null flag
+      return _nullFlag; // replace interpolation with a null flag
     },
   );
 
   // join the string with the interpolation in between
   final buffer = StringBuffer();
-  final parts = digestedString.split(_NULL_FLAG);
+  final parts = digestedString.split(_nullFlag);
   bool needPlus = false;
   for (int i = 0; i < parts.length; i++) {
     // add the string part

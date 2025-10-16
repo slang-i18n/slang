@@ -487,7 +487,7 @@ void _writeMap({
       final fileContent = FileUtils.encodeContent(
         fileType: fileType,
         content: {
-          INFO_KEY: info(entry.key, entry.value),
+          infoKey: info(entry.key, entry.value),
           ...entry.value,
         },
       );
@@ -520,7 +520,7 @@ void _writeMap({
     final fileContent = FileUtils.encodeContent(
       fileType: fileType,
       content: {
-        INFO_KEY: info(null, result),
+        infoKey: info(null, result),
         for (final entry in result.entries) entry.key.languageTag: entry.value,
       },
     );

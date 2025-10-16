@@ -11,7 +11,7 @@ void main() {
       file(String locale) => TranslationFile(
             path: '',
             locale: I18nLocale(language: locale),
-            namespace: RegexUtils.DEFAULT_NAMESPACE,
+            namespace: RegexUtils.defaultNamespace,
             read: () async => '',
           );
 

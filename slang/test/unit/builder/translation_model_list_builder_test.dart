@@ -22,7 +22,7 @@ void main() {
         )
         ..addTranslations(
           locale: I18nLocale(language: 'en'),
-          namespace: RegexUtils.DEFAULT_NAMESPACE,
+          namespace: RegexUtils.defaultNamespace,
           translations: {
             'appName': 'TestApp',
           },

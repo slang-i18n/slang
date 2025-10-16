@@ -53,7 +53,7 @@ class NodeModifiers {
 
 /// the super class of every node
 abstract class Node {
-  static const KEY_DELIMITER = ','; // used by plural or context
+  static const keyDelimiter = ','; // used by plural or context
 
   final String path;
   final String rawPath; // including modifiers

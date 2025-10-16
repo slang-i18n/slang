@@ -17,7 +17,7 @@ class TranslationMap {
   /// Namespace may be ignored if this feature is not used
   void addTranslations({
     required I18nLocale locale,
-    String namespace = RegexUtils.DEFAULT_NAMESPACE,
+    String namespace = RegexUtils.defaultNamespace,
     required Map<String, dynamic> translations,
   }) {
     final Map<String, Map<String, dynamic>> namespaceMap;

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/utils/yaml_writer.dart';
 
-const String INFO_KEY = '@@info';
+const String infoKey = '@@info';
 
 class FileUtils {
   static void writeFile({required String path, required String content}) {
@@ -64,9 +64,9 @@ class FileUtils {
         }
 
         final Map<String, Map<String, String>> columns = {};
-        if (content.containsKey(INFO_KEY)) {
-          final info = content.remove(INFO_KEY);
-          columns[INFO_KEY] = {INFO_KEY: escapeRow(info.join('\\n'))};
+        if (content.containsKey(infoKey)) {
+          final info = content.remove(infoKey);
+          columns[infoKey] = {infoKey: escapeRow(info.join('\\n'))};
         }
         for (final e in content.entries) {
           final result = <String, String>{};

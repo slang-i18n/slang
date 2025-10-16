@@ -153,7 +153,7 @@ extension on Map<String, dynamic> {
       return ContextType(
         enumName: enumName,
         defaultParameter:
-            config['default_parameter'] ?? ContextType.DEFAULT_PARAMETER,
+            config['default_parameter'] ?? ContextType.defaultParameterSlang,
         generateEnum: config['generate_enum'] ?? defaultGenerateEnum,
       );
     }).toList();

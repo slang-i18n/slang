@@ -443,7 +443,7 @@ Map<String, Node> _parseMapNode({
           Map<String, TextNode> digestedMap = <String, StringTextNode>{};
           final entries = children.entries.toList();
           for (final entry in entries) {
-            final split = entry.key.split(Node.KEY_DELIMITER);
+            final split = entry.key.split(Node.keyDelimiter);
             if (split.length == 1) {
               // keep as is
               digestedMap[entry.key] = entry.value as StringTextNode;
@@ -486,7 +486,7 @@ Map<String, Node> _parseMapNode({
             if (context == null) {
               context = PendingContextType(
                 enumName: enumName,
-                defaultParameter: ContextType.DEFAULT_PARAMETER,
+                defaultParameter: ContextType.defaultParameterSlang,
                 generateEnum: config.generateEnum,
               );
               contextCollection[context.enumName] = context;
@@ -625,7 +625,7 @@ _DetectionResult _determineNodeType(
     );
   } else {
     final childrenSplitByComma =
-        children.keys.expand((key) => key.split(Node.KEY_DELIMITER)).toList();
+        children.keys.expand((key) => key.split(Node.keyDelimiter)).toList();
 
     if (childrenSplitByComma.isEmpty) {
       // fallback: empty node is a class by default

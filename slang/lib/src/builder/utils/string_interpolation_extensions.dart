@@ -1,4 +1,4 @@
-const _DOLLAR = '\$';
+const _dollar = '\$';
 final _nonWordRegex = RegExp(r'[^\w]');
 
 extension StringInterpolationExtensions on String {
@@ -11,7 +11,7 @@ extension StringInterpolationExtensions on String {
 
     do {
       int startCharacterLength = 1;
-      int startIndex = curr.indexOf(_DOLLAR);
+      int startIndex = curr.indexOf(_dollar);
       if (startIndex == -1) {
         // no more matches
         buffer.write(curr);
@@ -21,7 +21,7 @@ extension StringInterpolationExtensions on String {
       // Check if the $ is escaped with a preceding \
       if (startIndex >= 1 && curr[startIndex - 1] == '\\') {
         buffer.write(curr.substring(0, startIndex)); // *do* include \
-        buffer.write(_DOLLAR);
+        buffer.write(_dollar);
         if (startIndex + 1 < curr.length) {
           curr = curr.substring(startIndex + 1);
           continue;
@@ -41,7 +41,7 @@ extension StringInterpolationExtensions on String {
           startCharacterLength = 2; // it is now "${"
         } else if (nextCharacter.contains(_nonWordRegex)) {
           // $ stands alone
-          buffer.write(_DOLLAR);
+          buffer.write(_dollar);
           curr = curr.substring(startIndex + 1);
           continue;
         }

@@ -71,12 +71,12 @@ class TranslationModelListBuilder {
 
 extension on Map<String, Map<String, dynamic>> {
   Map<String, dynamic> digest() {
-    if (length > 1 && containsKey(RegexUtils.DEFAULT_NAMESPACE)) {
+    if (length > 1 && containsKey(RegexUtils.defaultNamespace)) {
       return {
-        ...this[RegexUtils.DEFAULT_NAMESPACE]!,
+        ...this[RegexUtils.defaultNamespace]!,
         ...{
           for (final entry in entries)
-            if (entry.key != RegexUtils.DEFAULT_NAMESPACE)
+            if (entry.key != RegexUtils.defaultNamespace)
               entry.key: entry.value,
         },
       };

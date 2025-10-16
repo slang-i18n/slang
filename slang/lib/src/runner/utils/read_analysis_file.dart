@@ -67,11 +67,11 @@ Map<I18nLocale, Map<String, dynamic>> readAnalysis({
 
     if (locale != null) {
       _printReading(locale, file);
-      resultMap[locale] = {...parsedContent}..remove(INFO_KEY);
+      resultMap[locale] = {...parsedContent}..remove(infoKey);
     } else {
       // handle file containing multiple locales
       for (final entry in parsedContent.entries) {
-        if (entry.key.startsWith(INFO_KEY)) {
+        if (entry.key.startsWith(infoKey)) {
           continue;
         }
 

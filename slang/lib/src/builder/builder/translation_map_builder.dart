@@ -90,7 +90,7 @@ class TranslationMapBuilder {
   }
 }
 
-const _BASE_STR_LENGTH = 7; // "(base) "
+const _baseStrLength = 7; // "(base) "
 
 /// Determines the longest debug string used for PadLeft
 int _getPadLeft({
@@ -108,7 +108,7 @@ int _getPadLeft({
     }
 
     if (file.locale.languageTag == baseLocale) {
-      currLength += _BASE_STR_LENGTH;
+      currLength += _baseStrLength;
     }
 
     if (currLength > longest) {

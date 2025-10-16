@@ -19,10 +19,10 @@ class RegexUtils {
   static final RegExp dollarOnlyRegex = RegExp(r'([^\\]|^)\$( |$)');
 
   /// locale regex
-  static const LOCALE_REGEX_RAW =
+  static const localeRegexRaw =
       r'([a-z]{2,3})(?:[_-]([A-Za-z]{4}))?(?:[_-]([A-Z]{2}|[0-9]{3}))?';
 
-  static const DEFAULT_NAMESPACE = '_default';
+  static const defaultNamespace = '_default';
 
   /// Finds the parts of the locale. It must start with an underscore.
   /// groups for strings-zh-Hant-TW:
@@ -31,13 +31,13 @@ class RegexUtils {
   /// 3 = Hant (script)
   /// 4 = TW (country)
   static final RegExp fileWithLocaleRegex =
-      RegExp('^(?:([a-zA-Z0-9]+|$DEFAULT_NAMESPACE)[_-])?$LOCALE_REGEX_RAW\$');
+      RegExp('^(?:([a-zA-Z0-9]+|$defaultNamespace)[_-])?$localeRegexRaw\$');
 
   /// matches locale part only
   /// 1 - language (non-nullable)
   /// 2 - script
   /// 3 - country
-  static final RegExp localeRegex = RegExp('^$LOCALE_REGEX_RAW\$');
+  static final RegExp localeRegex = RegExp('^$localeRegexRaw\$');
 
   /// matches any string without special characters
   static final RegExp baseFileRegex = RegExp(r'^([a-zA-Z0-9]+)?$');
