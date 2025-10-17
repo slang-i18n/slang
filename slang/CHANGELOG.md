@@ -1,3 +1,7 @@
+## 4.9.1
+
+- fix: generate the flat map as a HashMap instead of a switch. Dart AOT compiler is unable to compile large switch statements (#318)
+
 ## 4.9.0
 
 - feat: combine namespaced and non-namespaced translations (#311)
