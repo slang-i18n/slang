@@ -164,48 +164,39 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
-/// Note: We use a HashMap because Dart seems to be unable to compile large switch statements.
-Map<String, dynamic>? _map;
-
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
-		final map = _map ?? _initFlatMap();
-		return map[path];
-	}
-
-	/// Initializes the flat map and returns it.
-	Map<String, dynamic> _initFlatMap() {
-		final map = <String, dynamic>{};
-		map['simple'] = 'Simple';
-		map['simpleParam'] = ({required Object simpleParam}) => 'Simple ${simpleParam}';
-		map['rich'] = TextSpan(children: [
+		switch (path) {
+			case 'simple': return 'Simple';
+			case 'simpleParam': return ({required Object simpleParam}) => 'Simple ${simpleParam}';
+			case 'rich': return TextSpan(children: [
 				const TextSpan(text: 'Rich'),
 			]);
-		map['richParam'] = ({required InlineSpan param}) => TextSpan(children: [
+			case 'richParam': return ({required InlineSpan param}) => TextSpan(children: [
 				const TextSpan(text: 'Rich '),
 				param,
 			]);
-		map['richDefaultParam'] = ({required InlineSpanBuilder param}) => TextSpan(children: [
+			case 'richDefaultParam': return ({required InlineSpanBuilder param}) => TextSpan(children: [
 				const TextSpan(text: 'Rich '),
 				param('Hello'),
 			]);
-		map['richDefaultLinkedParam'] = ({required InlineSpanBuilder param}) => TextSpan(children: [
+			case 'richDefaultLinkedParam': return ({required InlineSpanBuilder param}) => TextSpan(children: [
 				const TextSpan(text: 'Rich '),
 				param(_root.simple),
 			]);
-		map['richDefaultLinkedParamTransitiveParam'] = ({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [
+			case 'richDefaultLinkedParamTransitiveParam': return ({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [
 				const TextSpan(text: 'Rich '),
 				param(_root.simpleParam(simpleParam: simpleParam)),
 			]);
-		map['simplePlural'] = ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+			case 'simplePlural': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 				one: 'one item',
 				other: 'multiple items',
 			);
-		map['pluralWithParameter'] = ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+			case 'pluralWithParameter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 				one: 'one item',
 				other: '${n} items',
 			);
-		map['simpleRichPlural'] = ({required num n}) => RichPluralResolvers.bridge(
+			case 'simpleRichPlural': return ({required num n}) => RichPluralResolvers.bridge(
 				n: n,
 				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
 				one: () => TextSpan(children: [
@@ -215,7 +206,7 @@ extension on Translations {
 					const TextSpan(text: 'multiple items'),
 				]),
 			);
-		map['richPluralWithParameter'] = ({required num n, required InlineSpan Function(num) nBuilder}) => RichPluralResolvers.bridge(
+			case 'richPluralWithParameter': return ({required num n, required InlineSpan Function(num) nBuilder}) => RichPluralResolvers.bridge(
 				n: n,
 				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
 				one: () => TextSpan(children: [
@@ -226,7 +217,7 @@ extension on Translations {
 					const TextSpan(text: ' items'),
 				]),
 			);
-		map['simpleContext'] = ({required Animal context}) {
+			case 'simpleContext': return ({required Animal context}) {
 				switch (context) {
 					case Animal.cat:
 						return 'Miaw';
@@ -234,7 +225,7 @@ extension on Translations {
 						return 'Woof';
 				}
 			};
-		map['contextWithParameter'] = ({required Animal context}) {
+			case 'contextWithParameter': return ({required Animal context}) {
 				switch (context) {
 					case Animal.cat:
 						return 'Miaw';
@@ -242,7 +233,7 @@ extension on Translations {
 						return 'Woof ${context}';
 				}
 			};
-		map['simpleRichContext'] = ({required Animal context}) {
+			case 'simpleRichContext': return ({required Animal context}) {
 				switch (context) {
 					case Animal.cat:
 						return TextSpan(children: [
@@ -254,7 +245,7 @@ extension on Translations {
 						]);
 				}
 			};
-		map['richContextWithParameter'] = ({required Animal context, required InlineSpan Function(Animal) contextBuilder}) {
+			case 'richContextWithParameter': return ({required Animal context, required InlineSpan Function(Animal) contextBuilder}) {
 				switch (context) {
 					case Animal.cat:
 						return TextSpan(children: [
@@ -267,9 +258,8 @@ extension on Translations {
 						]);
 				}
 			};
-
-		_map = map;
-		return map;
+			default: return null;
+		}
 	}
 }
 
