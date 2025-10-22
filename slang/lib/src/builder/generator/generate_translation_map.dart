@@ -1,6 +1,6 @@
 part of 'generate_translations.dart';
 
-const _maxSwitchCasesPerBlock = 1024;
+const _maxSwitchCasesPerBlock = 512;
 
 /// Generates the flat map(s) containing all translations for one locale.
 String generateTranslationMap(
