@@ -237,8 +237,15 @@ class TranslationsOnboarding$modifierPages$0i1$En with MPage {
 
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
+///
+/// The Dart AOT compiler has issues with very large switch statements,
+/// so the map is split into smaller functions (1024 entries each).
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
+		return _flatMapFunction$0(path);
+	}
+
+	dynamic _flatMapFunction$0(String path) {
 		switch (path) {
 			case 'onboarding.welcome': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcome', {'fullName': fullName}) ?? 'Welcome ${fullName}';
 			case 'onboarding.welcomeAlias': return ({required Object fullName}) => TranslationOverrides.string(_root.$meta, 'onboarding.welcomeAlias', {'fullName': fullName}) ?? _root.onboarding.welcome(fullName: fullName);
