@@ -1,3 +1,7 @@
+## 4.9.2
+
+- fix: split flat map into multiple switch blocks instead of a HashMap which caused StackOverflow on linked translations (#319)
+
 ## 4.9.1
 
 - fix: generate the flat map as a HashMap instead of a switch. Dart AOT compiler is unable to compile large switch statements (#318)
