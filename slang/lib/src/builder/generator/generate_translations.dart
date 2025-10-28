@@ -36,6 +36,7 @@ String generateTranslations(GenerateConfig config, I18nData localeData,
 ///
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
+// dart format off
 ''');
 
   if (localeData.base) {
