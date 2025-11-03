@@ -32,6 +32,7 @@ class GenerateConfigBuilder {
       contexts: contexts,
       interface: interfaces,
       obfuscation: config.obfuscation,
+      format: config.format,
       autodoc: config.autodoc,
       imports: config.imports,
     );
