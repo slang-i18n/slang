@@ -91,6 +91,7 @@ void _generateTranslationMap({
       }
     } else if (curr is RichTextNode) {
       buffer.write('\t\t\t\'${curr.path}\' => ');
+
       final tmp = StringBuffer();
       _addRichTextCall(
         buffer: tmp,
@@ -102,9 +103,11 @@ void _generateTranslationMap({
         depth: 2,
         forceSemicolon: false,
       );
+
       flatten(tmp);
     } else if (curr is PluralNode) {
       buffer.write('\t\t\t\'${curr.path}\' => ');
+
       final tmp = StringBuffer();
       _addPluralCall(
         buffer: tmp,
@@ -114,9 +117,11 @@ void _generateTranslationMap({
         depth: 2,
         forceSemicolon: false,
       );
+
       flatten(tmp);
     } else if (curr is ContextNode) {
       buffer.write('\t\t\t\'${curr.path}\' => ');
+
       final tmp = StringBuffer();
       _addContextCall(
         buffer: tmp,
@@ -125,6 +130,7 @@ void _generateTranslationMap({
         depth: 2,
         forceSemicolon: false,
       );
+
       flatten(tmp);
     } else {
       throw 'This should not happen';
