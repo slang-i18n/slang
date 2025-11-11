@@ -1,3 +1,8 @@
+## 4.10.0
+
+- feat: add `// dart format off` for generated files (#320) @adil192
+- feat: flat map uses switch expressions instead of statements (#323) @mrgnhnt96
+
 ## 4.9.2
 
 - fix: split flat map into multiple switch blocks instead of a HashMap which caused StackOverflow on linked translations (#319)

@@ -16,7 +16,7 @@ void main() {
   }
 
   test('fallback base locale', () {
-    expectCompiles('main/_expected_fallback_base_locale.output');
+    expectCompiles('main/_expected_fallback_base_locale_main.output');
   });
 
   test('no flutter', () {
@@ -24,7 +24,7 @@ void main() {
   });
 
   test('obfuscation', () {
-    expectCompiles('main/_expected_obfuscation.output');
+    expectCompiles('main/_expected_obfuscation_main.output');
   });
 
   test('rich text', () {
@@ -32,6 +32,6 @@ void main() {
   });
 
   test('translation overrides', () {
-    expectCompiles('main/_expected_translation_overrides.output');
+    expectCompiles('main/_expected_translation_overrides_main.output');
   });
 }
