@@ -71,18 +71,15 @@ extension on TranslationsDe {
 	}
 
 	dynamic _flatMapFunction$0(String path) {
-		switch (path) {
-			case 'mainScreen.title': return 'Ein deutscher Titel';
-			case 'mainScreen.counter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n,
-				one: 'Du hast einmal gedrückt.',
-				other: 'Du hast ${n} mal gedrückt.',
-			);
-			case 'mainScreen.tapMe': return 'Drück mich';
-			case 'locales.en': return 'Englisch';
-			case 'locales.de': return 'Deutsch';
-			case 'locales.fr-FR': return 'Französisch';
-			default: return null;
-		}
+		return switch (path) {
+			'mainScreen.title' => 'Ein deutscher Titel',
+			'mainScreen.counter' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n, one: 'Du hast einmal gedrückt.', other: 'Du hast ${n} mal gedrückt.', ), 
+			'mainScreen.tapMe' => 'Drück mich',
+			'locales.en' => 'Englisch',
+			'locales.de' => 'Deutsch',
+			'locales.fr-FR' => 'Französisch',
+			_ => null,
+		};
 	}
 }
 

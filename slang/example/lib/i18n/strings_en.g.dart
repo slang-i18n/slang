@@ -80,18 +80,15 @@ extension on Translations {
 	}
 
 	dynamic _flatMapFunction$0(String path) {
-		switch (path) {
-			case 'mainScreen.title': return 'An English Title';
-			case 'mainScreen.counter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-				one: 'You pressed ${n} time.',
-				other: 'You pressed ${n} times.',
-			);
-			case 'mainScreen.tapMe': return 'Tap me';
-			case 'locales.en': return 'English';
-			case 'locales.de': return 'German';
-			case 'locales.fr-FR': return 'French';
-			default: return null;
-		}
+		return switch (path) {
+			'mainScreen.title' => 'An English Title',
+			'mainScreen.counter' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'You pressed ${n} time.', other: 'You pressed ${n} times.', ), 
+			'mainScreen.tapMe' => 'Tap me',
+			'locales.en' => 'English',
+			'locales.de' => 'German',
+			'locales.fr-FR' => 'French',
+			_ => null,
+		};
 	}
 }
 
