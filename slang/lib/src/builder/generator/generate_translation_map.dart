@@ -71,10 +71,6 @@ void _generateTranslationMap({
   required GenerateConfig config,
   required String language,
 }) {
-  void flatten(StringBuffer other) {
-    buffer.writeln(other.toString().split('\n').map((e) => e.trim()).join(' '));
-  }
-
   for (final curr in flatList) {
     if (curr is StringTextNode) {
       final translationOverrides = config.translationOverrides
@@ -104,7 +100,7 @@ void _generateTranslationMap({
         forceSemicolon: false,
       );
 
-      flatten(tmp);
+      buffer.writeln(tmp.toFlatString());
     } else if (curr is PluralNode) {
       buffer.write('\t\t\t\'${curr.path}\' => ');
 
@@ -118,7 +114,7 @@ void _generateTranslationMap({
         forceSemicolon: false,
       );
 
-      flatten(tmp);
+      buffer.writeln(tmp.toFlatString());
     } else if (curr is ContextNode) {
       buffer.write('\t\t\t\'${curr.path}\' => ');
 
@@ -131,7 +127,7 @@ void _generateTranslationMap({
         forceSemicolon: false,
       );
 
-      flatten(tmp);
+      buffer.writeln(tmp.toFlatString());
     } else {
       throw 'This should not happen';
     }
@@ -160,4 +156,10 @@ List<Node> _toFlatList(ObjectNode root) {
   }
 
   return result;
+}
+
+extension on StringBuffer {
+  String toFlatString() {
+    return toString().split('\n').map((e) => e.trim()).join(' ');
+  }
 }
