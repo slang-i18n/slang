@@ -1,3 +1,7 @@
+## 0.11.1
+
+- feat: add gpt-4.1, gpt-5, and gpt-5-mini #321
+
 ## 0.11.0
 
 - deps: bump slang to 4.0.0
