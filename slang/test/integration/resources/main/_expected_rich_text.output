@@ -174,100 +174,24 @@ extension on Translations {
 	}
 
 	dynamic _flatMapFunction$0(String path) {
-		switch (path) {
-			case 'simple': return 'Simple';
-			case 'simpleParam': return ({required Object simpleParam}) => 'Simple ${simpleParam}';
-			case 'rich': return TextSpan(children: [
-				const TextSpan(text: 'Rich'),
-			]);
-			case 'richParam': return ({required InlineSpan param}) => TextSpan(children: [
-				const TextSpan(text: 'Rich '),
-				param,
-			]);
-			case 'richDefaultParam': return ({required InlineSpanBuilder param}) => TextSpan(children: [
-				const TextSpan(text: 'Rich '),
-				param('Hello'),
-			]);
-			case 'richDefaultLinkedParam': return ({required InlineSpanBuilder param}) => TextSpan(children: [
-				const TextSpan(text: 'Rich '),
-				param(_root.simple),
-			]);
-			case 'richDefaultLinkedParamTransitiveParam': return ({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [
-				const TextSpan(text: 'Rich '),
-				param(_root.simpleParam(simpleParam: simpleParam)),
-			]);
-			case 'simplePlural': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-				one: 'one item',
-				other: 'multiple items',
-			);
-			case 'pluralWithParameter': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-				one: 'one item',
-				other: '${n} items',
-			);
-			case 'simpleRichPlural': return ({required num n}) => RichPluralResolvers.bridge(
-				n: n,
-				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
-				one: () => TextSpan(children: [
-					const TextSpan(text: 'one item'),
-				]),
-				other: () => TextSpan(children: [
-					const TextSpan(text: 'multiple items'),
-				]),
-			);
-			case 'richPluralWithParameter': return ({required num n, required InlineSpan Function(num) nBuilder}) => RichPluralResolvers.bridge(
-				n: n,
-				resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'),
-				one: () => TextSpan(children: [
-					const TextSpan(text: 'one item'),
-				]),
-				other: () => TextSpan(children: [
-					nBuilder(n),
-					const TextSpan(text: ' items'),
-				]),
-			);
-			case 'simpleContext': return ({required Animal context}) {
-				switch (context) {
-					case Animal.cat:
-						return 'Miaw';
-					case Animal.dog:
-						return 'Woof';
-				}
-			};
-			case 'contextWithParameter': return ({required Animal context}) {
-				switch (context) {
-					case Animal.cat:
-						return 'Miaw';
-					case Animal.dog:
-						return 'Woof ${context}';
-				}
-			};
-			case 'simpleRichContext': return ({required Animal context}) {
-				switch (context) {
-					case Animal.cat:
-						return TextSpan(children: [
-							const TextSpan(text: 'Miaw'),
-						]);
-					case Animal.dog:
-						return TextSpan(children: [
-							const TextSpan(text: 'Woof'),
-						]);
-				}
-			};
-			case 'richContextWithParameter': return ({required Animal context, required InlineSpan Function(Animal) contextBuilder}) {
-				switch (context) {
-					case Animal.cat:
-						return TextSpan(children: [
-							const TextSpan(text: 'Miaw'),
-						]);
-					case Animal.dog:
-						return TextSpan(children: [
-							const TextSpan(text: 'Woof '),
-							contextBuilder(context),
-						]);
-				}
-			};
-			default: return null;
-		}
+		return switch (path) {
+			'simple' => 'Simple',
+			'simpleParam' => ({required Object simpleParam}) => 'Simple ${simpleParam}',
+			'rich' => TextSpan(children: [ const TextSpan(text: 'Rich'), ]), 
+			'richParam' => ({required InlineSpan param}) => TextSpan(children: [ const TextSpan(text: 'Rich '), param, ]), 
+			'richDefaultParam' => ({required InlineSpanBuilder param}) => TextSpan(children: [ const TextSpan(text: 'Rich '), param('Hello'), ]), 
+			'richDefaultLinkedParam' => ({required InlineSpanBuilder param}) => TextSpan(children: [ const TextSpan(text: 'Rich '), param(_root.simple), ]), 
+			'richDefaultLinkedParamTransitiveParam' => ({required InlineSpanBuilder param, required Object simpleParam}) => TextSpan(children: [ const TextSpan(text: 'Rich '), param(_root.simpleParam(simpleParam: simpleParam)), ]), 
+			'simplePlural' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'one item', other: 'multiple items', ), 
+			'pluralWithParameter' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'one item', other: '${n} items', ), 
+			'simpleRichPlural' => ({required num n}) => RichPluralResolvers.bridge( n: n, resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'), one: () => TextSpan(children: [ const TextSpan(text: 'one item'), ]), other: () => TextSpan(children: [ const TextSpan(text: 'multiple items'), ]), ), 
+			'richPluralWithParameter' => ({required num n, required InlineSpan Function(num) nBuilder}) => RichPluralResolvers.bridge( n: n, resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'), one: () => TextSpan(children: [ const TextSpan(text: 'one item'), ]), other: () => TextSpan(children: [ nBuilder(n), const TextSpan(text: ' items'), ]), ), 
+			'simpleContext' => ({required Animal context}) { switch (context) { case Animal.cat: return 'Miaw'; case Animal.dog: return 'Woof'; } }, 
+			'contextWithParameter' => ({required Animal context}) { switch (context) { case Animal.cat: return 'Miaw'; case Animal.dog: return 'Woof ${context}'; } }, 
+			'simpleRichContext' => ({required Animal context}) { switch (context) { case Animal.cat: return TextSpan(children: [ const TextSpan(text: 'Miaw'), ]); case Animal.dog: return TextSpan(children: [ const TextSpan(text: 'Woof'), ]); } }, 
+			'richContextWithParameter' => ({required Animal context, required InlineSpan Function(Animal) contextBuilder}) { switch (context) { case Animal.cat: return TextSpan(children: [ const TextSpan(text: 'Miaw'), ]); case Animal.dog: return TextSpan(children: [ const TextSpan(text: 'Woof '), contextBuilder(context), ]); } }, 
+			_ => null,
+		};
 	}
 }
 

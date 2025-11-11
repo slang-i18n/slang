@@ -46,7 +46,7 @@ String generateTranslationMap(
   for (var i = 0; i < flatListSplits.length; i++) {
     buffer.writeln();
     buffer.writeln('\tdynamic _flatMapFunction\$$i(String path) {');
-    buffer.writeln('\t\tswitch (path) {');
+    buffer.writeln('\t\treturn switch (path) {');
 
     _generateTranslationMap(
       buffer: buffer,
@@ -55,8 +55,8 @@ String generateTranslationMap(
       language: localeData.locale.language,
     );
 
-    buffer.writeln('\t\t\tdefault: return null;');
-    buffer.writeln('\t\t}');
+    buffer.writeln('\t\t\t_ => null,');
+    buffer.writeln('\t\t};');
     buffer.writeln('\t}');
   }
 
@@ -71,6 +71,10 @@ void _generateTranslationMap({
   required GenerateConfig config,
   required String language,
 }) {
+  void flatten(StringBuffer other) {
+    buffer.writeln(other.toString().split('\n').map((e) => e.trim()).join(' '));
+  }
+
   for (final curr in flatList) {
     if (curr is StringTextNode) {
       final translationOverrides = config.translationOverrides
@@ -80,42 +84,54 @@ void _generateTranslationMap({
           getStringLiteral(curr.content, curr.links.length, config.obfuscation);
       if (curr.params.isEmpty) {
         buffer.writeln(
-            '\t\t\tcase \'${curr.path}\': return $translationOverrides$stringLiteral;');
+            '\t\t\t\'${curr.path}\' => $translationOverrides$stringLiteral,');
       } else {
         buffer.writeln(
-            '\t\t\tcase \'${curr.path}\': return ${_toParameterList(curr.params, curr.paramTypeMap)} => $translationOverrides$stringLiteral;');
+            '\t\t\t\'${curr.path}\' => ${_toParameterList(curr.params, curr.paramTypeMap)} => $translationOverrides$stringLiteral,');
       }
     } else if (curr is RichTextNode) {
-      buffer.write('\t\t\tcase \'${curr.path}\': return ');
+      buffer.write('\t\t\t\'${curr.path}\' => ');
+
+      final tmp = StringBuffer();
       _addRichTextCall(
-        buffer: buffer,
+        buffer: tmp,
         config: config,
         node: curr,
         includeParameters: true,
         variableNameResolver: null,
         forceArrow: false,
         depth: 2,
-        forceSemicolon: true,
+        forceSemicolon: false,
       );
+
+      flatten(tmp);
     } else if (curr is PluralNode) {
-      buffer.write('\t\t\tcase \'${curr.path}\': return ');
+      buffer.write('\t\t\t\'${curr.path}\' => ');
+
+      final tmp = StringBuffer();
       _addPluralCall(
-        buffer: buffer,
+        buffer: tmp,
         config: config,
         language: language,
         node: curr,
         depth: 2,
-        forceSemicolon: true,
+        forceSemicolon: false,
       );
+
+      flatten(tmp);
     } else if (curr is ContextNode) {
-      buffer.write('\t\t\tcase \'${curr.path}\': return ');
+      buffer.write('\t\t\t\'${curr.path}\' => ');
+
+      final tmp = StringBuffer();
       _addContextCall(
-        buffer: buffer,
+        buffer: tmp,
         config: config,
         node: curr,
         depth: 2,
-        forceSemicolon: true,
+        forceSemicolon: false,
       );
+
+      flatten(tmp);
     } else {
       throw 'This should not happen';
     }
