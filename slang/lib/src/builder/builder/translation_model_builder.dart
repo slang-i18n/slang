@@ -131,14 +131,20 @@ class TranslationModelBuilder {
     //
     // TextNodes with parameterized linked translations are rebuilt with correct parameters.
     if (handleLinks) {
-      leavesMap.entries
-          .where((entry) => entry.value is TextNode)
-          .forEach((entry) {
-        final key = entry.key;
-        final value = entry.value as TextNode;
+      for (final leave in leavesMap.entries) {
+        final key = leave.key;
+        final value = leave.value;
+
+        if (value is! TextNode) {
+          continue;
+        }
 
         final linkParamMap = <String, Set<String>>{};
         final paramTypeMap = <String, String>{};
+
+        // add own param types
+        paramTypeMap.addAll(value.paramTypeMap);
+
         for (final link in value.links) {
           final paramSet = <String>{};
           final visitedLinks = <String>{};
@@ -218,7 +224,7 @@ class TranslationModelBuilder {
             paramTypeMap: paramTypeMap,
           );
         }
-      });
+      }
     }
 
     // imaginary root node

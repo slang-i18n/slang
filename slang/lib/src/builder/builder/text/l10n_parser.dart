@@ -8,6 +8,7 @@ class ParseL10nResult {
   final String paramType;
 
   /// The format string that will be rendered as is.
+  /// E.g. NumberFormat.currency(locale: 'en').format(value)
   final String format;
 
   ParseL10nResult({

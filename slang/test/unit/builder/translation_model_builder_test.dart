@@ -87,6 +87,21 @@ void main() {
       expect(textNode.content, r'Hello ${_root.a}');
     });
 
+    test('should keep non-link parameter type', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'a': r'A $p2',
+          'b': r'Hello ${p1: bool} @:a',
+        },
+      );
+      final textNode = result.root.entries['b'] as StringTextNode;
+      expect(textNode.params, {'p1', 'p2'});
+      expect(textNode.content, r'Hello ${p1} ${_root.a(p2: p2)}');
+      expect(textNode.paramTypeMap, {'p1': 'bool', 'p2': 'Object'});
+    });
+
     test('one link 2 parameters straight', () {
       final result = TranslationModelBuilder.build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
