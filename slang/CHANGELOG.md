@@ -1,3 +1,7 @@
+## 4.10.1
+
+- fix: when L10n and linked translations are used together, the L10n parameter type got lost (#324)
+
 ## 4.10.0
 
 - feat: add `// dart format off` for generated files (#320) @adil192
