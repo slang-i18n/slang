@@ -67,10 +67,6 @@ class _TranslationsMainScreenDe implements TranslationsMainScreenEn {
 /// so the map is split into smaller functions (512 entries each).
 extension on TranslationsDe {
 	dynamic _flatMapFunction(String path) {
-		return _flatMapFunction$0(path);
-	}
-
-	dynamic _flatMapFunction$0(String path) {
 		return switch (path) {
 			'mainScreen.title' => 'Ein deutscher Titel',
 			'mainScreen.counter' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n, one: 'Du hast einmal gedrückt.', other: 'Du hast ${n} mal gedrückt.', ), 
@@ -82,4 +78,3 @@ extension on TranslationsDe {
 		};
 	}
 }
-

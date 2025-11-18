@@ -61,8 +61,7 @@ extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
 			'greet' => ({required Gender context}) { switch (context) { case Gender.male: return 'Hello Mr'; case Gender.female: return 'Hello Mrs'; } }, 
-			_ => null};
+			_ => null,
+		};
 	}
 }
-
-

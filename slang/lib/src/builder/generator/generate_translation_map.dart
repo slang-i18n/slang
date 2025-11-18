@@ -34,9 +34,13 @@ String generateTranslationMap(
 
   // Generate split functions
   for (var i = 0; i < flatListSplits.length; i++) {
-    final returnOrIfNull = switch (i) { 0 => '\t\treturn', _ => ' ??' };
+    if (i == 0) {
+      buffer.write('\t\treturn ');
+    } else {
+      buffer.write(' ?? ');
+    }
 
-    buffer.writeln('$returnOrIfNull switch (path) {');
+    buffer.writeln('switch (path) {');
 
     _generateTranslationMap(
       buffer: buffer,
@@ -45,14 +49,13 @@ String generateTranslationMap(
       language: localeData.locale.language,
     );
 
-    buffer.write('\t\t\t_ => null}');
+    buffer.write('\t\t\t_ => null,\n\t\t}');
   }
 
   buffer.writeln(';');
 
   buffer.writeln('\t}');
-  buffer.writeln('}');
-  buffer.writeln('');
+  buffer.write('}');
 
   return buffer.toString();
 }

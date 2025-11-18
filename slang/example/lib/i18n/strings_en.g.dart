@@ -76,10 +76,6 @@ class TranslationsMainScreenEn {
 /// so the map is split into smaller functions (512 entries each).
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
-		return _flatMapFunction$0(path);
-	}
-
-	dynamic _flatMapFunction$0(String path) {
 		return switch (path) {
 			'mainScreen.title' => 'An English Title',
 			'mainScreen.counter' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'You pressed ${n} time.', other: 'You pressed ${n} times.', ), 
@@ -91,4 +87,3 @@ extension on Translations {
 		};
 	}
 }
-

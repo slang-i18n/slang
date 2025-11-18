@@ -217,8 +217,7 @@ extension on TranslationsDe {
 			'end.pages.1.with space' => 'Ein Fehler',
 			'end.pages.1.with second space' => 'Ein 2. Fehler',
 			'advancedPlural' => ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge( n: count, resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'), one: () => TextSpan(children: [ const TextSpan(text: 'Eins'), ]), other: () => TextSpan(children: [ const TextSpan(text: 'Andere '), countBuilder(count), TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'), ]), ), 
-			_ => null};
+			_ => null,
+		};
 	}
 }
-
-
