@@ -192,10 +192,6 @@ class _TranslationsOnboarding$modifierPages$0i1$De with MPage implements Transla
 /// so the map is split into smaller functions (512 entries each).
 extension on TranslationsDe {
 	dynamic _flatMapFunction(String path) {
-		return _flatMapFunction$0(path);
-	}
-
-	dynamic _flatMapFunction$0(String path) {
 		return switch (path) {
 			'onboarding.welcome' => ({required Object fullName}) => _root.$meta.d([12, 50, 55, 55, 48, 52, 54, 54, 62, 53, 123]) + fullName.toString(),
 			'onboarding.welcomeAlias' => ({required Object fullName}) => _root.onboarding.welcome(fullName: fullName),
@@ -223,8 +219,8 @@ extension on TranslationsDe {
 			'end.pages.1.with space' => _root.$meta.d([30, 50, 53, 123, 29, 62, 51, 55, 62, 41]),
 			'end.pages.1.with second space' => _root.$meta.d([30, 50, 53, 123, 105, 117, 123, 29, 62, 51, 55, 62, 41]),
 			'advancedPlural' => ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => RichPluralResolvers.bridge( n: count, resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'), one: () => TextSpan(children: [ TextSpan(text: _root.$meta.d([30, 50, 53, 40])), ]), other: () => TextSpan(children: [ TextSpan(text: _root.$meta.d([26, 53, 63, 62, 41, 62, 123])), countBuilder(count), TextSpan(text: _root.$meta.d([119, 123]) + _root.onboarding.greet2(gender: gender)), ]), ), 
-			_ => null,
-		};
+			_ => null};
 	}
 }
+
 
