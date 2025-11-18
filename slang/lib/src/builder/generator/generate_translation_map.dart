@@ -31,22 +31,12 @@ String generateTranslationMap(
   }
 
   buffer.writeln('\tdynamic _flatMapFunction(String path) {');
-  buffer.write('\t\treturn ');
-  for (var i = 0; i < flatListSplits.length; i++) {
-    if (i == 0) {
-      buffer.write('_flatMapFunction\$$i(path)');
-    } else {
-      buffer.write('\n\t\t\t?? _flatMapFunction\$$i(path)');
-    }
-  }
-  buffer.writeln(';');
-  buffer.writeln('\t}');
 
   // Generate split functions
   for (var i = 0; i < flatListSplits.length; i++) {
-    buffer.writeln();
-    buffer.writeln('\tdynamic _flatMapFunction\$$i(String path) {');
-    buffer.writeln('\t\treturn switch (path) {');
+    final returnOrIfNull = switch (i) { 0 => '\t\treturn', _ => ' ??' };
+
+    buffer.writeln('$returnOrIfNull switch (path) {');
 
     _generateTranslationMap(
       buffer: buffer,
@@ -55,12 +45,14 @@ String generateTranslationMap(
       language: localeData.locale.language,
     );
 
-    buffer.writeln('\t\t\t_ => null,');
-    buffer.writeln('\t\t};');
-    buffer.writeln('\t}');
+    buffer.write('\t\t\t_ => null}');
   }
 
+  buffer.writeln(';');
+
+  buffer.writeln('\t}');
   buffer.writeln('}');
+  buffer.writeln('');
 
   return buffer.toString();
 }
