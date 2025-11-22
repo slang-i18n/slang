@@ -1,3 +1,9 @@
+## 4.11.0
+
+- feat: add `t.$wip('Welcome $name')` or `t.$wip.welcome.title('Welcome $name')` for key-less prototyping without code generation
+- feat: add `dart run slang wip apply` to add the translations to resources and update the Dart code accordingly
+- feat: generate the flat map in a single function (#325) @mrgnhnt96
+
 ## 4.10.1
 
 - fix: when L10n and linked translations are used together, the L10n parameter type got lost (#324)
