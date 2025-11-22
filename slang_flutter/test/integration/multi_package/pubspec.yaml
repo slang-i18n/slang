@@ -3,7 +3,7 @@ description: Multi-package test for slang. This package is used to test slang in
 version: 0.0.1
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
