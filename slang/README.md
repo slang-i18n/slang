@@ -29,17 +29,18 @@ final t = Translations.of(context); // there is also a static getter without con
 
 String a = t.mainScreen.title;                         // simple use case
 String b = t.game.end.highscore(score: 32.6);          // with parameters
-String c = t.items(n: 2);                              // with pluralization
-String d = t.greet(name: 'Tom', context: Gender.male); // with custom context
-String e = t.greet(today: DateTime.now());             // with L10n
-String f = t.intro.step[4];                            // with index
-String g = t.error.type['WARNING'];                    // with dynamic key
-String h = t['mainScreen.title'];                      // with fully dynamic key
-TextSpan i = t.greet(name: TextSpan(text: 'Tom'));     // with RichText
+String c = t.$wip('Password Forgotten');               // fast prototyping
+String d = t.items(n: 2);                              // with pluralization
+String e = t.greet(name: 'Tom', context: Gender.male); // with custom context
+String f = t.greet(today: DateTime.now());             // with L10n
+String g = t.intro.step[4];                            // with index
+String h = t.error.type['WARNING'];                    // with dynamic key
+String i = t['mainScreen.title'];                      // with fully dynamic key
+TextSpan j = t.greet(name: TextSpan(text: 'Tom'));     // with RichText
 
 PageData page0 = t.onboarding.pages[0];                // with interfaces
 PageData page1 = t.onboarding.pages[1];
-String j = page1.title; // type-safe call
+String k = page1.title; // type-safe call
 ```
 
 An extensive CLI will help you to manage the translations:
@@ -82,6 +83,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Compact CSV](#-compact-csv)
 - [Other Features](#other-features)
   - [Fallback](#-fallback)
+  - [Prototyping](#-prototyping)
   - [Lazy Loading](#-lazy-loading)
   - [Comments](#-comments)
   - [Auto Generated Comments](#-auto-generated-comments)
@@ -96,6 +98,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Analyze Translations](#-analyze-translations)
   - [Clean Translations](#-clean-translations)
   - [Apply Translations](#-apply-translations)
+  - [WIP Operations](#-wip-operations)
   - [Edit Translations](#-edit-translations)
   - [Normalize Translations](#-normalize-translations)
   - [Outdated Translations](#-outdated-translations)
@@ -1409,6 +1412,47 @@ To still apply the fallback strategy to maps, add the `(fallback)` modifier.
 }
 ```
 
+### ➤ Prototyping
+
+When prototyping, you may want to skip the overhead of defining keys and running code generation.
+
+Simply call `$wip` ("Work in Progress") on the `t` variable:
+
+```dart
+String name = 'Tom';
+t.$wip('Hello $name'); // => e.g. 'Hello Tom'
+```
+
+This requires no key paths, no code generation and works with hot reload!
+
+Extend it with a path:
+
+```dart
+t.$wip.welcome.name('Hello $name'); // still returns the same
+```
+
+Once you're done, you can let Slang do the work for you.
+
+```text
+dart run slang wip apply
+```
+
+This will update your translation files and your Dart code accordingly.
+
+```json5
+{
+  "welcome": {
+    "name": "Hello $name" // added automatically
+  }
+}
+```
+
+```dart
+t.welcome.name(name: name); // updated automatically
+```
+
+Complete CLI reference: [WIP Operations](#-wip-operations)
+
 ### ➤ Lazy Loading
 
 By default, translations for secondary locales are loaded lazily if [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-library) is supported (Web).
@@ -1655,9 +1699,9 @@ This command will care about all configuration files for you.
 dart run slang configure [--source-dirs=dir1,dir2]
 ```
 
-| Argument              | Usage                                                      |
-|-----------------------|------------------------------------------------------------|
-| `--source-dirs=<dirs>`| Comma-separated list of source directories to search in    |
+| Argument               | Usage                                                   |
+|------------------------|---------------------------------------------------------|
+| `--source-dirs=<dirs>` | Comma-separated list of source directories to search in |
 
 You can also specify additional arguments, for example to set the source directories:
 
@@ -1730,6 +1774,18 @@ dart run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
 |---------------------|--------------------------------------------------------|
 | `--locale=<locale>` | Apply only one specific locale                         |
 | `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
+
+### ➤ WIP Operations
+
+When working with the [Prototyping](#-prototyping) feature, you can apply the changes to your translation files.
+
+```sh
+dart run slang wip apply [--source-dirs=dir1,dir2]
+```
+
+| Argument               | Usage                                                   |
+|------------------------|---------------------------------------------------------|
+| `--source-dirs=<dirs>` | Comma-separated list of source directories to search in |
 
 ### ➤ Edit Translations
 
