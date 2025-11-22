@@ -135,8 +135,17 @@ void _generateClass(
       ),
   };
 
-  final mixinStr =
-      node.interface != null ? ' with ${node.interface!.name}' : '';
+  String mixinStr;
+  if (root) {
+    mixinStr = ' with BaseTranslations<${config.enumName}, ${config.className}>';
+    if (node.interface != null) {
+      mixinStr += ', with ${node.interface!.name}';
+    }
+  } else if (node.interface != null) {
+    mixinStr = ' with ${node.interface!.name}';
+  } else {
+    mixinStr = '';
+  }
 
   if (localeData.base) {
     if (root) {
@@ -148,7 +157,7 @@ void _generateClass(
       buffer.writeln(
           'typedef $legacyClassName = ${config.className}; // ignore: unused_element');
       buffer.writeln(
-          'class $finalClassName$mixinStr implements BaseTranslations<${config.enumName}, ${config.className}> {');
+          'class $finalClassName$mixinStr {');
     } else {
       buffer.writeln('class $finalClassName$mixinStr {');
     }

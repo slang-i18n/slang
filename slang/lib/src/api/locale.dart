@@ -1,13 +1,24 @@
 import 'package:slang/src/api/formatter.dart';
 import 'package:slang/src/api/pluralization.dart';
+import 'package:slang/src/api/wip.dart';
 import 'package:slang/src/builder/model/node.dart';
 
 /// Root translation class of ONE locale
 /// Entry point for every translation
-abstract class BaseTranslations<E extends BaseAppLocale<E, T>,
+abstract mixin class BaseTranslations<E extends BaseAppLocale<E, T>,
     T extends BaseTranslations<E, T>> {
   /// Metadata of this root translation class
   TranslationMetadata<E, T> get $meta;
+
+  /// Provides the ability to write plain strings without code generation.
+  /// Useful for prototyping / development.
+  ///
+  /// Example:
+  /// t.$wip.welcome.title('Welcome $name') => 'Welcome Tom'
+  ///
+  /// Run `dart run slang wip apply` to convert this into:
+  /// t.welcome.title(name: name)
+  dynamic get $wip => WipStrings.instance;
 }
 
 /// Metadata instance hold by the root translation class.
