@@ -17,6 +17,7 @@ import 'package:slang/src/runner/migrate.dart';
 import 'package:slang/src/runner/normalize.dart';
 import 'package:slang/src/runner/stats.dart';
 import 'package:slang/src/runner/utils/format.dart';
+import 'package:slang/src/runner/wip.dart';
 import 'package:slang/src/utils/log.dart' as log;
 import 'package:watcher/watcher.dart';
 
@@ -34,6 +35,7 @@ enum RunnerMode {
   add, // add a translation
   clean, // clean unused translations
   normalize, // normalize translations according to base locale
+  wip, // access the wip commands
 }
 
 /// To run this:
@@ -85,6 +87,9 @@ void main(List<String> arguments) async {
       case 'normalize':
         mode = RunnerMode.normalize;
         break;
+      case 'wip':
+        mode = RunnerMode.wip;
+        break;
       default:
         mode = RunnerMode.generate;
     }
@@ -131,6 +136,8 @@ void main(List<String> arguments) async {
       break;
     case RunnerMode.normalize:
       log.info('Normalizing translations...\n');
+      break;
+    case RunnerMode.wip:
       break;
   }
 
@@ -203,6 +210,21 @@ void main(List<String> arguments) async {
         fileCollection: fileCollection,
         arguments: arguments,
       );
+      break;
+    case RunnerMode.wip:
+      final changed = await runWip(
+        fileCollection: fileCollection,
+        arguments: filteredArguments,
+      );
+      if (changed) {
+        if (filteredArguments
+            .any((element) => element.startsWith('--source-dirs='))) {
+          log.info('No regeneration as --source-dirs is not supported yet');
+          return;
+        }
+        log.info('Changes has been applied! Regenerating Dart files...');
+        main(const []);
+      }
       break;
   }
 }

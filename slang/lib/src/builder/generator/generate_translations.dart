@@ -137,7 +137,8 @@ void _generateClass(
 
   String mixinStr;
   if (root) {
-    mixinStr = ' with BaseTranslations<${config.enumName}, ${config.className}>';
+    mixinStr =
+        ' with BaseTranslations<${config.enumName}, ${config.className}>';
     if (node.interface != null) {
       mixinStr += ', with ${node.interface!.name}';
     }
@@ -156,8 +157,7 @@ void _generateClass(
       );
       buffer.writeln(
           'typedef $legacyClassName = ${config.className}; // ignore: unused_element');
-      buffer.writeln(
-          'class $finalClassName$mixinStr {');
+      buffer.writeln('class $finalClassName$mixinStr {');
     } else {
       buffer.writeln('class $finalClassName$mixinStr {');
     }

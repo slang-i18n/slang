@@ -416,19 +416,31 @@ void _getUnusedTranslationsInSourceCodeRecursive({
 /// and joins them into a single (huge) string without any spaces.
 String loadSourceCode(List<File> files) {
   final buffer = StringBuffer();
-  final spacesRegex = RegExp(r'\s');
-  final singleLineCommentsRegex = RegExp(r'//.*');
-  final multiLineCommentsRegex = RegExp(r'/\*.*?\*/', dotAll: true);
 
   for (final file in files) {
     buffer.write(file
         .readAsStringSync()
-        .replaceAll(singleLineCommentsRegex, '')
-        .replaceAll(multiLineCommentsRegex, '')
-        .replaceAll(spacesRegex, ''));
+        .sanitizeDartFileForAnalysis(removeSpaces: true));
   }
 
   return buffer.toString();
+}
+
+final _spacesRegex = RegExp(r'\s');
+final _singleLineCommentsRegex = RegExp(r'//.*');
+final _multiLineCommentsRegex = RegExp(r'/\*.*?\*/', dotAll: true);
+
+extension DartAnalysisExt on String {
+  String sanitizeDartFileForAnalysis({required bool removeSpaces}) {
+    String temp = replaceAll(_singleLineCommentsRegex, '')
+        .replaceAll(_multiLineCommentsRegex, '');
+
+    if (removeSpaces) {
+      temp = temp.replaceAll(_spacesRegex, '');
+    }
+
+    return temp;
+  }
 }
 
 I18nData _findBaseTranslations(RawConfig rawConfig, List<I18nData> i18nData) {
