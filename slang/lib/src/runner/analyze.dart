@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:collection/collection.dart';
 import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
@@ -345,6 +348,10 @@ Map<String, dynamic> _getUnusedTranslationsInSourceCode({
 }) {
   final resultMap = <String, dynamic>{};
 
+  // Collect all used translation paths using AST analysis
+  final allUsedPaths = <String>{};
+  final analyzer = TranslationUsageAnalyzer(translateVar: translateVar);
+
   final files = <File>[];
   for (final sourceDir in sourceDirs) {
     final dir = Directory(sourceDir);
@@ -359,19 +366,29 @@ Map<String, dynamic> _getUnusedTranslationsInSourceCode({
     }
   }
 
-  _getUnusedTranslationsInSourceCodeRecursive(
-    sourceCode: loadSourceCode(files),
-    translateVar: translateVar,
+  // Analyze each file to find used translation paths
+  for (final file in files) {
+    try {
+      final usedPaths = analyzer.analyzeFile(file.path);
+      allUsedPaths.addAll(usedPaths);
+    } catch (e) {
+      log.verbose('Failed to analyze file ${file.path}: $e');
+    }
+  }
+
+  // Now check each translation node to see if it's used
+  _checkUnusedTranslations(
     node: baseModel.root,
+    usedPaths: allUsedPaths,
     resultMap: resultMap,
   );
+
   return resultMap;
 }
 
-void _getUnusedTranslationsInSourceCodeRecursive({
-  required String sourceCode,
-  required String translateVar,
+void _checkUnusedTranslations({
   required ObjectNode node,
+  required Set<String> usedPaths,
   required Map<String, dynamic> resultMap,
 }) {
   for (final child in node.values) {
@@ -380,28 +397,16 @@ void _getUnusedTranslationsInSourceCodeRecursive({
     }
 
     if (child is ObjectNode && !child.isMap) {
-      // recursive
-      _getUnusedTranslationsInSourceCodeRecursive(
-        sourceCode: sourceCode,
-        translateVar: translateVar,
+      // Recursively check children
+      _checkUnusedTranslations(
         node: child,
+        usedPaths: usedPaths,
         resultMap: resultMap,
       );
     } else {
-      final translationCall = '$translateVar.${child.path}';
-      const linkedPrefix = r'${_root';
-
-      // We only need to check if the translateVar is not part of the linked string.
-      // Since most developers use the default "t" as translateVar,
-      // we can ignore the linked call because it is already covered by the translateVar.
-      final linkedCall = linkedPrefix.endsWith(translateVar)
-          ? null
-          : '$linkedPrefix.${child.path}';
-
-      final isUsed = sourceCode.contains(translationCall) ||
-          (linkedCall != null && sourceCode.contains(linkedCall));
-      if (!isUsed) {
-        // add whole base node which is expected
+      // Check if this translation path is used
+      if (!usedPaths.contains(child.path)) {
+        // Add unused translation to result
         _addNodeRecursive(
           node: child,
           resultMap: resultMap,
@@ -412,36 +417,7 @@ void _getUnusedTranslationsInSourceCodeRecursive({
   }
 }
 
-/// Loads all dart files in lib/
-/// and joins them into a single (huge) string without any spaces.
-String loadSourceCode(List<File> files) {
-  final buffer = StringBuffer();
 
-  for (final file in files) {
-    buffer.write(file
-        .readAsStringSync()
-        .sanitizeDartFileForAnalysis(removeSpaces: true));
-  }
-
-  return buffer.toString();
-}
-
-final _spacesRegex = RegExp(r'\s');
-final _singleLineCommentsRegex = RegExp(r'//.*');
-final _multiLineCommentsRegex = RegExp(r'/\*.*?\*/', dotAll: true);
-
-extension DartAnalysisExt on String {
-  String sanitizeDartFileForAnalysis({required bool removeSpaces}) {
-    String temp = replaceAll(_singleLineCommentsRegex, '')
-        .replaceAll(_multiLineCommentsRegex, '');
-
-    if (removeSpaces) {
-      temp = temp.replaceAll(_spacesRegex, '');
-    }
-
-    return temp;
-  }
-}
 
 I18nData _findBaseTranslations(RawConfig rawConfig, List<I18nData> i18nData) {
   final baseTranslations = i18nData.firstWhereOrNull((element) => element.base);
@@ -492,7 +468,7 @@ void _writeMap({
       final path = PathUtils.withFileName(
         directoryPath: outDir,
         fileName:
-            '${fileNamePrefix}_${entry.key.languageTag.replaceAll('-', '_')}.${fileType.name}',
+        '${fileNamePrefix}_${entry.key.languageTag.replaceAll('-', '_')}.${fileType.name}',
         pathSeparator: Platform.pathSeparator,
       );
 
@@ -553,5 +529,244 @@ void _writeMap({
       content: fileContent,
     );
     log.info(' -> $path');
+  }
+}
+
+/// AST-based analyzer for detecting translation usage
+class TranslationUsageAnalyzer {
+  final String translateVar;
+  final Map<String, String> _translationVariables = {}; // name -> path
+  final Set<String> _usedPaths = {};
+
+  TranslationUsageAnalyzer({required this.translateVar});
+
+  Set<String> analyzeFile(String filePath) {
+    try {
+      final content = File(filePath).readAsStringSync();
+      final result = parseString(path: filePath, content: content);
+      final visitor = TranslationUsageVisitor(this);
+      result.unit.accept(visitor);
+      return _usedPaths;
+    } catch (e) {
+      log.verbose('Failed to analyze $filePath: $e');
+      return {};
+    }
+  }
+
+  void recordTranslationVariable(String variableName, String path) {
+    _translationVariables[variableName] = path;
+  }
+
+  void recordUsedPath(String path) {
+    _usedPaths.add(path);
+  }
+
+  bool isTranslationVariable(String variableName) {
+    return _translationVariables.containsKey(variableName);
+  }
+
+  String? getVariablePath(String variableName) {
+    return _translationVariables[variableName];
+  }
+}
+
+/// AST visitor that tracks translation variable assignments and usage
+class TranslationUsageVisitor extends RecursiveAstVisitor<void> {
+  final TranslationUsageAnalyzer analyzer;
+
+  TranslationUsageVisitor(this.analyzer);
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    final initializer = node.initializer;
+    if (initializer != null) {
+      final path = _extractTranslationPath(initializer);
+      if (path != null) {
+        analyzer.recordTranslationVariable(node.name.lexeme, path);
+      }
+    }
+    super.visitVariableDeclaration(node);
+  }
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) {
+    final target = node.realTarget;
+    if (target is SimpleIdentifier) {
+      final basePath = analyzer.getVariablePath(target.name);
+      if (basePath != null) {
+        final fullPath = '$basePath.${node.propertyName.name}';
+        analyzer.recordUsedPath(fullPath);
+        return;
+      }
+    }
+
+    // Handle nested cases like screen.header.title where screen is a variable
+    if (target is PropertyAccess || target is PrefixedIdentifier) {
+      final rootTarget = _getRootTarget(target);
+      if (rootTarget is SimpleIdentifier) {
+        final variablePath = analyzer.getVariablePath(rootTarget.name);
+        if (variablePath != null) {
+          final targetPath = _getTargetPath(target);
+          final fullPath = '$variablePath.$targetPath.${node.propertyName.name}';
+          analyzer.recordUsedPath(fullPath);
+          return;
+        }
+      }
+    }
+
+    // Check if this is a direct translation access like t.mainScreen.title
+    if (_isTranslationAccess(node)) {
+      final path = _getExpressionPath(node);
+      analyzer.recordUsedPath(path);
+      return;
+    }
+
+    super.visitPropertyAccess(node);
+  }
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    final prefix = node.prefix;
+    final identifier = node.identifier;
+
+    // Check if this is a translation variable usage like screen.title
+    final basePath = analyzer.getVariablePath(prefix.name);
+    if (basePath != null) {
+      final fullPath = '$basePath.${identifier.name}';
+      analyzer.recordUsedPath(fullPath);
+      return;
+    }
+
+    // Check if this is a direct translation access like t.mainScreen
+    if (_isTranslationAccess(node)) {
+      final path = _getExpressionPath(node);
+      analyzer.recordUsedPath(path);
+      return;
+    }
+
+    super.visitPrefixedIdentifier(node);
+  }
+
+  /// Extracts translation path from expressions like t.mainScreen.title
+  String? _extractTranslationPath(Expression expression) {
+    // Handle PrefixedIdentifier (e.g., t.mainScreen, screen.title)
+    if (expression is PrefixedIdentifier) {
+      final prefix = expression.prefix;
+      final identifier = expression.identifier;
+
+      // Check if this is a translation variable access like screen.title
+      final variablePath = analyzer.getVariablePath(prefix.name);
+      if (variablePath != null) {
+        return '$variablePath.${identifier.name}';
+      }
+    }
+
+    // Handle PropertyAccess (e.g., t.mainScreen.title, t.mainScreen.title)
+    if (expression is PropertyAccess) {
+      final target = expression.realTarget;
+
+      // Check for simple variable access like screen.title
+      if (target is SimpleIdentifier) {
+        final variablePath = analyzer.getVariablePath(target.name);
+        if (variablePath != null) {
+          return '$variablePath.${expression.propertyName.name}';
+        }
+      }
+
+      // Handle nested cases like screen.subtitle.title
+      if (target is PropertyAccess) {
+        final rootTarget = _getRootTarget(target);
+        if (rootTarget is SimpleIdentifier) {
+          final variablePath = analyzer.getVariablePath(rootTarget.name);
+          if (variablePath != null) {
+            final targetPath = _getPropertyAccessPath(target);
+            return '$variablePath.$targetPath.${expression.propertyName.name}';
+          }
+        }
+      }
+    }
+
+    // Handle direct translation access like t.mainScreen.title
+    if (_isTranslationAccess(expression)) {
+      return _getExpressionPath(expression);
+    }
+
+    return null;
+  }
+
+  /// Checks if an expression is a translation access
+  bool _isTranslationAccess(Expression expression) {
+    final exprString = expression.toString();
+
+    // Direct access: t.some.path
+    if (exprString.startsWith('${analyzer.translateVar}.')) {
+      return true;
+    }
+
+    // Context access: context.t.some.path
+    if (exprString.startsWith('context.${analyzer.translateVar}.')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Extracts path from translation access expression
+  String _getExpressionPath(Expression expression) {
+    final exprString = expression.toString();
+
+    // Handle context.t case first (most specific)
+    final contextPrefix = 'context.${analyzer.translateVar}.';
+    final contextIndex = exprString.indexOf(contextPrefix);
+    if (contextIndex != -1) {
+      return exprString.substring(contextIndex + contextPrefix.length);
+    }
+
+    // Handle direct t.some.path case (most general)
+    final prefix = '${analyzer.translateVar}.';
+    final startIndex = exprString.indexOf(prefix);
+    if (startIndex != -1) {
+      return exprString.substring(startIndex + prefix.length);
+    }
+
+    return '';
+  }
+
+  /// Gets the root target of a property access chain
+  Expression _getRootTarget(Expression node) {
+    Expression current = node;
+    while (current is PropertyAccess) {
+      current = current.realTarget;
+    }
+
+    // Handle PrefixedIdentifier case (e.g., for screen.header)
+    if (current is PrefixedIdentifier) {
+      return current.prefix;
+    }
+
+    return current;
+  }
+
+  /// Gets the full property access path (excluding the root)
+  String _getPropertyAccessPath(PropertyAccess node) {
+    final parts = <String>[node.propertyName.name];
+    Expression current = node.realTarget;
+
+    while (current is PropertyAccess) {
+      parts.insert(0, current.propertyName.name);
+      current = current.realTarget;
+    }
+
+    return parts.join('.');
+  }
+
+  /// Gets the path from a target expression (PropertyAccess or PrefixedIdentifier)
+  String _getTargetPath(Expression target) {
+    if (target is PropertyAccess) {
+      return _getPropertyAccessPath(target);
+    } else if (target is PrefixedIdentifier) {
+      return target.identifier.name;
+    }
+    return '';
   }
 }
