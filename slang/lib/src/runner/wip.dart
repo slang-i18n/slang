@@ -7,6 +7,7 @@ import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/string_extensions.dart';
 import 'package:slang/src/builder/utils/string_interpolation_extensions.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/apply.dart';
@@ -32,12 +33,6 @@ Future<bool> runWip({
       log.error('Usage: dart run slang wip apply');
       return false;
   }
-}
-
-RegExp buildRegExp(String translateVar) {
-  return RegExp(
-    translateVar + r"""\.\$wip\.([a-zA-Z_.]+)\((?:'([^']*)'|"([^"]*)\")\)""",
-  );
 }
 
 /// Returns true if a wip invocation has been found.
@@ -69,45 +64,21 @@ Future<bool> _runWipApply({
     }
   }
 
-  final regex = buildRegExp(fileCollection.config.translateVar);
-
   bool foundInvocations = false;
   for (final file in files) {
-    final sourceRaw = file.readAsStringSync();
-    final source = sourceRaw.sanitizeDartFileForAnalysis(removeSpaces: false);
+    final source = file.readAsStringSync();
 
-    final invocationsMap = <String, dynamic>{};
-    final invocationsList = <_WipInvocationMatch>[];
+    final invocations = WipInvocationCollection.findInString(
+      translateVar: fileCollection.config.translateVar,
+      source: source,
+      interpolation: fileCollection.config.stringInterpolation,
+    );
 
-    bool loggedFile = false;
-    for (final match in regex.allMatches(source)) {
-      if (!loggedFile) {
-        loggedFile = true;
-        log.info('${file.path}:');
-      }
-      foundInvocations = true;
-
-      final path = match.group(1)!;
-      final value = match.group(2) ?? match.group(3)!;
-
-      final invocation = _WipInvocationMatch.parse(
-        interpolation: fileCollection.config.stringInterpolation,
-        original: match.group(0)!,
-        path: path,
-        value: value,
-      );
-
-      MapUtils.addItemToMap(
-        map: invocationsMap,
-        destinationPath: path,
-        item: invocation.sanitizedValue,
-      );
-      invocationsList.add(invocation);
-    }
-
-    if (invocationsMap.isEmpty) {
+    if (invocations.list.isEmpty) {
       continue;
     }
+
+    foundInvocations = true;
 
     final translationMap = await TranslationMapBuilder.build(
       fileCollection: fileCollection,
@@ -123,6 +94,7 @@ Future<bool> _runWipApply({
       }
     }
 
+    final invocationsMap = invocations.map;
     if (fileCollection.config.namespaces) {
       for (final entry in fileMap.entries) {
         if (!invocationsMap.containsKey(entry.key)) {
@@ -144,8 +116,9 @@ Future<bool> _runWipApply({
       );
     }
 
-    String updatedCode = sourceRaw;
-    for (final invocation in invocationsList) {
+    String updatedCode = source;
+    log.info('${file.path}:');
+    for (final invocation in invocations.list) {
       final parametersStr = invocation.parameterMap.isEmpty
           ? ''
           : '(${invocation.parameterMap.entries.map((e) => '${e.key}: ${e.value}').join(', ')})';
@@ -171,14 +144,13 @@ Future<void> _runWipApplyForFile({
   required Map<String, dynamic> newTranslations,
   required TranslationFile destinationFile,
 }) async {
-  final existingFile = destinationFile;
   final fileType = _supportedFiles.firstWhereOrNull(
-      (type) => type.name == PathUtils.getFileExtension(existingFile.path));
+      (type) => type.name == PathUtils.getFileExtension(destinationFile.path));
   if (fileType == null) {
-    throw FileTypeNotSupportedError(existingFile.path);
+    throw FileTypeNotSupportedError(destinationFile.path);
   }
 
-  final parsedContent = await existingFile.readAndParse(fileType);
+  final parsedContent = await destinationFile.readAndParse(fileType);
 
   final appliedTranslations = applyMapRecursive(
     baseMap: baseTranslations,
@@ -189,33 +161,87 @@ Future<void> _runWipApplyForFile({
 
   FileUtils.writeFileOfType(
     fileType: fileType,
-    path: existingFile.path,
+    path: destinationFile.path,
     content: appliedTranslations,
   );
 }
 
-class _WipInvocationMatch {
+class WipInvocationCollection {
+  final Map<String, dynamic> map;
+  final List<WipInvocationMatch> list;
+
+  WipInvocationCollection({
+    required this.map,
+    required this.list,
+  });
+
+  // Caches the regex for a given translateVar
+  static (String, RegExp)? _cachedRegex;
+
+  static WipInvocationCollection findInString({
+    required String translateVar,
+    required String source,
+    required StringInterpolation interpolation,
+  }) {
+    final sourceSanitized =
+        source.sanitizeDartFileForAnalysis(removeSpaces: false);
+    final RegExp regex;
+    if (_cachedRegex?.$1 == translateVar) {
+      regex = _cachedRegex!.$2;
+    } else {
+      regex = RegExp(
+        translateVar +
+            r"""\.\$wip\.([a-zA-Z_.\d]+)\(\s*(?:'([^']*)'|"([^"]*)\")\s*,?\s*\)""",
+      );
+      _cachedRegex = (translateVar, regex);
+    }
+
+    final invocationsMap = <String, dynamic>{};
+    final invocationsList = <WipInvocationMatch>[];
+
+    for (final match in regex.allMatches(sourceSanitized)) {
+      final path = match.group(1)!;
+      final value = match.group(2) ?? match.group(3)!;
+
+      final invocation = WipInvocationMatch.parse(
+        interpolation: interpolation,
+        original: match.group(0)!,
+        path: path,
+        value: value,
+      );
+
+      MapUtils.addItemToMap(
+        map: invocationsMap,
+        destinationPath: path,
+        item: invocation.sanitizedValue,
+      );
+      invocationsList.add(invocation);
+    }
+
+    return WipInvocationCollection(
+      map: invocationsMap,
+      list: invocationsList,
+    );
+  }
+}
+
+class WipInvocationMatch {
   final String original;
   final String path;
-
-  /// The value of the first argument of the method call.
-  /// Contains the Dart-style interpolation (using $)
-  final String value;
 
   final String sanitizedValue;
 
   /// Original call -> Sanitized parameter
   final Map<String, String> parameterMap;
 
-  _WipInvocationMatch({
+  WipInvocationMatch({
     required this.original,
     required this.path,
-    required this.value,
     required this.sanitizedValue,
     required this.parameterMap,
   });
 
-  static _WipInvocationMatch parse({
+  static WipInvocationMatch parse({
     required StringInterpolation interpolation,
     required String original,
     required String path,
@@ -231,8 +257,9 @@ class _WipInvocationMatch {
             final rawParam = match.startsWith(r'${')
                 ? match.substring(2, match.length - 1)
                 : match.substring(1, match.length);
-            final sanitized = rawParam.sanitizedParameter();
-            parameterMap[sanitized] = rawParam;
+            final sanitized =
+                rawParam.sanitizeParameterAndUniqueness(parameterMap);
+            parameterMap[sanitized] = rawParam.trim();
             return '\${$sanitized}';
           },
         );
@@ -243,8 +270,9 @@ class _WipInvocationMatch {
             final rawParam = match.startsWith(r'${')
                 ? match.substring(2, match.length - 1)
                 : match.substring(1, match.length);
-            final sanitized = rawParam.sanitizedParameter();
-            parameterMap[sanitized] = rawParam;
+            final sanitized =
+                rawParam.sanitizeParameterAndUniqueness(parameterMap);
+            parameterMap[sanitized] = rawParam.trim();
             return '{$sanitized}';
           },
         );
@@ -254,17 +282,17 @@ class _WipInvocationMatch {
             final rawParam = match.startsWith(r'${')
                 ? match.substring(2, match.length - 1)
                 : match.substring(1, match.length);
-            final sanitized = rawParam.sanitizedParameter();
-            parameterMap[sanitized] = rawParam;
+            final sanitized =
+                rawParam.sanitizeParameterAndUniqueness(parameterMap);
+            parameterMap[sanitized] = rawParam.trim();
             return '{{$sanitized}}';
           },
         );
     }
 
-    return _WipInvocationMatch(
+    return WipInvocationMatch(
       original: original,
       path: path,
-      value: value,
       sanitizedValue: digestedInterpolation,
       parameterMap: parameterMap,
     );
@@ -274,8 +302,57 @@ class _WipInvocationMatch {
 final _underscoreRegex = RegExp(r'^_+');
 
 extension on String {
-  /// Removes any leading underscore character.
-  String sanitizedParameter() {
-    return replaceFirst(_underscoreRegex, '');
+  /// Sanitizes the parameter and ensures uniqueness within the existing parameters.
+  String sanitizeParameterAndUniqueness(
+      Map<String, String> existingParameters) {
+    final original = trim();
+    String curr = this;
+    curr = sanitizeParameter();
+
+    if (curr.contains('.')) {
+      final lastPart = curr.split('.').last.sanitizeParameter();
+      if (!existingParameters.hasConflictingBinding(
+        original: original,
+        sanitized: lastPart,
+      )) {
+        return lastPart;
+      }
+
+      final joinedParts = curr.toCase(CaseStyle.camel);
+      if (!existingParameters.hasConflictingBinding(
+        original: original,
+        sanitized: joinedParts,
+      )) {
+        return joinedParts;
+      }
+
+      curr = joinedParts;
+    }
+
+    int counter = 2;
+    String currWithoutCounter = curr;
+    while (existingParameters.hasConflictingBinding(
+      original: original,
+      sanitized: curr,
+    )) {
+      curr = '$currWithoutCounter${counter++}';
+    }
+
+    return curr;
+  }
+
+  /// Removes any leading underscore characters and trims the result.
+  String sanitizeParameter() {
+    return replaceFirst(_underscoreRegex, '').trim();
+  }
+}
+
+extension on Map<String, String> {
+  bool hasConflictingBinding({
+    required String original,
+    required String sanitized,
+  }) {
+    final foundOriginal = this[sanitized];
+    return foundOriginal != null && foundOriginal != original;
   }
 }
