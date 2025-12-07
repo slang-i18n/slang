@@ -1,3 +1,7 @@
+## 4.11.1
+
+- fix: handle edge cases in `t.$wip` detection (#330) (#331)
+
 ## 4.11.0
 
 - feat: add `t.$wip('Welcome $name')` or `t.$wip.welcome.title('Welcome $name')` for key-less prototyping without code generation

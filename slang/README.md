@@ -497,15 +497,25 @@ targets:
 
 ### ➤ File Types
 
-Supported file types: `JSON (default)`, `YAML`, `CSV`, and `ARB`.
-
 Update `input_file_pattern` to change the file type.
+
+It is recommended to specify `input_directory` before leaving out `.i18n`,
+otherwise all files (e.g. all JSON files) will be considered.
 
 ```yaml
 # Config
 input_directory: assets/i18n
-input_file_pattern: .i18n.yaml # must end with .json, .yaml, .csv, or .arb
+input_file_pattern: .i18n.json # must end with .json, .yaml, .csv, or .arb
 ```
+
+The following types are supported:
+
+| File Type | File extension | Note                                  |
+|-----------|----------------|---------------------------------------|
+| JSON      | `.json`        | Default: `.i18n.json`                 |
+| YAML      | `.yaml`        | Multiline & Comments                  |
+| CSV       | `.csv`         | Easy to edit in Excel / Google Sheets |
+| ARB       | `.arb`         | Flutter's choice                      |
 
 **JSON Example**
 
@@ -660,7 +670,7 @@ You can access each translation via string keys.
 Add the `(map)` modifier.
 
 ```json5
-// File: strings.i18n.json
+// File: en.json
 {
   "a(map)": {
     "hello world": "hello"
@@ -768,7 +778,7 @@ Some languages have support out of the box. See [here](https://github.com/slang-
 Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
 
 ```json5
-// File: strings.i18n.json
+// File: en.json
 {
   "someKey": {
     "apple": {
@@ -789,7 +799,7 @@ The detected plurals are **cardinals** by default.
 To specify ordinals, you need to add the `(ordinal)` modifier.
 
 ```json5
-// File: strings.i18n.json
+// File: en.json
 {
   "someKey": {
     "apple(cardinal)": {
@@ -870,7 +880,7 @@ You can set the default parameter globally via `pluralization`/`default_paramete
 You can utilize custom contexts to differentiate between male and female forms (or other enums).
 
 ```json5
-// File: strings.i18n.json
+// File: en.json
 {
   "greet(context=GenderContext)": {
     "male": "Hello Mr $name",
@@ -1287,21 +1297,21 @@ You can also use different folders. The namespace is only dependent on the file 
 ```text
 i18n/
  └── widgets/
-      └── widgets.i18n.json
+      └── widgets_en.i18n.json
       └── widgets_fr.i18n.json
  └── errorDialogs/
-      └── errorDialogs.i18n.json
+      └── errorDialogs_en.i18n.json
       └── errorDialogs_fr.i18n.json
 ```
 
 ```text
 i18n/
  └── en/
-      └── widgets.i18n.json
-      └── error_dialogs.i18n.json
+      └── widgets_en.i18n.json
+      └── errorDialogs_en.i18n.json
  └── fr/
-      └── widgets-fr.i18n.json
-      └── error_dialogs.i18n.json <-- directory locale will be used
+      └── widgets_fr.i18n.json
+      └── errorDialogs.i18n.json <-- directory locale will be used
 ```
 
 If you use directory locales, then you may use underscores as namespace, but it is recommended to use camel case.
@@ -1333,7 +1343,7 @@ String b = t.widgets.welcomeCard.title; // from widgets namespace
 ### ➤ Compact CSV
 
 Normally, you would create a new csv file for each locale:
-`strings.i18n.csv`, `strings_fr.i18n.csv`, etc.
+`strings_en.i18n.csv`, `strings_fr.i18n.csv`, etc.
 
 You can also merge multiple locales into one single csv file! To do this,
 you need at least 3 columns. The first row contains the locale names. This library should detect that, so no configuration is needed.
