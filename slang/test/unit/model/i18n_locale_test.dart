@@ -36,5 +36,10 @@ void main() {
     test('en-En-En', () {
       expect(I18nLocale.fromString('en-En-En').enumConstant, 'enEnEn');
     });
+
+    test('Should handle reserved words', () {
+      expect(I18nLocale.fromString('is').enumConstant, 'icelandic');
+      expect(I18nLocale.fromString('in').enumConstant, 'india');
+    });
   });
 }

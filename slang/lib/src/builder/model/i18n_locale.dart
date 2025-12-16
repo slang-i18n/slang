@@ -23,11 +23,13 @@ class I18nLocale {
 
   String _toEnumConstant() {
     final result = _toLanguageTag().toCaseOfLocale(CaseStyle.camel);
-    if (result == 'in') {
-      return 'india'; // hardcode to india because 'in' is a keyword
-    } else {
-      return result;
-    }
+
+    // Take care of reserved words
+    return switch (result) {
+      'is' => 'icelandic',
+      'in' => 'india',
+      _ => result,
+    };
   }
 
   @override
