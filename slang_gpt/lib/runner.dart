@@ -389,6 +389,59 @@ Future<GptResponse> _doRequest({
         completionTokens: rawMap['usage']['completion_tokens'] as int,
         totalTokens: rawMap['usage']['total_tokens'] as int,
       );
+    case GptProvider.gemini:
+      final response = await http.post(
+        Uri.https(
+          'generativelanguage.googleapis.com',
+          'v1beta/models/${model.id}:generateContent',
+        ),
+        headers: {
+          'x-goog-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'system_instruction': {
+            'parts': [
+              {'text': prompt.system}
+            ]
+          },
+          'contents': [
+            {
+              'parts': [
+                {'text': prompt.user}
+              ]
+            }
+          ],
+          'generationConfig': {
+            'responseMimeType': 'application/json',
+            if (temperature != null) 'temperature': temperature,
+          },
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw 'Error: ${response.statusCode} ${response.body}';
+      }
+
+      final rawMap = jsonDecode(utf8.decode(response.bodyBytes));
+      final rawMessage =
+          rawMap['candidates'][0]['content']['parts'][0]['text'] as String;
+      Map<String, dynamic> jsonMessage;
+      try {
+        jsonMessage = _jsonFromMessage(rawMessage);
+      } catch (e) {
+        jsonMessage = {
+          _errorKey: 'Error: ${e.toString()}',
+        };
+      }
+      return GptResponse(
+        rawMessage: rawMessage,
+        jsonMessage: jsonMessage,
+        promptTokens: rawMap['usageMetadata']['promptTokenCount'] as int,
+        completionTokens:
+            rawMap['usageMetadata']['candidatesTokenCount'] as int,
+        totalTokens: rawMap['usageMetadata']['totalTokenCount'] as int,
+      );
   }
 }
 
