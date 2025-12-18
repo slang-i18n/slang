@@ -1,5 +1,6 @@
 enum GptProvider {
   openai,
+  gemini,
 }
 
 // ignore_for_file: constant_identifier_names
@@ -39,7 +40,15 @@ enum GptModel {
   gpt5_mini('gpt-5-mini', GptProvider.openai,
       defaultInputLength: 400000,
       costPer1kInputToken: 0.00025,
-      costPer1kOutputToken: 0.002);
+      costPer1kOutputToken: 0.002),
+  gemini_2_5_flash('gemini-2.5-flash', GptProvider.gemini,
+      defaultInputLength: 400000,
+      costPer1kInputToken: 0.0,
+      costPer1kOutputToken: 0.0),
+  gemini_2_5_flash_lite('gemini-2.5-flash-lite', GptProvider.gemini,
+      defaultInputLength: 400000,
+      costPer1kInputToken: 0.0,
+      costPer1kOutputToken: 0.0);
 
   const GptModel(
     this.id,

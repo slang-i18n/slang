@@ -38,9 +38,12 @@ class GptConfig {
       throw 'Missing gpt entry in config.';
     }
 
-    final model = GptModel.values.firstWhereOrNull((e) => e.id == gpt['model']);
+    final model = GptModel.values.firstWhereOrNull((e) =>
+        e.id == gpt['model'] &&
+        (gpt['provider'] == null || e.provider.name == gpt['provider']));
+
     if (model == null) {
-      throw 'Unknown model: ${gpt['model']}\nAvailable models: ${GptModel.values.map((e) => e.id).join(', ')}';
+      throw 'Unknown model: ${gpt['model']}${gpt['provider'] == null ? '' : ' of provider ${gpt['provider']}'}\nAvailable Providers models:\n\t${GptModel.values.groupListsBy((e) => e.provider).entries.map((e) => '${e.key.name}: ${e.value.map((e) => e.id).join(', ')}').join('\n\t')}';
     }
 
     final description = gpt['description'];

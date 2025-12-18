@@ -4,7 +4,7 @@ Use GPT to automatically translate your app at compile time.
 
 This is library is intended to be used with [slang](https://pub.dev/packages/slang).
 
-Currently, only the [OpenAI API](https://platform.openai.com/docs/) is supported.
+Currently, only [OpenAI API](https://platform.openai.com/docs/) and [Google Gemini](https://ai.google.dev/gemini-api/docs) are supported.
 
 ## Motivation
 
@@ -53,6 +53,7 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 
 | Key                | Type     | Usage                            | Required | Default             |
 |--------------------|----------|----------------------------------|----------|---------------------|
+| `provider`         | `String` | Provider                         | NO       | (inferred by model) |
 | `model`            | `String` | Model name                       | YES      |                     |
 | `max_input_length` | `int`    | Max input characters per request | NO       | (inferred by model) |
 | `temperature`      | `double` | Temperature parameter for GPT    | NO       | (API default)       |
@@ -71,14 +72,16 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 
 ## Models
 
-| Model name          | Provider | Context length | Cost per 1k input token | Cost per 1k output token |
-|---------------------|----------|----------------|-------------------------|--------------------------|
-| `gpt-3.5-turbo`     | Open AI  | 4096           | $0.0005                 | $0.0015                  |
-| `gpt-3.5-turbo-16k` | Open AI  | 16384          | $0.003                  | $0.004                   |
-| `gpt-4`             | Open AI  | 8192           | $0.03                   | $0.06                    |
-| `gpt-4-turbo`       | Open AI  | 64000          | $0.01                   | $0.03                    |
-| `gpt-4o`            | Open AI  | 128000         | $0.005                  | $0.015                   |
-| `gpt-4o-mini`       | Open AI  | 128000         | $0.00015                | $0.0006                  |
+| Model name              | Provider | Context length | Cost per 1k input token | Cost per 1k output token |
+|-------------------------|----------|----------------|-------------------------|--------------------------|
+| `gpt-3.5-turbo`         | Open AI  | 4096           | $0.0005                 | $0.0015                  |
+| `gpt-3.5-turbo-16k`     | Open AI  | 16384          | $0.003                  | $0.004                   |
+| `gpt-4`                 | Open AI  | 8192           | $0.03                   | $0.06                    |
+| `gpt-4-turbo`           | Open AI  | 64000          | $0.01                   | $0.03                    |
+| `gpt-4o`                | Open AI  | 128000         | $0.005                  | $0.015                   |
+| `gpt-4o-mini`           | Open AI  | 128000         | $0.00015                | $0.0006                  |
+| `gemini-2.5-flash`      | Gemini   | 1048576        | $0.0                    | $0.0                     |
+| `gemini-2.5-flash-lite` | Gemini   | 1048576        | $0.0                    | $0.0                     |
 
 1k tokens = 750 words (English)
 
