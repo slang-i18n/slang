@@ -17,14 +17,15 @@ List<GptPrompt> getPrompts({
   required I18nLocale targetLocale,
   required GptConfig config,
   required String? namespace,
+  required String? description,
   required Map<String, dynamic> translations,
 }) {
   final systemPrompt = _getSystemPrompt(
-    rawConfig: rawConfig,
-    targetLocale: targetLocale,
-    config: config,
-    namespace: namespace,
-  );
+      rawConfig: rawConfig,
+      targetLocale: targetLocale,
+      config: config,
+      namespace: namespace,
+      description: description ?? config.description);
   final systemPromptLength = systemPrompt.length;
 
   final prompts = <GptPrompt>[];
@@ -70,6 +71,7 @@ String _getSystemPrompt({
   required I18nLocale targetLocale,
   required GptConfig config,
   required String? namespace,
+  required String description,
 }) {
   final String interpolationHint;
   switch (rawConfig.stringInterpolation) {
@@ -97,5 +99,5 @@ Parameters are interpolated with $interpolationHint.
 Linked translations are denoted with the "@:path0.path1" syntax.
 
 Here is the app description. Respect this context when translating:
-${config.description}''';
+$description''';
 }

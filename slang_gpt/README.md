@@ -68,6 +68,7 @@ dart run slang_gpt --target=fr --api-key=<api-key>
 | `-f` / `--full`  | Skip partial translation | NO       | (partial translation)  |
 | `-d` / `--debug` | Write chat to file       | NO       | (no chat output)       |
 | `--outdir=`      | Output directory         | NO*      | (using config)         |
+| `--description=` | App description          | NO       | (using config)         |
 
 ## Models
 
