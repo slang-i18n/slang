@@ -38,6 +38,7 @@ Future<void> runGpt(List<String> arguments) async {
   String? outDir;
   bool debug = false;
   bool full = false;
+  String? description;
   for (final a in arguments) {
     if (a.startsWith('--api-key=')) {
       apiKey = a.substring(10);
@@ -55,6 +56,8 @@ Future<void> runGpt(List<String> arguments) async {
       full = true;
     } else if (a == '-d' || a == '--debug') {
       debug = true;
+    } else if (a.startsWith('--description=')) {
+      description = a.substring(14);
     }
   }
 
@@ -132,6 +135,7 @@ Future<void> runGpt(List<String> arguments) async {
           outDir: outDir,
           full: full,
           debug: debug,
+          description: description,
           file: file,
           originalTranslations: originalTranslations,
           apiKey: apiKey,
@@ -152,6 +156,7 @@ Future<void> runGpt(List<String> arguments) async {
           outDir: outDir,
           full: full,
           debug: debug,
+          description: description,
           file: file,
           originalTranslations: originalTranslations,
           apiKey: apiKey,
@@ -194,6 +199,7 @@ Future<TranslateMetrics> _translate({
   required String outDir,
   required bool full,
   required bool debug,
+  required String? description,
   required TranslationFile file,
   required Map<String, dynamic> originalTranslations,
   required String apiKey,
@@ -259,6 +265,7 @@ Future<TranslateMetrics> _translate({
     targetLocale: targetLocale,
     config: gptConfig,
     namespace: fileCollection.config.namespaces ? file.namespace : null,
+    description: description,
     translations: inputTranslations,
   );
 

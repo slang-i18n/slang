@@ -30,6 +30,7 @@ void main() {
           excludes: [],
         ),
         namespace: null,
+        description: null,
         translations: {
           'calculate': 'Calculate',
           'add': 'Add',
@@ -59,6 +60,7 @@ void main() {
           excludes: [],
         ),
         namespace: null,
+        description: null,
         translations: {
           'a': 'a',
           'b': 'b',
@@ -97,6 +99,7 @@ void main() {
           excludes: [],
         ),
         namespace: 'settings',
+        description: null,
         translations: {
           'a': 'a',
         },
