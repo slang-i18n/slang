@@ -31,7 +31,10 @@ void main() {
     test('add string to empty map', () {
       final map = <String, dynamic>{};
       MapUtils.addItemToMap(
-          map: map, destinationPath: 'myPath.mySubPath', item: 'Hello World');
+        map: map,
+        destinationPath: 'myPath.mySubPath',
+        item: 'Hello World',
+      );
       expect(map, {
         'myPath': {
           'mySubPath': 'Hello World',
@@ -46,7 +49,10 @@ void main() {
         },
       };
       MapUtils.addItemToMap(
-          map: map, destinationPath: 'myPath.mySubPath', item: 'Hello World');
+        map: map,
+        destinationPath: 'myPath.mySubPath',
+        item: 'Hello World',
+      );
       expect(map, {
         'myPath': {
           'myExistingSubPath': ['1', '2', '3'],
@@ -98,6 +104,39 @@ void main() {
             'a': 3,
             'b': 'c',
           },
+        },
+      });
+    });
+
+    test('add map with quoted keys to populated map', () {
+      final map = <String, dynamic>{
+        'myPath': <String, dynamic>{
+          'myExistingSubPath': ['1', '2', '3'],
+        },
+      };
+
+      MapUtils.addItemToMap(
+        map: map,
+        destinationPath: 'myPath."3"',
+        item: 'added',
+      );
+      expect(map, {
+        'myPath': {
+          'myExistingSubPath': ['1', '2', '3'],
+          '3': 'added',
+        },
+      });
+
+      MapUtils.addItemToMap(
+        map: map,
+        destinationPath: 'myPath."with.dots"',
+        item: 'added2',
+      );
+      expect(map, {
+        'myPath': {
+          'myExistingSubPath': ['1', '2', '3'],
+          '3': 'added',
+          'with.dots': 'added2',
         },
       });
     });

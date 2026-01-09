@@ -371,6 +371,26 @@ void main() {
       expect(mapNode.entries['continue'], isA<StringTextNode>());
       expect(mapNode.entries['kContinue'], isNull);
     });
+
+    test('Should add quotations for keys with special characters in maps', () {
+      final result = TranslationModelBuilder.build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'a(map)': {
+            '3': 'is a number',
+            'has.dots': 'has dots',
+          },
+        },
+      );
+
+      final mapNode = result.root.entries['a'] as ObjectNode;
+      expect(mapNode.entries.length, 2);
+      expect(mapNode.entries['"3"'], isA<StringTextNode>());
+      expect(mapNode.entries['3'], isNull);
+      expect(mapNode.entries['"has.dots"'], isA<StringTextNode>());
+      expect(mapNode.entries['has.dots'], isNull);
+    });
   });
 
   group('Fallback', () {

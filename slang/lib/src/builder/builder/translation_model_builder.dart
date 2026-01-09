@@ -125,6 +125,7 @@ class TranslationModelBuilder {
       shouldEscapeText: shouldEscapeText,
       handleTypes: handleTypes,
       sanitizeKey: true,
+      quoteKeys: false,
     );
 
     // 2nd iteration: Handle parameterized linked translations
@@ -281,6 +282,7 @@ Map<String, Node> _parseMapNode({
   required bool shouldEscapeText,
   required bool handleTypes,
   required bool sanitizeKey,
+  required bool quoteKeys,
 }) {
   final Map<String, Node> resultNodeTree = {};
 
@@ -290,7 +292,12 @@ Map<String, Node> _parseMapNode({
       return;
     }
 
-    final originalKey = key;
+    // If the entry is within a map, we might need to quote the key to not
+    // interfere with dot notation or numeric keys (which is interpreted as list).
+    final originalKey = _quoteKeyIfNeed(
+      key: key,
+      quoteKeys: quoteKeys,
+    );
 
     final nodePathInfo = NodeUtils.parseModifiers(originalKey);
     key = sanitizeReservedKeyword(
@@ -371,6 +378,7 @@ Map<String, Node> _parseMapNode({
           shouldEscapeText: shouldEscapeText,
           handleTypes: handleTypes,
           sanitizeKey: false,
+          quoteKeys: false,
         );
 
         // finally only take their values, ignoring keys
@@ -414,6 +422,7 @@ Map<String, Node> _parseMapNode({
           shouldEscapeText: shouldEscapeText,
           handleTypes: handleTypes,
           sanitizeKey: detectedType == null,
+          quoteKeys: detectedType?.nodeType == _DetectionType.map,
         );
 
         if (detectedType?.nodeType == _DetectionType.map &&
@@ -483,6 +492,7 @@ Map<String, Node> _parseMapNode({
               shouldEscapeText: shouldEscapeText,
               handleTypes: handleTypes,
               sanitizeKey: false,
+              quoteKeys: false,
             ).cast<String, RichTextNode>();
           }
 
@@ -582,6 +592,20 @@ Map<String, Node> _parseMapNode({
   });
 
   return resultNodeTree;
+}
+
+/// Quotes the key if
+/// - it is a number
+/// - contains dots
+String _quoteKeyIfNeed({
+  required String key,
+  required bool quoteKeys,
+}) {
+  if (quoteKeys && (double.tryParse(key) != null || key.contains('.'))) {
+    return '"$key"';
+  } else {
+    return key;
+  }
 }
 
 String? _parseCommentNode(dynamic node) {

@@ -24,7 +24,7 @@ class MapUtils {
     required Map<String, dynamic> map,
     required String path,
   }) {
-    final pathList = path.split('.');
+    final pathList = _splitPath(path);
 
     Map<String, dynamic> currMap = map;
 
@@ -77,15 +77,16 @@ class MapUtils {
     required String destinationPath,
     required dynamic item,
   }) {
-    final pathList = destinationPath.split('.');
+    final pathList = _splitPath(destinationPath);
 
     // starts with type Map<String, dynamic> but
     // may be a Map<String, dynamic> or List<dynamic> after the 1st iteration
     dynamic curr = map;
 
     for (int i = 0; i < pathList.length; i++) {
-      final subPath = pathList[i];
-      final subPathInt = int.tryParse(subPath);
+      final originalSubPath = pathList[i];
+      final subPath = _withoutQuotes(originalSubPath);
+      final subPathInt = int.tryParse(originalSubPath);
 
       final nextSubPath = i + 1 < pathList.length ? pathList[i + 1] : null;
       final nextIsList =
@@ -186,20 +187,15 @@ class MapUtils {
     required String path,
     required MapEntry<String, dynamic> Function(String key, Object path) update,
   }) {
-    final pathList = path.split('.');
+    final pathList = _splitPath(path);
 
     Map<String, dynamic> currMap = map;
 
     for (int i = 0; i < pathList.length; i++) {
       final subPath = pathList[i];
       final entryList = currMap.entries.toList();
-      final entryIndex = entryList.indexWhere((entry) {
-        final key = entry.key;
-        if (key.contains('(')) {
-          return key.substring(0, key.indexOf('(')) == subPath;
-        }
-        return key == subPath;
-      });
+      final entryIndex = entryList
+          .indexWhere((entry) => entry.key.withoutModifiers == subPath);
       if (entryIndex == -1) {
         // The leaf cannot be updated because it does not exist.
         return false;
@@ -241,7 +237,7 @@ class MapUtils {
     required Map<String, dynamic> map,
     required String path,
   }) {
-    final pathList = path.split('.');
+    final pathList = _splitPath(path);
 
     Map<String, dynamic> currMap = map;
 
@@ -368,4 +364,45 @@ List<dynamic> _deepCastList(List<dynamic> source) {
       return item;
     }
   }).toList();
+}
+
+String _withoutQuotes(String input) {
+  if (input.startsWith('"') && input.endsWith('"')) {
+    return input.substring(1, input.length - 1);
+  } else {
+    return input;
+  }
+}
+
+/// Splits a path by dots, but ignores dots within quoted strings.
+/// Quotes are only recognized at the start of a segment.
+/// For example: 'myPath."with.dots"' -> ['myPath', '"with.dots"']
+List<String> _splitPath(String path) {
+  final result = <String>[];
+  bool insideQuotes = false;
+  int segmentStart = 0;
+
+  for (int i = 0; i < path.length; i++) {
+    final char = path[i];
+
+    if (char == '"') {
+      if (i == segmentStart) {
+        // Quote at start of segment - enter quote mode
+        insideQuotes = true;
+      } else if (insideQuotes) {
+        // Closing quote
+        insideQuotes = false;
+      }
+      // (any other quote is treated as normal character)
+    } else if (char == '.' && !insideQuotes) {
+      result.add(path.substring(segmentStart, i));
+      segmentStart = i + 1;
+    }
+  }
+
+  if (segmentStart < path.length) {
+    result.add(path.substring(segmentStart));
+  }
+
+  return result;
 }
