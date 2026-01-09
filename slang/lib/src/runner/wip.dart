@@ -190,8 +190,7 @@ class WipInvocationCollection {
       regex = _cachedRegex!.$2;
     } else {
       regex = RegExp(
-        translateVar +
-            r"""\.\$wip\.([a-zA-Z_.\d]+)\(\s*(?:'([^']*)'|"([^"]*)\")\s*,?\s*\)""",
+        translateVar + r'\.\$wip\.([a-zA-Z_.\d]+)\(\s*(.*)\s*,?\s*\)',
       );
       _cachedRegex = (translateVar, regex);
     }
@@ -201,7 +200,7 @@ class WipInvocationCollection {
 
     for (final match in regex.allMatches(sourceSanitized)) {
       final path = match.group(1)!;
-      final value = match.group(2) ?? match.group(3)!;
+      final value = match.group(2)!;
 
       final invocation = WipInvocationMatch.parse(
         interpolation: interpolation,
@@ -225,6 +224,9 @@ class WipInvocationCollection {
   }
 }
 
+final _stringLiteralRegex =
+    RegExp(r"""^\s*(['"])(.*)(\1),?\s*$""", dotAll: true);
+
 class WipInvocationMatch {
   final String original;
   final String path;
@@ -247,55 +249,77 @@ class WipInvocationMatch {
     required String path,
     required String value,
   }) {
-    final parameterMap = <String, String>{};
-    final String digestedInterpolation;
-    switch (interpolation) {
-      case StringInterpolation.dart:
-        // Source is already in Dart-style
-        digestedInterpolation = value.replaceDartInterpolation(
-          replacer: (match) {
-            final rawParam = match.startsWith(r'${')
-                ? match.substring(2, match.length - 1)
-                : match.substring(1, match.length);
-            final sanitized =
-                rawParam.sanitizeParameterAndUniqueness(parameterMap);
-            parameterMap[sanitized] = rawParam.trim();
-            return '\${$sanitized}';
-          },
-        );
-        break;
-      case StringInterpolation.braces:
-        digestedInterpolation = value.replaceDartInterpolation(
-          replacer: (match) {
-            final rawParam = match.startsWith(r'${')
-                ? match.substring(2, match.length - 1)
-                : match.substring(1, match.length);
-            final sanitized =
-                rawParam.sanitizeParameterAndUniqueness(parameterMap);
-            parameterMap[sanitized] = rawParam.trim();
-            return '{$sanitized}';
-          },
-        );
-      case StringInterpolation.doubleBraces:
-        digestedInterpolation = value.replaceDartInterpolation(
-          replacer: (match) {
-            final rawParam = match.startsWith(r'${')
-                ? match.substring(2, match.length - 1)
-                : match.substring(1, match.length);
-            final sanitized =
-                rawParam.sanitizeParameterAndUniqueness(parameterMap);
-            parameterMap[sanitized] = rawParam.trim();
-            return '{{$sanitized}}';
-          },
-        );
-    }
+    final string = _stringLiteralRegex.firstMatch(value);
 
-    return WipInvocationMatch(
-      original: original,
-      path: path,
-      sanitizedValue: digestedInterpolation,
-      parameterMap: parameterMap,
-    );
+    if (string != null) {
+      final value = string.group(2)!;
+      final parameterMap = <String, String>{};
+      final String digestedInterpolation;
+      switch (interpolation) {
+        case StringInterpolation.dart:
+          // Source is already in Dart-style
+          digestedInterpolation = value.replaceDartInterpolation(
+            replacer: (match) {
+              final rawParam = match.startsWith(r'${')
+                  ? match.substring(2, match.length - 1)
+                  : match.substring(1, match.length);
+              final sanitized =
+                  rawParam.sanitizeParameterAndUniqueness(parameterMap);
+              parameterMap[sanitized] = rawParam.trim();
+              return '\${$sanitized}';
+            },
+          );
+          break;
+        case StringInterpolation.braces:
+          digestedInterpolation = value.replaceDartInterpolation(
+            replacer: (match) {
+              final rawParam = match.startsWith(r'${')
+                  ? match.substring(2, match.length - 1)
+                  : match.substring(1, match.length);
+              final sanitized =
+                  rawParam.sanitizeParameterAndUniqueness(parameterMap);
+              parameterMap[sanitized] = rawParam.trim();
+              return '{$sanitized}';
+            },
+          );
+        case StringInterpolation.doubleBraces:
+          digestedInterpolation = value.replaceDartInterpolation(
+            replacer: (match) {
+              final rawParam = match.startsWith(r'${')
+                  ? match.substring(2, match.length - 1)
+                  : match.substring(1, match.length);
+              final sanitized =
+                  rawParam.sanitizeParameterAndUniqueness(parameterMap);
+              parameterMap[sanitized] = rawParam.trim();
+              return '{{$sanitized}}';
+            },
+          );
+      }
+
+      return WipInvocationMatch(
+        original: original,
+        path: path,
+        sanitizedValue: digestedInterpolation,
+        parameterMap: parameterMap,
+      );
+    } else {
+      // This might be a variable or a function call
+      // e.g. t.$wip.wow(testFunction())
+      final rawParam = value;
+      final sanitized = rawParam.sanitizeParameterAndUniqueness({});
+      return WipInvocationMatch(
+        original: original,
+        path: path,
+        sanitizedValue: switch (interpolation) {
+          StringInterpolation.dart => '\$$sanitized',
+          StringInterpolation.braces => '{$sanitized}',
+          StringInterpolation.doubleBraces => '{{$sanitized}}',
+        },
+        parameterMap: {
+          sanitized: rawParam.trim(),
+        },
+      );
+    }
   }
 }
 
@@ -304,7 +328,8 @@ final _underscoreRegex = RegExp(r'^_+');
 extension on String {
   /// Sanitizes the parameter and ensures uniqueness within the existing parameters.
   String sanitizeParameterAndUniqueness(
-      Map<String, String> existingParameters) {
+    Map<String, String> existingParameters,
+  ) {
     final original = trim();
     String curr = this;
     curr = sanitizeParameter();
@@ -342,8 +367,20 @@ extension on String {
   }
 
   /// Removes any leading underscore characters and trims the result.
+  /// Removes the method call.
+  /// Removes trailing comma.
   String sanitizeParameter() {
-    return replaceFirst(_underscoreRegex, '').trim();
+    final s = replaceFirst(_underscoreRegex, '').trim();
+    final parenIndex = s.indexOf('(');
+    if (parenIndex != -1) {
+      return s.substring(0, parenIndex);
+    } else {
+      final commaIndex = s.indexOf(',');
+      if (commaIndex != -1) {
+        return s.substring(0, commaIndex);
+      }
+      return s;
+    }
   }
 }
 

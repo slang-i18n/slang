@@ -124,5 +124,46 @@ t.$wip.testMethod(
           'Value with spaces and {param} inside');
       expect(result.list[0].parameterMap, {'param': 'param'});
     });
+
+    test('Should handle a function as argument', () {
+      final result = f(r'''
+t.$wip.complexMethod(
+  someFunction('test', param: $value),
+);
+''');
+
+      expect(result.map, {
+        'complexMethod': '{someFunction}',
+      });
+      expect(result.list.length, 1);
+      expect(result.list[0].original, r"""t.$wip.complexMethod(
+  someFunction('test', param: $value),
+)""");
+      expect(result.list[0].path, 'complexMethod');
+      expect(result.list[0].sanitizedValue, '{someFunction}');
+      expect(result.list[0].parameterMap, {
+        'someFunction': r'''someFunction('test', param: $value),''',
+      });
+    });
+
+    test('Should handle a variable as argument', () {
+      final result = f(r'''
+t.$wip.variableMethod(
+  myVariable,
+);
+''');
+      expect(result.map, {
+        'variableMethod': '{myVariable}',
+      });
+      expect(result.list.length, 1);
+      expect(result.list[0].original, r'''t.$wip.variableMethod(
+  myVariable,
+)''');
+      expect(result.list[0].path, 'variableMethod');
+      expect(result.list[0].sanitizedValue, '{myVariable}');
+      expect(result.list[0].parameterMap, {
+        'myVariable': r'myVariable,',
+      });
+    });
   });
 }
