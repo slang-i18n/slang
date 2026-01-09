@@ -1,3 +1,10 @@
+## 4.11.2
+
+- fix: do not throw an error on empty translation files (#335)
+- fix: `slang analyze` should handle maps with numbers or dots as keys (#339, #340)
+- fix: handle `t.$wip(x)` where x is a variable or a function call
+- fix: allow Icelandic as language code (#333)
+
 ## 4.11.1
 
 - fix: handle edge cases in `t.$wip` detection (#330) (#331)
