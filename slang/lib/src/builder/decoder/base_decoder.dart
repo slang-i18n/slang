@@ -18,6 +18,10 @@ abstract class BaseDecoder {
     FileType fileType,
     String raw,
   ) {
+    if (raw.trim().isEmpty) {
+      return {};
+    }
+
     final BaseDecoder decoder;
     switch (fileType) {
       case FileType.json:
