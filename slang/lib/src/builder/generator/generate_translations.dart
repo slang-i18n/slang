@@ -531,6 +531,10 @@ void _generateMap({
   buffer.writeln('{');
 
   node.entries.forEach((key, value) {
+    final digestedKey = key.startsWith('"') && key.endsWith('"')
+        ? key.substring(1, key.length - 1)
+        : key;
+
     _addTabs(buffer, depth + 2);
 
     // Note:
@@ -540,13 +544,13 @@ void _generateMap({
       final stringLiteral = getStringLiteral(
           value.content, value.links.length, config.obfuscation);
       if (value.params.isEmpty) {
-        buffer.writeln('\'$key\': $stringLiteral,');
+        buffer.writeln('\'$digestedKey\': $stringLiteral,');
       } else {
         buffer.writeln(
-            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => $stringLiteral,');
+            '\'$digestedKey\': ${_toParameterList(value.params, value.paramTypeMap)} => $stringLiteral,');
       }
     } else if (value is ListNode) {
-      buffer.write('\'$key\': ');
+      buffer.write('\'$digestedKey\': ');
       _generateList(
         config: config,
         base: base,
@@ -555,7 +559,7 @@ void _generateMap({
         queue: queue,
         className: className,
         node: value,
-        listName: key,
+        listName: digestedKey,
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
@@ -563,12 +567,12 @@ void _generateMap({
         base: base,
         visibility: config.translationClassVisibility,
         parentName: className,
-        childName: key,
+        childName: digestedKey,
       );
 
       if (value.isMap) {
         // inline map
-        buffer.write('\'$key\': ');
+        buffer.write('\'$digestedKey\': ');
         _generateMap(
           config: config,
           base: base,
@@ -586,11 +590,11 @@ void _generateMap({
           base: base,
           visibility: config.translationClassVisibility,
           parentName: className,
-          childName: key,
+          childName: digestedKey,
           locale: locale,
         );
 
-        buffer.write('\'$key\': ');
+        buffer.write('\'$digestedKey\': ');
         if (base &&
             config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
           buffer.writeln('$childClassWithLocale.internal(_root),');
@@ -599,7 +603,7 @@ void _generateMap({
         }
       }
     } else if (value is PluralNode) {
-      buffer.write('\'$key\': ');
+      buffer.write('\'$digestedKey\': ');
       _addPluralCall(
         buffer: buffer,
         config: config,
@@ -608,7 +612,7 @@ void _generateMap({
         depth: depth + 1,
       );
     } else if (value is ContextNode) {
-      buffer.write('\'$key\': ');
+      buffer.write('\'$digestedKey\': ');
       _addContextCall(
         buffer: buffer,
         config: config,

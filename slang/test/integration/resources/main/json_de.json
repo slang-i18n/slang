@@ -64,5 +64,10 @@
   "advancedPlural(rich, param=count)": {
     "one": "Eins",
     "other": "Andere {count}, @:onboarding.greet2"
+  },
+  "myMap(map)": {
+    "a": "Wert 1",
+    "1": "Wert 2",
+    "b.c": "Wert 3"
   }
 }

@@ -57,6 +57,12 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 			TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'),
 		]),
 	);
+
+	Map<String, String> get myMap => TranslationOverrides.map(_root.$meta, 'myMap') ?? {
+		'a': 'Value 1',
+		'1': 'Value 2',
+		'b.c': 'Value 3',
+	};
 }
 
 // Path: onboarding
@@ -270,6 +276,9 @@ extension on Translations {
 			'end.pages.1.with space' => TranslationOverrides.string(_root.$meta, 'end.pages.1.with space', {}) ?? 'An Error',
 			'end.pages.1.with second space' => TranslationOverrides.string(_root.$meta, 'end.pages.1.with second space', {}) ?? 'An 2nd Error',
 			'advancedPlural' => ({required num count, required InlineSpan Function(num) countBuilder, required GenderContext gender}) => TranslationOverridesFlutter.richPlural(_root.$meta, 'advancedPlural', {'gender': gender, 'count': count, 'countBuilder': countBuilder}) ?? RichPluralResolvers.bridge( n: count, resolver: _root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'), one: () => TextSpan(children: [ const TextSpan(text: 'One'), ]), other: () => TextSpan(children: [ const TextSpan(text: 'Other '), countBuilder(count), TextSpan(text: ', ${_root.onboarding.greet2(gender: gender)}'), ]), ), 
+			'myMap.a' => TranslationOverrides.string(_root.$meta, 'myMap.a', {}) ?? 'Value 1',
+			'myMap."1"' => TranslationOverrides.string(_root.$meta, 'myMap."1"', {}) ?? 'Value 2',
+			'myMap."b.c"' => TranslationOverrides.string(_root.$meta, 'myMap."b.c"', {}) ?? 'Value 3',
 			_ => null,
 		};
 	}

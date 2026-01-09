@@ -30,3 +30,6 @@ end.pages.1.with space,An Error
 end.pages.1.with second space,An 2nd Error
 "advancedPlural(rich, param=count).one",One
 "advancedPlural(rich, param=count).other","Other {count}, @:onboarding.greet2"
+myMap(map).a,Value 1
+myMap(map)."1",Value 2
+myMap(map)."b.c",Value 3
