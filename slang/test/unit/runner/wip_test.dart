@@ -42,6 +42,42 @@ t.$wip.multilineMethod('test');
       expect(result.list[0].parameterMap, {});
     });
 
+    test('Should find invocation within brackets', () {
+      final result = f(r"f(t.$wip.a('b'));");
+
+      expect(result.map, {
+        'a': 'b',
+      });
+      expect(result.list.length, 1);
+      expect(
+        result.list[0].original,
+        r"""t.$wip.a('b')""",
+      );
+      expect(result.list[0].path, 'a');
+      expect(result.list[0].sanitizedValue, 'b');
+      expect(result.list[0].parameterMap, {});
+    });
+
+    test('Should find invocation within nested brackets', () {
+      final result = f(r"""
+f(
+  g(t.$wip.a('b')),
+);
+""");
+
+      expect(result.map, {
+        'a': 'b',
+      });
+      expect(result.list.length, 1);
+      expect(
+        result.list[0].original,
+        r"""t.$wip.a('b')""",
+      );
+      expect(result.list[0].path, 'a');
+      expect(result.list[0].sanitizedValue, 'b');
+      expect(result.list[0].parameterMap, {});
+    });
+
     test('Should find invocation with interpolation', () {
       final result = f(r'''
 final greeting = t.$wip.welcome.message('Hello, $name!');

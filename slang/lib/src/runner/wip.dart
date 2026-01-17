@@ -199,12 +199,36 @@ class WipInvocationCollection {
     final invocationsList = <WipInvocationMatch>[];
 
     for (final match in regex.allMatches(sourceSanitized)) {
+      String original = match.group(0)!;
       final path = match.group(1)!;
-      final value = match.group(2)!;
+      String value = match.group(2)!;
+
+      if (value.contains(')')) {
+        // The regex is greedy and might capture too many closing parentheses.
+        // We need to find the matching closing parenthesis for the opening one.
+        final openParenIndex = original.indexOf('(');
+        if (openParenIndex != -1) {
+          int depth = 0;
+
+          for (int i = openParenIndex; i < original.length; i++) {
+            if (original[i] == '(') {
+              depth++;
+            } else if (original[i] == ')') {
+              depth--;
+              if (depth == 0) {
+                // Found the matching closing paren!
+                original = original.substring(0, i + 1);
+                value = original.substring(openParenIndex + 1, i);
+                break;
+              }
+            }
+          }
+        }
+      }
 
       final invocation = WipInvocationMatch.parse(
         interpolation: interpolation,
-        original: match.group(0)!,
+        original: original,
         path: path,
         value: value,
       );
