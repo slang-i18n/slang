@@ -102,7 +102,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Edit Translations](#-edit-translations)
   - [Normalize Translations](#-normalize-translations)
   - [Outdated Translations](#-outdated-translations)
-  - [Translate with GPT](#-translate-with-gpt)
+  - [MCP Server](#-mcp-server)
   - [Migration](#-migration)
     - [ARB](#arb)
   - [Statistics](#-statistics)
@@ -1857,29 +1857,32 @@ This will add an `(OUTDATED)` modifier to all secondary locales.
 
 You can also add these flags manually!
 
-### ➤ Translate with GPT
+### ➤ MCP Server
 
-Take advantage of GPT to internationalize your app with context-aware translations.
+Take advantage of LLMs to internationalize your app with context-aware translations.
 
-Import [slang_gpt](https://pub.dev/packages/slang_gpt) to your `dev_dependencies`.
+Install the MCP package:
 
-Then add the following configuration:
-
-```yaml
-# existing config
-base_locale: fr
-fallback_strategy: base_locale
-input_directory: lib/i18n
-input_file_pattern: .i18n.json
-output_directory: lib/i18n
-
-# add this
-gpt:
-  model: gpt-3.5-turbo
-  description: |
-    "River Adventure" is a game where you need to cross a river by jumping on stones.
-    The game is over when you either fall into the water or reach the other side.
+```bash
+dart pub global activate slang_mcp
 ```
+
+Register the MCP package:
+
+```bash
+# Claude Code
+claude mcp add slang_mcp slang_mcp
+```
+
+Prompt your LLM to generate translations:
+
+```text
+Translate the missing translations
+```
+
+See the full documentation of [slang_mcp](https://pub.dev/packages/slang_mcp).
+
+You can also use the older [slang_gpt](https://pub.dev/packages/slang_gpt) package.
 
 ### ➤ Migration
 
@@ -2251,6 +2254,7 @@ Feel free to extend this list :)
 
 ## Ecosystem
 
+- [slang_mcp](https://pub.dev/packages/slang_mcp) - The official MCP server to work with LLMs.
 - [slang_gpt](https://pub.dev/packages/slang_gpt) - Use GPT to internationalize your app with context-aware translations.
 - [SlangMate](https://plugins.jetbrains.com/plugin/26502-slangmate) - IntelliJ IDEA / Android Studio plugin for Slang.
 - [Apparencekit](https://apparencekit.dev/docs/other/internationalization/) - Boilerplate solution
