@@ -1,26 +1,28 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_data.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
-import 'package:slang/src/builder/model/translation_map.dart';
+import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/utils/log.dart' as log;
+import 'package:slang/src/utils/stopwatch.dart';
 
 final _setEquality = SetEquality();
 
-void runAnalyzeTranslations({
-  required RawConfig rawConfig,
-  required TranslationMap translationMap,
+Future<void> runAnalyzeTranslations({
+  required SlangFileCollection fileCollection,
   required List<String> arguments,
-}) {
+  Stopwatch? stopwatch,
+}) async {
   String? outDir;
   List<String>? sourceDirs;
 
@@ -36,7 +38,7 @@ void runAnalyzeTranslations({
   sourceDirs ??= ['lib'];
 
   if (outDir == null) {
-    outDir = rawConfig.inputDirectory;
+    outDir = fileCollection.config.inputDirectory;
     if (outDir == null) {
       throw 'input_directory or --outdir=<path> must be specified.';
     }
@@ -47,14 +49,22 @@ void runAnalyzeTranslations({
   final full = arguments.contains('--full');
   final exitIfChanged = arguments.contains('--exit-if-changed');
 
+  final rawConfig = fileCollection.config;
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+  );
+
   // build translation model
   final translationModelList = TranslationModelListBuilder.build(
     rawConfig,
     translationMap,
   );
 
+  final baseTranslations =
+      findBaseTranslations(rawConfig, translationModelList);
+
   final missingTranslationsResult = getMissingTranslations(
-    rawConfig: rawConfig,
+    baseTranslations: baseTranslations,
     translations: translationModelList,
   );
 
@@ -80,6 +90,7 @@ void runAnalyzeTranslations({
   );
 
   final unusedTranslationsResult = getUnusedTranslations(
+    baseTranslations: baseTranslations,
     rawConfig: rawConfig,
     translations: translationModelList,
     full: full,
@@ -111,14 +122,16 @@ void runAnalyzeTranslations({
     },
     result: unusedTranslationsResult,
   );
+
+  if (stopwatch != null) {
+    log.info('Analysis done. ${stopwatch.elapsedSeconds}');
+  }
 }
 
 Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
-  required RawConfig rawConfig,
+  required I18nData baseTranslations,
   required List<I18nData> translations,
 }) {
-  final baseTranslations = _findBaseTranslations(rawConfig, translations);
-
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
   for (final currTranslations in translations) {
@@ -142,13 +155,12 @@ Map<I18nLocale, Map<String, dynamic>> getMissingTranslations({
 }
 
 Map<I18nLocale, Map<String, dynamic>> getUnusedTranslations({
+  required I18nData baseTranslations,
   required RawConfig rawConfig,
   required List<I18nData> translations,
   required bool full,
   List<String>? sourceDirs,
 }) {
-  final baseTranslations = _findBaseTranslations(rawConfig, translations);
-
   // use translation model and find missing translations
   Map<I18nLocale, Map<String, dynamic>> result = {};
   for (final localeData in translations) {
@@ -443,7 +455,7 @@ extension DartAnalysisExt on String {
   }
 }
 
-I18nData _findBaseTranslations(RawConfig rawConfig, List<I18nData> i18nData) {
+I18nData findBaseTranslations(RawConfig rawConfig, List<I18nData> i18nData) {
   final baseTranslations = i18nData.firstWhereOrNull((element) => element.base);
   if (baseTranslations == null) {
     throw 'There are no base translations. Could not found ${rawConfig.baseLocale.languageTag} in ${i18nData.map((e) => e.locale.languageTag)}';

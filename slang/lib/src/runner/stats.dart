@@ -1,18 +1,37 @@
+import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
-import 'package:slang/src/builder/model/raw_config.dart';
-import 'package:slang/src/builder/model/translation_map.dart';
+import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/utils/log.dart' as log;
+import 'package:slang/src/utils/stopwatch.dart';
 
-StatsResult getStats({
-  required RawConfig rawConfig,
-  required TranslationMap translationMap,
-}) {
+Future<void> runStats({
+  required SlangFileCollection fileCollection,
+  Stopwatch? stopwatch,
+}) async {
+  final result = await getStats(
+    fileCollection: fileCollection,
+  );
+
+  result.printResult();
+
+  if (stopwatch != null) {
+    log.info('\nScan done. ${stopwatch.elapsedSeconds}');
+  }
+}
+
+Future<StatsResult> getStats({
+  required SlangFileCollection fileCollection,
+}) async {
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+  );
+
   // build translation model
   final translationModelList = TranslationModelListBuilder.build(
-    rawConfig,
+    fileCollection.config,
     translationMap,
   );
 

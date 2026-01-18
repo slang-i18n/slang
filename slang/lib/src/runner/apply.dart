@@ -56,12 +56,15 @@ Future<void> runApplyTranslations({
     // To know what has been changed, we need to regenerate the analysis
     log.info('');
     log.info('Regenerating analysis...');
+
+    final translations = TranslationModelListBuilder.build(
+      rawConfig,
+      translationMap,
+    );
+
     final analysis = getMissingTranslations(
-      rawConfig: rawConfig,
-      translations: TranslationModelListBuilder.build(
-        rawConfig,
-        translationMap,
-      ),
+      baseTranslations: findBaseTranslations(rawConfig, translations),
+      translations: translations,
     );
 
     final ignoreBecauseMissing = <I18nLocale>[];
@@ -114,7 +117,7 @@ Future<void> runApplyTranslations({
     final missingTranslations = entry.value;
 
     log.info(' -> Apply <${locale.languageTag}>');
-    await _applyTranslationsForOneLocale(
+    await applyTranslationsForOneLocale(
       fileCollection: fileCollection,
       applyLocale: locale,
       baseTranslations: baseTranslationMap,
@@ -128,7 +131,7 @@ Future<void> runApplyTranslations({
 /// Throws an error if the file could not be found.
 ///
 /// [newTranslations] is a map of "Namespace -> Translations"
-Future<void> _applyTranslationsForOneLocale({
+Future<void> applyTranslationsForOneLocale({
   required SlangFileCollection fileCollection,
   required I18nLocale applyLocale,
   required Map<String, Map<String, dynamic>> baseTranslations,

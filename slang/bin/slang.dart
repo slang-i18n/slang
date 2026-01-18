@@ -1,24 +1,22 @@
 import 'dart:io';
 
 import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
-import 'package:slang/src/builder/builder/translation_map_builder.dart';
-import 'package:slang/src/builder/generator_facade.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
-import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/apply.dart';
 import 'package:slang/src/runner/clean.dart';
 import 'package:slang/src/runner/configure.dart';
 import 'package:slang/src/runner/edit.dart';
+import 'package:slang/src/runner/generate.dart';
 import 'package:slang/src/runner/help.dart';
 import 'package:slang/src/runner/migrate.dart';
 import 'package:slang/src/runner/normalize.dart';
 import 'package:slang/src/runner/stats.dart';
-import 'package:slang/src/runner/utils/format.dart';
 import 'package:slang/src/runner/wip.dart';
 import 'package:slang/src/utils/log.dart' as log;
+import 'package:slang/src/utils/stopwatch.dart';
 import 'package:watcher/watcher.dart';
 
 /// Determines what the runner will do
@@ -168,14 +166,23 @@ void main(List<String> arguments) async {
         arguments: filteredArguments,
       );
       break;
-    case RunnerMode.generate:
     case RunnerMode.stats:
-    case RunnerMode.analyze:
-      await generateTranslations(
-        mode: mode,
+      await runStats(
         fileCollection: fileCollection,
         stopwatch: stopwatch,
+      );
+      break;
+    case RunnerMode.analyze:
+      await runAnalyzeTranslations(
+        fileCollection: fileCollection,
         arguments: filteredArguments,
+        stopwatch: stopwatch,
+      );
+      break;
+    case RunnerMode.generate:
+      await generateTranslations(
+        fileCollection: fileCollection,
+        stopwatch: stopwatch,
       );
       break;
     case RunnerMode.migrate:
@@ -282,7 +289,6 @@ Future<void> _generateTranslationsFromWatch({
   bool success = true;
   try {
     await generateTranslations(
-      mode: RunnerMode.watch,
       fileCollection: SlangFileCollectionBuilder.fromFileModel(
         config: config,
         files: newFiles,
@@ -305,114 +311,6 @@ Future<void> _generateTranslationsFromWatch({
         '\r[$currentTime] $_green#$counter Update $fileName ${stopwatch.elapsedSeconds}',
       );
     }
-  }
-}
-
-/// Reads the translations from hard drive and generates the g.dart file
-/// The [files] are already filtered (only translation files!).
-Future<void> generateTranslations({
-  required RunnerMode mode,
-  required SlangFileCollection fileCollection,
-  Stopwatch? stopwatch,
-  List<String>? arguments,
-}) async {
-  if (fileCollection.files.isEmpty) {
-    log.error('No translation file found.');
-    return;
-  }
-
-  // STEP 1: determine base name and output file name / path
-  final outputFilePath = fileCollection.determineOutputPath();
-
-  // STEP 2: scan translations
-  log.verbose('Scanning translations...\n');
-
-  final translationMap = await TranslationMapBuilder.build(
-    fileCollection: fileCollection,
-  );
-
-  if (mode == RunnerMode.stats) {
-    getStats(
-      rawConfig: fileCollection.config,
-      translationMap: translationMap,
-    ).printResult();
-    if (stopwatch != null) {
-      log.info('\nScan done. (${stopwatch.elapsed})');
-    }
-    return; // skip generation
-  } else if (mode == RunnerMode.analyze) {
-    runAnalyzeTranslations(
-      rawConfig: fileCollection.config,
-      translationMap: translationMap,
-      arguments: arguments ?? [],
-    );
-    if (stopwatch != null) {
-      log.info('Analysis done. ${stopwatch.elapsedSeconds}');
-    }
-    return; // skip generation
-  }
-
-  // STEP 3: generate .g.dart content
-  final result = GeneratorFacade.generate(
-    rawConfig: fileCollection.config,
-    translationMap: translationMap,
-    inputDirectoryHint: fileCollection.determineInputPath(),
-  );
-
-  // STEP 4: write output to hard drive
-  FileUtils.createMissingFolders(filePath: outputFilePath);
-
-  FileUtils.writeFile(
-    path: BuildResultPaths.mainPath(outputFilePath),
-    content: result.main,
-  );
-  for (final entry in result.translations.entries) {
-    final locale = entry.key;
-    final localeTranslations = entry.value;
-    FileUtils.writeFile(
-      path: BuildResultPaths.localePath(
-        outputPath: outputFilePath,
-        locale: locale,
-      ),
-      content: localeTranslations,
-    );
-  }
-
-  if (log.level == log.Level.verbose) {
-    log.verbose('\nOutput:');
-    log.verbose(' -> $outputFilePath');
-    for (final locale in result.translations.keys) {
-      log.verbose(' -> ${BuildResultPaths.localePath(
-        outputPath: outputFilePath,
-        locale: locale,
-      )}');
-    }
-  }
-
-  if (fileCollection.config.format.enabled) {
-    final formatDir = PathUtils.getParentPath(outputFilePath)!;
-    Stopwatch? formatStopwatch;
-    if (log.level == log.Level.verbose) {
-      log.verbose('\nFormatting "$formatDir" ...');
-      if (stopwatch != null) {
-        formatStopwatch = Stopwatch()..start();
-      }
-    }
-    await runDartFormat(
-      dir: formatDir,
-      width: fileCollection.config.format.width,
-    );
-    if (formatStopwatch != null) {
-      log.verbose('Format done. ${formatStopwatch.elapsedSeconds}');
-    }
-  }
-
-  if (stopwatch != null) {
-    if (log.level == log.Level.verbose) {
-      log.verbose('');
-    }
-    log.info(
-        '${_green}Translations generated successfully. ${stopwatch.elapsedSeconds}$_reset');
   }
 }
 
@@ -444,9 +342,3 @@ const _green = '\x1B[32m';
 const _yellow = '\x1B[33m';
 const _red = '\x1B[31m';
 const _reset = '\x1B[0m';
-
-extension on Stopwatch {
-  String get elapsedSeconds {
-    return '(${elapsed.inMilliseconds / 1000} seconds)';
-  }
-}

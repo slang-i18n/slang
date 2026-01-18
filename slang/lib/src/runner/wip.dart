@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
@@ -139,6 +140,49 @@ Future<bool> _runWipApply({
   return foundInvocations;
 }
 
+Future<Map<String, dynamic>> readWipMapFromFileSystem({
+  bool verbose = false,
+}) async {
+  final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
+    verbose: verbose,
+  );
+
+  const sourceDirs = ['lib'];
+
+  final files = <File>[];
+  for (final sourceDir in sourceDirs) {
+    final dir = Directory(sourceDir);
+    if (dir.existsSync()) {
+      files.addAll(
+        dir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'))
+            .toList(),
+      );
+    }
+  }
+
+  WipInvocationCollection? collection;
+  for (final file in files) {
+    final source = file.readAsStringSync();
+
+    final invocations = WipInvocationCollection.findInString(
+      translateVar: fileCollection.config.translateVar,
+      source: source,
+      interpolation: fileCollection.config.stringInterpolation,
+    );
+
+    if (invocations.list.isEmpty) {
+      continue;
+    }
+
+    collection = collection?.merge(invocations) ?? invocations;
+  }
+
+  return collection?.map ?? {};
+}
+
 Future<void> _runWipApplyForFile({
   required Map<String, dynamic> baseTranslations,
   required Map<String, dynamic> newTranslations,
@@ -244,6 +288,19 @@ class WipInvocationCollection {
     return WipInvocationCollection(
       map: invocationsMap,
       list: invocationsList,
+    );
+  }
+
+  WipInvocationCollection merge(WipInvocationCollection other) {
+    return WipInvocationCollection(
+      map: MapUtils.merge(
+        base: map,
+        other: other.map,
+      ),
+      list: [
+        ...list,
+        ...other.list,
+      ],
     );
   }
 }

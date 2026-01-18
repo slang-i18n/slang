@@ -338,6 +338,43 @@ class MapUtils {
     return resultMap;
   }
 
+  /// Merges two maps and returns a new map.
+  /// Values from [other] take precedence over [base].
+  /// Nested maps are merged recursively.
+  static Map<String, dynamic> merge({
+    required Map<String, dynamic> base,
+    required Map<String, dynamic> other,
+  }) {
+    final resultMap = <String, dynamic>{};
+    for (final entry in base.entries) {
+      resultMap[entry.key] = entry.value;
+    }
+
+    // Merge entries from other
+    for (final entry in other.entries) {
+      final keyWithoutModifier = entry.key.withoutModifiers;
+      final existingKey = resultMap.keys
+          .firstWhereOrNull((k) => k.withoutModifiers == keyWithoutModifier);
+
+      if (existingKey == null) {
+        // Key doesn't exist in target, add it
+        resultMap[entry.key] = entry.value;
+      } else if (entry.value is Map<String, dynamic> &&
+          resultMap[existingKey] is Map<String, dynamic>) {
+        // Both are maps, merge recursively
+        resultMap[existingKey] = merge(
+          base: resultMap[existingKey],
+          other: entry.value,
+        );
+      } else {
+        // Overwrite with value from other
+        resultMap[existingKey] = entry.value;
+      }
+    }
+
+    return resultMap;
+  }
+
   /// Removes all entries that are empty maps recursively.
   /// They are removed from the map in place.
   static void clearEmptyMaps(Map map) {

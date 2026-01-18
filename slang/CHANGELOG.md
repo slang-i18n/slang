@@ -1,3 +1,8 @@
+## 4.12.0
+
+- feat: announcing [slang_mcp](https://pub.dev/packages/slang_mcp), a new package to work with LLMs more efficiently
+- fix: $wip should handle nested parenthesis
+
 ## 4.11.2
 
 - fix: do not throw an error on empty translation files (#335)

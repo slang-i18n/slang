@@ -471,6 +471,96 @@ void main() {
     });
   });
 
+  group('merge', () {
+    test('Should merge two empty maps', () {
+      final result = MapUtils.merge(
+        base: {},
+        other: {},
+      );
+
+      expect(result, {});
+    });
+
+    test('Should return base when other is empty', () {
+      final result = MapUtils.merge(
+        base: {'a': 42},
+        other: {},
+      );
+
+      expect(result, {'a': 42});
+    });
+
+    test('Should return other when base is empty', () {
+      final result = MapUtils.merge(
+        base: {},
+        other: {'a': 42},
+      );
+
+      expect(result, {'a': 42});
+    });
+
+    test('Should merge two flat maps without overlap', () {
+      final result = MapUtils.merge(
+        base: {'a': 42},
+        other: {'b': 33},
+      );
+
+      expect(result, {'a': 42, 'b': 33});
+    });
+
+    test('Should overwrite with other on overlap', () {
+      final result = MapUtils.merge(
+        base: {'a': 42},
+        other: {'a': 33},
+      );
+
+      expect(result, {'a': 33});
+    });
+
+    test('Should merge nested maps recursively', () {
+      final result = MapUtils.merge(
+        base: {
+          'a': {
+            'b': 42,
+            'c': 43,
+          }
+        },
+        other: {
+          'a': {
+            'b': 100,
+            'd': 44,
+          }
+        },
+      );
+
+      expect(result, {
+        'a': {
+          'b': 100,
+          'c': 43,
+          'd': 44,
+        }
+      });
+    });
+
+    test('Should handle keys with modifiers', () {
+      final result = MapUtils.merge(
+        base: {'a(rich)': 42},
+        other: {'a': 33},
+      );
+
+      expect(result, {'a(rich)': 33});
+    });
+
+    test('Should not modify original maps', () {
+      final base = {'a': 42};
+      final other = {'b': 33};
+      MapUtils.merge(base: base, other: other);
+
+      expect(base, {'a': 42});
+      expect(other, {'b': 33});
+    });
+  });
+
   group('clearEmptyMaps', () {
     test('Should clear empty map', () {
       final map = {

@@ -205,16 +205,19 @@ void main() {
 Map<I18nLocale, Map<String, dynamic>> _getMissingTranslations(
   Map<String, Map<String, dynamic>> translations,
 ) {
+  final existing = _buildTranslations(translations);
   return getMissingTranslations(
-    rawConfig: RawConfig.defaultConfig,
-    translations: _buildTranslations(translations),
+    baseTranslations: findBaseTranslations(RawConfig.defaultConfig, existing),
+    translations: existing,
   );
 }
 
 Map<I18nLocale, Map<String, dynamic>> _getUnusedTranslations(
   Map<String, Map<String, dynamic>> translations,
 ) {
+  final existing = _buildTranslations(translations);
   return getUnusedTranslations(
+    baseTranslations: findBaseTranslations(RawConfig.defaultConfig, existing),
     rawConfig: RawConfig.defaultConfig,
     translations: _buildTranslations(translations),
     full: false,
