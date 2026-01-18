@@ -60,7 +60,7 @@ This requires `fallback_strategy: base_locale`.
 
 Prompt the LLM:
 
-```
+```text
 Translate the missing translations
 ```
 
@@ -68,7 +68,7 @@ Translate the missing translations
 
 Prompt the LLM:
 
-```
+```text
 Translate the app to Spanish (es)
 ```
 
@@ -106,7 +106,7 @@ class LoginPage extends StatelessWidget {
 
 Step 2: Prompt the LLM
 
-```
+```text
 Apply my new WIP strings and translate
 ```
 
