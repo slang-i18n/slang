@@ -16,18 +16,19 @@ import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/runner/analyze.dart';
 
 // ignore: implementation_imports
-import 'package:slang/src/runner/apply.dart';
-
-// ignore: implementation_imports
 import 'package:slang/src/runner/generate.dart';
 
 // ignore: implementation_imports
 import 'package:slang/src/runner/wip.dart';
+import 'package:slang_mcp/src/tools/add_locale.dart';
+import 'package:slang_mcp/src/tools/apply.dart';
 
 void main(List<String> arguments) async {
   final server = McpServer(
     Implementation(
       name: 'slang-mcp-server',
+      description:
+          'The MCP server for slang, the i18n library for Dart/Flutter.',
       version: '0.1.0',
     ),
     options: McpServerOptions(
@@ -104,6 +105,32 @@ and the value is a nested map containing the missing translation keys and their 
   );
 
   server.registerTool(
+    'get-base-translations',
+    description: 'Gets the translations of the base locale.',
+    outputSchema: JsonSchema.object(
+      description:
+          '''A nested map containing the missing translation keys and their corresponding base locale strings.''',
+    ),
+    callback: (args, extra) async {
+      final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
+        verbose: false,
+      );
+
+      final translationMap = await TranslationMapBuilder.build(
+        fileCollection: fileCollection,
+      );
+
+      final translations = translationMap[fileCollection.config.baseLocale]!;
+
+      return CallToolResult.fromStructuredContent(
+        fileCollection.config.namespaces
+            ? translations
+            : translations.values.first,
+      );
+    },
+  );
+
+  server.registerTool(
     'apply-wip-translations',
     description:
         '''Adds the found translations from source code to the actual translation files.
@@ -132,7 +159,7 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
   server.registerTool(
     'apply-translations',
     description:
-        'Adds translations from a provided map to the actual translation files',
+        'Adds translations from the provided map to the actual translation files',
     inputSchema: ToolInputSchema(
       properties: {
         'locale': JsonSchema.string(
@@ -149,26 +176,39 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
       final locale = args['locale'] as String;
       final translations = args['translations'] as Map<String, dynamic>;
 
-      final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
-        verbose: false,
+      await apply(
+        locale: I18nLocale.fromString(locale),
+        translations: translations,
       );
 
-      final translationMap = await TranslationMapBuilder.build(
-        fileCollection: fileCollection,
-      );
+      return CallToolResult.fromContent([
+        TextContent(text: 'OK'),
+      ]);
+    },
+  );
 
-      await applyTranslationsForOneLocale(
-        fileCollection: fileCollection,
-        applyLocale: I18nLocale.fromString(locale),
-        baseTranslations: translationMap[fileCollection.config.baseLocale]!,
-        newTranslations: translations,
-      );
-
-      // Generate after applying with new translations
-      await generateTranslations(
-        fileCollection: SlangFileCollectionBuilder.readFromFileSystem(
-          verbose: false,
+  server.registerTool(
+    'add-locale',
+    description: 'Adds a new locale with translations from the provided map',
+    inputSchema: ToolInputSchema(
+      properties: {
+        'locale': JsonSchema.string(
+          description: 'Locale identifier (e.g., en, de, fr-CA)',
         ),
+        'translations': JsonSchema.object(
+          description:
+              'A nested map of translation keys and their corresponding translated strings',
+        ),
+      },
+      required: ['locale', 'translations'],
+    ),
+    callback: (args, extra) async {
+      final locale = args['locale'] as String;
+      final translations = args['translations'] as Map<String, dynamic>;
+
+      await addLocale(
+        locale: I18nLocale.fromString(locale),
+        translations: translations,
       );
 
       return CallToolResult.fromContent([
@@ -179,5 +219,5 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
 
   await server.connect(StdioServerTransport());
 
-  print('Running slang_mcp! v0.0.1');
+  print('Running slang_mcp!');
 }

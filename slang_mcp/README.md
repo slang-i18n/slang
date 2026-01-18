@@ -2,13 +2,16 @@
 
 An [MCP](https://modelcontextprotocol.io) server for [slang](https://pub.dev/packages/slang).
 
+Use LLMs to automatically translate your app at compile time.
+
 Exposes an API for LLMs to find missing translations, WIP translations,
 and allows LLMs to add new translations without requiring knowledge about folder structure, file formats, etc.
 
 ## Motivation
 
 LLMs are increasingly being used to help with translation tasks.
-However, letting LLMs directly access translation files can be error-prone and insecure.
+However, letting LLMs directly access translation files can be slow, feedback intensive,
+and error-prone.
 
 Compared to [slang_gpt](https://pub.dev/packages/slang_gpt),
 the MCP approach offers a more standardized and extensible way to interact with translation data.
@@ -16,12 +19,19 @@ the MCP approach offers a more standardized and extensible way to interact with 
 In particular, this package does not need knowledge about API keys
 which is necessary to work with Claude Code or other subscriptions.
 
-## Advantages over direct file access
+## Advantages
+
+### ➤ Over direct file access
 
 - **Token Efficiency**: MCP allows LLMs to request only the data they need,
   reducing the amount of text that needs to be processed.
 - **Speed**: LLMs don't need to find what files are relevant, MCP handles that - reducing unnecessary file reads.
-- **Robustness**: LLMs are only responsible for generating translations, not more.
+- **Robustness**: LLMs are only responsible for generating translations, nothing more.
+
+### ➤ Over slang_gpt
+
+- **LLM agnostic**: Works with any LLM that supports MCP.
+- **No API key**: No need to manage API keys. Works with LLM subscriptions that do not provide API access (e.g. Claude Code).
 
 ## Installation
 
@@ -31,11 +41,15 @@ Install the package globally:
 dart pub global activate slang_mcp
 ```
 
-Register the MCP server in your LLM tooling:
+Register the MCP server in your LLM tooling.
+
+Note: The working directory should be your Flutter app
+where the `build.yaml` / `slang.yaml` file is located.
 
 ```bash
 # Claude Code
-claude mcp add slang_mcp slang_mcp
+cd my_flutter_app/
+claude mcp add --transport stdio slang_mcp -- slang_mcp
 ```
 
 ## Workflows
@@ -48,6 +62,14 @@ Prompt the LLM:
 
 ```
 Translate the missing translations
+```
+
+### ➤ Add new locale
+
+Prompt the LLM:
+
+```
+Translate the app to Spanish (es)
 ```
 
 ### ➤ Apply and translate WIP translations
