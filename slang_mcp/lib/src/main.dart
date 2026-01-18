@@ -71,7 +71,7 @@ void main(List<String> arguments) async {
         'Gets the translations that existing in base locale but not in secondary locales.',
     outputSchema: JsonSchema.object(
       description:
-'''A map where each key is a locale identifier (e.g., "de", "fr-CA")
+          '''A map where each key is a locale identifier (e.g., "de", "fr-CA")
 and the value is a nested map containing the missing translation keys and their corresponding base locale strings.''',
     ),
     callback: (args, extra) async {
