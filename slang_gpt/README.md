@@ -6,6 +6,8 @@ This is library is intended to be used with [slang](https://pub.dev/packages/sla
 
 Currently, only the [OpenAI API](https://platform.openai.com/docs/) is supported.
 
+**Note:** It is recommended to use the newer [slang_mcp](https://pub.dev/packages/slang_mcp) package.
+
 ## Motivation
 
 Google Translate and other translation services are great, but they are not perfect.

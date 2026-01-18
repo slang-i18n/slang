@@ -1,3 +1,8 @@
+## 0.11.2
+
+- docs: announcing [slang_mcp](https://pub.dev/packages/slang_mcp)
+- feat: allow overriding description via command line #338
+
 ## 0.11.1
 
 - feat: add gpt-4.1, gpt-5, and gpt-5-mini #321
