@@ -1,11 +1,13 @@
 # slang_mcp
 
-An [MCP](https://modelcontextprotocol.io) server for [slang](https://pub.dev/packages/slang).
+The [MCP](https://modelcontextprotocol.io) server for [slang](https://pub.dev/packages/slang).
 
 Use LLMs to automatically translate your app at compile time.
 
 Exposes an API for LLMs to find missing translations, WIP translations,
 and allows LLMs to add new translations without requiring knowledge about folder structure, file formats, etc.
+
+This MCP server adds around 540 tokens into the context (which is 0.27% of 200k tokens in Claude).
 
 ## Motivation
 
