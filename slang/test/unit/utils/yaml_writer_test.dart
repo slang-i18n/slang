@@ -31,9 +31,9 @@ nullable: null
           'details': {'age': 28, 'job': 'Engineer'}
         }
       };
-      final expected = '''person: 
+      final expected = '''person:
   name: Alice
-  details: 
+  details:
     age: 28
     job: Engineer
 ''';
@@ -56,7 +56,7 @@ nullable: null
           'normal': 'normal'
         }
       };
-      final expected = r'''special: 
+      final expected = r'''special:
   empty: ""
   with_question: "? a"
   "with:colon": inner spaces
@@ -89,7 +89,7 @@ with_nl: |
   This is a
   multiline string
    with newline
-indented: 
+indented:
   with_nl: |
     This is a
     multiline string
@@ -106,7 +106,7 @@ indented:
       final input = {
         'fruits': ['apple', 'banana', 'cherry'],
       };
-      final expected = '''fruits: 
+      final expected = '''fruits:
   - apple
   - banana
   - cherry
@@ -121,7 +121,7 @@ indented:
           {'type': 'phone', 'value': '555-1234'}
         ]
       };
-      final expected = '''contacts: 
+      final expected = '''contacts:
   - 
     type: email
     value: john@example.com
@@ -153,12 +153,12 @@ indented:
           ]
         }
       };
-      final expected = '''company: 
+      final expected = '''company:
   name: Acme Inc
-  departments: 
+  departments:
     - 
       name: Engineering
-      employees: 
+      employees:
         - 
           name: Bob
           role: Developer
@@ -167,7 +167,7 @@ indented:
           role: Architect
     - 
       name: Marketing
-      employees: 
+      employees:
         - 
           name: Charlie
           role: Manager
@@ -182,7 +182,7 @@ indented:
           [4, 5, 6]
         ]
       };
-      final expected = '''matrix: 
+      final expected = '''matrix:
   - 
     - 1
     - 2

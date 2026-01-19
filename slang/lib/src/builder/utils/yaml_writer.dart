@@ -7,7 +7,7 @@ String _convertMapToYaml(Map<String, dynamic> map, int indent) {
   final indentStr = '  ' * indent;
 
   map.forEach((key, value) {
-    buffer.write('$indentStr${_sanitizeStringValue(key)}: ');
+    buffer.write('$indentStr${_sanitizeStringValue(key)}:');
 
     if (value is Map<String, dynamic>) {
       buffer.writeln();
@@ -16,6 +16,7 @@ String _convertMapToYaml(Map<String, dynamic> map, int indent) {
       buffer.writeln();
       buffer.write(_convertListToYaml(value, indent + 1));
     } else {
+      buffer.write(' ');
       buffer.writeln(_formatScalarValue(value, indent + 1));
     }
   });
