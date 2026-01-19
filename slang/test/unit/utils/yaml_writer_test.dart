@@ -31,9 +31,9 @@ nullable: null
           'details': {'age': 28, 'job': 'Engineer'}
         }
       };
-      final expected = '''person: 
+      final expected = '''person:
   name: Alice
-  details: 
+  details:
     age: 28
     job: Engineer
 ''';
@@ -56,7 +56,7 @@ nullable: null
           'normal': 'normal'
         }
       };
-      final expected = r'''special: 
+      final expected = r'''special:
   empty: ""
   with_question: "? a"
   "with:colon": inner spaces
@@ -89,7 +89,7 @@ with_nl: |
   This is a
   multiline string
    with newline
-indented: 
+indented:
   with_nl: |
     This is a
     multiline string
@@ -106,10 +106,10 @@ indented:
       final input = {
         'fruits': ['apple', 'banana', 'cherry'],
       };
-      final expected = '''fruits: 
-  - apple
-  - banana
-  - cherry
+      final expected = '''fruits:
+- apple
+- banana
+- cherry
 ''';
       expect(convertToYaml(input), equals(expected));
     });
@@ -121,13 +121,11 @@ indented:
           {'type': 'phone', 'value': '555-1234'}
         ]
       };
-      final expected = '''contacts: 
-  - 
-    type: email
-    value: john@example.com
-  - 
-    type: phone
-    value: 555-1234
+      final expected = '''contacts:
+- type: email
+  value: john@example.com
+- type: phone
+  value: 555-1234
 ''';
       expect(convertToYaml(input), equals(expected));
     });
@@ -153,24 +151,19 @@ indented:
           ]
         }
       };
-      final expected = '''company: 
+      final expected = '''company:
   name: Acme Inc
-  departments: 
-    - 
-      name: Engineering
-      employees: 
-        - 
-          name: Bob
-          role: Developer
-        - 
-          name: Alice
-          role: Architect
-    - 
-      name: Marketing
-      employees: 
-        - 
-          name: Charlie
-          role: Manager
+  departments:
+  - name: Engineering
+    employees:
+    - name: Bob
+      role: Developer
+    - name: Alice
+      role: Architect
+  - name: Marketing
+    employees:
+    - name: Charlie
+      role: Manager
 ''';
       expect(convertToYaml(input), equals(expected));
     });
@@ -182,15 +175,15 @@ indented:
           [4, 5, 6]
         ]
       };
-      final expected = '''matrix: 
-  - 
-    - 1
-    - 2
-    - 3
-  - 
-    - 4
-    - 5
-    - 6
+      final expected = '''matrix:
+-
+  - 1
+  - 2
+  - 3
+-
+  - 4
+  - 5
+  - 6
 ''';
       expect(convertToYaml(input), equals(expected));
     });
