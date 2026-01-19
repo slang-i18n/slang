@@ -107,9 +107,9 @@ indented:
         'fruits': ['apple', 'banana', 'cherry'],
       };
       final expected = '''fruits:
-  - apple
-  - banana
-  - cherry
+- apple
+- banana
+- cherry
 ''';
       expect(convertToYaml(input), equals(expected));
     });
@@ -122,12 +122,10 @@ indented:
         ]
       };
       final expected = '''contacts:
-  - 
-    type: email
-    value: john@example.com
-  - 
-    type: phone
-    value: 555-1234
+- type: email
+  value: john@example.com
+- type: phone
+  value: 555-1234
 ''';
       expect(convertToYaml(input), equals(expected));
     });
@@ -156,21 +154,16 @@ indented:
       final expected = '''company:
   name: Acme Inc
   departments:
-    - 
-      name: Engineering
-      employees:
-        - 
-          name: Bob
-          role: Developer
-        - 
-          name: Alice
-          role: Architect
-    - 
-      name: Marketing
-      employees:
-        - 
-          name: Charlie
-          role: Manager
+  - name: Engineering
+    employees:
+    - name: Bob
+      role: Developer
+    - name: Alice
+      role: Architect
+  - name: Marketing
+    employees:
+    - name: Charlie
+      role: Manager
 ''';
       expect(convertToYaml(input), equals(expected));
     });
@@ -183,14 +176,14 @@ indented:
         ]
       };
       final expected = '''matrix:
-  - 
-    - 1
-    - 2
-    - 3
-  - 
-    - 4
-    - 5
-    - 6
+-
+  - 1
+  - 2
+  - 3
+-
+  - 4
+  - 5
+  - 6
 ''';
       expect(convertToYaml(input), equals(expected));
     });

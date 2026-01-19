@@ -2,19 +2,24 @@ String convertToYaml(Map<String, dynamic> content) {
   return _convertMapToYaml(content, 0);
 }
 
-String _convertMapToYaml(Map<String, dynamic> map, int indent) {
+String _convertMapToYaml(Map<String, dynamic> map, int indent,
+    {bool indentFirstLine = true}) {
   final buffer = StringBuffer();
   final indentStr = '  ' * indent;
+  var isFirstLine = true;
 
   map.forEach((key, value) {
-    buffer.write('$indentStr${_sanitizeStringValue(key)}:');
+    if (indentFirstLine || !isFirstLine) buffer.write(indentStr);
+    isFirstLine = false;
+
+    buffer.write('${_sanitizeStringValue(key)}:');
 
     if (value is Map<String, dynamic>) {
       buffer.writeln();
       buffer.write(_convertMapToYaml(value, indent + 1));
     } else if (value is List) {
       buffer.writeln();
-      buffer.write(_convertListToYaml(value, indent + 1));
+      buffer.write(_convertListToYaml(value, indent));
     } else {
       buffer.write(' ');
       buffer.writeln(_formatScalarValue(value, indent + 1));
@@ -29,15 +34,16 @@ String _convertListToYaml(List list, int indent) {
   final indentStr = '  ' * indent;
 
   for (var item in list) {
-    buffer.write('$indentStr- ');
+    buffer.write('$indentStr-');
 
     if (item is Map<String, dynamic>) {
-      buffer.writeln();
-      buffer.write(_convertMapToYaml(item, indent + 1));
+      buffer.write(' ');
+      buffer.write(_convertMapToYaml(item, indent + 1, indentFirstLine: false));
     } else if (item is List) {
       buffer.writeln();
       buffer.write(_convertListToYaml(item, indent + 1));
     } else {
+      buffer.write(' ');
       buffer.writeln(_formatScalarValue(item, indent + 1));
     }
   }
