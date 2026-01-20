@@ -152,7 +152,8 @@ t.$wip.testMethod(
         'testMethod': 'Value with spaces and {param} inside',
       });
       expect(result.list.length, 1);
-      expect(result.list[0].original, r"""t.$wip.testMethod(
+      expect(result.list[0].original, r"""
+t.$wip.testMethod(
   'Value with spaces and $param inside',
 )""");
       expect(result.list[0].path, 'testMethod');
@@ -172,7 +173,8 @@ t.$wip.complexMethod(
         'complexMethod': '{someFunction}',
       });
       expect(result.list.length, 1);
-      expect(result.list[0].original, r"""t.$wip.complexMethod(
+      expect(result.list[0].original, r"""
+t.$wip.complexMethod(
   someFunction('test', param: $value),
 )""");
       expect(result.list[0].path, 'complexMethod');
@@ -192,7 +194,8 @@ t.$wip.variableMethod(
         'variableMethod': '{myVariable}',
       });
       expect(result.list.length, 1);
-      expect(result.list[0].original, r'''t.$wip.variableMethod(
+      expect(result.list[0].original, r'''
+t.$wip.variableMethod(
   myVariable,
 )''');
       expect(result.list[0].path, 'variableMethod');

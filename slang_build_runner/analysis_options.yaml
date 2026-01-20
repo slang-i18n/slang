@@ -5,3 +5,4 @@ linter:
     sort_pub_dependencies: true
     always_use_package_imports: true
     directives_ordering: true
+    leading_newlines_in_multiline_strings: true
