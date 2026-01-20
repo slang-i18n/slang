@@ -71,8 +71,7 @@ void main(List<String> arguments) async {
     description:
         'Gets the translations that existing in base locale but not in secondary locales.',
     outputSchema: JsonSchema.object(
-      description:
-          '''
+      description: '''
 A map where each key is a locale identifier (e.g., "de", "fr-CA")
 and the value is a nested map containing the missing translation keys and their corresponding base locale strings.''',
     ),
@@ -133,8 +132,7 @@ and the value is a nested map containing the missing translation keys and their 
 
   server.registerTool(
     'apply-wip-translations',
-    description:
-        '''
+    description: '''
 Adds the found translations from source code to the actual translation files.
 Note: Running apply-translations with **base locale** is not needed afterwards.''',
     callback: (args, extra) async {

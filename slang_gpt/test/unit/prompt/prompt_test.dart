@@ -7,8 +7,7 @@ import 'package:slang_gpt/model/gpt_model.dart';
 import 'package:slang_gpt/prompt/prompt.dart';
 import 'package:test/test.dart';
 
-const _expectedSystemPrompt =
-    r'''
+const _expectedSystemPrompt = r'''
 The user wants to internationalize the app. The user will provide you with a JSON file containing the English strings.
 You will translate it to German.
 Parameters are interpolated with ${parameter} or $parameter.
