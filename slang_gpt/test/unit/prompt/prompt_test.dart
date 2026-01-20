@@ -8,7 +8,8 @@ import 'package:slang_gpt/prompt/prompt.dart';
 import 'package:test/test.dart';
 
 const _expectedSystemPrompt =
-    r'''The user wants to internationalize the app. The user will provide you with a JSON file containing the English strings.
+    r'''
+The user wants to internationalize the app. The user will provide you with a JSON file containing the English strings.
 You will translate it to German.
 Parameters are interpolated with ${parameter} or $parameter.
 Linked translations are denoted with the "@:path0.path1" syntax.
@@ -108,7 +109,8 @@ void main() {
       expect(prompts.length, 1);
       expect(
         prompts.first.system,
-        r'''The user wants to internationalize the "settings" part of the app. The user will provide you with a JSON file containing the English strings.
+        r'''
+The user wants to internationalize the "settings" part of the app. The user will provide you with a JSON file containing the English strings.
 You will translate it to German.
 Parameters are interpolated with ${parameter} or $parameter.
 Linked translations are denoted with the "@:path0.path1" syntax.

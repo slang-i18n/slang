@@ -15,7 +15,8 @@ void main() {
         'height': 1.85,
         'nullable': null
       };
-      final expected = '''name: John
+      final expected = '''
+name: John
 age: 30
 isActive: true
 height: 1.85
@@ -31,7 +32,8 @@ nullable: null
           'details': {'age': 28, 'job': 'Engineer'}
         }
       };
-      final expected = '''person:
+      final expected = '''
+person:
   name: Alice
   details:
     age: 28
@@ -56,7 +58,8 @@ nullable: null
           'normal': 'normal'
         }
       };
-      final expected = r'''special:
+      final expected = r'''
+special:
   empty: ""
   with_question: "? a"
   "with:colon": inner spaces
@@ -81,7 +84,8 @@ nullable: null
           'without_nl': 'This is a\nmultiline string\n with several lines'
         }
       };
-      final expected = '''without_nl: |-
+      final expected = '''
+without_nl: |-
   This is a
   multiline string
    with several lines
@@ -106,7 +110,8 @@ indented:
       final input = {
         'fruits': ['apple', 'banana', 'cherry'],
       };
-      final expected = '''fruits:
+      final expected = '''
+fruits:
 - apple
 - banana
 - cherry
@@ -121,7 +126,8 @@ indented:
           {'type': 'phone', 'value': '555-1234'}
         ]
       };
-      final expected = '''contacts:
+      final expected = '''
+contacts:
 - type: email
   value: john@example.com
 - type: phone
@@ -151,7 +157,8 @@ indented:
           ]
         }
       };
-      final expected = '''company:
+      final expected = '''
+company:
   name: Acme Inc
   departments:
   - name: Engineering
@@ -175,7 +182,8 @@ indented:
           [4, 5, 6]
         ]
       };
-      final expected = '''matrix:
+      final expected = '''
+matrix:
 -
   - 1
   - 2
