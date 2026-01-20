@@ -1822,6 +1822,8 @@ dart run slang edit <type> <params...>
 To keep the order of the keys consistent, you can normalize the translations.
 They will follow the same order as the base locale.
 
+As a side effect, this command also reformats the translation file/files.
+
 ```sh
 dart run slang normalize [--locale=fr-FR]
 ```

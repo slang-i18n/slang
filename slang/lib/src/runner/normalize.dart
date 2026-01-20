@@ -11,6 +11,8 @@ import 'package:slang/src/utils/log.dart' as log;
 const _supportedFiles = [FileType.json, FileType.yaml];
 
 /// Normalizes the translation files according to the base locale.
+///
+/// As a side effect, this command also reformats the translation file/files.
 Future<void> runNormalize({
   required SlangFileCollection fileCollection,
   required List<String> arguments,
@@ -40,10 +42,6 @@ Future<void> runNormalize({
     log.info('Target: all locales');
 
     for (final locale in translationMap.getLocales()) {
-      if (locale == fileCollection.config.baseLocale) {
-        continue;
-      }
-
       await _normalizeLocale(
         fileCollection: fileCollection,
         locale: locale,
