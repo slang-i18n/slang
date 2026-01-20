@@ -93,7 +93,8 @@ String _getSystemPrompt({
     namespaceHint = '';
   }
 
-  return '''The user wants to internationalize$namespaceHint the app. The user will provide you with a JSON file containing the ${getEnglishName(rawConfig.baseLocale)} strings.
+  return '''
+The user wants to internationalize$namespaceHint the app. The user will provide you with a JSON file containing the ${getEnglishName(rawConfig.baseLocale)} strings.
 You will translate it to ${getEnglishName(targetLocale)}.
 Parameters are interpolated with $interpolationHint.
 Linked translations are denoted with the "@:path0.path1" syntax.
