@@ -1,7 +1,7 @@
 name: slang_gpt
 description: Use GPT to automatically translate at compile time. A tool for slang.
-version: 0.11.2
-repository: https://github.com/slang-i18n/slang
+version: 0.11.3
+repository: https://codeberg.org/Tienisto/slang
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

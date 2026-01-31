@@ -1,7 +1,7 @@
 name: slang_mcp
 description: The MCP server for slang to allow working with LLMs more efficiently.
-version: 0.1.1
-repository: https://github.com/slang-i18n/slang
+version: 0.1.2
+repository: https://codeberg.org/Tienisto/slang
 
 environment:
   sdk: ^3.3.0

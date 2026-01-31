@@ -1,7 +1,7 @@
 name: slang_build_runner
 description: build_runner integration for slang. This library ensures that slang is recognized by build_runner.
-version: 4.12.0
-repository: https://github.com/slang-i18n/slang
+version: 4.12.1
+repository: https://codeberg.org/Tienisto/slang
 
 environment:
   sdk: ">=3.3.0 <4.0.0"

@@ -1,7 +1,7 @@
 name: slang
 description: Localization / Internationalization (i18n) solution. Use JSON, YAML, CSV, or ARB files to create typesafe translations via source generation.
-version: 4.12.0
-repository: https://github.com/slang-i18n/slang
+version: 4.12.1
+repository: https://codeberg.org/Tienisto/slang
 topics:
   - i18n
   - l10n

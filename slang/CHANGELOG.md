@@ -1,3 +1,9 @@
+## 4.12.1
+
+- feat: also format base locale when running `slang normalize` (#344) @adil192
+- feat: format yaml files like in Weblate (#343) @adil192
+- chore: migrate from GitHub to Codeberg: https://codeberg.org/Tienisto/slang
+
 ## 4.12.0
 
 - feat: announcing [slang_mcp](https://pub.dev/packages/slang_mcp), a new package to work with LLMs more efficiently
@@ -144,7 +150,7 @@ On web, [Deferred loading](https://dart.dev/language/libraries#lazily-loading-a-
 - **Breaking:** defining contexts (enums) is no longer allowed in `build.yaml` or `slang.yaml` (deprecated in v3.19.0)
 - **Breaking:** enums specified in `context` are no longer transformed into pascal case keeping the original case
 
-You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://codeberg.org/Tienisto/slang/src/main/slang/MIGRATION.md).
 
 ## 3.32.0
 
@@ -252,7 +258,7 @@ You can read the detailed migration guide [here](https://github.com/slang-i18n/s
 - feat: add enum value inference (no need to specify `enum` in the config anymore)
 - feat: add `slang edit copy` to copy translations
 - feat: namespaces may contain underscores if at least one file of same directory uses locale from directory name
-- **DEPRECATED:** Use explicit `context` modifier instead of relying on the config file (see [migration guide](https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md#use-context-modifier-since-3190))
+- **DEPRECATED:** Use explicit `context` modifier instead of relying on the config file (see [migration guide](https://codeberg.org/Tienisto/slang/src/main/slang/MIGRATION.md))
 
 ## 3.18.1
 
@@ -382,7 +388,7 @@ You can read the detailed migration guide [here](https://github.com/slang-i18n/s
 
 All breaking changes will result in a compile-time error, so don't worry for "hidden" bugs :)
 
-You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://codeberg.org/Tienisto/slang/src/main/slang/MIGRATION.md).
 
 ## 2.8.0
 
@@ -462,4 +468,4 @@ You can read the detailed migration guide [here](https://github.com/slang-i18n/s
 
 Thanks to [@fzyzcjy](https://github.com/fzyzcjy).
 
-You can read the detailed migration guide [here](https://github.com/slang-i18n/slang/blob/main/slang/MIGRATION.md).
+You can read the detailed migration guide [here](https://codeberg.org/Tienisto/slang/src/main/slang/MIGRATION.md).

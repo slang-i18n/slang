@@ -773,7 +773,7 @@ Optionally, you can escape linked translations by surrounding the path with `{}`
 
 This library uses the concept defined [here](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
 
-Some languages have support out of the box. See [here](https://github.com/slang-i18n/slang/blob/main/slang/lib/src/api/plural_resolver_map.dart).
+Some languages have support out of the box. See [here](https://codeberg.org/Tienisto/slang/src/main/slang/lib/src/api/plural_resolver_map.dart).
 
 Plurals are detected by the following keywords: `zero`, `one`, `two`, `few`, `many`, `other`.
 

@@ -1,3 +1,7 @@
+## 0.11.3
+
+- chore: migrate from GitHub to Codeberg: https://codeberg.org/Tienisto/slang
+
 ## 0.11.2
 
 - docs: announcing [slang_mcp](https://pub.dev/packages/slang_mcp)
