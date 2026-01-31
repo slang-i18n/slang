@@ -441,7 +441,7 @@ Map<String, Node> _parseMapNode({
         if (children.isEmpty) {
           // We do not want to generate empty nodes:
           // (1) Not really useful
-          // (2) Can cause issues in combination with fallbacks (https://github.com/slang-i18n/slang/issues/305)
+          // (2) Can cause issues in combination with fallbacks (https://codeberg.org/Tienisto/slang/issues/305)
           return;
         }
 

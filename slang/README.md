@@ -1,9 +1,9 @@
-![featured](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/featured.svg)
+![featured](https://codeberg.org/Tienisto/slang/raw/branch/main/resources/featured.svg)
 
-![logo](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/logo.svg)
+![logo](https://codeberg.org/Tienisto/slang/raw/branch/main/resources/logo.svg)
 
 [![pub package](https://img.shields.io/pub/v/slang.svg)](https://pub.dev/packages/slang)
-![ci](https://github.com/slang-i18n/slang/actions/workflows/ci.yml/badge.svg)
+![ci](https://codeberg.org/Tienisto/slang/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Type-safe i18n solution using JSON, YAML, CSV, or ARB files.
@@ -20,7 +20,7 @@ Type-safe i18n solution using JSON, YAML, CSV, or ARB files.
 - 🖥 Flutter-independent, use it in any Dart project!
 - 🔨 Configurable, English is not the default language? Configure it in `build.yaml`!
 
-You can see an example of the generated file [here](https://github.com/slang-i18n/slang/blob/main/slang/example/lib/i18n/strings.g.dart).
+You can see an example of the generated file [here](https://codeberg.org/Tienisto/slang/src/main/slang/example/lib/i18n/strings.g.dart).
 
 This is how you access the translations:
 
@@ -1111,7 +1111,7 @@ void main() {
 
 You can customize the attributes and use different node selectors.
 
-Checkout the [full article](https://github.com/slang-i18n/slang/blob/main/slang/documentation/interfaces.md).
+Checkout the [full article](https://codeberg.org/Tienisto/slang/src/main/slang/documentation/interfaces.md).
 
 ### ➤ Modifiers
 
@@ -1261,7 +1261,7 @@ String a = t.welcome.title; // get translation
 AppLocale locale = t.$meta.locale; // get locale
 ```
 
-Checkout the [full article](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md).
+Checkout the [full article](https://codeberg.org/Tienisto/slang/src/main/slang/documentation/dependency_injection.md).
 
 ## Structuring Features
 
@@ -2117,7 +2117,7 @@ final localeProvider = StreamProvider((ref) => LocaleSettings.getLocaleStream())
 
 **Method B: Use dependency injection**
 
-Checkout [Dependency Injection](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md).
+Checkout [Dependency Injection](https://codeberg.org/Tienisto/slang/src/main/slang/documentation/dependency_injection.md).
 
 ### ➤ slang x Weblate
 
@@ -2125,9 +2125,9 @@ Checkout [Dependency Injection](https://github.com/slang-i18n/slang/blob/main/sl
 
 Below are recommended settings and addons for a smooth integration.
 
-![settings](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/weblate/settings.png)
+![settings](https://codeberg.org/Tienisto/slang/raw/main/resources/weblate/settings.png)
 
-![addons](https://raw.githubusercontent.com/slang-i18n/slang/main/resources/weblate/addons.png)
+![addons](https://codeberg.org/Tienisto/slang/raw/main/resources/weblate/addons.png)
 
 ## FAQ
 
@@ -2229,8 +2229,8 @@ The second one always returns a new instance.
 
 ### In Depth
 
-- [Interfaces](https://github.com/slang-i18n/slang/blob/main/slang/documentation/interfaces.md)
-- [Dependency Injection](https://github.com/slang-i18n/slang/blob/main/slang/documentation/dependency_injection.md)
+- [Interfaces](https://codeberg.org/Tienisto/slang/src/main/slang/documentation/interfaces.md)
+- [Dependency Injection](https://codeberg.org/Tienisto/slang/src/main/slang/documentation/dependency_injection.md)
 
 ### Tutorials
 

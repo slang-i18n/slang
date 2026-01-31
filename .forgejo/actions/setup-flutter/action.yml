@@ -1,0 +1,24 @@
+name: Setup Flutter
+description: Sets up Flutter SDK
+
+inputs:
+  flutter-version:
+    description: Flutter version to install
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Clone Flutter
+      shell: bash
+      run: |
+        git clone --depth 1 --branch ${{ inputs.flutter-version }} https://github.com/flutter/flutter.git $HOME/flutter
+        echo "$HOME/flutter/bin" >> $GITHUB_PATH
+
+    - name: Flutter Doctor
+      shell: bash
+      env:
+        TAR_OPTIONS: "--no-same-owner"
+      run: |
+        $HOME/flutter/bin/flutter config --no-analytics
+        $HOME/flutter/bin/flutter doctor -v

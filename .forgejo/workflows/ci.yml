@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  FLUTTER_VERSION_OLDEST: "3.19.6"
+  FLUTTER_VERSION_NEWEST: "3.38.9"
+
+jobs:
+  test:
+    name: Test (newest Flutter version)
+    runs-on: codeberg-small
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.forgejo/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION_NEWEST }}
+
+      - name: Dependencies (flutter)
+        working-directory: slang_flutter
+        run: flutter pub get
+
+      - name: Test (flutter)
+        working-directory: slang_flutter
+        run: flutter test
+
+      # The compilation test needs "pub get" to be run for Flutter first.
+      # That's why we run the core tests after the Flutter tests.
+      - name: Dependencies (core)
+        working-directory: slang
+        run: dart pub get
+
+      - name: Check format (core)
+        working-directory: slang
+        run: dart format --set-exit-if-changed lib bin test
+
+      - name: Analyze (core)
+        working-directory: slang
+        run: flutter analyze
+
+      - name: Test (core)
+        working-directory: slang
+        run: dart test
+
+  test_legacy:
+    name: Test (oldest Flutter version)
+    runs-on: codeberg-small
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.forgejo/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION_OLDEST }}
+
+      - name: Dependencies (flutter)
+        working-directory: slang_flutter
+        run: flutter pub get
+
+      - name: Test (flutter)
+        working-directory: slang_flutter
+        run: flutter test
+
+      # The compilation test needs "pub get" to be run for Flutter first.
+      # That's why we run the core tests after the Flutter tests.
+      - name: Dependencies (core)
+        working-directory: slang
+        run: dart pub get
+
+      - name: Test (core)
+        working-directory: slang
+        run: dart test
