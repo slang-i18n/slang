@@ -13,15 +13,13 @@ env:
 jobs:
   test:
     name: Test (newest Flutter version)
-    runs-on: codeberg-small
+    runs-on: self-hosted
+
+    container:
+      image: ghcr.io/cirruslabs/flutter:${{ env.FLUTTER_VERSION_NEWEST }}
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: ./.forgejo/actions/setup-flutter
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION_NEWEST }}
+      - uses: https://codeberg.org/Tienisto/checkout@v0.1.0
 
       - name: Dependencies (flutter)
         working-directory: slang_flutter
@@ -51,15 +49,13 @@ jobs:
 
   test_legacy:
     name: Test (oldest Flutter version)
-    runs-on: codeberg-small
+    runs-on: self-hosted
+
+    container:
+      image: ghcr.io/cirruslabs/flutter:${{ env.FLUTTER_VERSION_OLDEST }}
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: ./.forgejo/actions/setup-flutter
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION_OLDEST }}
+      - uses: https://codeberg.org/Tienisto/checkout@v0.1.0
 
       - name: Dependencies (flutter)
         working-directory: slang_flutter
@@ -69,8 +65,6 @@ jobs:
         working-directory: slang_flutter
         run: flutter test
 
-      # The compilation test needs "pub get" to be run for Flutter first.
-      # That's why we run the core tests after the Flutter tests.
       - name: Dependencies (core)
         working-directory: slang
         run: dart pub get
