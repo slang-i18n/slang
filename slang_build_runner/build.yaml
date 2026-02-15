@@ -2,7 +2,14 @@
 builders:
   slang_build_runner:
     import: 'package:slang_build_runner/slang_build_runner.dart'
-    builder_factories: ['i18nBuilder']
-    build_extensions: {'.i18n.json': ['.g.dart']}
-    build_to: source
+    builder_factories: [ 'i18nBuilder' ]
+    build_extensions: { '$lib$': [ '_slang_temp.json' ] }
     auto_apply: root_package
+    build_to: cache
+    applies_builders: [":slang_fan_out"]
+
+post_process_builders:
+  slang_fan_out:
+    import: 'package:slang_build_runner/slang_build_runner.dart'
+    builder_factory: 'i18nPostProcessBuilder'
+    input_extensions: [ '_slang_temp.json' ]

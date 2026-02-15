@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
@@ -32,20 +33,17 @@ Builder i18nBuilder(BuilderOptions options) {
 
 class I18nBuilder implements Builder {
   final RawConfig config;
-  final String outputFilePattern;
-  bool _generated = false;
 
-  I18nBuilder({required this.config})
-      : outputFilePattern = config.outputFileName.getFileExtension();
+  I18nBuilder({required this.config});
+
+  @override
+  Map<String, List<String>> get buildExtensions => {
+        r'$lib$': ['_slang_temp.json'],
+      };
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    // only generate once
-    if (_generated) return;
-
-    _generated = true;
-
-    final Glob findAssetsPattern = config.inputDirectory != null
+    final findAssetsPattern = config.inputDirectory != null
         ? Glob('**${config.inputDirectory}/**${config.inputFilePattern}')
         : Glob('**${config.inputFilePattern}');
 
@@ -78,44 +76,65 @@ class I18nBuilder implements Builder {
       inputDirectoryHint: fileCollection.determineInputPath(),
     );
 
-    // STEP 4: write output to hard drive
-    FileUtils.createMissingFolders(filePath: outputFilePath);
-
+    // STEP 4: Encode all outputs into a single file
     final formatter = DartFormatter(
       languageVersion: DartFormatter.latestLanguageVersion,
       pageWidth: config.format.width,
     );
 
-    FileUtils.writeFile(
-      path: BuildResultPaths.mainPath(outputFilePath),
-      content: result.main.formatted(config, formatter),
-    );
-
-    for (final entry in result.translations.entries) {
-      final locale = entry.key;
-      final localeTranslations = entry.value;
-      FileUtils.writeFile(
-        path: BuildResultPaths.localePath(
+    final preparedOutput = {
+      BuildResultPaths.mainPath(outputFilePath):
+          result.main.formatted(config, formatter),
+      for (final entry in result.translations.entries)
+        BuildResultPaths.localePath(
           outputPath: outputFilePath,
-          locale: locale,
-        ),
-        content: localeTranslations.formatted(config, formatter),
-      );
-    }
+          locale: entry.key,
+        ): entry.value.formatted(config, formatter),
+    };
+
+    final tempId = AssetId(buildStep.inputId.package, 'lib/_slang_temp.json');
+    await buildStep.writeAsString(tempId, jsonEncode(preparedOutput));
   }
+}
+
+PostProcessBuilder i18nPostProcessBuilder(BuilderOptions options) {
+  return I18nPostProcessBuilder();
+}
+
+class I18nPostProcessBuilder implements PostProcessBuilder {
+  @override
+  final inputExtensions = ['_slang_temp.json'];
 
   @override
-  get buildExtensions => {
-        config.inputFilePattern: [outputFilePattern],
-      };
+  Future<void> build(PostProcessBuildStep buildStep) async {
+    final content = await buildStep.readInputAsString();
+
+    final Map<String, String> outputs =
+        jsonDecode(content).cast<String, String>();
+
+    // for (final entry in outputs.entries) {
+    //   print('Writing to ${entry.key}');
+    //   buildStep.writeAsString(
+    //     AssetId(buildStep.inputId.package, entry.key),
+    //     entry.value,
+    //   );
+    // }
+
+    /// TODO: buildStep.writeAsString somehow does not produce any files. We use dart:io for now.
+    FileUtils.createMissingFolders(filePath: outputs.keys.first);
+
+    for (final entry in outputs.entries) {
+      FileUtils.writeFile(
+        path: entry.key,
+        content: entry.value,
+      );
+    }
+
+    buildStep.deletePrimaryInput();
+  }
 }
 
 extension on String {
-  /// converts /some/path/file.i18n.json to i18n.json
-  String getFileExtension() {
-    return PathUtils.getFileExtension(this);
-  }
-
   /// Conditionally formats the string using the provided [formatter].
   String formatted(RawConfig config, DartFormatter formatter) {
     return switch (config.format.enabled) {
