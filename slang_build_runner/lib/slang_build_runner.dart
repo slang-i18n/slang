@@ -17,8 +17,6 @@ import 'package:slang/src/builder/model/raw_config.dart';
 // ignore: implementation_imports
 import 'package:slang/src/builder/model/slang_file_collection.dart';
 // ignore: implementation_imports
-import 'package:slang/src/builder/utils/file_utils.dart';
-// ignore: implementation_imports
 import 'package:slang/src/builder/utils/map_utils.dart';
 // ignore: implementation_imports
 import 'package:slang/src/builder/utils/path_utils.dart';
@@ -112,21 +110,10 @@ class I18nPostProcessBuilder implements PostProcessBuilder {
     final Map<String, String> outputs =
         jsonDecode(content).cast<String, String>();
 
-    // for (final entry in outputs.entries) {
-    //   print('Writing to ${entry.key}');
-    //   buildStep.writeAsString(
-    //     AssetId(buildStep.inputId.package, entry.key),
-    //     entry.value,
-    //   );
-    // }
-
-    /// TODO: buildStep.writeAsString somehow does not produce any files. We use dart:io for now.
-    FileUtils.createMissingFolders(filePath: outputs.keys.first);
-
     for (final entry in outputs.entries) {
-      FileUtils.writeFile(
-        path: entry.key,
-        content: entry.value,
+      buildStep.writeAsString(
+        AssetId(buildStep.inputId.package, entry.key),
+        entry.value,
       );
     }
 

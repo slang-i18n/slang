@@ -13,3 +13,4 @@ post_process_builders:
     import: 'package:slang_build_runner/slang_build_runner.dart'
     builder_factory: 'i18nPostProcessBuilder'
     input_extensions: [ '_slang_temp.json' ]
+    build_to: source
