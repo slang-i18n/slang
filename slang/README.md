@@ -1068,14 +1068,6 @@ Add the `(interface=<Interface Name>)` to the container node.
 }
 ```
 
-Alternatively, you can specify them in the global config:
-
-```yaml
-# Config
-interfaces:
-  ChangeData: onboarding.whatsNew.*
-```
-
 The following mixin will be generated automatically for you:
 
 ```dart
@@ -2271,10 +2263,6 @@ Open source:
 - [Grüne App (German political app)](https://github.com/verdigado/gruene-app)
 - [OllamaTalk (Ollama Frontend)](https://github.com/shinhyo/OllamaTalk)
 - [Flutter Advanced Boilerplate (boilerplate project)](https://github.com/fikretsengul/flutter_advanced_boilerplate)
-
-Closed source:
-
-- Notan (grade calculator)
 
 Feel free to extend this list :)
 
