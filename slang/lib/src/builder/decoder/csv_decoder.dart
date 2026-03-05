@@ -1,23 +1,13 @@
-import 'package:csv/csv.dart';
-import 'package:csv/csv_settings_autodetection.dart';
+import 'package:serial_csv/serial_csv.dart';
 import 'package:slang/src/builder/decoder/base_decoder.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
-
-final _csvConverter = CsvToListConverter(
-  // Allow both \r\n and \n
-  // See README of csv package
-  csvSettingsDetector: FirstOccurrenceSettingsDetector(
-    eols: ['\r\n', '\n'],
-    textDelimiters: ['"', "'"],
-  ),
-);
 
 class CsvDecoder extends BaseDecoder {
   // If this csv is a compact csv, then the root keys represents the locale names
   @override
   Map<String, dynamic> decode(String raw) {
-    final compactCSV = isCompactCSV(raw);
-    final parsed = _csvConverter.convert(raw);
+    final parsed = SerialCsv.decodeFlexible(raw);
+    final compactCSV = isCompactCSV(parsed: parsed);
 
     if (compactCSV) {
       final result = <String, Map<String, dynamic>>{};
@@ -53,7 +43,14 @@ class CsvDecoder extends BaseDecoder {
         for (int localeIndex = 0; localeIndex < locales.length; localeIndex++) {
           final locale = locales[localeIndex];
           final path = parsed[rowIndex][0];
-          final content = parsed[rowIndex][localeIndex + 1].toString();
+          Object? content = parsed[rowIndex][localeIndex + 1];
+
+          if (content == null) {
+            continue; // skip empty cells
+          }
+
+          content = content.toString();
+
           if (locale != null) {
             // normal column
             MapUtils.addItemToMap(
@@ -61,7 +58,7 @@ class CsvDecoder extends BaseDecoder {
               destinationPath: path,
               item: content,
             );
-          } else if (!commentAdded && content.isNotEmpty) {
+          } else if (!commentAdded) {
             // comment column (only parse the first comment column)
             // add @<path> for all other locales
             for (final localeMap in result.values) {
@@ -94,8 +91,13 @@ class CsvDecoder extends BaseDecoder {
   }
 
   /// True, if this csv contains at least 3 rows
-  static bool isCompactCSV(String raw) {
-    final parsed = _csvConverter.convert(raw);
+  static bool isCompactCSV({String? raw, List<List<dynamic>>? parsed}) {
+    assert(
+      raw != null || parsed != null,
+      'Either raw or parsed must be provided',
+    );
+
+    parsed = parsed ?? SerialCsv.decodeFlexible(raw!);
     return parsed.first.length > 2;
   }
 }

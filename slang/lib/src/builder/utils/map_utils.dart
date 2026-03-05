@@ -96,7 +96,7 @@ class MapUtils {
         // destination
         if (subPathInt != null) {
           if (curr is! List) {
-            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list but a ${curr.runtimeType}.';
           }
           final added = addToList(
             list: curr,
@@ -110,7 +110,7 @@ class MapUtils {
           }
         } else {
           if (curr is! Map) {
-            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map but a ${curr.runtimeType}.';
           }
           curr[subPath] = item;
         }
@@ -119,7 +119,7 @@ class MapUtils {
         if (subPathInt != null) {
           // list mode
           if (curr is! List) {
-            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list.';
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPathInt" is not a list but a ${curr.runtimeType}.';
           }
 
           final added = addToList(
@@ -137,7 +137,7 @@ class MapUtils {
         } else {
           // map mode
           if (curr is! Map) {
-            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map.';
+            throw 'The leaf "$destinationPath" cannot be added because the parent of "$subPath" is not a map but a ${curr.runtimeType}.';
           }
 
           if (!curr.containsKey(subPath)) {

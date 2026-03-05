@@ -38,7 +38,7 @@ class TranslationMapBuilder {
       }
 
       if (rawConfig.fileType == FileType.csv &&
-          CsvDecoder.isCompactCSV(content)) {
+          CsvDecoder.isCompactCSV(raw: content)) {
         // compact csv
 
         for (final key in translations.keys) {
