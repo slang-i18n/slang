@@ -1,3 +1,7 @@
+## 4.13.0
+
+- feat: support `build_runner build --workspace`, requires `build_runner: ^2.12.1` (#348)
+
 ## 4.12.1
 
 - chore: migrate from GitHub to Codeberg: https://codeberg.org/Tienisto/slang

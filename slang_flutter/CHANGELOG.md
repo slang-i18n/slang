@@ -1,3 +1,7 @@
+## 4.13.0
+
+- bump `slang` to `4.13.0`
+
 ## 4.12.1
 
 - chore: migrate from GitHub to Codeberg: https://codeberg.org/Tienisto/slang

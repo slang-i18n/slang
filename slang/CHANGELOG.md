@@ -1,7 +1,9 @@
 ## 4.13.0
 
-- feat: add `generate_mixin` to interfaces to allow predefined mixins instead of generating new ones (#347)
-- **DEPRECATED:** Do not specify paths in interface config, use interface modifier in the translation keys instead (e.g. `myKey(interface=MyInterface)`)
+- feat: add `generate_mixin` to interfaces config to allow predefined mixins instead of generating new ones (#347)
+- feat: support `build_runner build --workspace`, requires `build_runner: ^2.12.1` (#348)
+- deps: replace [csv](https://pub.dev/packages/csv) with [serial_csv](https://pub.dev/packages/serial_csv)
+- **DEPRECATED:** Do not specify paths for interfaces in config, use interface modifier in the translation keys instead (e.g. `myKey(interface=MyInterface)`)
 
 ## 4.12.1
 
