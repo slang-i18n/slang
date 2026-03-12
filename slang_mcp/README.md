@@ -67,6 +67,29 @@ claude mcp add --transport stdio slang_mcp -- slang_mcp
 | `add-locale`               | `locale`, `translations` | Adds a new locale with translations and regenerates the output                            |
 
 
+## Notes
+
+You can add `@@notes` to a translation file to provide context to the LLM.
+This is useful to inform the LLM about the language, tone, or other details relevant to the translation.
+
+The notes are automatically included when calling `get-missing-translations`.
+It can be any JSON-serializable value.
+
+```json
+{
+  "@@notes": {
+    "general": [
+      "The app is a banking app, so use financial terms.",
+      "The tone should be formal and professional."
+    ],
+    "dictionary": {
+      "bank": "Bank (financial institution, not 'Ufer')"
+    }
+  },
+  "welcome": "Willkommen"
+}
+```
+
 ## Workflows
 
 ### ➤ Translate missing translations

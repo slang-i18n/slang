@@ -25,6 +25,8 @@ import 'package:slang/src/runner/wip.dart';
 import 'package:slang_mcp/src/tools/add_locale.dart';
 import 'package:slang_mcp/src/tools/apply.dart';
 
+const notesKey = '@@notes';
+
 void main(List<String> arguments) async {
   if (arguments.isNotEmpty) {
     await _runCli(arguments);
@@ -74,7 +76,8 @@ void main(List<String> arguments) async {
     outputSchema: JsonSchema.object(
       description: '''
 A map where each key is a locale identifier (e.g., "de", "fr-CA")
-and the value is a nested map containing the missing translation keys and their corresponding base locale strings.''',
+and the value is a nested map containing the missing translation keys and their corresponding base locale strings.
+The $notesKey entry are just hints and should not be translated''',
     ),
     callback: (args, extra) async {
       return CallToolResult.fromStructuredContent(
@@ -106,8 +109,9 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
 
   server.registerTool(
     'apply-translations',
-    description:
-        'Adds translations from the provided map to the actual translation files',
+    description: '''
+Adds translations from the provided map to the actual translation files.
+Call get-missing-translations first.''',
     inputSchema: ToolInputSchema(
       properties: {
         'locale': JsonSchema.string(
@@ -123,6 +127,8 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
     callback: (args, extra) async {
       final locale = args['locale'] as String;
       final translations = args['translations'] as Map<String, dynamic>;
+
+      translations.remove(notesKey);
 
       await apply(
         locale: I18nLocale.fromString(locale),
@@ -212,6 +218,21 @@ Future<Map<String, dynamic>> getMissingTranslationsMap() async {
     baseTranslations: baseTranslations,
     translations: translationModelList,
   );
+
+  for (final entry in result.entries) {
+    final translations = fileCollection.config.namespaces
+        ? translationMap[entry.key]!
+        : translationMap[entry.key]!.values.first;
+
+    final notes = translations[notesKey];
+    if (notes != null) {
+      result[entry.key] = {
+        notesKey: notes,
+        ...entry.value,
+      };
+    }
+  }
+
   return {
     for (final entry in result.entries) entry.key.languageTag: entry.value,
   };
