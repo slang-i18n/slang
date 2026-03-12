@@ -62,8 +62,8 @@ claude mcp add --transport stdio slang_mcp -- slang_mcp
 | `get-base-translations`    | -                        | Gets the translations of the base locale                                                  |
 | `get-missing-translations` | -                        | Gets translations that exist in the base locale but not in secondary locales              |
 | `get-wip-translations`     | -                        | Gets WIP translations found in source code that should be translated                      |
-| `apply-translations`       | `locale`, `translations` | Adds translations to the actual translation files and regenerates the output              |
 | `apply-wip-translations`   | -                        | Applies WIP translations from source code to translation files and regenerates the output |
+| `apply-translations`       | `locale`, `translations` | Adds translations to the actual translation files and regenerates the output              |
 | `add-locale`               | `locale`, `translations` | Adds a new locale with translations and regenerates the output                            |
 
 
@@ -126,3 +126,13 @@ Apply my new WIP strings and translate
 ```
 
 The MCP server should receive the translated strings and apply them to the appropriate files.
+
+## Install from source
+
+Clone the repository and navigate to the project directory.
+
+Then install the package globally:
+
+```bash
+dart pub global activate --source path .
+```
