@@ -235,6 +235,28 @@ Map<String, dynamic> applyMapRecursive({
     for (final entry in newMap.entries) entry.key.withoutModifiers: entry.value
   };
 
+  // Add @@ keys from oldMap first
+  for (final key in oldMap.keys) {
+    if (!key.startsWith('@@')) continue;
+
+    final currPath = path == null ? key : '$path.$key';
+    final newEntry = newMap[key];
+    dynamic actualValue = newEntry ?? oldMap[key];
+    if (actualValue is Map) {
+      actualValue = applyMapRecursive(
+        path: currPath,
+        baseMap: {},
+        newMap: newEntry ?? {},
+        oldMap: oldMap[key],
+        verbose: verbose,
+      );
+    }
+
+    if (verbose && newEntry != null) _printAdding(currPath, actualValue);
+    resultMap[key] = actualValue;
+    resultKeys.add(key);
+  }
+
   // Add keys according to the order in base map.
   // Prefer new map over old map.
   for (final key in baseMap.keys) {
