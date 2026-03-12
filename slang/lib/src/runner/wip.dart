@@ -5,6 +5,7 @@ import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
@@ -36,6 +37,70 @@ Future<bool> runWip({
   }
 }
 
+sealed class _CasingNodeBase {
+  Map<String, CasingNode> get children;
+}
+
+class CasingNodeRoot implements _CasingNodeBase {
+  /// Maps lowercased key -> child node (original key is stored in [CasingNode.key]).
+  @override
+  final Map<String, CasingNode> children;
+
+  const CasingNodeRoot({
+    required this.children,
+  });
+
+  static Future<CasingNodeRoot> fromFileCollection(
+    SlangFileCollection fileCollection, [
+    TranslationMap? translationMap,
+  ]) async {
+    translationMap ??= await TranslationMapBuilder.build(
+      fileCollection: fileCollection,
+    );
+    final baseTranslations = translationMap[fileCollection.config.baseLocale]!;
+
+    if (fileCollection.config.namespaces) {
+      return CasingNodeRoot.fromMap({
+        for (final entry in baseTranslations.entries) entry.key: entry.value,
+      });
+    } else {
+      return CasingNodeRoot.fromMap(baseTranslations.values.first);
+    }
+  }
+
+  /// Recursively builds a [CasingNodeRoot] tree from a translation map.
+  static CasingNodeRoot fromMap(Map<String, dynamic> map) {
+    return CasingNodeRoot(children: _buildChildren(map));
+  }
+
+  static Map<String, CasingNode> _buildChildren(Map<String, dynamic> map) {
+    final children = <String, CasingNode>{};
+    for (final entry in map.entries) {
+      final grandChildren = entry.value is Map<String, dynamic>
+          ? _buildChildren(entry.value as Map<String, dynamic>)
+          : <String, CasingNode>{};
+
+      children[entry.key.toLowerCase()] = CasingNode(
+        key: entry.key,
+        children: grandChildren,
+      );
+    }
+    return children;
+  }
+}
+
+class CasingNode implements _CasingNodeBase {
+  final String key;
+
+  @override
+  final Map<String, CasingNode> children;
+
+  const CasingNode({
+    required this.key,
+    required this.children,
+  });
+}
+
 /// Returns true if a wip invocation has been found.
 Future<bool> _runWipApply({
   required SlangFileCollection fileCollection,
@@ -65,6 +130,23 @@ Future<bool> _runWipApply({
     }
   }
 
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+  );
+  final baseTranslations = translationMap[fileCollection.config.baseLocale]!;
+
+  final baseLocale = fileCollection.config.baseLocale;
+  final fileMap = <String, TranslationFile>{}; // namespace -> file
+
+  for (final file in fileCollection.files) {
+    if (file.locale == baseLocale) {
+      fileMap[file.namespace] = file;
+    }
+  }
+
+  final baseCasingTree =
+      await CasingNodeRoot.fromFileCollection(fileCollection, translationMap);
+
   bool foundInvocations = false;
   for (final file in files) {
     final source = file.readAsStringSync();
@@ -73,6 +155,7 @@ Future<bool> _runWipApply({
       translateVar: fileCollection.config.translateVar,
       source: source,
       interpolation: fileCollection.config.stringInterpolation,
+      baseCasingTree: baseCasingTree,
     );
 
     if (invocations.list.isEmpty) {
@@ -81,30 +164,15 @@ Future<bool> _runWipApply({
 
     foundInvocations = true;
 
-    final translationMap = await TranslationMapBuilder.build(
-      fileCollection: fileCollection,
-    );
-    final baseTranslations = translationMap[fileCollection.config.baseLocale]!;
-
-    final baseLocale = fileCollection.config.baseLocale;
-    final fileMap = <String, TranslationFile>{}; // namespace -> file
-
-    for (final file in fileCollection.files) {
-      if (file.locale == baseLocale) {
-        fileMap[file.namespace] = file;
-      }
-    }
-
-    final invocationsMap = invocations.map;
     if (fileCollection.config.namespaces) {
       for (final entry in fileMap.entries) {
-        if (!invocationsMap.containsKey(entry.key)) {
+        if (!invocations.map.containsKey(entry.key)) {
           // This namespace exists but it is not specified in new translations
           continue;
         }
         await _runWipApplyForFile(
           baseTranslations: baseTranslations[entry.key] ?? {},
-          newTranslations: invocationsMap[entry.key],
+          newTranslations: invocations.map[entry.key],
           destinationFile: entry.value,
         );
       }
@@ -112,7 +180,7 @@ Future<bool> _runWipApply({
       // only apply for the first namespace
       await _runWipApplyForFile(
         baseTranslations: baseTranslations.values.first,
-        newTranslations: invocationsMap,
+        newTranslations: invocations.map,
         destinationFile: fileMap.values.first,
       );
     }
@@ -125,7 +193,12 @@ Future<bool> _runWipApply({
           : '(${invocation.parameterMap.entries.map((e) => '${e.key}: ${e.value}').join(', ')})';
       final replacement =
           '${fileCollection.config.translateVar}.${invocation.path}$parametersStr';
-      log.info(' -> ${invocation.original} -> $replacement');
+      final originalPath = invocations.correctedPaths[invocation.path];
+      final correctionHint = originalPath != null
+          ? ' (casing corrected: $originalPath -> ${invocation.path})'
+          : '';
+      log.info(' -> ${invocation.original} -> $replacement$correctionHint');
+
       updatedCode = updatedCode.replaceAll(invocation.original, replacement);
     }
 
@@ -146,6 +219,8 @@ Future<Map<String, dynamic>> readWipMapFromFileSystem({
   final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
     verbose: verbose,
   );
+  final baseCasingTree =
+      await CasingNodeRoot.fromFileCollection(fileCollection);
 
   const sourceDirs = ['lib'];
 
@@ -171,6 +246,7 @@ Future<Map<String, dynamic>> readWipMapFromFileSystem({
       translateVar: fileCollection.config.translateVar,
       source: source,
       interpolation: fileCollection.config.stringInterpolation,
+      baseCasingTree: baseCasingTree,
     );
 
     if (invocations.list.isEmpty) {
@@ -181,6 +257,42 @@ Future<Map<String, dynamic>> readWipMapFromFileSystem({
   }
 
   return collection?.map ?? {};
+}
+
+/// Corrects each segment of [path] (dot-separated) using the [CasingNode] tree,
+/// replacing same letters but with different casing (typo).
+/// Returns null if no corrections were needed to avoid unnecessary updates.
+String? _getCorrectPath(String path, CasingNodeRoot root) {
+  final parts = path.split('.');
+  final correctedParts = <String>[];
+  _CasingNodeBase? current = root;
+  bool changed = false;
+
+  for (final part in parts) {
+    if (current == null) {
+      correctedParts.add(part);
+      continue;
+    }
+
+    final child = current.children[part.toLowerCase()];
+    if (child != null) {
+      correctedParts.add(child.key);
+      current = child;
+      if (child.key != part) {
+        changed = true;
+      }
+    } else {
+      // Leaving the base locale key tree, add the remaining parts as they are.
+      correctedParts.add(part);
+      current = null;
+    }
+  }
+
+  if (!changed) {
+    return null;
+  }
+
+  return correctedParts.join('.');
 }
 
 Future<void> _runWipApplyForFile({
@@ -214,9 +326,14 @@ class WipInvocationCollection {
   final Map<String, dynamic> map;
   final List<WipInvocationMatch> list;
 
+  /// Maps corrected path -> original path for paths that were changed by
+  /// case-insensitive matching against the base locale key tree.
+  final Map<String, String> correctedPaths;
+
   WipInvocationCollection({
     required this.map,
     required this.list,
+    this.correctedPaths = const {},
   });
 
   // Caches the regex for a given translateVar
@@ -226,6 +343,7 @@ class WipInvocationCollection {
     required String translateVar,
     required String source,
     required StringInterpolation interpolation,
+    required CasingNodeRoot baseCasingTree,
   }) {
     final sourceSanitized =
         source.sanitizeDartFileForAnalysis(removeSpaces: false);
@@ -241,6 +359,7 @@ class WipInvocationCollection {
 
     final invocationsMap = <String, dynamic>{};
     final invocationsList = <WipInvocationMatch>[];
+    final correctedPaths = <String, String>{};
 
     for (final match in regex.allMatches(sourceSanitized)) {
       String original = match.group(0)!;
@@ -277,9 +396,16 @@ class WipInvocationCollection {
         value: value,
       );
 
+      // Apply case-insensitive path correction against the base locale key tree.
+      final correctedPath = _getCorrectPath(path, baseCasingTree);
+      if (correctedPath != null) {
+        invocation.path = correctedPath;
+        correctedPaths[correctedPath] = path;
+      }
+
       MapUtils.addItemToMap(
         map: invocationsMap,
-        destinationPath: path,
+        destinationPath: correctedPath ?? path,
         item: invocation.sanitizedValue,
       );
       invocationsList.add(invocation);
@@ -288,6 +414,7 @@ class WipInvocationCollection {
     return WipInvocationCollection(
       map: invocationsMap,
       list: invocationsList,
+      correctedPaths: correctedPaths,
     );
   }
 
@@ -301,6 +428,10 @@ class WipInvocationCollection {
         ...list,
         ...other.list,
       ],
+      correctedPaths: {
+        ...correctedPaths,
+        ...other.correctedPaths,
+      },
     );
   }
 }
@@ -310,7 +441,7 @@ final _stringLiteralRegex =
 
 class WipInvocationMatch {
   final String original;
-  final String path;
+  String path;
 
   final String sanitizedValue;
 

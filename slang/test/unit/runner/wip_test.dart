@@ -3,12 +3,21 @@ import 'package:slang/src/runner/wip.dart';
 import 'package:test/test.dart';
 
 void main() {
+  final baseCasingTree = CasingNodeRoot.fromMap({
+    'pages': {
+      'loginPage': {
+        'title': '',
+      },
+    },
+  });
+
   group('WipInvocationCollection.findInString', () {
     WipInvocationCollection f(String source) {
       return WipInvocationCollection.findInString(
         translateVar: 't',
         source: source,
         interpolation: StringInterpolation.braces,
+        baseCasingTree: baseCasingTree,
       );
     }
 
@@ -25,6 +34,7 @@ t.$wip.multilineMethod('test');
 
       expect(result.map, {});
       expect(result.list, []);
+      expect(result.correctedPaths, {});
     });
 
     test('Should find basic invocation', () {
@@ -40,6 +50,29 @@ t.$wip.multilineMethod('test');
       expect(result.list[0].path, 'my.path');
       expect(result.list[0].sanitizedValue, 'Hello, World!');
       expect(result.list[0].parameterMap, {});
+      expect(result.correctedPaths, {});
+    });
+
+    test('Should correct casing', () {
+      final result =
+          f(r"final title = t.$wip.pages.loginpage.subTitle('Welcome');");
+
+      expect(result.map, {
+        'pages': {
+          'loginPage': {
+            'subTitle': 'Welcome',
+          },
+        },
+      });
+      expect(result.list.length, 1);
+      expect(result.list[0].original,
+          r"t.$wip.pages.loginpage.subTitle('Welcome')");
+      expect(result.list[0].path, 'pages.loginPage.subTitle');
+      expect(result.list[0].sanitizedValue, 'Welcome');
+      expect(result.list[0].parameterMap, {});
+      expect(result.correctedPaths, {
+        'pages.loginPage.subTitle': 'pages.loginpage.subTitle',
+      });
     });
 
     test('Should find invocation within brackets', () {
@@ -56,6 +89,7 @@ t.$wip.multilineMethod('test');
       expect(result.list[0].path, 'a');
       expect(result.list[0].sanitizedValue, 'b');
       expect(result.list[0].parameterMap, {});
+      expect(result.correctedPaths, {});
     });
 
     test('Should find invocation within nested brackets', () {
@@ -76,6 +110,7 @@ f(
       expect(result.list[0].path, 'a');
       expect(result.list[0].sanitizedValue, 'b');
       expect(result.list[0].parameterMap, {});
+      expect(result.correctedPaths, {});
     });
 
     test('Should find invocation with interpolation', () {
@@ -94,6 +129,7 @@ final greeting = t.$wip.welcome.message('Hello, $name!');
       expect(result.list[0].path, 'welcome.message');
       expect(result.list[0].sanitizedValue, 'Hello, {name}!');
       expect(result.list[0].parameterMap, {'name': 'name'});
+      expect(result.correctedPaths, {});
     });
 
     test('Should sanitize parameters', () {
@@ -121,6 +157,7 @@ t.$wip.greet('Hi, $name, ${ name }, $_name, ${nested.name}, ${nested._name}, ${n
           'otherName1': 'nested.otherName1',
         },
       );
+      expect(result.correctedPaths, {});
     });
 
     test('Should respect numbers in path', () {
@@ -139,6 +176,7 @@ t.$wip.section1.item2('Value with $param');
       expect(result.list[0].path, 'section1.item2');
       expect(result.list[0].sanitizedValue, 'Value with {param}');
       expect(result.list[0].parameterMap, {'param': 'param'});
+      expect(result.correctedPaths, {});
     });
 
     test('Should detect with spaces in argument', () {
@@ -160,6 +198,7 @@ t.$wip.testMethod(
       expect(result.list[0].sanitizedValue,
           'Value with spaces and {param} inside');
       expect(result.list[0].parameterMap, {'param': 'param'});
+      expect(result.correctedPaths, {});
     });
 
     test('Should handle a function as argument', () {
@@ -182,6 +221,7 @@ t.$wip.complexMethod(
       expect(result.list[0].parameterMap, {
         'someFunction': r'''someFunction('test', param: $value),''',
       });
+      expect(result.correctedPaths, {});
     });
 
     test('Should handle a variable as argument', () {
@@ -203,6 +243,7 @@ t.$wip.variableMethod(
       expect(result.list[0].parameterMap, {
         'myVariable': r'myVariable,',
       });
+      expect(result.correctedPaths, {});
     });
   });
 }
