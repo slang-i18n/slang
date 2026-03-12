@@ -25,6 +25,7 @@ import 'package:slang/src/runner/wip.dart';
 import 'package:slang_mcp/src/tools/add_locale.dart';
 import 'package:slang_mcp/src/tools/apply.dart';
 
+const version = '0.1.1';
 const notesKey = '@@notes';
 
 void main(List<String> arguments) async {
@@ -38,7 +39,7 @@ void main(List<String> arguments) async {
       name: 'slang-mcp-server',
       description:
           'The MCP server for slang, the i18n library for Dart/Flutter.',
-      version: '0.1.0',
+      version: version,
     ),
     options: McpServerOptions(
       capabilities: ServerCapabilities(
@@ -261,6 +262,9 @@ Future<void> applyWipTranslations() async {
 Future<void> _runCli(List<String> arguments) async {
   final encoder = JsonEncoder.withIndent('  ');
   final Map<String, Future<String?> Function()> commands = {
+    '--version': () async {
+      return version;
+    },
     'get-locales': () async {
       return encoder.convert(await getLocales());
     },
