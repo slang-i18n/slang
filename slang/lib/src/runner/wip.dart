@@ -92,12 +92,23 @@ class CasingNodeRoot implements _CasingNodeBase {
 class CasingNode implements _CasingNodeBase {
   final String key;
 
+  /// Key with a distinct casing -> occurrence count
+  /// Used to decide for a correction based on majority occurrence
+  /// if there are multiple keys with different casing.
+  final Map<String, int>? newKeys;
+
   @override
   final Map<String, CasingNode> children;
 
   const CasingNode({
     required this.key,
     required this.children,
+  }) : newKeys = null;
+
+  CasingNode.withNewKeys({
+    required this.key,
+    required this.children,
+    required this.newKeys,
   });
 }
 
@@ -195,9 +206,14 @@ Future<bool> _runWipApply({
           '${fileCollection.config.translateVar}.${invocation.path}$parametersStr';
       final originalPath = invocations.correctedPaths[invocation.path];
       final correctionHint = originalPath != null
-          ? ' (casing corrected: $originalPath -> ${invocation.path})'
+          ? 'CHANGED: ${originalPath.note.padLeft(4, ' ')}'
+          : '   PATH OK   ';
+
+      final correctionChange = originalPath != null
+          ? ' // ${originalPath.original} -> ${invocation.path}'
           : '';
-      log.info(' -> ${invocation.original} -> $replacement$correctionHint');
+      log.info(
+          ' -> [$correctionHint] ${invocation.original} -> $replacement$correctionChange');
 
       updatedCode = updatedCode.replaceAll(invocation.original, replacement);
     }
@@ -259,32 +275,94 @@ Future<Map<String, dynamic>> readWipMapFromFileSystem({
   return collection?.map ?? {};
 }
 
-/// Corrects each segment of [path] (dot-separated) using the [CasingNode] tree,
-/// replacing same letters but with different casing (typo).
-/// Returns null if no corrections were needed to avoid unnecessary updates.
-String? _getCorrectPath(String path, CasingNodeRoot root) {
+/// Walks the [path] segments through the [CasingNodeRoot] tree.
+/// For segments that are NOT in the base locale key tree, records their
+/// casing in [CasingNode.newKeys] so majority voting can be applied later.
+///
+/// Side effect:
+/// - updates the [CasingNodeRoot] tree with new nodes for new segments
+void _trackCasingOccurrences(String path, CasingNodeRoot root) {
   final parts = path.split('.');
-  final correctedParts = <String>[];
-  _CasingNodeBase? current = root;
-  bool changed = false;
+  _CasingNodeBase current = root;
 
   for (final part in parts) {
-    if (current == null) {
-      correctedParts.add(part);
-      continue;
-    }
+    final lowerKey = part.toLowerCase();
+    final child = current.children[lowerKey];
 
-    final child = current.children[part.toLowerCase()];
     if (child != null) {
-      correctedParts.add(child.key);
-      current = child;
-      if (child.key != part) {
-        changed = true;
+      final newKeys = child.newKeys;
+      if (newKeys == null) {
+        // This segment exists in the base locale tree, just traverse deeper.
+        current = child;
+      } else {
+        // Already tracking this new key, increment the count.
+        newKeys[part] = (newKeys[part] ?? 0) + 1;
+        current = child;
       }
     } else {
-      // Leaving the base locale key tree, add the remaining parts as they are.
-      correctedParts.add(part);
-      current = null;
+      // First time seeing this new key.
+      final newNode = CasingNode.withNewKeys(
+        key: part,
+        children: <String, CasingNode>{},
+        newKeys: {part: 1},
+      );
+      current.children[lowerKey] = newNode;
+      current = newNode;
+    }
+  }
+}
+
+class _CorrectedPathResult {
+  final String correctedPath;
+  final double? confidence;
+
+  _CorrectedPathResult({
+    required this.correctedPath,
+    required this.confidence,
+  });
+}
+
+/// Corrects each segment of [path] (dot-separated) using the [CasingNode] tree,
+/// replacing same letters but with different casing (typo).
+/// For segments in the base locale tree, uses the base key.
+/// For new segments (tracked via [CasingNode.newKeys]), uses majority voting.
+/// Returns null if no corrections were needed to avoid unnecessary updates.
+_CorrectedPathResult? _getCorrectPath(String path, CasingNodeRoot root) {
+  final parts = path.split('.');
+  final correctedParts = <String>[];
+  _CasingNodeBase current = root;
+  bool changed = false;
+
+  final confidence = <double>[];
+
+  for (final part in parts) {
+    final child = current.children[part.toLowerCase()];
+    if (child == null) {
+      throw 'Path segment "$part" not found in base locale tree. Please report this to the developers.';
+    }
+
+    final String correctKey;
+    var newKeys = child.newKeys;
+    if (newKeys != null) {
+      // This segment is new. Decide what casing we should use.
+      if (newKeys.length == 1) {
+        // Only one casing variant.
+        correctKey = newKeys.keys.first;
+      } else {
+        // Majority voting: pick the casing with the highest occurrence count.
+        correctKey =
+            newKeys.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
+        confidence.add(newKeys[correctKey]! / newKeys.values.sum);
+      }
+    } else {
+      // This segment exists in the base locale tree, use the original key.
+      correctKey = child.key;
+    }
+
+    correctedParts.add(correctKey);
+    current = child;
+    if (correctKey != part) {
+      changed = true;
     }
   }
 
@@ -292,7 +370,10 @@ String? _getCorrectPath(String path, CasingNodeRoot root) {
     return null;
   }
 
-  return correctedParts.join('.');
+  return _CorrectedPathResult(
+    correctedPath: correctedParts.join('.'),
+    confidence: confidence.isEmpty ? null : confidence.sum / confidence.length,
+  );
 }
 
 Future<void> _runWipApplyForFile({
@@ -322,13 +403,41 @@ Future<void> _runWipApplyForFile({
   );
 }
 
+class CasingCorrection {
+  final String original;
+
+  /// The note that will be printed in the log.
+  /// - "BASE" for corrections based on the base locale tree
+  /// - "80%" for corrections based on majority voting
+  final String note;
+
+  CasingCorrection({
+    required this.original,
+    required this.note,
+  });
+
+  @override
+  String toString() => '$original ($note)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CasingCorrection &&
+          runtimeType == other.runtimeType &&
+          original == other.original &&
+          note == other.note;
+
+  @override
+  int get hashCode => original.hashCode ^ note.hashCode;
+}
+
 class WipInvocationCollection {
   final Map<String, dynamic> map;
   final List<WipInvocationMatch> list;
 
-  /// Maps corrected path -> original path for paths that were changed by
-  /// case-insensitive matching against the base locale key tree.
-  final Map<String, String> correctedPaths;
+  /// Maps corrected path -> original path
+  /// for casing corrections (e.g. "loginpage" -> "loginPage").
+  final Map<String, CasingCorrection> correctedPaths;
 
   WipInvocationCollection({
     required this.map,
@@ -357,10 +466,7 @@ class WipInvocationCollection {
       _cachedRegex = (translateVar, regex);
     }
 
-    final invocationsMap = <String, dynamic>{};
     final invocationsList = <WipInvocationMatch>[];
-    final correctedPaths = <String, String>{};
-
     for (final match in regex.allMatches(sourceSanitized)) {
       String original = match.group(0)!;
       final path = match.group(1)!;
@@ -389,26 +495,44 @@ class WipInvocationCollection {
         }
       }
 
+      // Track occurrence count for each distinct casing of new path segments.
+      _trackCasingOccurrences(path, baseCasingTree);
+
       final invocation = WipInvocationMatch.parse(
         interpolation: interpolation,
         original: original,
         path: path,
         value: value,
       );
+      invocationsList.add(invocation);
+    }
 
-      // Apply case-insensitive path correction against the base locale key tree.
-      final correctedPath = _getCorrectPath(path, baseCasingTree);
+    final invocationsMap = <String, dynamic>{};
+    final correctedPaths = <String, CasingCorrection>{};
+
+    for (final invocation in invocationsList) {
+      // Apply case-insensitive path correction against the base locale key
+      // tree, using majority voting for new (non-base) segments.
+      final correctedPath = _getCorrectPath(
+        invocation.path,
+        baseCasingTree,
+      );
+
       if (correctedPath != null) {
-        invocation.path = correctedPath;
-        correctedPaths[correctedPath] = path;
+        correctedPaths[correctedPath.correctedPath] = CasingCorrection(
+          original: invocation.path,
+          note: correctedPath.confidence == null
+              ? 'BASE'
+              : '${(correctedPath.confidence! * 100).round().toString()}%',
+        );
+        invocation.path = correctedPath.correctedPath;
       }
 
       MapUtils.addItemToMap(
         map: invocationsMap,
-        destinationPath: correctedPath ?? path,
+        destinationPath: invocation.path,
         item: invocation.sanitizedValue,
       );
-      invocationsList.add(invocation);
     }
 
     return WipInvocationCollection(

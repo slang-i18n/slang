@@ -71,7 +71,81 @@ t.$wip.multilineMethod('test');
       expect(result.list[0].sanitizedValue, 'Welcome');
       expect(result.list[0].parameterMap, {});
       expect(result.correctedPaths, {
-        'pages.loginPage.subTitle': 'pages.loginpage.subTitle',
+        'pages.loginPage.subTitle': CasingCorrection(
+          original: 'pages.loginpage.subTitle',
+          note: 'BASE',
+        ),
+      });
+    });
+
+    test('Should decide on majority casing', () {
+      final result = f(r"""
+final a = t.$wip.pages.startPage.a('A');
+final b = t.$wip.pages.startpage.b('B')
+final c = t.$wip.pages.startPage.c('C')""");
+
+      expect(result.map, {
+        'pages': {
+          'startPage': {
+            'a': 'A',
+            'b': 'B',
+            'c': 'C',
+          },
+        },
+      });
+      expect(result.list.length, 3);
+      expect(result.correctedPaths, {
+        'pages.startPage.b': CasingCorrection(
+          original: 'pages.startpage.b',
+          note: '67%',
+        ),
+      });
+    });
+
+    test('Should decide on majority casing (nested)', () {
+      final baseCasingTree = CasingNodeRoot.fromMap({});
+
+      final result = WipInvocationCollection.findInString(
+        translateVar: 't',
+        source: r"""
+final a = t.$wip.myGroup.subSection.a('A');
+final b = t.$wip.mygroup.subSection.b('B');
+final c = t.$wip.myGroup.subSection.c('C');
+final d = t.$wip.myGroup.subsection.d('D');
+final e = t.$wip.myGroup.subsection.e('E');""",
+        interpolation: StringInterpolation.dart,
+        baseCasingTree: baseCasingTree,
+      );
+
+      expect(result.map, {
+        'myGroup': {
+          'subSection': {
+            'a': 'A',
+            'b': 'B',
+            'c': 'C',
+            'd': 'D',
+            'e': 'E',
+          },
+        },
+      });
+      expect(result.list.length, 5);
+
+      final confidence = ((((4 / 5) + (3 / 5)) / 2) * 100).round();
+      expect(confidence, 70);
+
+      expect(result.correctedPaths, {
+        'myGroup.subSection.b': CasingCorrection(
+          original: 'mygroup.subSection.b',
+          note: '$confidence%',
+        ),
+        'myGroup.subSection.d': CasingCorrection(
+          original: 'myGroup.subsection.d',
+          note: '$confidence%',
+        ),
+        'myGroup.subSection.e': CasingCorrection(
+          original: 'myGroup.subsection.e',
+          note: '$confidence%',
+        ),
       });
     });
 
