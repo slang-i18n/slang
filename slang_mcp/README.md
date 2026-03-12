@@ -54,6 +54,19 @@ cd my_flutter_app/
 claude mcp add --transport stdio slang_mcp -- slang_mcp
 ```
 
+## MCP API
+
+| Tool                       | Input                    | Description                                                                               |
+|----------------------------|--------------------------|-------------------------------------------------------------------------------------------|
+| `get-locales`              | -                        | Gets the list of locales in the project                                                   |
+| `get-base-translations`    | -                        | Gets the translations of the base locale                                                  |
+| `get-missing-translations` | -                        | Gets translations that exist in the base locale but not in secondary locales              |
+| `get-wip-translations`     | -                        | Gets WIP translations found in source code that should be translated                      |
+| `apply-translations`       | `locale`, `translations` | Adds translations to the actual translation files and regenerates the output              |
+| `apply-wip-translations`   | -                        | Applies WIP translations from source code to translation files and regenerates the output |
+| `add-locale`               | `locale`, `translations` | Adds a new locale with translations and regenerates the output                            |
+
+
 ## Workflows
 
 ### ➤ Translate missing translations
