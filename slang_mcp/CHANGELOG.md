@@ -1,6 +1,6 @@
 ## 0.1.3
 
-- feat: allow specifying `@@note` in translation files to give LLMs more context
+- feat: allow specifying `@@notes` in translation files to give LLMs more context
 
 ## 0.1.2
 

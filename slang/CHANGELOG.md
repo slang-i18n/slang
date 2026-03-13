@@ -2,7 +2,7 @@
 
 - feat: allow nested namespaces
 - feat: automatically fix common casing typos during `slang wip apply` based on existing translations and majority vote
-- feat(mcp): allow specifying `@@note` in translation files to give LLMs more context
+- feat(mcp): allow specifying `@@notes` in translation files to give LLMs more context
 
 ## 4.13.0
 
