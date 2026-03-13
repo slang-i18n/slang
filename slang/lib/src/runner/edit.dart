@@ -440,7 +440,6 @@ Future<void> _addEntry({
       baseMap: baseTranslationMap,
       newMap: newMap,
       oldMap: oldMap,
-      verbose: true,
     );
 
     FileUtils.writeFileOfType(

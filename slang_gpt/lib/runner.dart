@@ -306,7 +306,6 @@ Future<TranslateMetrics> _translate({
         baseMap: originalTranslations,
         newMap: response.jsonMessage,
         oldMap: result,
-        verbose: false,
       );
     }
 
@@ -319,7 +318,6 @@ Future<TranslateMetrics> _translate({
     baseMap: originalTranslations,
     newMap: existingTranslations,
     oldMap: result,
-    verbose: false,
   );
 
   // add comments from base locale to target locale
@@ -327,7 +325,6 @@ Future<TranslateMetrics> _translate({
     baseMap: originalTranslations,
     newMap: comments,
     oldMap: result,
-    verbose: false,
   );
 
   FileUtils.writeFileOfType(

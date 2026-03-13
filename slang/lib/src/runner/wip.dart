@@ -393,7 +393,6 @@ Future<void> _runWipApplyForFile({
     baseMap: baseTranslations,
     newMap: newTranslations,
     oldMap: parsedContent,
-    verbose: true,
   );
 
   FileUtils.writeFileOfType(

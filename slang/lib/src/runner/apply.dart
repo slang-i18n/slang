@@ -10,6 +10,7 @@ import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/runner/analyze.dart';
 import 'package:slang/src/runner/utils/read_analysis_file.dart';
 import 'package:slang/src/utils/log.dart' as log;
@@ -150,14 +151,26 @@ Future<void> applyTranslationsForOneLocale({
   }
 
   if (fileCollection.config.namespaces) {
+    final topLevelNamespaces =
+        fileMap.keys.map((e) => e.split('.').first).toSet();
     for (final entry in fileMap.entries) {
-      if (!newTranslations.containsKey(entry.key)) {
+      final baseTranslationsEntry = _getNamespace(
+        translations: baseTranslations,
+        namespace: entry.key,
+        topLevelNamespaces: topLevelNamespaces,
+      );
+      final newTranslationsEntry = _getNamespace(
+        translations: newTranslations,
+        namespace: entry.key,
+        topLevelNamespaces: topLevelNamespaces,
+      );
+      if (newTranslationsEntry == null) {
         // This namespace exists but it is not specified in new translations
         continue;
       }
       await _applyTranslationsForFile(
-        baseTranslations: baseTranslations[entry.key] ?? {},
-        newTranslations: newTranslations[entry.key],
+        baseTranslations: baseTranslationsEntry ?? {},
+        newTranslations: newTranslationsEntry,
         destinationFile: entry.value,
       );
     }
@@ -169,6 +182,36 @@ Future<void> applyTranslationsForOneLocale({
       destinationFile: fileMap.values.first,
     );
   }
+}
+
+/// Returns the namespace map for the given [namespace] from [translations].
+Map<String, dynamic>? _getNamespace({
+  required Map<String, dynamic> translations,
+  required String namespace,
+  required Set<String> topLevelNamespaces,
+}) {
+  if (namespace == RegexUtils.defaultNamespace) {
+    return {
+      for (final entry in translations.entries)
+        if (!topLevelNamespaces.contains(entry.key)) entry.key: entry.value
+    };
+  }
+
+  final parts = namespace.split('.');
+  Map<String, dynamic> current = translations;
+  for (final part in parts) {
+    final temp = current[part];
+    if (temp == null) {
+      return null;
+    }
+
+    if (temp is! Map<String, dynamic>) {
+      throw 'The namespace "$namespace" is invalid because "$part" is not a map.';
+    }
+
+    current = temp;
+  }
+  return current;
 }
 
 /// Reads the [destinationFile]. Applies [newTranslations] to it
@@ -197,7 +240,6 @@ Future<void> _applyTranslationsForFile({
     baseMap: baseTranslations,
     newMap: newTranslations,
     oldMap: parsedContent,
-    verbose: true,
   );
 
   FileUtils.writeFileOfType(
@@ -221,7 +263,6 @@ Map<String, dynamic> applyMapRecursive({
   required Map<String, dynamic> baseMap,
   required Map<String, dynamic> newMap,
   required Map<String, dynamic> oldMap,
-  required bool verbose,
 }) {
   final resultMap = <String, dynamic>{};
   final resultKeys = <String>{}; // keys without modifiers
@@ -248,11 +289,10 @@ Map<String, dynamic> applyMapRecursive({
         baseMap: {},
         newMap: newEntry ?? {},
         oldMap: oldMap[key],
-        verbose: verbose,
       );
     }
 
-    if (verbose && newEntry != null) _printAdding(currPath, actualValue);
+    if (newEntry != null) _printAdding(currPath, actualValue);
     resultMap[key] = actualValue;
     resultKeys.add(key);
   }
@@ -276,16 +316,13 @@ Map<String, dynamic> applyMapRecursive({
             : throw 'In the base translations, "$key" is not a map.',
         newMap: newEntry ?? {},
         oldMap: oldMap[key] ?? {},
-        verbose: verbose,
       );
     }
 
     if (newEntry != null) {
       final split = key.split('(');
       appliedKeys.add(split.first);
-      if (verbose) {
-        _printAdding(currPath, actualValue);
-      }
+      _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;
     resultKeys.add(keyWithoutModifiers);
@@ -317,11 +354,10 @@ Map<String, dynamic> applyMapRecursive({
         baseMap: {},
         newMap: newEntry ?? {},
         oldMap: oldMap[key],
-        verbose: verbose,
       );
     }
 
-    if (verbose && newEntry != null) {
+    if (newEntry != null) {
       _printAdding(currPath, actualValue);
     }
     resultMap[key] = actualValue;
@@ -344,13 +380,10 @@ Map<String, dynamic> applyMapRecursive({
         baseMap: {},
         newMap: entry.value,
         oldMap: {},
-        verbose: verbose,
       );
     }
 
-    if (verbose) {
-      _printAdding(currPath, actualValue);
-    }
+    _printAdding(currPath, actualValue);
     resultMap[entry.key] = actualValue;
   }
 
