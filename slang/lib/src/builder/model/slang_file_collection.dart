@@ -58,6 +58,13 @@ class SlangFileCollection {
         .where((n) => n != RegexUtils.defaultNamespace)
         .toSet();
   }
+
+  Set<String> getNamespaces() {
+    return files
+        .map((f) => f.namespace)
+        .where((n) => n != RegexUtils.defaultNamespace)
+        .toSet();
+  }
 }
 
 class TranslationFile extends PlainTranslationFile {

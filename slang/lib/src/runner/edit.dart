@@ -131,8 +131,7 @@ Future<void> _moveEntry({
   required String destinationPath,
 }) async {
   final config = fileCollection.config;
-  final topLevelNamespaces =
-      config.namespaces ? fileCollection.getTopLevelNamespaces() : <String>{};
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
   final destinationPathList = destinationPath.split('.');
 
   log.info('Operation: $originPath -> $destinationPath');
@@ -140,17 +139,14 @@ Future<void> _moveEntry({
 
   bool found = false;
   for (final origFile in fileCollection.files) {
-    final String originSubPath;
-    if (config.namespaces) {
-      final resolved = _resolveSubPath(
-        path: originPath,
-        namespace: origFile.namespace,
-        topLevelNamespaces: topLevelNamespaces,
-      );
-      if (resolved == null) continue;
-      originSubPath = resolved;
-    } else {
-      originSubPath = originPath;
+    final originSubPath = resolveSubPath(
+      path: originPath,
+      namespace: origFile.namespace,
+      topLevelNamespaces: topLevelNamespaces,
+    );
+
+    if (originSubPath == null) {
+      continue;
     }
 
     final origMap = await origFile.readAndParse(config.fileType);
@@ -167,7 +163,7 @@ Future<void> _moveEntry({
     // Check if this is a rename (same parent path, just last key differs)
     final originSubPathList = originSubPath.split('.');
     final destSubPathForRename = config.namespaces
-        ? _resolveSubPath(
+        ? resolveSubPath(
             path: destinationPath,
             namespace: origFile.namespace,
             topLevelNamespaces: topLevelNamespaces,
@@ -189,8 +185,7 @@ Future<void> _moveEntry({
 
     // Find the destination node
     if (rename) {
-      log.info(
-          '[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
+      log.info('[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
       MapUtils.updateEntry(
         map: origMap,
         path: originSubPath,
@@ -215,17 +210,14 @@ Future<void> _moveEntry({
           continue;
         }
 
-        final String resolvedDestSubPath;
-        if (config.namespaces) {
-          final resolved = _resolveSubPath(
-            path: destinationPath,
-            namespace: destFile.namespace,
-            topLevelNamespaces: topLevelNamespaces,
-          );
-          if (resolved == null) continue;
-          resolvedDestSubPath = resolved;
-        } else {
-          resolvedDestSubPath = destinationPath;
+        final resolvedDestSubPath = resolveSubPath(
+          path: destinationPath,
+          namespace: destFile.namespace,
+          topLevelNamespaces: topLevelNamespaces,
+        );
+
+        if (resolvedDestSubPath == null) {
+          continue;
         }
 
         log.info('[${origFile.path}] Delete "$originPath"');
@@ -271,25 +263,21 @@ Future<void> _copyEntry({
   required String destinationPath,
 }) async {
   final config = fileCollection.config;
-  final topLevelNamespaces =
-      config.namespaces ? fileCollection.getTopLevelNamespaces() : <String>{};
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
 
   log.info('Operation: $originPath -> $destinationPath');
   log.info('');
 
   bool found = false;
   for (final origFile in fileCollection.files) {
-    final String originSubPath;
-    if (config.namespaces) {
-      final resolved = _resolveSubPath(
-        path: originPath,
-        namespace: origFile.namespace,
-        topLevelNamespaces: topLevelNamespaces,
-      );
-      if (resolved == null) continue;
-      originSubPath = resolved;
-    } else {
-      originSubPath = originPath;
+    final originSubPath = resolveSubPath(
+      path: originPath,
+      namespace: origFile.namespace,
+      topLevelNamespaces: topLevelNamespaces,
+    );
+
+    if (originSubPath == null) {
+      continue;
     }
 
     final origMap = await origFile.readAndParse(config.fileType);
@@ -309,17 +297,14 @@ Future<void> _copyEntry({
         continue;
       }
 
-      final String destSubPath;
-      if (config.namespaces) {
-        final resolved = _resolveSubPath(
-          path: destinationPath,
-          namespace: destFile.namespace,
-          topLevelNamespaces: topLevelNamespaces,
-        );
-        if (resolved == null) continue;
-        destSubPath = resolved;
-      } else {
-        destSubPath = destinationPath;
+      final destSubPath = resolveSubPath(
+        path: destinationPath,
+        namespace: destFile.namespace,
+        topLevelNamespaces: topLevelNamespaces,
+      );
+
+      if (destSubPath == null) {
+        continue;
       }
 
       final destMap = await destFile.readAndParse(config.fileType);
@@ -351,21 +336,17 @@ Future<void> _deleteEntry({
   required String path,
 }) async {
   final config = fileCollection.config;
-  final topLevelNamespaces =
-      config.namespaces ? fileCollection.getTopLevelNamespaces() : <String>{};
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
 
   for (final file in fileCollection.files) {
-    final String subPath;
-    if (config.namespaces) {
-      final resolved = _resolveSubPath(
-        path: path,
-        namespace: file.namespace,
-        topLevelNamespaces: topLevelNamespaces,
-      );
-      if (resolved == null) continue;
-      subPath = resolved;
-    } else {
-      subPath = path;
+    final subPath = resolveSubPath(
+      path: path,
+      namespace: file.namespace,
+      topLevelNamespaces: topLevelNamespaces,
+    );
+
+    if (subPath == null) {
+      continue;
     }
 
     log.info('Deleting "$path" in ${file.path}...');
@@ -390,8 +371,7 @@ Future<void> _outdatedEntry({
   required String path,
 }) async {
   final config = fileCollection.config;
-  final topLevelNamespaces =
-      config.namespaces ? fileCollection.getTopLevelNamespaces() : <String>{};
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
 
   for (final file in fileCollection.files) {
     if (file.locale == config.baseLocale) {
@@ -399,17 +379,14 @@ Future<void> _outdatedEntry({
       continue;
     }
 
-    final String subPath;
-    if (config.namespaces) {
-      final resolved = _resolveSubPath(
-        path: path,
-        namespace: file.namespace,
-        topLevelNamespaces: topLevelNamespaces,
-      );
-      if (resolved == null) continue;
-      subPath = resolved;
-    } else {
-      subPath = path;
+    final subPath = resolveSubPath(
+      path: path,
+      namespace: file.namespace,
+      topLevelNamespaces: topLevelNamespaces,
+    );
+
+    if (subPath == null) {
+      continue;
     }
 
     log.info('Adding flag to <${file.locale.languageTag}> in ${file.path}...');
@@ -446,30 +423,25 @@ Future<void> _addEntry({
     fileCollection: fileCollection,
   );
   final config = fileCollection.config;
-  final topLevelNamespaces =
-      config.namespaces ? fileCollection.getTopLevelNamespaces() : <String>{};
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
 
   for (final file in fileCollection.files) {
     if (locale != null && file.locale != locale) {
       continue;
     }
 
-    final String subPath;
-    if (config.namespaces) {
-      final resolved = _resolveSubPath(
-        path: path,
-        namespace: file.namespace,
-        topLevelNamespaces: topLevelNamespaces,
-      );
-      if (resolved == null) continue;
-      subPath = resolved;
-    } else {
-      subPath = path;
+    final subPath = resolveSubPath(
+      path: path,
+      namespace: file.namespace,
+      topLevelNamespaces: topLevelNamespaces,
+    );
+
+    if (subPath == null) {
+      continue;
     }
 
-    final baseTranslationMap = config.namespaces
-        ? translationMap[config.baseLocale]![file.namespace]!
-        : translationMap[config.baseLocale]!.values.first;
+    final baseTranslationMap =
+        translationMap[config.baseLocale]![file.namespace]!;
 
     log.info(
         'Adding translation to <${file.locale.languageTag}> in ${file.path}...');
@@ -508,24 +480,24 @@ String? _getArgument(int position, List<String> arguments) {
 
 /// Given a user-provided path and a file's namespace, returns the sub-path
 /// within that namespace, or null if the path doesn't belong to it.
-///
-/// For _default namespace: matches if the path doesn't start with a known
-/// top-level namespace.
-/// For nested namespaces (e.g. "a.b"): matches if the path starts with "a.b.".
-String? _resolveSubPath({
+String? resolveSubPath({
   required String path,
   required String namespace,
   required Set<String> topLevelNamespaces,
 }) {
-  final pathParts = path.split('.');
-
   if (namespace == RegexUtils.defaultNamespace) {
+    if (topLevelNamespaces.isEmpty) {
+      return path;
+    }
+
+    final pathParts = path.split('.');
     if (topLevelNamespaces.contains(pathParts.first)) {
       return null;
     }
     return path;
   }
 
+  final pathParts = path.split('.');
   final namespaceParts = namespace.split('.');
   if (pathParts.length <= namespaceParts.length) {
     return null;

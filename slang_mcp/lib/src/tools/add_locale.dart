@@ -11,6 +11,9 @@ import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 
 // ignore: implementation_imports
+import 'package:slang/src/builder/model/translation_map.dart';
+
+// ignore: implementation_imports
 import 'package:slang/src/builder/utils/path_utils.dart';
 
 // ignore: implementation_imports
@@ -69,7 +72,9 @@ Future<void> addLocale({
 
         final segments = PathUtils.getPathSegments(file.path);
         segments[directoryLocale.localeSegmentIndex] = locale.languageTag;
-        final namespacePrefix = directoryLocale.namespacePrefix.isEmpty ? '' : '${directoryLocale.namespacePrefix.join('/')}/';
+        final namespacePrefix = directoryLocale.namespacePrefix.isEmpty
+            ? ''
+            : '${directoryLocale.namespacePrefix.join('/')}/';
         final path =
             '${segments.sublist(0, segments.length - 1).join('/')}/$namespacePrefix${file.namespace}${fileCollection.config.inputFilePattern}';
         _createFile(path: path);
@@ -99,7 +104,9 @@ Future<void> addLocale({
     applyLocale: locale,
     baseTranslations:
         translationMap[fileCollectionAfterCreate.config.baseLocale]!,
-    newTranslations: translations,
+    newTranslations: ExpandedNamespaceMap(translations).flatten(
+      namespaces: fileCollection.getNamespaces(),
+    ),
   );
 
   final finalFileCollection = SlangFileCollectionBuilder.readFromFileSystem(

@@ -6,10 +6,10 @@ import 'package:slang/src/builder/utils/regex_utils.dart';
 ///
 /// locale -> (namespace -> translation map)
 class TranslationMap {
-  final _internalMap = <I18nLocale, Map<String, Map<String, dynamic>>>{};
+  final _internalMap = <I18nLocale, FlatNamespaceMap>{};
 
   /// Read access
-  Map<String, Map<String, dynamic>>? operator [](I18nLocale key) {
+  FlatNamespaceMap? operator [](I18nLocale key) {
     return _internalMap[key];
   }
 
@@ -20,12 +20,12 @@ class TranslationMap {
     String namespace = RegexUtils.defaultNamespace,
     required Map<String, dynamic> translations,
   }) {
-    final Map<String, Map<String, dynamic>> namespaceMap;
+    final FlatNamespaceMap namespaceMap;
     if (_internalMap.containsKey(locale)) {
       namespaceMap = _internalMap[locale]!;
     } else {
       // ensure that the locale exists
-      namespaceMap = {};
+      namespaceMap = FlatNamespaceMap({});
       _internalMap[locale] = namespaceMap;
     }
 
@@ -49,5 +49,100 @@ class TranslationMap {
 
   Map<I18nLocale, Map<String, Map<String, dynamic>>> getInternalMap() {
     return _internalMap;
+  }
+}
+
+extension type FlatNamespaceMap(Map<String, Map<String, dynamic>> m)
+    implements Map<String, Map<String, dynamic>> {
+  ExpandedNamespaceMap expand() {
+    ExpandedNamespaceMap curr = ExpandedNamespaceMap(this);
+
+    if (keys.any((k) => k.contains('.'))) {
+      // Has dot-separated keys, we need to build the nested structure
+      final result = ExpandedNamespaceMap({});
+      for (final entry in entries) {
+        final parts = entry.key.split('.');
+        if (parts.length == 1) {
+          result[entry.key] = {...entry.value};
+        } else {
+          Map<String, dynamic> current = result.putIfAbsent(
+            parts.first,
+            () => <String, dynamic>{},
+          );
+          for (int i = 1; i < parts.length - 1; i++) {
+            final nested = current.putIfAbsent(
+              parts[i],
+              () => <String, dynamic>{},
+            ) as Map<String, dynamic>;
+            current = nested;
+          }
+          current[parts.last] = {...entry.value};
+        }
+      }
+      curr = result;
+    }
+
+    if (containsKey(RegexUtils.defaultNamespace)) {
+      curr = ExpandedNamespaceMap({
+        ...this[RegexUtils.defaultNamespace]!,
+        ...{
+          for (final entry in curr.entries)
+            if (entry.key != RegexUtils.defaultNamespace)
+              entry.key: entry.value,
+        },
+      });
+    }
+
+    return curr;
+  }
+}
+
+extension type ExpandedNamespaceMap(Map<String, dynamic> m)
+    implements Map<String, dynamic> {
+  FlatNamespaceMap flatten({required Set<String> namespaces}) {
+    final result = <String, Map<String, dynamic>>{};
+
+    // Collect top-level namespace names
+    final topLevelNamespaces =
+        namespaces.map((n) => n.split('.').first).toSet();
+
+    // Collect default namespace entries (top-level keys not in any namespace)
+    final defaultEntries = <String, dynamic>{
+      for (final entry in entries)
+        if (!topLevelNamespaces.contains(entry.key)) entry.key: entry.value,
+    };
+    if (defaultEntries.isNotEmpty) {
+      result[RegexUtils.defaultNamespace] = defaultEntries;
+    }
+
+    // Collect each namespace
+    for (final namespace in namespaces) {
+      final parts = namespace.split('.');
+      Map<String, dynamic>? current = this;
+      for (final part in parts) {
+        final value = current?[part];
+        if (value is Map<String, dynamic>) {
+          current = value;
+        } else {
+          current = null;
+          break;
+        }
+      }
+
+      if (current != null) {
+        // Remove sub-namespace keys from this level
+        final subNamespaceKeys = namespaces
+            .where((n) => n.startsWith('$namespace.'))
+            .map((n) => n.substring(namespace.length + 1).split('.').first)
+            .toSet();
+
+        result[namespace] = <String, dynamic>{
+          for (final entry in current.entries)
+            if (!subNamespaceKeys.contains(entry.key)) entry.key: entry.value,
+        };
+      }
+    }
+
+    return FlatNamespaceMap(result);
   }
 }
