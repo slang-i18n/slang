@@ -97,6 +97,11 @@ void main(List<String> arguments) async {
         logLevel = log.Level.verbose;
       }
     }
+    if (logLevel == log.Level.verbose) {
+      arguments = arguments
+          .where((element) => element != '-v' && element != '--verbose')
+          .toList();
+    }
   } else {
     mode = RunnerMode.generate;
   }
