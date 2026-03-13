@@ -203,6 +203,9 @@ void main() {
           _file('lib/i18n/fr/en/login/errors.json'),
           _file('lib/i18n/fr/en/home/dialogs.json'),
           _file('lib/i18n/fr/en/home/errors.json'),
+          _file('lib/i18n/fr/en/_missing_translations.json'),
+          _file('lib/i18n/fr/en/_missing_translations_en.json'),
+          _file('lib/i18n/fr/en/_unused_translations.json'),
         ],
       );
 

@@ -11,6 +11,9 @@ import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/utils/log.dart' as log;
 
+const missingTranslationsFileName = '_missing_translations';
+const unusedTranslationsFileName = '_unused_translations';
+
 class SlangFileCollectionBuilder {
   static SlangFileCollection readFromFileSystem({
     required bool verbose,
@@ -99,6 +102,14 @@ class SlangFileCollectionBuilder {
           .map((f) {
             final fileNameNoExtension =
                 PathUtils.getFileNameNoExtension(f.path);
+
+            if (includeUnderscore &&
+                (fileNameNoExtension.startsWith(missingTranslationsFileName) ||
+                    fileNameNoExtension
+                        .startsWith(unusedTranslationsFileName))) {
+              // ignore analysis files
+              return null;
+            }
 
             if (!config.namespaces) {
               final localeMatch =

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:slang/src/builder/builder/slang_file_collection_builder.dart';
 import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/src/builder/model/enums.dart';
@@ -70,7 +71,7 @@ Future<void> runAnalyzeTranslations({
 
   _writeMap(
     outDir: outDir,
-    fileNamePrefix: '_missing_translations',
+    fileNamePrefix: missingTranslationsFileName,
     fileType: rawConfig.fileType,
     exitIfChanged: exitIfChanged,
     split: splitMissing,
@@ -99,7 +100,7 @@ Future<void> runAnalyzeTranslations({
 
   _writeMap(
     outDir: outDir,
-    fileNamePrefix: '_unused_translations',
+    fileNamePrefix: unusedTranslationsFileName,
     fileType: rawConfig.fileType,
     exitIfChanged: exitIfChanged,
     split: splitUnused,
