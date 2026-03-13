@@ -15,9 +15,9 @@ void main() {
       TranslationMap()
         ..addTranslations(
           locale: I18nLocale(language: 'en'),
-          namespace: 'errors',
+          namespace: 'l1',
           translations: {
-            'empty': 'Cannot be empty',
+            'l2': 'Cannot be empty',
           },
         )
         ..addTranslations(
@@ -35,12 +35,59 @@ void main() {
     expect(data.locale, I18nLocale(language: 'en'));
     expect(data.root.entries.length, 2);
 
-    final root = data.root.entries;
-    expect(root['appName'], isA<TextNode>());
-    expect(root['errors'], isA<ObjectNode>());
-    expect(
-      (root['errors'] as ObjectNode).entries['empty'],
-      isA<TextNode>(),
+    final l1 = data.root.entries;
+    expect(l1['appName'], isA<TextNode>());
+    expect(l1['l1'], isA<ObjectNode>());
+    expect((l1['l1'] as ObjectNode).entries['l2'], isA<TextNode>());
+  });
+
+  test('Should handle nested namespaces', () {
+    final result = TranslationModelListBuilder.build(
+      RawConfig.defaultConfig.copyWith(
+        namespaces: true,
+      ),
+      TranslationMap()
+        ..addTranslations(
+          locale: I18nLocale(language: 'en'),
+          namespace: 'l1.l2.l3',
+          translations: {
+            'title': 'Deep Title',
+          },
+        )
+        ..addTranslations(
+          locale: I18nLocale(language: 'en'),
+          namespace: 'l1.l2b',
+          translations: {
+            'title': 'Third Title',
+          },
+        )
+        ..addTranslations(
+          locale: I18nLocale(language: 'en'),
+          namespace: RegexUtils.defaultNamespace,
+          translations: {
+            'appName': 'TestApp',
+          },
+        ),
     );
+
+    expect(result.length, 1);
+
+    final data = result.first;
+    expect(data.locale, I18nLocale(language: 'en'));
+    expect(data.root.entries.length, 2);
+
+    final l1 = data.root.entries;
+    expect(l1['appName'], isA<TextNode>());
+    expect(l1['l1'], isA<ObjectNode>());
+
+    final l2 = (l1['l1'] as ObjectNode).entries;
+    expect(l2.length, 2);
+    expect(l2['l2b'], isA<ObjectNode>());
+    expect(l2['l2'], isA<ObjectNode>());
+    expect((l2['l2b'] as ObjectNode).entries['title'], isA<TextNode>());
+
+    final l3 = (l2['l2'] as ObjectNode).entries;
+    expect(l3['l3'], isA<ObjectNode>());
+    expect((l3['l3'] as ObjectNode).entries['title'], isA<TextNode>());
   });
 }

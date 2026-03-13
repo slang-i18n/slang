@@ -39,13 +39,40 @@ void main() {
     });
 
     test('locale in last directory', () {
-      expect(f('/test/world/de/fr/cool.json'), I18nLocale(language: 'fr'));
+      expect(
+        f('/test/world/de/fr/cool.json'),
+        DirectoryLocaleResult(
+          locale: I18nLocale(language: 'fr'),
+          localeSegmentIndex: 3,
+          namespacePrefix: const [],
+        ),
+      );
     });
 
     test('locale in first directory after inputDirectory', () {
       expect(
+        f('/de/world/es/cool.json', '/de/world'),
+        DirectoryLocaleResult(
+          locale: I18nLocale(language: 'es'),
+          localeSegmentIndex: 2,
+          namespacePrefix: const [],
+        ),
+      );
+      expect(
+        f('/de/world/es/haha/cool.json', '/de/world'),
+        DirectoryLocaleResult(
+          locale: I18nLocale(language: 'es'),
+          localeSegmentIndex: 2,
+          namespacePrefix: const ['haha'],
+        ),
+      );
+      expect(
         f('/de/world/es/haha/fr/cool.json', '/de/world'),
-        I18nLocale(language: 'es'),
+        DirectoryLocaleResult(
+          locale: I18nLocale(language: 'es'),
+          localeSegmentIndex: 2,
+          namespacePrefix: const ['haha', 'fr'],
+        ),
       );
     });
   });

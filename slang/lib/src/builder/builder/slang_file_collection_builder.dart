@@ -117,6 +117,8 @@ class SlangFileCollectionBuilder {
                   read: f.read,
                 );
               }
+
+              // TODO(v5): Add return null to remove v4.3.0 deprecation
             }
 
             final baseFileMatch =
@@ -126,39 +128,47 @@ class SlangFileCollectionBuilder {
               // could also be a non-base locale when directory name is a locale (namespace only)
 
               // directory name could be a locale
-              I18nLocale? directoryLocale;
+              final DirectoryLocaleResult? directoryLocale;
+              final String namespace;
               if (config.namespaces) {
                 directoryLocale = PathUtils.findDirectoryLocale(
                   filePath: f.path,
                   inputDirectory: config.inputDirectory,
                 );
 
-                if (showWarning && directoryLocale == null) {
-                  _baseLocaleDeprecationWarning(
+                if (directoryLocale != null) {
+                  namespace = [
+                    ...directoryLocale.namespacePrefix,
+                    fileNameNoExtension
+                  ].join('.');
+                } else {
+                  // TODO(v5): Return null to remove v4.3.0 deprecation
+                  namespace = fileNameNoExtension;
+                  if (showWarning) {
+                    _baseLocaleDeprecationWarning(
+                      fileName: PathUtils.getFileName(f.path),
+                      replacement:
+                          '${fileNameNoExtension}_${config.baseLocale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
+                    );
+                  }
+                }
+              } else {
+                directoryLocale = null;
+                namespace = RegexUtils.defaultNamespace;
+                if (showWarning && config.fileType != FileType.csv) {
+                  // Note: Compact CSV files are still allowed to have a file name without locale.
+                  _namespaceDeprecationWarning(
                     fileName: PathUtils.getFileName(f.path),
                     replacement:
-                        '${fileNameNoExtension}_${config.baseLocale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
+                        '${config.baseLocale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
                   );
                 }
               }
 
-              if (showWarning &&
-                  !config.namespaces &&
-                  config.fileType != FileType.csv) {
-                // Note: Compact CSV files are still allowed to have a file name without locale.
-                _namespaceDeprecationWarning(
-                  fileName: PathUtils.getFileName(f.path),
-                  replacement:
-                      '${config.baseLocale.languageTag.replaceAll('-', '_')}${config.inputFilePattern}',
-                );
-              }
-
               return TranslationFile(
                 path: f.path,
-                locale: directoryLocale ?? config.baseLocale,
-                namespace: config.namespaces
-                    ? fileNameNoExtension
-                    : RegexUtils.defaultNamespace,
+                locale: directoryLocale?.locale ?? config.baseLocale,
+                namespace: namespace,
                 read: f.read,
               );
             }

@@ -145,6 +145,7 @@ class RawConfig {
   RawConfig copyWith({
     I18nLocale? baseLocale,
     FallbackStrategy? fallbackStrategy,
+    String? inputDirectory,
     String? inputFilePattern,
     String? outputFileName,
     bool? lazy,
@@ -173,7 +174,7 @@ class RawConfig {
     return RawConfig(
       baseLocale: baseLocale ?? this.baseLocale,
       fallbackStrategy: fallbackStrategy ?? this.fallbackStrategy,
-      inputDirectory: inputDirectory,
+      inputDirectory: inputDirectory ?? this.inputDirectory,
       inputFilePattern: inputFilePattern ?? this.inputFilePattern,
       outputDirectory: outputDirectory,
       outputFileName: outputFileName ?? this.outputFileName,

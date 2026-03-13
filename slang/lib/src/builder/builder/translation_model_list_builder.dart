@@ -71,17 +71,44 @@ class TranslationModelListBuilder {
 
 extension on Map<String, Map<String, dynamic>> {
   Map<String, dynamic> digest() {
+    Map<String, dynamic> curr = this;
+
+    if (keys.any((k) => k.contains('.'))) {
+      // Has dot-separated keys, we need to build the nested structure
+      final result = <String, Map<String, dynamic>>{};
+      for (final entry in entries) {
+        final parts = entry.key.split('.');
+        if (parts.length == 1) {
+          result[entry.key] = entry.value;
+        } else {
+          Map<String, dynamic> current = result.putIfAbsent(
+            parts.first,
+            () => <String, dynamic>{},
+          );
+          for (int i = 1; i < parts.length - 1; i++) {
+            final nested = current.putIfAbsent(
+              parts[i],
+              () => <String, dynamic>{},
+            ) as Map<String, dynamic>;
+            current = nested;
+          }
+          current[parts.last] = entry.value;
+        }
+      }
+      curr = result;
+    }
+
     if (length > 1 && containsKey(RegexUtils.defaultNamespace)) {
-      return {
+      curr = {
         ...this[RegexUtils.defaultNamespace]!,
         ...{
-          for (final entry in entries)
+          for (final entry in curr.entries)
             if (entry.key != RegexUtils.defaultNamespace)
               entry.key: entry.value,
         },
       };
     }
 
-    return this;
+    return curr;
   }
 }
