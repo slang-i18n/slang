@@ -65,6 +65,67 @@ class SlangFileCollection {
         .where((n) => n != RegexUtils.defaultNamespace)
         .toSet();
   }
+
+  /// Finds the translation file for a given path.
+  /// Respects namespaces and returns the sub-path within the file.
+  SubPathResult? findFile({
+    required String path,
+    required I18nLocale locale,
+    Set<String>? topLevelNamespaces,
+  }) {
+    topLevelNamespaces ??= getTopLevelNamespaces();
+
+    for (final file in files) {
+      if (file.locale != locale) {
+        continue;
+      }
+
+      final resolved = resolveSubPath(
+        path: path,
+        namespace: file.namespace,
+        topLevelNamespaces: topLevelNamespaces,
+      );
+
+      if (resolved != null) {
+        return SubPathResult(file: file, subPath: resolved);
+      }
+    }
+
+    return null;
+  }
+
+  List<SubPathResult> findFiles({
+    required String path,
+    Set<String>? topLevelNamespaces,
+  }) {
+    topLevelNamespaces ??= getTopLevelNamespaces();
+
+    final results = <SubPathResult>[];
+
+    for (final file in files) {
+      final resolved = resolveSubPath(
+        path: path,
+        namespace: file.namespace,
+        topLevelNamespaces: topLevelNamespaces,
+      );
+
+      if (resolved != null) {
+        results.add(SubPathResult(file: file, subPath: resolved));
+      }
+    }
+
+    return results;
+  }
+}
+
+class SubPathResult {
+  final TranslationFile file;
+  final String subPath;
+
+  SubPathResult({
+    required this.file,
+    required this.subPath,
+  });
 }
 
 class TranslationFile extends PlainTranslationFile {
@@ -106,3 +167,37 @@ class PlainTranslationFile {
 }
 
 typedef FileReader = Future<String> Function();
+
+/// Given a user-provided path and a file's namespace, returns the sub-path
+/// within that namespace, or null if the path doesn't belong to it.
+String? resolveSubPath({
+  required String path,
+  required String namespace,
+  required Set<String> topLevelNamespaces,
+}) {
+  if (namespace == RegexUtils.defaultNamespace) {
+    if (topLevelNamespaces.isEmpty) {
+      return path;
+    }
+
+    final pathParts = path.split('.');
+    if (topLevelNamespaces.contains(pathParts.first)) {
+      return null;
+    }
+    return path;
+  }
+
+  final pathParts = path.split('.');
+  final namespaceParts = namespace.split('.');
+  if (pathParts.length <= namespaceParts.length) {
+    return null;
+  }
+
+  for (int i = 0; i < namespaceParts.length; i++) {
+    if (pathParts[i] != namespaceParts[i]) {
+      return null;
+    }
+  }
+
+  return pathParts.skip(namespaceParts.length).join('.');
+}

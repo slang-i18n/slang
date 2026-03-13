@@ -5,7 +5,6 @@ import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
-import 'package:slang/src/runner/edit.dart';
 import 'package:slang/src/runner/utils/read_analysis_file.dart';
 import 'package:slang/src/utils/log.dart' as log;
 
@@ -83,39 +82,29 @@ Future<void> _deleteEntriesForLocale({
   final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
 
   for (final path in paths) {
-    String? resolvedNamespace;
-    String? subPath;
+    final resolvedFile = fileCollection.findFile(
+      path: path,
+      locale: locale,
+      topLevelNamespaces: topLevelNamespaces,
+    );
 
-    for (final namespace in fileMap.keys) {
-      final resolved = resolveSubPath(
-        path: path,
-        namespace: namespace,
-        topLevelNamespaces: topLevelNamespaces,
-      );
-      if (resolved != null) {
-        resolvedNamespace = namespace;
-        subPath = resolved;
-        break;
-      }
-    }
-
-    if (resolvedNamespace == null || subPath == null) {
+    if (resolvedFile == null) {
       continue;
     }
 
-    var intermediateMap = outputMap[resolvedNamespace];
+    final namespace = resolvedFile.file.namespace;
+    var intermediateMap = outputMap[namespace];
 
     if (intermediateMap == null) {
       // Not in RAM yet, read from file
-      final file = fileMap[resolvedNamespace]!;
-      final map = await file.readAndParse(config.fileType);
-      outputMap[resolvedNamespace] = map;
+      final map = await resolvedFile.file.readAndParse(config.fileType);
+      outputMap[namespace] = map;
       intermediateMap = map;
     }
 
     // Delete entry in RAM
     MapUtils.deleteEntry(
-      path: subPath,
+      path: resolvedFile.subPath,
       map: intermediateMap,
     );
   }
