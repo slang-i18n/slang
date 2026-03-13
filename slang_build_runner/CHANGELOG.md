@@ -1,3 +1,7 @@
+## 4.14.0
+
+- bump `slang` to `4.14.0`
+
 ## 4.13.0
 
 - feat: support `build_runner build --workspace`, requires `build_runner: ^2.12.1` (#348)
