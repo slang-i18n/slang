@@ -3,6 +3,7 @@ import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/utils/log.dart' as log;
 
 /// A collection of translation files that can be read in a later step.
@@ -49,6 +50,14 @@ class SlangFileCollection {
       return segments.take(segments.length - 1).join('/');
     }
   }
+
+  /// Returns the set of top-level namespace names (excluding _default).
+  Set<String> getTopLevelNamespaces() {
+    return files
+        .map((f) => f.namespace.split('.').first)
+        .where((n) => n != RegexUtils.defaultNamespace)
+        .toSet();
+  }
 }
 
 class TranslationFile extends PlainTranslationFile {
@@ -57,6 +66,7 @@ class TranslationFile extends PlainTranslationFile {
 
   /// The inferred namespace of this file (by file name).
   /// If no namespaces are used, ignore this field.
+  /// Might contain dots for nested namespaces, e.g. "home.screen1".
   final String namespace;
 
   TranslationFile({

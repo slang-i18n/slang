@@ -151,8 +151,8 @@ Future<void> applyTranslationsForOneLocale({
   }
 
   if (fileCollection.config.namespaces) {
-    final topLevelNamespaces =
-        fileMap.keys.map((e) => e.split('.').first).toSet();
+    final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
+
     for (final entry in fileMap.entries) {
       final baseTranslationsEntry = _getNamespace(
         translations: baseTranslations,
@@ -164,7 +164,7 @@ Future<void> applyTranslationsForOneLocale({
         namespace: entry.key,
         topLevelNamespaces: topLevelNamespaces,
       );
-      if (newTranslationsEntry == null) {
+      if (newTranslationsEntry == null || newTranslationsEntry.isEmpty) {
         // This namespace exists but it is not specified in new translations
         continue;
       }
