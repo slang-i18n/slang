@@ -23,6 +23,34 @@ final _defaultResolver = _Resolvers(
 ///
 /// Contribution would be nice! (Only this file needs to be changed)
 final Map<String, _Resolvers> _resolverMap = {
+  // Arabic
+  'ar': _Resolvers(
+    cardinal: (n, {zero, one, two, few, many, other}) {
+      if (n == 0) {
+        return zero ?? other!;
+      }
+      if (n == 1) {
+        return one ?? other!;
+      }
+      if (n == 2) {
+        return two ?? other!;
+      }
+
+      final i = n.toInt();
+      final mod100 = i % 100;
+      if (mod100 >= 3 && mod100 <= 10) {
+        return few ?? other!;
+      }
+      if (mod100 >= 11 && mod100 <= 99) {
+        return many ?? other!;
+      }
+
+      return other!;
+    },
+    ordinal: (n, {zero, one, two, few, many, other}) {
+      return other!;
+    },
+  ),
   // Czech
   'cs': _Resolvers(
     cardinal: (n, {zero, one, two, few, many, other}) {
