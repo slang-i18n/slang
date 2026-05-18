@@ -105,6 +105,10 @@ class RegexUtils {
   static final RegExp analysisFileRegex = RegExp(
       r'^_(missing_translations|unused_translations)(?:_(.*))?\.(json|yaml|csv)$');
 
+  /// Matches region-file patterns like _TR, _US, _DE, _840
+  /// 1 = region code (e.g., TR, US, 840)
+  static final RegExp regionFileRegex = RegExp(r'^_([A-Z]{2}|[0-9]{3})$');
+
   /// Matches if the string starts with a number.
   /// Example: 1hello, 2world
   static final RegExp startsWithNumber = RegExp(r'^\d');

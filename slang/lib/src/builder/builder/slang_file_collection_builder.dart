@@ -117,6 +117,19 @@ class SlangFileCollectionBuilder {
                   read: f.read,
                 );
               }
+
+              // Region file check (_TR, _US, etc.)
+              final regionMatch =
+                  RegexUtils.regionFileRegex.firstMatch(fileNameNoExtension);
+              if (regionMatch != null) {
+                final locale = I18nLocale(language: fileNameNoExtension);
+                return TranslationFile(
+                  path: f.path,
+                  locale: locale,
+                  namespace: RegexUtils.defaultNamespace,
+                  read: f.read,
+                );
+              }
             }
 
             final baseFileMatch =
