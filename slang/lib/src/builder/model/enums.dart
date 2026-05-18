@@ -1,10 +1,10 @@
 enum FileType { json, yaml, csv, arb }
 
-enum FallbackStrategy { none, baseLocale, baseLocaleEmptyString }
+enum FallbackStrategy { none, baseLocale, baseLocaleEmptyString, cascade }
 
 /// Similar to [FallbackStrategy] but [FallbackStrategy.baseLocaleEmptyString]
 /// has been already handled in the previous step.
-enum GenerateFallbackStrategy { none, baseLocale }
+enum GenerateFallbackStrategy { none, baseLocale, cascade }
 
 enum StringInterpolation { dart, braces, doubleBraces }
 
@@ -23,6 +23,8 @@ extension FallbackStrategyExt on FallbackStrategy {
         return GenerateFallbackStrategy.baseLocale;
       case FallbackStrategy.baseLocaleEmptyString:
         return GenerateFallbackStrategy.baseLocale;
+      case FallbackStrategy.cascade:
+        return GenerateFallbackStrategy.cascade;
     }
   }
 }

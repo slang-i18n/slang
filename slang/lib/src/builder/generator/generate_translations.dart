@@ -11,6 +11,7 @@ import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
 import 'package:slang/src/builder/utils/encryption_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 
 part 'generate_translation_map.dart';
 
@@ -20,6 +21,20 @@ class ClassTask {
   final ObjectNode node;
 
   ClassTask(this.className, this.node);
+}
+
+/// Finds the language-level parent locale for cascade fallback.
+/// Returns the first non-base locale with same language code and no script/country.
+I18nLocale? _findLanguageParent(
+    I18nData localeData, List<I18nData> allTranslations) {
+  if (localeData.base) return null;
+  final parent = allTranslations.firstWhereOrNull((d) =>
+      !d.base &&
+      d.locale.language == localeData.locale.language &&
+      d.locale.script == null &&
+      d.locale.country == null &&
+      d.locale.languageTag != localeData.locale.languageTag);
+  return parent?.locale;
 }
 
 /// generates all classes of one locale
@@ -54,6 +69,16 @@ ${!config.format.enabled ? '// dart format off' : ''}
 
     for (final i in imports) {
       buffer.writeln('import \'$i\';');
+    }
+  }
+
+  // For cascade: add import for language-parent locale
+  if (config.fallbackStrategy == GenerateFallbackStrategy.cascade &&
+      !localeData.base) {
+    final parentLocale = _findLanguageParent(localeData, allTranslations);
+    if (parentLocale != null) {
+      buffer.writeln(
+          'import \'${BuildResultPaths.localePath(outputPath: config.outputFileName, locale: parentLocale)}\';');
     }
   }
 
@@ -121,6 +146,8 @@ void _generateClass(
         );
 
   // The current class name.
+  final usePublicNested = localeData.base ||
+      config.fallbackStrategy == GenerateFallbackStrategy.cascade;
   final finalClassName = switch (root) {
     true => switch (localeData.base) {
         true => config.className,
@@ -128,7 +155,7 @@ void _generateClass(
           getClassNameRoot(className: className, locale: localeData.locale),
       },
     false => getClassName(
-        base: localeData.base,
+        base: usePublicNested,
         visibility: config.translationClassVisibility,
         parentName: className,
         locale: localeData.locale,
@@ -162,26 +189,39 @@ void _generateClass(
       buffer.writeln('class $finalClassName$mixinStr {');
     }
   } else {
-    // The class name of the **base** locale (path-dependent).
+    // Determine parent locale: for cascade, try language-level parent
+    final I18nLocale? cascadeParentLocale =
+        config.fallbackStrategy == GenerateFallbackStrategy.cascade
+            ? _findLanguageParent(localeData, allTranslations)
+            : null;
+
+    // The class name of the parent locale (path-dependent).
     final baseClassName = root
-        ? config.className
+        ? (cascadeParentLocale != null
+            ? getClassNameRoot(
+                className: config.className,
+                locale: cascadeParentLocale,
+              )
+            : config.className)
         : getClassName(
             base: true,
             visibility: TranslationClassVisibility.public,
             parentName: className,
-            locale: config.baseLocale,
+            locale: cascadeParentLocale ?? config.baseLocale,
           );
     if (config.fallbackStrategy == GenerateFallbackStrategy.none) {
       buffer.writeln(
           'class $finalClassName$mixinStr implements $baseClassName {');
     } else {
-      buffer.writeln('class $finalClassName extends $baseClassName$mixinStr {');
+      buffer.writeln(
+          'class $finalClassName extends $baseClassName$mixinStr {');
     }
   }
 
   // constructor and custom fields
   final callSuperConstructor = !localeData.base &&
-      config.fallbackStrategy == GenerateFallbackStrategy.baseLocale;
+      (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale ||
+       config.fallbackStrategy == GenerateFallbackStrategy.cascade);
   if (root) {
     if (localeData.base && config.flutterIntegration && config.localeHandling) {
       buffer.writeln(
@@ -286,7 +326,8 @@ void _generateClass(
       buffer.write(
           'dynamic operator[](String key) => \$meta.getTranslation(key)');
 
-      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale &&
+      if ((config.fallbackStrategy == GenerateFallbackStrategy.baseLocale ||
+           config.fallbackStrategy == GenerateFallbackStrategy.cascade) &&
           !localeData.base) {
         buffer.writeln(' ?? super.\$meta.getTranslation(key);');
       } else {
@@ -295,10 +336,16 @@ void _generateClass(
     }
   } else {
     if (callSuperConstructor) {
-      buffer.writeln(
-          '\t$finalClassName._($rootClassName root) : this._root = root, super.internal(root);');
+      if (config.fallbackStrategy == GenerateFallbackStrategy.cascade) {
+        buffer.writeln(
+            '\t$finalClassName.internal($rootClassName root) : this._root = root, super.internal(root);');
+      } else {
+        buffer.writeln(
+            '\t$finalClassName._($rootClassName root) : this._root = root, super.internal(root);');
+      }
     } else {
-      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale ||
+          config.fallbackStrategy == GenerateFallbackStrategy.cascade) {
         buffer.writeln('\t$finalClassName.internal(this._root);');
       } else {
         buffer.writeln('\t$finalClassName._(this._root);');
@@ -398,7 +445,8 @@ void _generateClass(
     // specified in the interface
     // this error seems to occur when using in combination with "extends"
     final optional =
-        config.fallbackStrategy == GenerateFallbackStrategy.baseLocale &&
+        (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale ||
+         config.fallbackStrategy == GenerateFallbackStrategy.cascade) &&
                 node.interface?.attributes.any((attribute) =>
                         attribute.optional && attribute.attributeName == key) ==
                     true
@@ -438,7 +486,7 @@ void _generateClass(
       buffer.write('List<${value.genericType}>$optional get $key => ');
       _generateList(
         config: config,
-        base: localeData.base,
+        base: usePublicNested,
         locale: localeData.locale,
         buffer: buffer,
         queue: queue,
@@ -455,12 +503,12 @@ void _generateClass(
         childName: key,
       );
 
-      if (value.isMap) {
+    if (value.isMap) {
         // inline map
         buffer.write('Map<String, ${value.genericType}>$optional get $key => ');
         _generateMap(
           config: config,
-          base: localeData.base,
+          base: usePublicNested,
           locale: localeData.locale,
           buffer: buffer,
           queue: queue,
@@ -472,7 +520,7 @@ void _generateClass(
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale = getClassName(
-          base: localeData.base,
+          base: usePublicNested,
           visibility: config.translationClassVisibility,
           parentName: className,
           childName: key,
@@ -480,8 +528,10 @@ void _generateClass(
         );
 
         buffer.write('late final $childClassWithLocale$optional $key = ');
-        if (localeData.base &&
-            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+        if ((localeData.base &&
+                config.fallbackStrategy ==
+                    GenerateFallbackStrategy.baseLocale) ||
+            config.fallbackStrategy == GenerateFallbackStrategy.cascade) {
           buffer.writeln('$childClassWithLocale.internal(_root);');
         } else {
           buffer.writeln('$childClassWithLocale._(_root);');
@@ -596,7 +646,9 @@ void _generateMap({
 
         buffer.write('\'$digestedKey\': ');
         if (base &&
-            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+                config.fallbackStrategy ==
+                    GenerateFallbackStrategy.baseLocale ||
+            config.fallbackStrategy == GenerateFallbackStrategy.cascade) {
           buffer.writeln('$childClassWithLocale.internal(_root),');
         } else {
           buffer.writeln('$childClassWithLocale._(_root),');
@@ -712,8 +764,10 @@ void _generateList({
           locale: locale,
         );
 
-        if (base &&
-            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+        if ((base &&
+                config.fallbackStrategy ==
+                    GenerateFallbackStrategy.baseLocale) ||
+            config.fallbackStrategy == GenerateFallbackStrategy.cascade) {
           buffer.writeln('$childClassWithLocale.internal(_root),');
         } else {
           buffer.writeln('$childClassWithLocale._(_root),');

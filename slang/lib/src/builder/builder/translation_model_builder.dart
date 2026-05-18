@@ -511,7 +511,8 @@ Map<String, Node> _parseMapNode({
 
             if (config.fallbackStrategy == FallbackStrategy.baseLocale ||
                 config.fallbackStrategy ==
-                    FallbackStrategy.baseLocaleEmptyString) {
+                    FallbackStrategy.baseLocaleEmptyString ||
+                config.fallbackStrategy == FallbackStrategy.cascade) {
               // add base context values if necessary
               final baseContext = baseContexts?[context.enumName];
               if (baseContext != null) {

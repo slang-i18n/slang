@@ -297,6 +297,8 @@ extension on String {
         return FallbackStrategy.baseLocale;
       case 'base_locale_empty_string':
         return FallbackStrategy.baseLocaleEmptyString;
+      case 'cascade':
+        return FallbackStrategy.cascade;
       default:
         return null;
     }
