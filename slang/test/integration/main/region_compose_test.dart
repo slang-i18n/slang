@@ -112,9 +112,9 @@ void main() {
     expect(frTrOutput, contains('class TranslationsFrTr extends TranslationsFr'));
     expect(frTrOutput, contains("import 'translations_fr.g.dart'"));
 
-    // fr-TR: has French strings (merged from fr)
-    expect(frTrOutput, contains('\'Bonjour\''));
-    expect(frTrOutput, contains('\'Au revoir\''));
+    // fr-TR: only contains region overrides, NOT inherited French strings
+    expect(frTrOutput, isNot(contains('\'Bonjour\'')));
+    expect(frTrOutput, isNot(contains('\'Au revoir\'')));
 
     // fr-TR: has Turkish currency (overridden from _TR)
     expect(frTrOutput, contains('\'TRY\''));
@@ -129,9 +129,11 @@ void main() {
     expect(result.translations.containsKey(enTrLocale), isTrue,
         reason: 'en-TR should be auto-composed from en + _TR');
     final enTrOutput = result.translations[enTrLocale]!;
+    // Only region overrides; base keys inherited from en
     expect(enTrOutput, contains('\'TRY\''));
-    expect(enTrOutput, contains('\'Hello\''));
-    expect(enTrOutput, contains('\'Goodbye\''));
+    expect(enTrOutput, isNot(contains('\'Hello\'')),
+        reason: 'Base keys should be inherited, not duplicated');
+    expect(enTrOutput, isNot(contains('\'Goodbye\'')));
     // en-TR extends base since en is the base locale
     expect(enTrOutput, contains('class TranslationsEnTr extends Translations'));
   });

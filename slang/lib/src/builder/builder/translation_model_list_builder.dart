@@ -109,6 +109,8 @@ class TranslationModelListBuilder {
 
   /// For each language locale and each region, creates a composed
   /// language-REGION locale if one doesn't already exist explicitly.
+  /// Only the region-specific overrides are stored; language keys are
+  /// inherited via cascade `extends`.
   static void _composeRegionLocales(
       TranslationMap translationMap,
       Map<String, Map<String, dynamic>> regionData,
@@ -127,43 +129,17 @@ class TranslationModelListBuilder {
         continue;
       }
 
-      final langNamespaces =
-          translationMap.getInternalMap()[langLocale]!;
-      final langTranslations = langNamespaces
-              .containsKey(RegexUtils.defaultNamespace)
-          ? Map<String, dynamic>.from(
-              langNamespaces[RegexUtils.defaultNamespace]!)
-          : Map<String, dynamic>.from(langNamespaces.values.first);
-
       for (final regionEntry in regionData.entries) {
         final composedTag = '$langTag-${regionEntry.key}';
         if (existingTags.contains(composedTag)) continue;
 
-        final merged = _deepMerge(langTranslations, regionEntry.value);
+        // Only store region overrides; language keys are inherited from parent.
         translationMap.addTranslations(
           locale: I18nLocale.fromString(composedTag),
-          translations: merged,
+          translations: regionEntry.value,
         );
       }
     }
-  }
-
-  /// Deep-merges [overlay] on top of [base]. Nested maps are merged
-  /// recursively; scalar values from [overlay] replace those in [base].
-  static Map<String, dynamic> _deepMerge(
-      Map<String, dynamic> base, Map<String, dynamic> overlay) {
-    final result = Map<String, dynamic>.from(base);
-    for (final entry in overlay.entries) {
-      if (entry.value is Map<String, dynamic> &&
-          result[entry.key] is Map<String, dynamic>) {
-        result[entry.key] = _deepMerge(
-            result[entry.key] as Map<String, dynamic>,
-            entry.value as Map<String, dynamic>);
-      } else {
-        result[entry.key] = entry.value;
-      }
-    }
-    return result;
   }
 }
 
