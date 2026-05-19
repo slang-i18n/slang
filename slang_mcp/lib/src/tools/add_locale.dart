@@ -11,6 +11,9 @@ import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 
 // ignore: implementation_imports
+import 'package:slang/src/builder/model/translation_map.dart';
+
+// ignore: implementation_imports
 import 'package:slang/src/builder/utils/path_utils.dart';
 
 // ignore: implementation_imports
@@ -42,10 +45,12 @@ Future<void> addLocale({
 
     if (fileCollection.config.namespaces) {
       final fileNameNoExtension = PathUtils.getFileNameNoExtension(file.path);
-      final existingFileMatch =
+      final namespaceWithLocaleMatch =
           RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
 
-      if (existingFileMatch != null) {
+      if (namespaceWithLocaleMatch != null) {
+        // Classical case: e.g. strings_en.i18n.json
+        // Just replace the locale in the file name
         final path = PathUtils.replaceFileName(
           path: file.path,
           newFileName:
@@ -60,26 +65,19 @@ Future<void> addLocale({
           inputDirectory: fileCollection.config.inputDirectory,
         );
 
-        if (directoryLocale != null) {
-          final segments = PathUtils.getPathSegments(file.path);
-          bool found = false;
-          final newLocalePath = segments.map((s) {
-            if (found) {
-              return s;
-            }
-
-            if (s == directoryLocale.languageTag) {
-              found = true;
-              return locale.languageTag;
-            }
-            return s;
-          }).toList();
-          final path =
-              '${newLocalePath.sublist(0, newLocalePath.length - 1).join('/')}/${file.namespace}${fileCollection.config.inputFilePattern}';
-          _createFile(path: path);
-        } else {
+        if (directoryLocale == null) {
           print('This should not happen: Cannot detect locale in ${file.path}');
+          continue;
         }
+
+        final segments = PathUtils.getPathSegments(file.path);
+        segments[directoryLocale.localeSegmentIndex] = locale.languageTag;
+        final namespacePrefix = directoryLocale.namespacePrefix.isEmpty
+            ? ''
+            : '${directoryLocale.namespacePrefix.join('/')}/';
+        final path =
+            '${segments.sublist(0, segments.length - 1).join('/')}/$namespacePrefix${file.namespace}${fileCollection.config.inputFilePattern}';
+        _createFile(path: path);
       }
     } else {
       final path = PathUtils.replaceFileName(
@@ -106,7 +104,9 @@ Future<void> addLocale({
     applyLocale: locale,
     baseTranslations:
         translationMap[fileCollectionAfterCreate.config.baseLocale]!,
-    newTranslations: translations,
+    newTranslations: ExpandedNamespaceMap(translations).flatten(
+      namespaces: fileCollection.getNamespaces(),
+    ),
   );
 
   final finalFileCollection = SlangFileCollectionBuilder.readFromFileSystem(

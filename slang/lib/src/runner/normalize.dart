@@ -101,7 +101,6 @@ Future<void> _normalizeFile({
     baseMap: baseTranslations,
     newMap: const {},
     oldMap: parsedContent,
-    verbose: true,
   );
 
   FileUtils.writeFileOfType(

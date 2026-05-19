@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:slang/src/builder/decoder/base_decoder.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/path_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
@@ -23,12 +24,12 @@ enum AnalysisType {
 
 /// Reads the analysis files.
 /// If [targetLocales] is specified, then only these locales are read.
-Map<I18nLocale, Map<String, dynamic>> readAnalysis({
+Map<I18nLocale, ExpandedNamespaceMap> readAnalysis({
   required AnalysisType type,
   required List<File> files,
   required List<I18nLocale>? targetLocales,
 }) {
-  final Map<I18nLocale, Map<String, dynamic>> resultMap = {};
+  final Map<I18nLocale, ExpandedNamespaceMap> resultMap = {};
   for (final file in files) {
     final fileName = PathUtils.getFileName(file.path);
     final fileNameMatch = RegexUtils.analysisFileRegex.firstMatch(fileName);
@@ -67,7 +68,8 @@ Map<I18nLocale, Map<String, dynamic>> readAnalysis({
 
     if (locale != null) {
       _printReading(locale, file);
-      resultMap[locale] = {...parsedContent}..remove(infoKey);
+      resultMap[locale] =
+          ExpandedNamespaceMap({...parsedContent}..remove(infoKey));
     } else {
       // handle file containing multiple locales
       for (final entry in parsedContent.entries) {

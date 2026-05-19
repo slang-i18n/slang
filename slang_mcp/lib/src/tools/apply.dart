@@ -8,6 +8,9 @@ import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 
 // ignore: implementation_imports
+import 'package:slang/src/builder/model/translation_map.dart';
+
+// ignore: implementation_imports
 import 'package:slang/src/runner/apply.dart';
 
 // ignore: implementation_imports
@@ -29,7 +32,9 @@ Future<void> apply({
     fileCollection: fileCollection,
     applyLocale: locale,
     baseTranslations: translationMap[fileCollection.config.baseLocale]!,
-    newTranslations: translations,
+    newTranslations: ExpandedNamespaceMap(translations).flatten(
+      namespaces: fileCollection.getNamespaces(),
+    ),
   );
 
   // Generate after applying with new translations

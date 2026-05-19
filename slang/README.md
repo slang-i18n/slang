@@ -1301,6 +1301,25 @@ i18n/
       └── errorDialogs.i18n.json <-- directory locale will be used
 ```
 
+When using directory locales, you can nest the namespaces as deep as you want.
+
+```yaml
+# Config
+input_directory: assets/i18n
+input_file_pattern: .json
+```
+
+```text
+i18n/
+ └── en/
+      └── widgets/
+           └── welcomeCard.json
+           └── profileCard.json
+      └── errorDialogs/
+           └── login.json
+           └── network.json
+```
+
 If you use directory locales, then you may use underscores as namespace, but it is recommended to use camel case.
 
 Now access the translations:
@@ -1860,7 +1879,7 @@ Register the MCP package:
 
 ```bash
 # Claude Code
-claude mcp add slang_mcp slang_mcp
+claude mcp add --transport stdio slang_mcp -- slang_mcp
 ```
 
 Prompt your LLM to generate translations:

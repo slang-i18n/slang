@@ -1,3 +1,7 @@
+## 0.11.4
+
+- deps: bump slang to 4.14.0
+
 ## 0.11.3
 
 - chore: migrate from GitHub to Codeberg: https://codeberg.org/Tienisto/slang

@@ -8,7 +8,6 @@ void main() {
         baseMap: {'base': 'BB'},
         newMap: {'new': 'NN'},
         oldMap: {'old': 'OO'},
-        verbose: false,
       );
       expect(result, {'new': 'NN', 'old': 'OO'});
       expect(result.keys.toList(), ['old', 'new']);
@@ -24,7 +23,6 @@ void main() {
         baseMap: map,
         newMap: {},
         oldMap: map,
-        verbose: false,
       );
       expect(result, map);
     });
@@ -39,7 +37,6 @@ void main() {
         baseMap: {},
         newMap: {},
         oldMap: map,
-        verbose: false,
       );
       expect(result, map);
     });
@@ -49,7 +46,6 @@ void main() {
         baseMap: {},
         newMap: {'d4': 'D'},
         oldMap: {'c1': 'C', 'a2': 'A', 'b3': 'B'},
-        verbose: false,
       );
       expect(result, {
         'c1': 'C',
@@ -70,7 +66,6 @@ void main() {
         },
         newMap: {'d4': 'D'},
         oldMap: {'c1': 'C', 'a2': 'A', 'b3': 'B'},
-        verbose: false,
       );
       expect(result, {
         'c1': 'C',
@@ -79,6 +74,43 @@ void main() {
         'b3': 'B',
       });
       expect(result.keys.toList(), ['c1', 'd4', 'a2', 'b3']);
+    });
+
+    test('sort keys starting with @@ first', () {
+      final result = applyMapRecursive(
+        baseMap: {},
+        newMap: {
+          'e': 'E',
+          '@@c': 'C2',
+          'd': {
+            'da': 'DA2',
+            '@@db': 'DB2',
+            'dc': 'DC2',
+          }
+        },
+        oldMap: {
+          'a': 'A',
+          'b': 'B',
+          '@@c': 'C',
+          'd': {
+            'da': 'DA',
+            '@@db': 'DB',
+            'dc': 'DC',
+          }
+        },
+      );
+      expect(result, {
+        '@@c': 'C2',
+        'a': 'A',
+        'b': 'B',
+        'd': {
+          '@@db': 'DB2',
+          'da': 'DA2',
+          'dc': 'DC2',
+        },
+        'e': 'E',
+      });
+      expect(result.keys.toList(), ['@@c', 'a', 'b', 'd', 'e']);
     });
 
     test('also reorder even if newMap is empty', () {
@@ -95,7 +127,6 @@ void main() {
           'd': 'D',
           'a': 'A',
         },
-        verbose: false,
       );
       expect(result, {
         'c': 'C',
@@ -130,7 +161,6 @@ void main() {
           },
           'b': 'B',
         },
-        verbose: false,
       );
       expect(result, {
         'c': 'C',
@@ -151,7 +181,6 @@ void main() {
         baseMap: {},
         newMap: {'a(param=arg0)': 'A'},
         oldMap: {},
-        verbose: false,
       );
       expect(result, {'a': 'A'});
     });
@@ -161,7 +190,6 @@ void main() {
         baseMap: {'a(param=arg0)': 'base'},
         newMap: {'a': 'new'},
         oldMap: {'a': 'old'},
-        verbose: false,
       );
       expect(result, {'a(param=arg0)': 'new'});
     });

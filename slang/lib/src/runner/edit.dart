@@ -9,6 +9,7 @@ import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/builder/utils/file_utils.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
+import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/runner/apply.dart';
 import 'package:slang/src/utils/log.dart' as log;
 
@@ -65,11 +66,6 @@ Future<void> runEdit({
     if (destinationPath == null) {
       throw 'Missing value.';
     }
-
-    // Sanity check
-    if (fileCollection.config.namespaces && originPath.split('.').length <= 1) {
-      throw 'Missing namespace + path. Expected: dart run slang edit add myNamespace.my.path.to.key';
-    }
   } else {
     locale = null;
     originPath = _getArgument(1, arguments);
@@ -77,11 +73,6 @@ Future<void> runEdit({
 
     if (originPath == null) {
       throw 'Missing path.';
-    }
-
-    // Sanity check
-    if (fileCollection.config.namespaces && originPath.split('.').length <= 1) {
-      throw 'Missing namespace + path. Expected: dart run slang outdated myNamespace.my.path.to.key';
     }
   }
 
@@ -140,47 +131,60 @@ Future<void> _moveEntry({
   required String destinationPath,
 }) async {
   final config = fileCollection.config;
-  final originPathList = originPath.split('.');
-  final originNamespace = originPathList.first;
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
   final destinationPathList = destinationPath.split('.');
-  final destinationNamespace = destinationPathList.first;
-  final rename = originPathList.length == destinationPathList.length &&
-      (!config.namespaces || originNamespace == destinationNamespace) &&
-      ListEquality().equals(
-          originPathList.take(max(originPathList.length - 1, 0)).toList(),
-          destinationPathList
-              .take(max(destinationPathList.length - 1, 0))
-              .toList());
 
-  log.info('Operation: $originPath -> $destinationPath (rename: $rename)');
+  log.info('Operation: $originPath -> $destinationPath');
   log.info('');
 
-  bool found = false;
-  for (final origFile in fileCollection.files) {
-    // Find the origin node
-    if (config.namespaces && origFile.namespace != originNamespace) {
-      // wrong namespace
-      continue;
-    }
+  final origFiles = fileCollection.findFiles(
+    path: originPath,
+    topLevelNamespaces: topLevelNamespaces,
+  );
 
-    final origMap = await origFile.readAndParse(config.fileType);
+  bool found = false;
+  for (final origFile in origFiles) {
+    final origMap = await origFile.file.readAndParse(config.fileType);
 
     final originValue = MapUtils.getValueAtPath(
       map: origMap,
-      path: config.namespaces ? originPathList.skip(1).join('.') : originPath,
+      path: origFile.subPath,
     );
 
     if (originValue == null) {
       continue;
     }
 
+    // Check if this is a rename (same parent path, just last key differs)
+    final originSubPathList = origFile.subPath.split('.');
+    final destSubPathForRename = config.namespaces
+        ? resolveSubPath(
+            path: destinationPath,
+            namespace: origFile.file.namespace,
+            topLevelNamespaces: topLevelNamespaces,
+          )
+        : destinationPath;
+
+    final sameNamespace = destSubPathForRename != null;
+    final destSubPathListForRename =
+        (destSubPathForRename ?? destinationPath).split('.');
+    final rename = sameNamespace &&
+        originSubPathList.length == destSubPathListForRename.length &&
+        const ListEquality().equals(
+            originSubPathList
+                .take(max(originSubPathList.length - 1, 0))
+                .toList(),
+            destSubPathListForRename
+                .take(max(destSubPathListForRename.length - 1, 0))
+                .toList());
+
     // Find the destination node
     if (rename) {
-      log.verbose(
-          '[${origFile.path}] Rename "$originPath" -> "$destinationPath"');
+      log.info(
+          '[${origFile.file.path}] Rename "$originPath" -> "$destinationPath"');
       MapUtils.updateEntry(
         map: origMap,
-        path: config.namespaces ? originPathList.skip(1).join('.') : originPath,
+        path: origFile.subPath,
         update: (key, value) {
           return MapEntry(
             destinationPathList.last,
@@ -191,55 +195,50 @@ Future<void> _moveEntry({
 
       FileUtils.writeFileOfType(
         fileType: config.fileType,
-        path: origFile.path,
+        path: origFile.file.path,
         content: origMap,
       );
 
       found = true;
     } else {
-      for (final destFile in fileCollection.files) {
-        if (destFile.locale != origFile.locale) {
-          // wrong locale
-          continue;
-        }
+      final destFile = fileCollection.findFile(
+        path: destinationPath,
+        locale: origFile.file.locale,
+        topLevelNamespaces: topLevelNamespaces,
+      );
 
-        if (config.namespaces && destFile.namespace != destinationNamespace) {
-          // wrong namespace
-          continue;
-        }
-
-        log.verbose('[${origFile.path}] Delete "$originPath"');
-        MapUtils.deleteEntry(
-          map: origMap,
-          path:
-              config.namespaces ? originPathList.skip(1).join('.') : originPath,
-        );
-
-        FileUtils.writeFileOfType(
-          fileType: config.fileType,
-          path: origFile.path,
-          content: origMap,
-        );
-
-        final destMap = await destFile.readAndParse(config.fileType);
-
-        log.verbose('[${destFile.path}] Add "$destinationPath"');
-        MapUtils.addItemToMap(
-          map: destMap,
-          destinationPath: config.namespaces
-              ? destinationPathList.skip(1).join('.')
-              : destinationPath,
-          item: originValue!,
-        );
-
-        FileUtils.writeFileOfType(
-          fileType: config.fileType,
-          path: destFile.path,
-          content: destMap,
-        );
-
-        found = true;
+      if (destFile == null) {
+        continue;
       }
+
+      log.info('[${origFile.file.path}] Delete "$originPath"');
+      MapUtils.deleteEntry(
+        map: origMap,
+        path: origFile.subPath,
+      );
+
+      FileUtils.writeFileOfType(
+        fileType: config.fileType,
+        path: origFile.file.path,
+        content: origMap,
+      );
+
+      final destMap = await destFile.file.readAndParse(config.fileType);
+
+      log.info('[${destFile.file.path}] Add "$destinationPath"');
+      MapUtils.addItemToMap(
+        map: destMap,
+        destinationPath: destFile.subPath,
+        item: originValue!,
+      );
+
+      FileUtils.writeFileOfType(
+        fileType: config.fileType,
+        path: destFile.file.path,
+        content: destMap,
+      );
+
+      found = true;
     }
   }
 
@@ -254,27 +253,23 @@ Future<void> _copyEntry({
   required String destinationPath,
 }) async {
   final config = fileCollection.config;
-  final originPathList = originPath.split('.');
-  final originNamespace = originPathList.first;
-  final destinationPathList = destinationPath.split('.');
-  final destinationNamespace = destinationPathList.first;
+  final topLevelNamespaces = fileCollection.getTopLevelNamespaces();
 
   log.info('Operation: $originPath -> $destinationPath');
   log.info('');
 
-  bool found = false;
-  for (final origFile in fileCollection.files) {
-    // Find the origin node
-    if (config.namespaces && origFile.namespace != originNamespace) {
-      // wrong namespace
-      continue;
-    }
+  final origFiles = fileCollection.findFiles(
+    path: originPath,
+    topLevelNamespaces: topLevelNamespaces,
+  );
 
-    final origMap = await origFile.readAndParse(config.fileType);
+  bool found = false;
+  for (final origFile in origFiles) {
+    final origMap = await origFile.file.readAndParse(config.fileType);
 
     final originValue = MapUtils.getValueAtPath(
       map: origMap,
-      path: config.namespaces ? originPathList.skip(1).join('.') : originPath,
+      path: origFile.subPath,
     );
 
     if (originValue == null) {
@@ -282,36 +277,32 @@ Future<void> _copyEntry({
     }
 
     // Find the destination node
-    for (final destFile in fileCollection.files) {
-      if (destFile.locale != origFile.locale) {
-        // wrong locale
-        continue;
-      }
+    final destFile = fileCollection.findFile(
+      path: destinationPath,
+      locale: origFile.file.locale,
+      topLevelNamespaces: topLevelNamespaces,
+    );
 
-      if (config.namespaces && destFile.namespace != destinationNamespace) {
-        // wrong namespace
-        continue;
-      }
-
-      final destMap = await destFile.readAndParse(config.fileType);
-
-      log.verbose('[${destFile.path}] Add "$destinationPath"');
-      MapUtils.addItemToMap(
-        map: destMap,
-        destinationPath: config.namespaces
-            ? destinationPathList.skip(1).join('.')
-            : destinationPath,
-        item: originValue!,
-      );
-
-      FileUtils.writeFileOfType(
-        fileType: config.fileType,
-        path: destFile.path,
-        content: destMap,
-      );
-
-      found = true;
+    if (destFile == null) {
+      continue;
     }
+
+    final destMap = await destFile.file.readAndParse(config.fileType);
+
+    log.info('[${destFile.file.path}] Add "$destinationPath"');
+    MapUtils.addItemToMap(
+      map: destMap,
+      destinationPath: destFile.subPath,
+      item: originValue!,
+    );
+
+    FileUtils.writeFileOfType(
+      fileType: config.fileType,
+      path: destFile.file.path,
+      content: destMap,
+    );
+
+    found = true;
   }
 
   if (!found) {
@@ -323,23 +314,20 @@ Future<void> _deleteEntry({
   required SlangFileCollection fileCollection,
   required String path,
 }) async {
-  final pathList = path.split('.');
-  final targetNamespace = pathList.first;
+  final config = fileCollection.config;
+  final resolvedFiles = fileCollection.findFiles(
+    path: path,
+  );
 
-  for (final file in fileCollection.files) {
-    final config = fileCollection.config;
-
-    if (config.namespaces && file.namespace != targetNamespace) {
-      // We only want to delete the key from the target namespace
-      continue;
-    }
+  for (final resolvedFile in resolvedFiles) {
+    final file = resolvedFile.file;
 
     log.info('Deleting "$path" in ${file.path}...');
 
     final map = await file.readAndParse(config.fileType);
 
     MapUtils.deleteEntry(
-      path: config.namespaces ? pathList.skip(1).join('.') : path,
+      path: resolvedFile.subPath,
       map: map,
     );
 
@@ -355,19 +343,19 @@ Future<void> _outdatedEntry({
   required SlangFileCollection fileCollection,
   required String path,
 }) async {
-  final pathList = path.split('.');
-  final targetNamespace = pathList.first;
+  final config = fileCollection.config;
+  final resolvedFiles = fileCollection.findFiles(
+    path: path,
+  );
 
-  for (final file in fileCollection.files) {
-    final config = fileCollection.config;
+  if (resolvedFiles.isEmpty) {
+    throw 'There is no namespace to fit "$path". Maybe create a ${RegexUtils.defaultNamespace}?';
+  }
 
+  for (final resolvedFile in resolvedFiles) {
+    final file = resolvedFile.file;
     if (file.locale == config.baseLocale) {
       // We only want to add the key to non-base locales
-      continue;
-    }
-
-    if (config.namespaces && file.namespace != targetNamespace) {
-      // We only want to add the key to the target namespace
       continue;
     }
 
@@ -377,7 +365,7 @@ Future<void> _outdatedEntry({
         await file.readAndParse(config.fileType);
 
     MapUtils.updateEntry(
-      path: config.namespaces ? pathList.skip(1).join('.') : path,
+      path: resolvedFile.subPath,
       map: parsedContent,
       update: (key, value) {
         return MapEntry(
@@ -401,27 +389,26 @@ Future<void> _addEntry({
   required String path,
   required String value,
 }) async {
-  final pathList = path.split('.');
-  final targetNamespace = pathList.first;
-
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
   );
   final config = fileCollection.config;
-  final baseTranslationMap = config.namespaces
-      ? translationMap[config.baseLocale]![targetNamespace]!
-      : translationMap[config.baseLocale]!.values.first;
+  final resolvedFiles = fileCollection.findFiles(
+    path: path,
+  );
 
-  for (final file in fileCollection.files) {
+  if (resolvedFiles.isEmpty) {
+    throw 'There is no namespace to fit "$path". Maybe create a ${RegexUtils.defaultNamespace}?';
+  }
+
+  for (final resolvedFile in resolvedFiles) {
+    final file = resolvedFile.file;
     if (locale != null && file.locale != locale) {
-      // We only want to add the key to the target locale
       continue;
     }
 
-    if (config.namespaces && file.namespace != targetNamespace) {
-      // We only want to add the key to the target namespace
-      continue;
-    }
+    final baseTranslationMap =
+        translationMap[config.baseLocale]![file.namespace]!;
 
     log.info(
         'Adding translation to <${file.locale.languageTag}> in ${file.path}...');
@@ -432,7 +419,7 @@ Future<void> _addEntry({
     final Map<String, dynamic> newMap = {};
     MapUtils.addItemToMap(
       map: newMap,
-      destinationPath: config.namespaces ? pathList.skip(1).join('.') : path,
+      destinationPath: resolvedFile.subPath,
       item: value,
     );
 
@@ -440,7 +427,6 @@ Future<void> _addEntry({
       baseMap: baseTranslationMap,
       newMap: newMap,
       oldMap: oldMap,
-      verbose: true,
     );
 
     FileUtils.writeFileOfType(

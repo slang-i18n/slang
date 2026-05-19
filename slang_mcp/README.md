@@ -54,6 +54,42 @@ cd my_flutter_app/
 claude mcp add --transport stdio slang_mcp -- slang_mcp
 ```
 
+## MCP API
+
+| Tool                       | Input                    | Description                                                                               |
+|----------------------------|--------------------------|-------------------------------------------------------------------------------------------|
+| `get-locales`              | -                        | Gets the list of locales in the project                                                   |
+| `get-base-translations`    | -                        | Gets the translations of the base locale                                                  |
+| `get-missing-translations` | -                        | Gets translations that exist in the base locale but not in secondary locales              |
+| `get-wip-translations`     | -                        | Gets WIP translations found in source code that should be translated                      |
+| `apply-wip-translations`   | -                        | Applies WIP translations from source code to translation files and regenerates the output |
+| `apply-translations`       | `locale`, `translations` | Adds translations to the actual translation files and regenerates the output              |
+| `add-locale`               | `locale`, `translations` | Adds a new locale with translations and regenerates the output                            |
+
+
+## Notes
+
+You can add `@@notes` to a translation file to provide context to the LLM.
+This is useful to inform the LLM about the language, tone, or other details relevant to the translation.
+
+The notes are automatically included when calling `get-missing-translations`.
+It can be any JSON-serializable value.
+
+```json
+{
+  "@@notes": {
+    "general": [
+      "The app is a banking app, so use financial terms.",
+      "The tone should be formal and professional."
+    ],
+    "dictionary": {
+      "bank": "Bank (financial institution, not 'Ufer')"
+    }
+  },
+  "welcome": "Willkommen"
+}
+```
+
 ## Workflows
 
 ### ➤ Translate missing translations
@@ -113,3 +149,13 @@ Apply my new WIP strings and translate
 ```
 
 The MCP server should receive the translated strings and apply them to the appropriate files.
+
+## Install from source
+
+Clone the repository and navigate to the project directory.
+
+Then install the package globally:
+
+```bash
+dart pub global activate --source path .
+```

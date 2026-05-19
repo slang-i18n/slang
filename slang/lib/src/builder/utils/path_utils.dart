@@ -50,34 +50,47 @@ class PathUtils {
 
   /// finds locale in directory path
   /// eg. /en-US/b/file.json will result in en-US
-  static I18nLocale? findDirectoryLocale(
-      {required String filePath, required String? inputDirectory}) {
+  static DirectoryLocaleResult? findDirectoryLocale({
+    required String filePath,
+    required String? inputDirectory,
+  }) {
     List<String> segments = PathUtils.getPathSegments(filePath);
 
-    // either first directory after inputDirectory, or last directory
-    RegExpMatch? match;
-
     if (inputDirectory != null) {
+      // locale is the first directory after inputDirectory
       final inputDirectorySegments = PathUtils.getPathSegments(inputDirectory);
       if (inputDirectorySegments.isNotEmpty &&
           inputDirectorySegments.firstOrNull == segments.firstOrNull &&
           segments.length > inputDirectorySegments.length) {
-        match = RegexUtils.localeRegex
-            .firstMatch(segments[inputDirectorySegments.length]);
+        final localeSegmentIndex = inputDirectorySegments.length;
+        final match =
+            RegexUtils.localeRegex.firstMatch(segments[localeSegmentIndex]);
+
+        if (match != null) {
+          return DirectoryLocaleResult.fromRegexMatch(
+            match: match,
+            localeSegmentIndex: localeSegmentIndex,
+            namespacePrefix:
+                segments.sublist(localeSegmentIndex + 1, segments.length - 1),
+          );
+        }
       }
     } else if (segments.length >= 2) {
-      match = RegexUtils.localeRegex.firstMatch(segments[segments.length - 2]);
+      // locale is the parent directory of the file
+      final localeSegmentIndex = segments.length - 2;
+      final match =
+          RegexUtils.localeRegex.firstMatch(segments[localeSegmentIndex]);
+
+      if (match != null) {
+        return DirectoryLocaleResult.fromRegexMatch(
+          match: match,
+          localeSegmentIndex: localeSegmentIndex,
+          namespacePrefix: const [],
+        );
+      }
     }
 
-    if (match == null) {
-      return null;
-    }
-
-    return I18nLocale(
-      language: match.group(1)!,
-      script: match.group(2),
-      country: match.group(3),
-    );
+    return null;
   }
 
   /// converts /some/path/file.json to /some/path/newFile.json
@@ -106,6 +119,56 @@ class PathUtils {
       return directoryPath + pathSeparator + fileName;
     }
   }
+}
+
+class DirectoryLocaleResult {
+  final I18nLocale locale;
+
+  /// The index of the locale segment in the path segments list.
+  /// This is used to replace the locale segment
+  /// when generating new paths for other locales.
+  final int localeSegmentIndex;
+
+  /// If the locale is not a direct parent directory,
+  /// all segments between the input directory and the locale segment
+  /// are considered as namespace prefix.
+  final List<String> namespacePrefix;
+
+  DirectoryLocaleResult({
+    required this.locale,
+    required this.localeSegmentIndex,
+    required this.namespacePrefix,
+  });
+
+  DirectoryLocaleResult.fromRegexMatch({
+    required RegExpMatch match,
+    required this.localeSegmentIndex,
+    required this.namespacePrefix,
+  }) : locale = I18nLocale(
+          language: match.group(1)!,
+          script: match.group(2),
+          country: match.group(3),
+        );
+
+  @override
+  String toString() {
+    return 'DirectoryLocaleResult($locale, $localeSegmentIndex, namespacePrefix: $namespacePrefix)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DirectoryLocaleResult &&
+          runtimeType == other.runtimeType &&
+          locale == other.locale &&
+          localeSegmentIndex == other.localeSegmentIndex &&
+          const ListEquality().equals(namespacePrefix, other.namespacePrefix);
+
+  @override
+  int get hashCode =>
+      locale.hashCode ^
+      localeSegmentIndex.hashCode ^
+      const ListEquality().hash(namespacePrefix);
 }
 
 class BuildResultPaths {

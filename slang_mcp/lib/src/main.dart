@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:mcp_dart/mcp_dart.dart';
 
 // ignore: implementation_imports
@@ -23,13 +25,21 @@ import 'package:slang/src/runner/wip.dart';
 import 'package:slang_mcp/src/tools/add_locale.dart';
 import 'package:slang_mcp/src/tools/apply.dart';
 
+const version = '0.1.1';
+const notesKey = '@@notes';
+
 void main(List<String> arguments) async {
+  if (arguments.isNotEmpty) {
+    await _runCli(arguments);
+    return;
+  }
+
   final server = McpServer(
     Implementation(
       name: 'slang-mcp-server',
       description:
           'The MCP server for slang, the i18n library for Dart/Flutter.',
-      version: '0.1.0',
+      version: version,
     ),
     options: McpServerOptions(
       capabilities: ServerCapabilities(
@@ -44,63 +54,7 @@ void main(List<String> arguments) async {
     'get-locales',
     description: 'Gets the list of locales in the project',
     callback: (args, extra) async {
-      final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
-        verbose: false,
-      );
-      return CallToolResult.fromStructuredContent({
-        'baseLocale': fileCollection.config.baseLocale.languageTag,
-        'locales': {
-          ...fileCollection.files.map((f) => f.locale.languageTag),
-        }.toList(),
-      });
-    },
-  );
-
-  server.registerTool(
-    'get-wip-translations',
-    description:
-        'Gets the translations found in source code (in base locale) that should be translated',
-    callback: (args, extra) async {
-      final map = await readWipMapFromFileSystem();
-      return CallToolResult.fromStructuredContent(map);
-    },
-  );
-
-  server.registerTool(
-    'get-missing-translations',
-    description:
-        'Gets the translations that existing in base locale but not in secondary locales.',
-    outputSchema: JsonSchema.object(
-      description: '''
-A map where each key is a locale identifier (e.g., "de", "fr-CA")
-and the value is a nested map containing the missing translation keys and their corresponding base locale strings.''',
-    ),
-    callback: (args, extra) async {
-      final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
-        verbose: false,
-      );
-
-      final translationMap = await TranslationMapBuilder.build(
-        fileCollection: fileCollection,
-      );
-
-      // build translation model
-      final translationModelList = TranslationModelListBuilder.build(
-        fileCollection.config,
-        translationMap,
-      );
-
-      final baseTranslations =
-          findBaseTranslations(fileCollection.config, translationModelList);
-
-      final result = getMissingTranslations(
-        baseTranslations: baseTranslations,
-        translations: translationModelList,
-      );
-
-      return CallToolResult.fromStructuredContent({
-        for (final entry in result.entries) entry.key.languageTag: entry.value,
-      });
+      return CallToolResult.fromStructuredContent(await getLocales());
     },
   );
 
@@ -112,21 +66,32 @@ and the value is a nested map containing the missing translation keys and their 
           '''A nested map containing the missing translation keys and their corresponding base locale strings.''',
     ),
     callback: (args, extra) async {
-      final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
-        verbose: false,
-      );
+      return CallToolResult.fromStructuredContent(await getBaseTranslations());
+    },
+  );
 
-      final translationMap = await TranslationMapBuilder.build(
-        fileCollection: fileCollection,
-      );
-
-      final translations = translationMap[fileCollection.config.baseLocale]!;
-
+  server.registerTool(
+    'get-missing-translations',
+    description:
+        'Gets the translations existing in base locale but not in secondary locales.',
+    outputSchema: JsonSchema.object(
+      description: '''
+A map where each key is a locale identifier (e.g., "de", "fr-CA")
+and the value is a nested map containing the missing translation keys and their corresponding base locale strings.
+The $notesKey entry are just hints and should not be translated''',
+    ),
+    callback: (args, extra) async {
       return CallToolResult.fromStructuredContent(
-        fileCollection.config.namespaces
-            ? translations
-            : translations.values.first,
-      );
+          await getMissingTranslationsMap());
+    },
+  );
+
+  server.registerTool(
+    'get-wip-translations',
+    description:
+        'Gets the translations found in source code (in base locale) that should be translated',
+    callback: (args, extra) async {
+      return CallToolResult.fromStructuredContent(await getWipTranslations());
     },
   );
 
@@ -136,20 +101,7 @@ and the value is a nested map containing the missing translation keys and their 
 Adds the found translations from source code to the actual translation files.
 Note: Running apply-translations with **base locale** is not needed afterwards.''',
     callback: (args, extra) async {
-      await runWip(
-        fileCollection: SlangFileCollectionBuilder.readFromFileSystem(
-          verbose: false,
-        ),
-        arguments: ['apply'],
-      );
-
-      // Generate after applying with new translations
-      await generateTranslations(
-        fileCollection: SlangFileCollectionBuilder.readFromFileSystem(
-          verbose: false,
-        ),
-      );
-
+      await applyWipTranslations();
       return CallToolResult.fromContent([
         TextContent(text: 'OK'),
       ]);
@@ -158,8 +110,9 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
 
   server.registerTool(
     'apply-translations',
-    description:
-        'Adds translations from the provided map to the actual translation files',
+    description: '''
+Adds translations from the provided map to the actual translation files.
+Call get-missing-translations first.''',
     inputSchema: ToolInputSchema(
       properties: {
         'locale': JsonSchema.string(
@@ -175,6 +128,8 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
     callback: (args, extra) async {
       final locale = args['locale'] as String;
       final translations = args['translations'] as Map<String, dynamic>;
+
+      translations.remove(notesKey);
 
       await apply(
         locale: I18nLocale.fromString(locale),
@@ -220,4 +175,127 @@ Note: Running apply-translations with **base locale** is not needed afterwards.'
   await server.connect(StdioServerTransport());
 
   print('Running slang_mcp!');
+}
+
+Future<Map<String, dynamic>> getLocales() async {
+  final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
+    verbose: false,
+  );
+  return {
+    'baseLocale': fileCollection.config.baseLocale.languageTag,
+    'locales': {
+      ...fileCollection.files.map((f) => f.locale.languageTag),
+    }.toList(),
+  };
+}
+
+Future<dynamic> getBaseTranslations() async {
+  final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
+    verbose: false,
+  );
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+  );
+  final translations = translationMap[fileCollection.config.baseLocale]!;
+  return fileCollection.config.namespaces
+      ? translations
+      : translations.values.first;
+}
+
+Future<Map<String, dynamic>> getMissingTranslationsMap() async {
+  final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
+    verbose: false,
+  );
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+  );
+  final translationModelList = TranslationModelListBuilder.build(
+    fileCollection.config,
+    translationMap,
+  );
+  final baseTranslations =
+      findBaseTranslations(fileCollection.config, translationModelList);
+  final result = getMissingTranslations(
+    baseTranslations: baseTranslations,
+    translations: translationModelList,
+  );
+
+  for (final entry in result.entries) {
+    final translations = fileCollection.config.namespaces
+        ? translationMap[entry.key]!
+        : translationMap[entry.key]!.values.first;
+
+    final notes = translations[notesKey];
+    if (notes != null) {
+      result[entry.key] = {
+        notesKey: notes,
+        ...entry.value,
+      };
+    }
+  }
+
+  return {
+    for (final entry in result.entries) entry.key.languageTag: entry.value,
+  };
+}
+
+Future<Map<String, dynamic>> getWipTranslations() async {
+  return readWipMapFromFileSystem();
+}
+
+Future<void> applyWipTranslations() async {
+  await runWip(
+    fileCollection: SlangFileCollectionBuilder.readFromFileSystem(
+      verbose: false,
+    ),
+    arguments: ['apply'],
+  );
+
+  // Generate after applying with new translations
+  await generateTranslations(
+    fileCollection: SlangFileCollectionBuilder.readFromFileSystem(
+      verbose: false,
+    ),
+  );
+}
+
+Future<void> _runCli(List<String> arguments) async {
+  final encoder = JsonEncoder.withIndent('  ');
+  final Map<String, Future<String?> Function()> commands = {
+    '--version': () async {
+      return version;
+    },
+    'get-locales': () async {
+      return encoder.convert(await getLocales());
+    },
+    'get-base-translations': () async {
+      return encoder.convert(await getBaseTranslations());
+    },
+    'get-missing-translations': () async {
+      return encoder.convert(await getMissingTranslationsMap());
+    },
+    'get-wip-translations': () async {
+      return encoder.convert(await getWipTranslations());
+    },
+    'apply-wip-translations': () async {
+      await applyWipTranslations();
+      return null;
+    },
+  };
+
+  final command = arguments[0];
+  final fn = commands[command];
+  if (fn == null) {
+    print('Unknown command: $command');
+    print('Available commands: ${commands.keys.join(', ')}');
+    return;
+  }
+
+  final output = await fn();
+  if (output != null) {
+    print('');
+    print(output);
+    print('');
+  }
+  print('Command "$command" executed successfully.');
 }
