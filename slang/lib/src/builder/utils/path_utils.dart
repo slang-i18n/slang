@@ -63,31 +63,23 @@ class PathUtils {
           inputDirectorySegments.firstOrNull == segments.firstOrNull &&
           segments.length > inputDirectorySegments.length) {
         final localeSegmentIndex = inputDirectorySegments.length;
-        final match =
-            RegexUtils.localeRegex.firstMatch(segments[localeSegmentIndex]);
-
-        if (match != null) {
-          return DirectoryLocaleResult.fromRegexMatch(
-            match: match,
-            localeSegmentIndex: localeSegmentIndex,
-            namespacePrefix:
-                segments.sublist(localeSegmentIndex + 1, segments.length - 1),
-          );
-        }
+        return DirectoryLocaleResult.tryFromSegment(
+          segment: segments[localeSegmentIndex],
+          localeSegmentIndex: localeSegmentIndex,
+          namespacePrefix: segments.sublist(
+            localeSegmentIndex + 1,
+            segments.length - 1,
+          ),
+        );
       }
     } else if (segments.length >= 2) {
       // locale is the parent directory of the file
       final localeSegmentIndex = segments.length - 2;
-      final match =
-          RegexUtils.localeRegex.firstMatch(segments[localeSegmentIndex]);
-
-      if (match != null) {
-        return DirectoryLocaleResult.fromRegexMatch(
-          match: match,
-          localeSegmentIndex: localeSegmentIndex,
-          namespacePrefix: const [],
-        );
-      }
+      return DirectoryLocaleResult.tryFromSegment(
+        segment: segments[localeSegmentIndex],
+        localeSegmentIndex: localeSegmentIndex,
+        namespacePrefix: const [],
+      );
     }
 
     return null;
@@ -140,15 +132,27 @@ class DirectoryLocaleResult {
     required this.namespacePrefix,
   });
 
-  DirectoryLocaleResult.fromRegexMatch({
-    required RegExpMatch match,
-    required this.localeSegmentIndex,
-    required this.namespacePrefix,
-  }) : locale = I18nLocale(
-          language: match.group(1)!,
-          script: match.group(2),
-          country: match.group(3),
-        );
+  /// Tries to parse the given [segment] as a locale.
+  /// Returns null if the segment does not match the locale regex.
+  static DirectoryLocaleResult? tryFromSegment({
+    required String segment,
+    required int localeSegmentIndex,
+    required List<String> namespacePrefix,
+  }) {
+    final match = RegexUtils.localeRegex.firstMatch(segment);
+    if (match == null) {
+      return null;
+    }
+    return DirectoryLocaleResult(
+      locale: I18nLocale(
+        language: match.group(1)!,
+        script: match.group(2),
+        country: match.group(3),
+      ),
+      localeSegmentIndex: localeSegmentIndex,
+      namespacePrefix: namespacePrefix,
+    );
+  }
 
   @override
   String toString() {
