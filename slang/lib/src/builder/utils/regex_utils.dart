@@ -20,23 +20,26 @@ class RegexUtils {
 
   /// locale regex
   static const localeRegexRaw =
-      r'([a-z]{2,3})(?:[_-]([A-Za-z]{4}))?(?:[_-]([A-Z]{2}|[0-9]{3}))?';
+      r'(?:([a-z]{2,3})|\[([^\]]+)\])(?:[_-]([A-Za-z]{4}))?(?:[_-]([A-Z]{2}|[0-9]{3}))?';
 
   static const defaultNamespace = '_default';
 
-  /// Finds the parts of the locale. It must start with an underscore.
-  /// groups for strings-zh-Hant-TW:
-  /// 1 = strings
-  /// 2 = zh (language, non-nullable)
-  /// 3 = Hant (script)
-  /// 4 = TW (country)
+  /// matches namespaced file with locale
+  /// Example for strings-zh-Hant-TW:
+  /// 1 = strings (namespace, non-nullable)
+  /// 2 = zh-Hant-TW (locale, non-nullable)
+  /// 3/4 = zh (language, non-nullable)
+  /// 5 = Hant (script)
+  /// 6 = TW (country)
   static final RegExp fileWithLocaleRegex =
-      RegExp('^(?:([a-zA-Z0-9]+|$defaultNamespace)[_-])?$localeRegexRaw\$');
+      RegExp('^(?:([a-zA-Z0-9]+|$defaultNamespace)[_-])($localeRegexRaw)\$');
 
   /// matches locale part only
-  /// 1 - language (non-nullable)
-  /// 2 - script
-  /// 3 - country
+  /// 1/2 - language (non-nullable)
+  ///     1 - language without wildcard
+  ///     2 - language with wildcard (e.g. `[any]`, `[de,fr]`)
+  /// 3 - script
+  /// 4 - country
   static final RegExp localeRegex = RegExp('^$localeRegexRaw\$');
 
   /// matches any string without special characters

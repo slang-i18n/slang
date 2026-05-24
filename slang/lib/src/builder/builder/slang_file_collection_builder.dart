@@ -112,15 +112,9 @@ class SlangFileCollectionBuilder {
             }
 
             if (!config.namespaces) {
-              final localeMatch =
-                  RegexUtils.localeRegex.firstMatch(fileNameNoExtension);
-              if (localeMatch != null) {
-                final locale = I18nLocale(
-                  language: localeMatch.group(1)!,
-                  script: localeMatch.group(2),
-                  country: localeMatch.group(3),
-                );
+              final locale = I18nLocale.tryFromString(fileNameNoExtension);
 
+              if (locale != null) {
                 return TranslationFile(
                   path: f.path,
                   locale: locale,
@@ -189,11 +183,8 @@ class SlangFileCollectionBuilder {
                 RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
             if (match != null) {
               final namespace = match.group(1)!;
-              final locale = I18nLocale(
-                language: match.group(2)!,
-                script: match.group(3),
-                country: match.group(4),
-              );
+              final localeRaw = match.group(2)!;
+              final locale = I18nLocale.fromString(localeRaw);
 
               if (showWarning && !config.namespaces) {
                 _namespaceDeprecationWarning(

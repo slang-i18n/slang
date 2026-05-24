@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
-import 'package:slang/src/builder/utils/regex_utils.dart';
 
 /// Operations on paths
 class PathUtils {
@@ -139,16 +138,12 @@ class DirectoryLocaleResult {
     required int localeSegmentIndex,
     required List<String> namespacePrefix,
   }) {
-    final match = RegexUtils.localeRegex.firstMatch(segment);
-    if (match == null) {
+    final locale = I18nLocale.tryFromString(segment);
+    if (locale == null) {
       return null;
     }
     return DirectoryLocaleResult(
-      locale: I18nLocale(
-        language: match.group(1)!,
-        script: match.group(2),
-        country: match.group(3),
-      ),
+      locale: locale,
       localeSegmentIndex: localeSegmentIndex,
       namespacePrefix: namespacePrefix,
     );

@@ -8,41 +8,71 @@ void main() {
     test('strings_en', () {
       RegExpMatch? match = regex.firstMatch('strings_en');
       expect(match?.group(1), 'strings'); // base name
-      expect(match?.group(2), 'en'); // language
-      expect(match?.group(3), null);
+      expect(match?.group(2), 'en'); // full locale
+      expect(match?.group(3), 'en'); // language
       expect(match?.group(4), null);
+      expect(match?.group(5), null);
+      expect(match?.group(6), null);
     });
 
     test('strings_en_US', () {
       RegExpMatch? match = regex.firstMatch('strings_en_US');
       expect(match?.group(1), 'strings'); // base name
-      expect(match?.group(2), 'en');
-      expect(match?.group(3), null);
-      expect(match?.group(4), 'US');
+      expect(match?.group(2), 'en_US'); // full locale
+      expect(match?.group(3), 'en');
+      expect(match?.group(4), null);
+      expect(match?.group(5), null);
+      expect(match?.group(6), 'US');
     });
 
     test('translations_en-US', () {
       RegExpMatch? match = regex.firstMatch('translations_en-US');
       expect(match?.group(1), 'translations'); // base name
-      expect(match?.group(2), 'en');
-      expect(match?.group(3), null);
-      expect(match?.group(4), 'US');
+      expect(match?.group(2), 'en-US'); // full locale
+      expect(match?.group(3), 'en');
+      expect(match?.group(4), null);
+      expect(match?.group(5), null);
+      expect(match?.group(6), 'US');
     });
 
     test('strings_zh-Hant-TW', () {
       RegExpMatch? match = regex.firstMatch('strings_zh-Hant-TW');
       expect(match?.group(1), 'strings'); // base name
-      expect(match?.group(2), 'zh');
-      expect(match?.group(3), 'Hant');
-      expect(match?.group(4), 'TW');
+      expect(match?.group(2), 'zh-Hant-TW'); // full locale
+      expect(match?.group(3), 'zh');
+      expect(match?.group(4), null);
+      expect(match?.group(5), 'Hant');
+      expect(match?.group(6), 'TW');
     });
 
     test('strings-zh-Hant-TW', () {
       RegExpMatch? match = regex.firstMatch('strings-zh-Hant-TW');
       expect(match?.group(1), 'strings'); // base name
-      expect(match?.group(2), 'zh');
-      expect(match?.group(3), 'Hant');
-      expect(match?.group(4), 'TW');
+      expect(match?.group(2), 'zh-Hant-TW'); // full locale
+      expect(match?.group(3), 'zh');
+      expect(match?.group(4), null);
+      expect(match?.group(5), 'Hant');
+      expect(match?.group(6), 'TW');
+    });
+
+    test('strings_[any]', () {
+      RegExpMatch? match = regex.firstMatch('strings_[any]');
+      expect(match?.group(1), 'strings'); // base name
+      expect(match?.group(2), '[any]'); // full locale
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'any');
+      expect(match?.group(5), null);
+      expect(match?.group(6), null);
+    });
+
+    test('strings_[de,fr]-US', () {
+      RegExpMatch? match = regex.firstMatch('strings_[de,fr]-US');
+      expect(match?.group(1), 'strings'); // base name
+      expect(match?.group(2), '[de,fr]-US'); // full locale
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'de,fr');
+      expect(match?.group(5), null);
+      expect(match?.group(6), 'US');
     });
 
     test('strings_CN', () {
@@ -57,25 +87,57 @@ void main() {
     test('en', () {
       RegExpMatch? match = regex.firstMatch('en');
       expect(match?.group(1), 'en');
+      expect(match?.group(2), null);
+      expect(match?.group(3), null);
+      expect(match?.group(4), null);
     });
 
     test('en_US', () {
       RegExpMatch? match = regex.firstMatch('en_US');
       expect(match?.group(1), 'en');
-      expect(match?.group(3), 'US');
+      expect(match?.group(2), null);
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'US');
     });
 
     test('en-US', () {
       RegExpMatch? match = regex.firstMatch('en-US');
       expect(match?.group(1), 'en');
-      expect(match?.group(3), 'US');
+      expect(match?.group(2), null);
+      expect(match?.group(3), null);
+      expect(match?.group(4), 'US');
     });
 
     test('zh-Hant-TW', () {
       RegExpMatch? match = regex.firstMatch('zh-Hant-TW');
       expect(match?.group(1), 'zh');
-      expect(match?.group(2), 'Hant');
-      expect(match?.group(3), 'TW');
+      expect(match?.group(2), null);
+      expect(match?.group(3), 'Hant');
+      expect(match?.group(4), 'TW');
+    });
+
+    test('[any]', () {
+      RegExpMatch? match = regex.firstMatch('[any]');
+      expect(match?.group(1), null);
+      expect(match?.group(2), 'any');
+      expect(match?.group(3), null);
+      expect(match?.group(4), null);
+    });
+
+    test('[de,fr]', () {
+      RegExpMatch? match = regex.firstMatch('[de,fr]');
+      expect(match?.group(1), null);
+      expect(match?.group(2), 'de,fr');
+      expect(match?.group(3), null);
+      expect(match?.group(4), null);
+    });
+
+    test('[any]-Hant-TW', () {
+      RegExpMatch? match = regex.firstMatch('[any]-Hant-TW');
+      expect(match?.group(1), null);
+      expect(match?.group(2), 'any');
+      expect(match?.group(3), 'Hant');
+      expect(match?.group(4), 'TW');
     });
   });
 

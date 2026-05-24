@@ -6,14 +6,21 @@ import 'package:slang/src/builder/utils/string_extensions.dart';
 class I18nLocale {
   static const String undefinedLanguage = 'und';
 
+  /// Note: Might be a wildcard (e.g. `[any]`, `[de,fr]`)
   final String language;
+  final bool languageIsWildcard;
   final String? script;
   final String? country;
   late String languageTag = _toLanguageTag();
   late String underscoreTag = languageTag.replaceAll('-', '_');
   late String enumConstant = _toEnumConstant();
 
-  I18nLocale({required this.language, this.script, this.country});
+  I18nLocale({
+    required this.language,
+    this.languageIsWildcard = false,
+    this.script,
+    this.country,
+  });
 
   String _toLanguageTag() {
     return [language, script, country]
@@ -49,13 +56,23 @@ class I18nLocale {
   String toString() => 'I18nLocale($languageTag)';
 
   static I18nLocale fromString(String localeRaw) {
+    return tryFromString(localeRaw) ?? I18nLocale(language: localeRaw);
+  }
+
+  static I18nLocale? tryFromString(String localeRaw) {
     final match = RegexUtils.localeRegex.firstMatch(localeRaw);
-    if (match != null) {
-      final language = match.group(1)!;
-      final script = match.group(2);
-      final country = match.group(3);
-      return I18nLocale(language: language, script: script, country: country);
+    if (match == null) {
+      return null;
     }
-    return I18nLocale(language: localeRaw);
+
+    final language = match.group(1) ?? match.group(2)!;
+    final script = match.group(3);
+    final country = match.group(4);
+    return I18nLocale(
+      language: language,
+      languageIsWildcard: match.group(2) != null,
+      script: script,
+      country: country,
+    );
   }
 }
