@@ -1,4 +1,5 @@
 import 'package:slang/src/builder/model/context_type.dart';
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/node.dart';
@@ -6,10 +7,31 @@ import 'package:slang/src/builder/utils/regex_utils.dart';
 
 typedef I18nDataComparator = int Function(I18nData a, I18nData b);
 
+class FallbackLocale {
+  /// Usually the base locale.
+  /// If there is a language-only locale (e.g. "de")
+  /// and a region-specific locale (e.g. "de-CH"),
+  /// the language-only ("de") locale will be used as fallback
+  /// for the region-specific locale.
+  final I18nLocale locale;
+
+  /// Whether or not to fallback to this locale if a translation is missing.
+  /// True if [GenerateFallbackStrategy.baseLocale].
+  final bool fallback;
+
+  FallbackLocale({
+    required this.locale,
+    required this.fallback,
+  });
+}
+
 /// represents one locale and its localized strings
 class I18nData {
   final bool base; // whether or not this is the base locale
   final I18nLocale locale; // the locale (the part after the underscore)
+  final FallbackLocale fallbackLocale;
+  final CodeVisibility classVisibility;
+  final CodeVisibility constructorVisibility;
   final ObjectNode root; // the actual strings
   final List<PopulatedContextType> contexts; // detected context types
   final List<Interface> interfaces; // detected interfaces
@@ -18,6 +40,9 @@ class I18nData {
   I18nData({
     required this.base,
     required this.locale,
+    required this.fallbackLocale,
+    required this.classVisibility,
+    required this.constructorVisibility,
     required this.root,
     required this.contexts,
     required this.interfaces,

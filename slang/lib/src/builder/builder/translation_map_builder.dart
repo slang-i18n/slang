@@ -86,6 +86,8 @@ class TranslationMapBuilder {
       throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
     }
 
+    translationMap.finalize();
+
     return translationMap;
   }
 }

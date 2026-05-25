@@ -1,4 +1,5 @@
 import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 
 /// Contains ALL translations of ALL locales
@@ -7,6 +8,16 @@ import 'package:slang/src/builder/utils/regex_utils.dart';
 /// locale -> (namespace -> translation map)
 class TranslationMap {
   final _internalMap = <I18nLocale, FlatNamespaceMap>{};
+
+  TranslationMap();
+
+  TranslationMap.fromMap(
+    Map<I18nLocale, Map<String, Map<String, dynamic>>> map,
+  ) {
+    for (final entry in map.entries) {
+      _internalMap[entry.key] = FlatNamespaceMap(entry.value);
+    }
+  }
 
   /// Read access
   FlatNamespaceMap? operator [](I18nLocale key) {
@@ -42,12 +53,58 @@ class TranslationMap {
     }
   }
 
+  /// Expands wildcard locales (e.g. `[de,en]-US`, `[any]-US`) into concrete
+  /// locales. Should be called after all translations have been added.
+  /// Existing explicit locales are extended with the wildcard translations;
+  /// keys already defined on the explicit locale take precedence.
+  void finalize() {
+    final wildcards =
+        _internalMap.keys.where((l) => l.languageIsWildcard).toList();
+    if (wildcards.isEmpty) {
+      return;
+    }
+
+    final anyLanguages = _internalMap.keys
+        .where((l) =>
+            !l.languageIsWildcard && l.script == null && l.country == null)
+        .map((l) => l.language)
+        .toList();
+
+    for (final wildcard in wildcards) {
+      final translations = _internalMap.remove(wildcard)!;
+
+      final languages = wildcard.language == 'any'
+          ? anyLanguages
+          : wildcard.language.split(',').map((s) => s.trim()).toList();
+
+      for (final language in languages) {
+        final expandedLocale = I18nLocale(
+          language: language,
+          script: wildcard.script,
+          country: wildcard.country,
+          generatedFromWildcard: true,
+        );
+        final existing = _internalMap[expandedLocale];
+        if (existing == null) {
+          _internalMap[expandedLocale] = translations;
+        } else {
+          _internalMap[expandedLocale] = FlatNamespaceMap(
+            MapUtils.merge(
+              base: translations,
+              other: existing,
+            ).cast<String, Map<String, dynamic>>(),
+          );
+        }
+      }
+    }
+  }
+
   /// Return all locales specified in this map
   List<I18nLocale> getLocales() {
     return _internalMap.keys.toList();
   }
 
-  Map<I18nLocale, Map<String, Map<String, dynamic>>> getInternalMap() {
+  Map<I18nLocale, FlatNamespaceMap> getInternalMap() {
     return _internalMap;
   }
 }

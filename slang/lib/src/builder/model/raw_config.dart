@@ -23,8 +23,8 @@ class RawConfig {
   static const String defaultTranslateVar = 't';
   static const String defaultEnumName = 'AppLocale';
   static const String defaultClassName = 'Translations';
-  static const TranslationClassVisibility defaultTranslationClassVisibility =
-      TranslationClassVisibility.private;
+  static const CodeVisibility defaultTranslationClassVisibility =
+      CodeVisibility.private;
   static const CaseStyle? defaultKeyCase = null;
   static const CaseStyle? defaultKeyMapCase = null;
   static const CaseStyle? defaultParamCase = null;
@@ -73,7 +73,7 @@ class RawConfig {
   final String translateVar;
   final String enumName;
   final String className;
-  final TranslationClassVisibility translationClassVisibility;
+  final CodeVisibility translationClassVisibility;
   final CaseStyle? keyCase;
   final CaseStyle? keyMapCase;
   final CaseStyle? paramCase;
@@ -152,7 +152,7 @@ class RawConfig {
     bool? localeHandling,
     bool? flutterIntegration,
     bool? namespaces,
-    TranslationClassVisibility? translationClassVisibility,
+    CodeVisibility? translationClassVisibility,
     CaseStyle? keyCase,
     CaseStyle? keyMapCase,
     CaseStyle? paramCase,

@@ -107,7 +107,7 @@ void generateNoLocaleHandling(RawConfig buildConfig, String simple) {
   final result = _generate(
     rawConfig: buildConfig.copyWith(
       localeHandling: false,
-      translationClassVisibility: TranslationClassVisibility.public,
+      translationClassVisibility: CodeVisibility.public,
     ),
     baseName: 'translations',
     translationMap: TranslationMap()

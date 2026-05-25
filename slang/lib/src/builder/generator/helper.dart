@@ -28,7 +28,7 @@ String getClassNameRoot({
 
 String getClassName({
   required bool base,
-  required TranslationClassVisibility visibility,
+  required CodeVisibility visibility,
   required String parentName,
   String childName = '',
   I18nLocale? locale,
@@ -40,13 +40,12 @@ String getClassName({
     languageTag = '';
   }
   if (base) {
-    visibility = TranslationClassVisibility.public;
+    visibility = CodeVisibility.public;
   }
-  if (!parentName.startsWith('_') &&
-      visibility == TranslationClassVisibility.private) {
+  if (!parentName.startsWith('_') && visibility == CodeVisibility.private) {
     parentName = '_$parentName';
   } else if (parentName.startsWith('_') &&
-      visibility == TranslationClassVisibility.public) {
+      visibility == CodeVisibility.public) {
     parentName = parentName.substring(1);
   }
   return parentName + childName.toCase(CaseStyle.pascal) + languageTag;

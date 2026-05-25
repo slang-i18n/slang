@@ -1,3 +1,4 @@
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
@@ -221,6 +222,111 @@ void main() {
       });
 
       expect(flattened, original);
+    });
+  });
+
+  group('TranslationMap.finalize', () {
+    test('should be a no-op when there are no wildcard locales', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('en'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hallo'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('en'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hallo'},
+        },
+      });
+    });
+
+    test('should expand comma-separated wildcard locales', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('[de,en, fr]-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('fr-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+    });
+
+    test('should expand [any] using plain-language locales', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hallo'},
+        },
+        I18nLocale.fromString('en'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('fr-FR'): {
+          '_default': {'hi': 'Bonjour'},
+        },
+        I18nLocale.fromString('[any]-US'): {
+          '_default': {'currency': 'USD'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hallo'},
+        },
+        I18nLocale.fromString('en'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('fr-FR'): {
+          '_default': {'hi': 'Bonjour'},
+        },
+        I18nLocale.fromString('de-US'): {
+          '_default': {'currency': 'USD'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'currency': 'USD'},
+        },
+      });
+    });
+
+    test('should extend an existing explicit locale without overwriting', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'original'},
+        },
+        I18nLocale.fromString('[de,en]-US'): {
+          '_default': {'hi': 'changed', 'currency': 'EUR'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'original', 'currency': 'EUR'},
+        },
+        I18nLocale.fromString('de-US'): {
+          '_default': {'hi': 'changed', 'currency': 'EUR'},
+        },
+      });
     });
   });
 }

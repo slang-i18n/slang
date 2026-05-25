@@ -192,7 +192,7 @@ class TranslationsOnboarding$pages$0i0$En with PageData {
 	@override String get title => 'First Page';
 
 	/// en: 'First Page Content'
-	@override String? get content => 'First Page Content';
+	@override String get content => 'First Page Content';
 }
 
 // Path: onboarding.pages.1
@@ -219,7 +219,7 @@ class TranslationsOnboarding$modifierPages$0i0$En with MPage {
 	@override String get title => 'First Modifier Page';
 
 	/// en: 'First Page Content'
-	@override String? get content => 'First Page Content';
+	@override String get content => 'First Page Content';
 }
 
 // Path: onboarding.modifierPages.1

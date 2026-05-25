@@ -7,10 +7,10 @@ import 'package:slang/src/builder/model/autodoc_config.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/generate_config.dart';
 import 'package:slang/src/builder/model/i18n_data.dart';
-import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
 import 'package:slang/src/builder/utils/encryption_utils.dart';
+import 'package:slang/src/builder/utils/path_utils.dart';
 
 part 'generate_translation_map.dart';
 
@@ -23,10 +23,13 @@ class ClassTask {
 }
 
 /// generates all classes of one locale
-/// all non-default locales has a postfix of their locale code
+/// all non-base locales has a postfix of their locale code
 /// e.g. Strings, StringsDe, StringsFr
-String generateTranslations(GenerateConfig config, I18nData localeData,
-    List<I18nData> allTranslations) {
+String generateTranslations(
+  GenerateConfig config,
+  I18nData localeData,
+  List<I18nData> allTranslations,
+) {
   final queue = Queue<ClassTask>();
   final buffer = StringBuffer();
 
@@ -55,6 +58,13 @@ ${!config.format.enabled ? '// dart format off' : ''}
     for (final i in imports) {
       buffer.writeln('import \'$i\';');
     }
+  }
+
+  if (localeData.fallbackLocale.locale != config.baseLocale) {
+    buffer.writeln('import \'${BuildResultPaths.localePath(
+      outputPath: config.outputFileName,
+      locale: localeData.fallbackLocale.locale,
+    )}\';');
   }
 
   queue.add(ClassTask(
@@ -129,7 +139,7 @@ void _generateClass(
       },
     false => getClassName(
         base: localeData.base,
-        visibility: config.translationClassVisibility,
+        visibility: localeData.classVisibility,
         parentName: className,
         locale: localeData.locale,
       ),
@@ -163,25 +173,24 @@ void _generateClass(
     }
   } else {
     // The class name of the **base** locale (path-dependent).
-    final baseClassName = root
-        ? config.className
-        : getClassName(
-            base: true,
-            visibility: TranslationClassVisibility.public,
-            parentName: className,
-            locale: config.baseLocale,
-          );
-    if (config.fallbackStrategy == GenerateFallbackStrategy.none) {
+    final baseClassName =
+        root && localeData.fallbackLocale.locale == config.baseLocale
+            ? config.className
+            : getClassName(
+                base: true,
+                visibility: CodeVisibility.public,
+                parentName: className,
+                locale: localeData.fallbackLocale.locale,
+              );
+    if (localeData.fallbackLocale.fallback) {
+      buffer.writeln('class $finalClassName extends $baseClassName$mixinStr {');
+    } else {
       buffer.writeln(
           'class $finalClassName$mixinStr implements $baseClassName {');
-    } else {
-      buffer.writeln('class $finalClassName extends $baseClassName$mixinStr {');
     }
   }
 
   // constructor and custom fields
-  final callSuperConstructor = !localeData.base &&
-      config.fallbackStrategy == GenerateFallbackStrategy.baseLocale;
   if (root) {
     if (localeData.base && config.flutterIntegration && config.localeHandling) {
       buffer.writeln(
@@ -251,14 +260,14 @@ void _generateClass(
     }
     buffer.write('\t\t  )');
 
-    if (callSuperConstructor) {
+    if (localeData.fallbackLocale.fallback) {
       buffer.write(
           ',\n\t\t  super(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver)');
     }
 
     if (config.renderFlatMap) {
       buffer.writeln(' {');
-      if (callSuperConstructor) {
+      if (localeData.fallbackLocale.fallback) {
         buffer.writeln(
             '\t\tsuper.\$meta.setFlatMapFunction(\$meta.getTranslation); // copy base translations to super.\$meta');
       }
@@ -286,23 +295,24 @@ void _generateClass(
       buffer.write(
           'dynamic operator[](String key) => \$meta.getTranslation(key)');
 
-      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale &&
-          !localeData.base) {
+      if (localeData.fallbackLocale.fallback && !localeData.base) {
         buffer.writeln(' ?? super.\$meta.getTranslation(key);');
       } else {
         buffer.writeln(';');
       }
     }
   } else {
-    if (callSuperConstructor) {
-      buffer.writeln(
-          '\t$finalClassName._($rootClassName root) : this._root = root, super.internal(root);');
+    if (localeData.constructorVisibility == CodeVisibility.public) {
+      buffer.write('\t$finalClassName.internal(');
     } else {
-      if (config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
-        buffer.writeln('\t$finalClassName.internal(this._root);');
-      } else {
-        buffer.writeln('\t$finalClassName._(this._root);');
-      }
+      buffer.write('\t$finalClassName._(');
+    }
+
+    if (localeData.fallbackLocale.fallback) {
+      buffer.writeln(
+          '$rootClassName root) : this._root = root, super.internal(root);');
+    } else {
+      buffer.writeln('this._root);');
     }
   }
 
@@ -397,13 +407,12 @@ void _generateClass(
     // even if this attribute exist, it has to satisfy the same signature as
     // specified in the interface
     // this error seems to occur when using in combination with "extends"
-    final optional =
-        config.fallbackStrategy == GenerateFallbackStrategy.baseLocale &&
-                node.interface?.attributes.any((attribute) =>
-                        attribute.optional && attribute.attributeName == key) ==
-                    true
-            ? '?'
-            : '';
+    final optional = localeData.fallbackLocale.fallback &&
+            node.interface?.attributes.any((attribute) =>
+                    attribute.optional && attribute.attributeName == key) ==
+                true
+        ? '?'
+        : '';
 
     if (value is StringTextNode) {
       final translationOverrides = config.translationOverrides
@@ -438,8 +447,7 @@ void _generateClass(
       buffer.write('List<${value.genericType}>$optional get $key => ');
       _generateList(
         config: config,
-        base: localeData.base,
-        locale: localeData.locale,
+        localeData: localeData,
         buffer: buffer,
         queue: queue,
         className: className,
@@ -450,7 +458,7 @@ void _generateClass(
     } else if (value is ObjectNode) {
       String childClassNoLocale = getClassName(
         base: localeData.base,
-        visibility: config.translationClassVisibility,
+        visibility: localeData.classVisibility,
         parentName: className,
         childName: key,
       );
@@ -460,8 +468,7 @@ void _generateClass(
         buffer.write('Map<String, ${value.genericType}>$optional get $key => ');
         _generateMap(
           config: config,
-          base: localeData.base,
-          locale: localeData.locale,
+          localeData: localeData,
           buffer: buffer,
           queue: queue,
           className: childClassNoLocale,
@@ -473,15 +480,14 @@ void _generateClass(
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale = getClassName(
           base: localeData.base,
-          visibility: config.translationClassVisibility,
+          visibility: localeData.classVisibility,
           parentName: className,
           childName: key,
           locale: localeData.locale,
         );
 
         buffer.write('late final $childClassWithLocale$optional $key = ');
-        if (localeData.base &&
-            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+        if (localeData.constructorVisibility == CodeVisibility.public) {
           buffer.writeln('$childClassWithLocale.internal(_root);');
         } else {
           buffer.writeln('$childClassWithLocale._(_root);');
@@ -516,8 +522,7 @@ void _generateClass(
 /// similar to _generateClass but anonymous and accessible via key
 void _generateMap({
   required GenerateConfig config,
-  required bool base,
-  required I18nLocale locale,
+  required I18nData localeData,
   required StringBuffer buffer,
   required Queue<ClassTask> queue,
   required String className, // without locale
@@ -553,8 +558,7 @@ void _generateMap({
       buffer.write('\'$digestedKey\': ');
       _generateList(
         config: config,
-        base: base,
-        locale: locale,
+        localeData: localeData,
         buffer: buffer,
         queue: queue,
         className: className,
@@ -564,8 +568,8 @@ void _generateMap({
       );
     } else if (value is ObjectNode) {
       String childClassNoLocale = getClassName(
-        base: base,
-        visibility: config.translationClassVisibility,
+        base: localeData.base,
+        visibility: localeData.classVisibility,
         parentName: className,
         childName: digestedKey,
       );
@@ -575,8 +579,7 @@ void _generateMap({
         buffer.write('\'$digestedKey\': ');
         _generateMap(
           config: config,
-          base: base,
-          locale: locale,
+          localeData: localeData,
           buffer: buffer,
           queue: queue,
           className: childClassNoLocale,
@@ -587,16 +590,15 @@ void _generateMap({
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale = getClassName(
-          base: base,
-          visibility: config.translationClassVisibility,
+          base: localeData.base,
+          visibility: localeData.classVisibility,
           parentName: className,
           childName: digestedKey,
-          locale: locale,
+          locale: localeData.locale,
         );
 
         buffer.write('\'$digestedKey\': ');
-        if (base &&
-            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+        if (localeData.constructorVisibility == CodeVisibility.public) {
           buffer.writeln('$childClassWithLocale.internal(_root),');
         } else {
           buffer.writeln('$childClassWithLocale._(_root),');
@@ -607,7 +609,7 @@ void _generateMap({
       _addPluralCall(
         buffer: buffer,
         config: config,
-        language: locale.language,
+        language: localeData.locale.language,
         node: value,
         depth: depth + 1,
       );
@@ -636,8 +638,7 @@ void _generateMap({
 /// generates a list
 void _generateList({
   required GenerateConfig config,
-  required bool base,
-  required I18nLocale locale,
+  required I18nData localeData,
   required StringBuffer buffer,
   required Queue<ClassTask> queue,
   required String className,
@@ -672,8 +673,7 @@ void _generateList({
     } else if (value is ListNode) {
       _generateList(
         config: config,
-        base: base,
-        locale: locale,
+        localeData: localeData,
         buffer: buffer,
         queue: queue,
         className: className,
@@ -684,8 +684,8 @@ void _generateList({
     } else if (value is ObjectNode) {
       final key = '\$${listName ?? ''}\$${depth.toString()}i${i.toString()}\$';
       final String childClassNoLocale = getClassName(
-          base: base,
-          visibility: config.translationClassVisibility,
+          base: localeData.base,
+          visibility: localeData.classVisibility,
           parentName: className,
           childName: key);
 
@@ -693,8 +693,7 @@ void _generateList({
         // inline map
         _generateMap(
           config: config,
-          base: base,
-          locale: locale,
+          localeData: localeData,
           buffer: buffer,
           queue: queue,
           className: childClassNoLocale,
@@ -705,15 +704,14 @@ void _generateList({
         // generate a class later on
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale = getClassName(
-          base: base,
-          visibility: config.translationClassVisibility,
+          base: localeData.base,
+          visibility: localeData.classVisibility,
           parentName: className,
           childName: key,
-          locale: locale,
+          locale: localeData.locale,
         );
 
-        if (base &&
-            config.fallbackStrategy == GenerateFallbackStrategy.baseLocale) {
+        if (localeData.constructorVisibility == CodeVisibility.public) {
           buffer.writeln('$childClassWithLocale.internal(_root),');
         } else {
           buffer.writeln('$childClassWithLocale._(_root),');
@@ -723,7 +721,7 @@ void _generateList({
       _addPluralCall(
         buffer: buffer,
         config: config,
-        language: locale.language,
+        language: localeData.locale.language,
         node: value,
         depth: depth + 1,
       );

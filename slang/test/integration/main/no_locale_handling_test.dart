@@ -28,7 +28,7 @@ void main() {
     final result = GeneratorFacade.generate(
       rawConfig: RawConfigBuilder.fromYaml(buildYaml)!.copyWith(
         localeHandling: false,
-        translationClassVisibility: TranslationClassVisibility.public,
+        translationClassVisibility: CodeVisibility.public,
       ),
       translationMap: TranslationMap()
         ..addTranslations(

@@ -1,9 +1,10 @@
+import 'package:slang/overrides.dart';
 import 'package:slang/src/builder/builder/build_model_config_builder.dart';
 import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/model/i18n_data.dart';
+import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
 import 'package:slang/src/builder/model/translation_map.dart';
-import 'package:slang/src/builder/utils/regex_utils.dart';
 
 class TranslationModelListBuilder {
   /// Combine all namespaces and build the internal model
@@ -26,7 +27,7 @@ class TranslationModelListBuilder {
     final namespaces = baseEntry.value;
     final baseResult = TranslationModelBuilder.build(
       buildConfig: buildConfig,
-      map: rawConfig.namespaces ? namespaces.digest() : namespaces.values.first,
+      map: rawConfig.namespaces ? namespaces.expand() : namespaces.values.first,
       locale: baseEntry.key,
     );
 
@@ -35,21 +36,72 @@ class TranslationModelListBuilder {
       final namespaces = localeEntry.value;
       final base = locale == rawConfig.baseLocale;
 
+      final hasChildLocales =
+          _hasChildLocales(locale, translationMap.getLocales());
+
       if (base) {
         // Use the already computed base data
         return I18nData(
           base: true,
           locale: locale,
+          fallbackLocale: FallbackLocale(
+            locale: rawConfig.baseLocale,
+            fallback: false,
+          ),
+          classVisibility: rawConfig.translationClassVisibility ==
+                      CodeVisibility.public ||
+                  buildConfig.fallbackStrategy == FallbackStrategy.baseLocale ||
+                  buildConfig.fallbackStrategy ==
+                      FallbackStrategy.baseLocaleEmptyString ||
+                  hasChildLocales
+              ? CodeVisibility.public
+              : CodeVisibility.private,
+          constructorVisibility:
+              buildConfig.fallbackStrategy == FallbackStrategy.baseLocale ||
+                      buildConfig.fallbackStrategy ==
+                          FallbackStrategy.baseLocaleEmptyString ||
+                      hasChildLocales
+                  ? CodeVisibility.public
+                  : CodeVisibility.private,
           root: baseResult.root,
           contexts: baseResult.contexts,
           interfaces: baseResult.interfaces,
           types: baseResult.types,
         );
       } else {
+        final defaultFallback = switch (buildConfig.fallbackStrategy) {
+          FallbackStrategy.none => false,
+          FallbackStrategy.baseLocale ||
+          FallbackStrategy.baseLocaleEmptyString =>
+            true,
+        };
+        final FallbackLocale? fallbackLocale;
+        if (locale.country == null && locale.script == null) {
+          // e.g. "de" only inherits the base locale like "en"
+          fallbackLocale = FallbackLocale(
+            locale: rawConfig.baseLocale,
+            fallback: defaultFallback,
+          );
+        } else {
+          // e.g. "de-CH" inherits "de" if it exists, otherwise the base locale
+          // If "de" exists, it will **always** inherit it.
+          if (_hasParentLocale(locale, translationMap.getLocales())) {
+            fallbackLocale = FallbackLocale(
+              locale: I18nLocale(language: locale.language),
+              fallback: true,
+            );
+          } else {
+            fallbackLocale = FallbackLocale(
+              locale: rawConfig.baseLocale,
+              fallback: defaultFallback,
+            );
+          }
+        }
+
         final result = TranslationModelBuilder.build(
           buildConfig: buildConfig,
           map: rawConfig.namespaces
-              ? namespaces.digest()
+              ? namespaces.expand()
               : namespaces.values.first,
           baseData: baseResult,
           locale: locale,
@@ -58,6 +110,14 @@ class TranslationModelListBuilder {
         return I18nData(
           base: false,
           locale: locale,
+          fallbackLocale: fallbackLocale,
+          classVisibility:
+              rawConfig.translationClassVisibility == CodeVisibility.public ||
+                      hasChildLocales
+                  ? CodeVisibility.public
+                  : CodeVisibility.private,
+          constructorVisibility:
+              hasChildLocales ? CodeVisibility.public : CodeVisibility.private,
           root: result.root,
           contexts: result.contexts,
           interfaces: result.interfaces,
@@ -69,46 +129,17 @@ class TranslationModelListBuilder {
   }
 }
 
-extension on Map<String, Map<String, dynamic>> {
-  Map<String, dynamic> digest() {
-    Map<String, dynamic> curr = this;
+bool _hasParentLocale(I18nLocale locale, List<I18nLocale> allLocales) {
+  return allLocales.any((l) =>
+      l != locale &&
+      l.language == locale.language &&
+      l.script == null &&
+      l.country == null);
+}
 
-    if (keys.any((k) => k.contains('.'))) {
-      // Has dot-separated keys, we need to build the nested structure
-      final result = <String, Map<String, dynamic>>{};
-      for (final entry in entries) {
-        final parts = entry.key.split('.');
-        if (parts.length == 1) {
-          result[entry.key] = entry.value;
-        } else {
-          Map<String, dynamic> current = result.putIfAbsent(
-            parts.first,
-            () => <String, dynamic>{},
-          );
-          for (int i = 1; i < parts.length - 1; i++) {
-            final nested = current.putIfAbsent(
-              parts[i],
-              () => <String, dynamic>{},
-            ) as Map<String, dynamic>;
-            current = nested;
-          }
-          current[parts.last] = entry.value;
-        }
-      }
-      curr = result;
-    }
-
-    if (length > 1 && containsKey(RegexUtils.defaultNamespace)) {
-      curr = {
-        ...this[RegexUtils.defaultNamespace]!,
-        ...{
-          for (final entry in curr.entries)
-            if (entry.key != RegexUtils.defaultNamespace)
-              entry.key: entry.value,
-        },
-      };
-    }
-
-    return curr;
-  }
+bool _hasChildLocales(I18nLocale locale, List<I18nLocale> allLocales) {
+  return allLocales.any((l) =>
+      l != locale &&
+      l.language == locale.language &&
+      (l.script != null || l.country != null));
 }

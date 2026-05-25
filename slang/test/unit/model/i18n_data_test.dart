@@ -1,3 +1,4 @@
+import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_data.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/node.dart';
@@ -7,6 +8,12 @@ I18nData _i18n(String locale, [bool base = false]) {
   return I18nData(
     base: base,
     locale: I18nLocale.fromString(locale),
+    fallbackLocale: FallbackLocale(
+      locale: I18nLocale(language: 'en'),
+      fallback: false,
+    ),
+    classVisibility: CodeVisibility.public,
+    constructorVisibility: CodeVisibility.public,
     root: ObjectNode(
       path: '',
       rawPath: '',

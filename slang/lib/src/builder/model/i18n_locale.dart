@@ -11,6 +11,7 @@ class I18nLocale {
   final bool languageIsWildcard;
   final String? script;
   final String? country;
+  final bool generatedFromWildcard;
   late String languageTag = _toLanguageTag();
   late String underscoreTag = languageTag.replaceAll('-', '_');
   late String enumConstant = _toEnumConstant();
@@ -20,6 +21,7 @@ class I18nLocale {
     this.languageIsWildcard = false,
     this.script,
     this.country,
+    this.generatedFromWildcard = false,
   });
 
   String _toLanguageTag() {

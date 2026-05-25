@@ -302,12 +302,12 @@ extension on String {
     }
   }
 
-  TranslationClassVisibility? toTranslationClassVisibility() {
+  CodeVisibility? toTranslationClassVisibility() {
     switch (this) {
       case 'private':
-        return TranslationClassVisibility.private;
+        return CodeVisibility.private;
       case 'public':
-        return TranslationClassVisibility.public;
+        return CodeVisibility.public;
       default:
         return null;
     }
