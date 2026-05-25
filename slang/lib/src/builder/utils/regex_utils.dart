@@ -20,7 +20,7 @@ class RegexUtils {
 
   /// locale regex
   static const localeRegexRaw =
-      r'(?:([a-z]{2,3})|\[([^\]]+)\])(?:[_-]([A-Za-z]{4}))?(?:[_-]([A-Z]{2}|[0-9]{3}))?';
+      r'(?:([a-z]{2,3})|\[([^\]]+)\])(?:[_-]([A-Za-z]{4}))?(?:[_-](?:([A-Z]{2}|[0-9]{3})|\[([^\]]+)\]))?';
 
   static const defaultNamespace = '_default';
 
@@ -30,7 +30,7 @@ class RegexUtils {
   /// 2 = zh-Hant-TW (locale, non-nullable)
   /// 3/4 = zh (language, non-nullable)
   /// 5 = Hant (script)
-  /// 6 = TW (country)
+  /// 6/7 = TW (country)
   static final RegExp fileWithLocaleRegex =
       RegExp('^(?:([a-zA-Z0-9]+|$defaultNamespace)[_-])($localeRegexRaw)\$');
 
@@ -39,7 +39,9 @@ class RegexUtils {
   ///     1 - language without wildcard
   ///     2 - language with wildcard (e.g. `[any]`, `[de,fr]`)
   /// 3 - script
-  /// 4 - country
+  /// 4/5 - country
+  ///     4 - country without wildcard
+  ///     5 - country with wildcard (e.g. `[US,DE]`)
   static final RegExp localeRegex = RegExp('^$localeRegexRaw\$');
 
   /// matches any string without special characters

@@ -6,11 +6,11 @@ import 'package:slang/src/builder/utils/string_extensions.dart';
 class I18nLocale {
   static const String undefinedLanguage = 'und';
 
-  /// Note: Might be a wildcard (e.g. `[any]`, `[de,fr]`)
   final String language;
   final bool languageIsWildcard;
   final String? script;
   final String? country;
+  final bool countryIsWildcard;
   final bool generatedFromWildcard;
   late String languageTag = _toLanguageTag();
   late String underscoreTag = languageTag.replaceAll('-', '_');
@@ -21,6 +21,7 @@ class I18nLocale {
     this.languageIsWildcard = false,
     this.script,
     this.country,
+    this.countryIsWildcard = false,
     this.generatedFromWildcard = false,
   });
 
@@ -69,12 +70,13 @@ class I18nLocale {
 
     final language = match.group(1) ?? match.group(2)!;
     final script = match.group(3);
-    final country = match.group(4);
+    final country = match.group(4) ?? match.group(5);
     return I18nLocale(
       language: language,
       languageIsWildcard: match.group(2) != null,
       script: script,
       country: country,
+      countryIsWildcard: match.group(5) != null,
     );
   }
 }

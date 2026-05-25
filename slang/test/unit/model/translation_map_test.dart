@@ -270,7 +270,29 @@ void main() {
       });
     });
 
-    test('should expand comma-separated wildcard language with country', () {
+    test('should expand wildcard languages containing country', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('[de,en, fr-FR]'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('fr-FR'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+    });
+
+    test('should expand wildcard languages with common country', () {
       final map = TranslationMap.fromMap({
         I18nLocale.fromString('[de,en, fr]-US'): {
           '_default': {'hi': 'Hi'},
@@ -292,7 +314,29 @@ void main() {
       });
     });
 
-    test('should expand [any]', () {
+    test('should expand comma-separated wildcard countries', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('en-[US,DE, FR]'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en-DE'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en-FR'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+    });
+
+    test('should expand language [any]', () {
       final map = TranslationMap.fromMap({
         I18nLocale.fromString('de'): {
           '_default': {'hi': 'Hallo'},
@@ -302,6 +346,9 @@ void main() {
         },
         I18nLocale.fromString('fr-FR'): {
           '_default': {'hi': 'Bonjour'},
+        },
+        I18nLocale.fromString('[ja-JP]'): {
+          '_default': {'hi': 'Konnichiwa'},
         },
         I18nLocale.fromString('[any]-US'): {
           '_default': {'currency': 'USD'},
@@ -320,6 +367,9 @@ void main() {
         I18nLocale.fromString('fr-FR'): {
           '_default': {'hi': 'Bonjour'},
         },
+        I18nLocale.fromString('ja-JP'): {
+          '_default': {'hi': 'Konnichiwa'},
+        },
         I18nLocale.fromString('de-US'): {
           '_default': {'currency': 'USD'},
         },
@@ -328,6 +378,105 @@ void main() {
         },
         I18nLocale.fromString('fr-US'): {
           '_default': {'currency': 'USD'},
+        },
+        I18nLocale.fromString('ja-US'): {
+          '_default': {'currency': 'USD'},
+        },
+      });
+    });
+
+    test('should expand country [any]', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('de-DE'): {
+          '_default': {'hi': 'Hallo'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('fr'): {
+          '_default': {'hi': 'Bonjour'},
+        },
+        I18nLocale.fromString('[ja-JP]'): {
+          '_default': {'hi': 'Konnichiwa'},
+        },
+        I18nLocale.fromString('en-[any]'): {
+          '_default': {'bye': 'Bye'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de-DE'): {
+          '_default': {'hi': 'Hallo'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi', 'bye': 'Bye'},
+        },
+        I18nLocale.fromString('fr'): {
+          '_default': {'hi': 'Bonjour'},
+        },
+        I18nLocale.fromString('ja-JP'): {
+          '_default': {'hi': 'Konnichiwa'},
+        },
+        I18nLocale.fromString('en-DE'): {
+          '_default': {'bye': 'Bye'},
+        },
+        I18nLocale.fromString('en-JP'): {
+          '_default': {'bye': 'Bye'},
+        },
+      });
+    });
+
+    test('should expand both language and country wildcards', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('[de,en]-[US,DE]'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('de-DE'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en-DE'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+    });
+
+    test('should expand [any]-[any]', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hallo'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('[any]-[any]'): {
+          '_default': {'shared': 'yes'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hallo'},
+        },
+        I18nLocale.fromString('en-US'): {
+          '_default': {'hi': 'Hi', 'shared': 'yes'},
+        },
+        I18nLocale.fromString('de-US'): {
+          '_default': {'shared': 'yes'},
         },
       });
     });

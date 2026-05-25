@@ -72,6 +72,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Custom Contexts / Enums](#-custom-contexts--enums)
   - [Typed Parameters](#-typed-parameters)
   - [L10n](#-l10n)
+  - [Region Extensions](#-region-extensions)
   - [Interfaces](#-interfaces)
   - [Modifiers](#-modifiers)
   - [Locale Enum](#-locale-enum)
@@ -80,6 +81,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
   - [Dependency Injection](#-dependency-injection)
 - [Structuring Features](#structuring-features)
   - [Namespaces](#-namespaces)
+  - [Wildcard Locales](#-wildcard-locales)
   - [Compact CSV](#-compact-csv)
 - [Other Features](#other-features)
   - [Fallback](#-fallback)
@@ -1040,6 +1042,22 @@ String b = t.today(today: DateTime(2023, 3, 2)); // Today is 03/02/2023
 String c = t.tomorrow(tomorrow: DateTime(2023, 3, 5)); // Tomorrow is 03/05/2023
 ```
 
+### ➤ Region Extensions
+
+You can extend a language-only locale (e.g. `en`) with region-specific locales (e.g. `en-US`, `en-GB`).
+
+It **always** falls back to the language-only locale ignoring the `fallback_strategy` config.
+
+Synergizes well with [Wildcard Locales](#-wildcard-locales).
+
+```text
+en.json
+en-US.json -> en.json
+en-GB.json -> en.json
+fr.json -> en.json (depends on fallback_strategy)
+fr-CA.json -> fr.json (always) -> en.json (depends on fallback_strategy)
+```
+
 ### ➤ Interfaces
 
 Often, multiple objects have the same attributes. You can create a common super class for that.
@@ -1345,6 +1363,41 @@ i18n/
 String a = t.appName; // from _default namespace
 String b = t.widgets.welcomeCard.title; // from widgets namespace
 ```
+
+### ➤ Wildcard Locales
+
+Reuse the same translations for multiple locales.
+
+Existing translations have precedence over wildcard translations.
+
+It works well with [Region Extensions](#-region-extensions).
+
+| Syntax          | Description                                    |
+|-----------------|------------------------------------------------|
+| `[de,en,fr-FR]` | Spreads to the specified codes                 |
+| `[any]`         | Spreads to all existing codes in that position |
+
+```text
+i18n/
+ └── de.json
+ └── en.json
+ └── fr.json
+ └── [de,fr,ja].json
+ └── [any]-FR.json
+```
+
+This will spread to the following locales:
+
+| Locale  | Source                       |
+|---------|------------------------------|
+| `de`    | `de.json`, `[de,fr,ja].json` |
+| `en`    | `en.json`                    |
+| `fr`    | `fr.json`, `[de,fr,ja].json` |
+| `ja`    | `[de,fr,ja].json`            |
+| `de-FR` | `[any]-FR.json`              |
+| `en-FR` | `[any]-FR.json`              |
+| `fr-FR` | `[any]-FR.json`              |
+| `ja-FR` | `[any]-FR.json`              |
 
 ### ➤ Compact CSV
 

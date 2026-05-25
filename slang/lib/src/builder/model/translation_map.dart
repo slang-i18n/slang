@@ -58,48 +58,55 @@ class TranslationMap {
   /// Existing explicit locales are extended with the wildcard translations;
   /// keys already defined on the explicit locale take precedence.
   void finalize() {
-    final wildcards =
-        _internalMap.keys.where((l) => l.languageIsWildcard).toList();
-    if (wildcards.isEmpty) {
-      return;
-    }
+    final locales = _internalMap.keys.toList();
+    final anyLanguages = _getDistinctLanguageCodes(locales);
+    final anyCountries = _getDistinctCountryCodes(locales);
 
-    final anyLanguages = _internalMap.keys
-        .where((l) => !l.languageIsWildcard)
-        .map((l) => l.language)
-        .toSet();
-
-    for (final wildcard in wildcards) {
-      if (wildcard.languageIsWildcard && wildcard.language != 'any') {
-        final languages = wildcard.language.split(',').map((s) => s.trim());
-        anyLanguages.addAll(languages);
+    for (final locale in locales) {
+      if (!locale.languageIsWildcard && !locale.countryIsWildcard) {
+        continue;
       }
-    }
 
-    for (final wildcard in wildcards) {
-      final translations = _internalMap.remove(wildcard)!;
+      final translations = _internalMap.remove(locale)!;
 
-      final languages = wildcard.language == 'any'
-          ? anyLanguages
-          : wildcard.language.split(',').map((s) => s.trim()).toList();
+      final List<String> languages;
+      if (locale.languageIsWildcard) {
+        languages = locale.language == 'any'
+            ? anyLanguages.toList()
+            : locale.language.split(',').map((s) => s.trim()).toList();
+      } else {
+        languages = [locale.language];
+      }
 
-      for (final language in languages) {
-        final expandedLocale = I18nLocale(
-          language: language,
-          script: wildcard.script,
-          country: wildcard.country,
-          generatedFromWildcard: true,
-        );
-        final existing = _internalMap[expandedLocale];
-        if (existing == null) {
-          _internalMap[expandedLocale] = translations;
-        } else {
-          _internalMap[expandedLocale] = FlatNamespaceMap(
-            MapUtils.merge(
-              base: translations,
-              other: existing,
-            ).cast<String, Map<String, dynamic>>(),
+      final List<String?> countries;
+      if (locale.countryIsWildcard) {
+        countries = locale.country == 'any'
+            ? anyCountries.toList()
+            : locale.country!.split(',').map((s) => s.trim()).toList();
+      } else {
+        countries = [locale.country];
+      }
+
+      for (final languageRaw in languages) {
+        final parsedLanguage = I18nLocale.tryFromString(languageRaw);
+        for (final country in countries) {
+          final expandedLocale = I18nLocale(
+            language: parsedLanguage?.language ?? languageRaw,
+            script: parsedLanguage?.script ?? locale.script,
+            country: parsedLanguage?.country ?? country,
+            generatedFromWildcard: true,
           );
+          final existing = _internalMap[expandedLocale];
+          if (existing == null) {
+            _internalMap[expandedLocale] = translations;
+          } else {
+            _internalMap[expandedLocale] = FlatNamespaceMap(
+              MapUtils.merge(
+                base: translations,
+                other: existing,
+              ).cast<String, Map<String, dynamic>>(),
+            );
+          }
         }
       }
     }
@@ -208,4 +215,53 @@ extension type ExpandedNamespaceMap(Map<String, dynamic> m)
 
     return FlatNamespaceMap(result);
   }
+}
+
+Set<String> _getDistinctLanguageCodes(List<I18nLocale> locales) {
+  final anyLanguages = <String>{};
+
+  for (final locale in locales) {
+    if (locale.languageIsWildcard) {
+      if (locale.language != 'any') {
+        // Language (e.g. [de,fr-FR]) may contain country,
+        // we need to parse it to get the language part only
+        final languages = locale.language
+            .split(',')
+            .map((s) => I18nLocale.tryFromString(s)?.language)
+            .nonNulls;
+        anyLanguages.addAll(languages);
+      }
+    } else {
+      anyLanguages.add(locale.language);
+    }
+  }
+
+  return anyLanguages;
+}
+
+Set<String> _getDistinctCountryCodes(List<I18nLocale> locales) {
+  final anyCountries = <String>{};
+
+  for (final locale in locales) {
+    if (locale.languageIsWildcard && locale.language != 'any') {
+      // Language (e.g. [de,fr-FR]) may contain country,
+      // we need to parse it to get the country part only
+      final languages = locale.language
+          .split(',')
+          .map((s) => I18nLocale.tryFromString(s)?.country)
+          .nonNulls;
+      anyCountries.addAll(languages);
+    }
+
+    if (locale.countryIsWildcard) {
+      if (locale.country != 'any') {
+        final countries = locale.country!.split(',').map((s) => s.trim());
+        anyCountries.addAll(countries);
+      }
+    } else if (locale.country != null) {
+      anyCountries.add(locale.country!);
+    }
+  }
+
+  return anyCountries;
 }
