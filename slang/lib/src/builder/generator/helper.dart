@@ -27,28 +27,31 @@ String getClassNameRoot({
 }
 
 String getClassName({
-  required bool base,
   required CodeVisibility visibility,
-  required String parentName,
-  String childName = '',
+  required String prefix,
+  required String path,
   I18nLocale? locale,
 }) {
-  final String languageTag;
+  final buffer = StringBuffer();
+
+  if (visibility == CodeVisibility.private) {
+    buffer.write('_');
+  }
+
+  buffer.write(prefix);
+
+  final parts = path.split('.');
+  for (final part in parts) {
+    buffer.write('\$');
+    buffer.write(part);
+  }
+
   if (locale != null) {
-    languageTag = locale.languageTag.toCaseOfLocale(CaseStyle.pascal);
-  } else {
-    languageTag = '';
+    buffer.write('\$');
+    buffer.write(locale.underscoreTag);
   }
-  if (base) {
-    visibility = CodeVisibility.public;
-  }
-  if (!parentName.startsWith('_') && visibility == CodeVisibility.private) {
-    parentName = '_$parentName';
-  } else if (parentName.startsWith('_') &&
-      visibility == CodeVisibility.public) {
-    parentName = parentName.substring(1);
-  }
-  return parentName + childName.toCase(CaseStyle.pascal) + languageTag;
+
+  return buffer.toString();
 }
 
 const _nullFlag = '\u0000';

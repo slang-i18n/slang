@@ -16,10 +16,9 @@ part 'generate_translation_map.dart';
 
 /// decides which class should be generated
 class ClassTask {
-  final String className;
   final ObjectNode node;
 
-  ClassTask(this.className, this.node);
+  ClassTask(this.node);
 }
 
 /// generates all classes of one locale
@@ -67,12 +66,7 @@ ${!config.format.enabled ? '// dart format off' : ''}
     )}\';');
   }
 
-  queue.add(ClassTask(
-    getClassNameRoot(
-      className: config.className,
-    ),
-    localeData.root,
-  ));
+  queue.add(ClassTask(localeData.root));
 
   // only for the first class
   bool root = true;
@@ -85,7 +79,6 @@ ${!config.format.enabled ? '// dart format off' : ''}
       localeData,
       buffer,
       queue,
-      task.className,
       task.node,
       root,
       allTranslations,
@@ -109,7 +102,6 @@ void _generateClass(
   I18nData localeData,
   StringBuffer buffer,
   Queue<ClassTask> queue,
-  String className,
   ObjectNode node,
   bool root,
   List<I18nData> allTranslations,
@@ -134,13 +126,13 @@ void _generateClass(
   final finalClassName = switch (root) {
     true => switch (localeData.base) {
         true => config.className,
-        false =>
-          getClassNameRoot(className: className, locale: localeData.locale),
+        false => getClassNameRoot(
+            className: config.className, locale: localeData.locale),
       },
     false => getClassName(
-        base: localeData.base,
         visibility: localeData.classVisibility,
-        parentName: className,
+        prefix: config.className,
+        path: node.path,
         locale: localeData.locale,
       ),
   };
@@ -173,20 +165,27 @@ void _generateClass(
     }
   } else {
     // The class name of the **base** locale (path-dependent).
-    final baseClassName =
-        root && localeData.fallbackLocale.locale == config.baseLocale
-            ? config.className
-            : getClassName(
-                base: true,
-                visibility: CodeVisibility.public,
-                parentName: className,
-                locale: localeData.fallbackLocale.locale,
-              );
+    final fallbackClassName = switch (root) {
+      true => switch (localeData.fallbackLocale.locale == config.baseLocale) {
+          true => config.className,
+          false => getClassNameRoot(
+              className: config.className,
+              locale: localeData.fallbackLocale.locale,
+            ),
+        },
+      false => getClassName(
+          visibility: CodeVisibility.public,
+          prefix: config.className,
+          path: node.path,
+          locale: localeData.fallbackLocale.locale,
+        )
+    };
     if (localeData.fallbackLocale.fallback) {
-      buffer.writeln('class $finalClassName extends $baseClassName$mixinStr {');
+      buffer.writeln(
+          'class $finalClassName extends $fallbackClassName$mixinStr {');
     } else {
       buffer.writeln(
-          'class $finalClassName$mixinStr implements $baseClassName {');
+          'class $finalClassName$mixinStr implements $fallbackClassName {');
     }
   }
 
@@ -450,19 +449,10 @@ void _generateClass(
         localeData: localeData,
         buffer: buffer,
         queue: queue,
-        className: className,
         node: value,
-        listName: key,
         depth: 0,
       );
     } else if (value is ObjectNode) {
-      String childClassNoLocale = getClassName(
-        base: localeData.base,
-        visibility: localeData.classVisibility,
-        parentName: className,
-        childName: key,
-      );
-
       if (value.isMap) {
         // inline map
         buffer.write('Map<String, ${value.genericType}>$optional get $key => ');
@@ -471,18 +461,16 @@ void _generateClass(
           localeData: localeData,
           buffer: buffer,
           queue: queue,
-          className: childClassNoLocale,
           node: value,
           depth: 0,
         );
       } else {
         // generate a class later on
-        queue.add(ClassTask(childClassNoLocale, value));
+        queue.add(ClassTask(value));
         String childClassWithLocale = getClassName(
-          base: localeData.base,
           visibility: localeData.classVisibility,
-          parentName: className,
-          childName: key,
+          prefix: config.className,
+          path: value.path,
           locale: localeData.locale,
         );
 
@@ -525,7 +513,6 @@ void _generateMap({
   required I18nData localeData,
   required StringBuffer buffer,
   required Queue<ClassTask> queue,
-  required String className, // without locale
   required ObjectNode node,
   required int depth,
 }) {
@@ -561,19 +548,10 @@ void _generateMap({
         localeData: localeData,
         buffer: buffer,
         queue: queue,
-        className: className,
         node: value,
-        listName: digestedKey,
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      String childClassNoLocale = getClassName(
-        base: localeData.base,
-        visibility: localeData.classVisibility,
-        parentName: className,
-        childName: digestedKey,
-      );
-
       if (value.isMap) {
         // inline map
         buffer.write('\'$digestedKey\': ');
@@ -582,18 +560,16 @@ void _generateMap({
           localeData: localeData,
           buffer: buffer,
           queue: queue,
-          className: childClassNoLocale,
           node: value,
           depth: depth + 1,
         );
       } else {
         // generate a class later on
-        queue.add(ClassTask(childClassNoLocale, value));
+        queue.add(ClassTask(value));
         String childClassWithLocale = getClassName(
-          base: localeData.base,
           visibility: localeData.classVisibility,
-          parentName: className,
-          childName: digestedKey,
+          prefix: config.className,
+          path: value.path,
           locale: localeData.locale,
         );
 
@@ -641,9 +617,7 @@ void _generateList({
   required I18nData localeData,
   required StringBuffer buffer,
   required Queue<ClassTask> queue,
-  required String className,
   required ListNode node,
-  required String? listName,
   required int depth,
 }) {
   if (config.translationOverrides && node.genericType == 'String') {
@@ -676,19 +650,10 @@ void _generateList({
         localeData: localeData,
         buffer: buffer,
         queue: queue,
-        className: className,
         node: value,
-        listName: listName,
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      final key = '\$${listName ?? ''}\$${depth.toString()}i${i.toString()}\$';
-      final String childClassNoLocale = getClassName(
-          base: localeData.base,
-          visibility: localeData.classVisibility,
-          parentName: className,
-          childName: key);
-
       if (value.isMap) {
         // inline map
         _generateMap(
@@ -696,18 +661,16 @@ void _generateList({
           localeData: localeData,
           buffer: buffer,
           queue: queue,
-          className: childClassNoLocale,
           node: value,
           depth: depth + 1,
         );
       } else {
         // generate a class later on
-        queue.add(ClassTask(childClassNoLocale, value));
+        queue.add(ClassTask(value));
         String childClassWithLocale = getClassName(
-          base: localeData.base,
           visibility: localeData.classVisibility,
-          parentName: className,
-          childName: key,
+          prefix: config.className,
+          path: value.path,
           locale: localeData.locale,
         );
 

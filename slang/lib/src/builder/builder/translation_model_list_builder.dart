@@ -48,14 +48,7 @@ class TranslationModelListBuilder {
             locale: rawConfig.baseLocale,
             fallback: false,
           ),
-          classVisibility: rawConfig.translationClassVisibility ==
-                      CodeVisibility.public ||
-                  buildConfig.fallbackStrategy == FallbackStrategy.baseLocale ||
-                  buildConfig.fallbackStrategy ==
-                      FallbackStrategy.baseLocaleEmptyString ||
-                  hasChildLocales
-              ? CodeVisibility.public
-              : CodeVisibility.private,
+          classVisibility: CodeVisibility.public,
           constructorVisibility:
               buildConfig.fallbackStrategy == FallbackStrategy.baseLocale ||
                       buildConfig.fallbackStrategy ==
