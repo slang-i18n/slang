@@ -11,6 +11,7 @@ class I18nLocale {
   final String? script;
   final String? country;
   final bool countryIsWildcard;
+  bool get isWildcard => languageIsWildcard || countryIsWildcard;
   final bool generatedFromWildcard;
   late String languageTag = _toLanguageTag();
   late String underscoreTag = languageTag.replaceAll('-', '_');
@@ -40,6 +41,46 @@ class I18nLocale {
       'in' => 'india',
       _ => result,
     };
+  }
+
+  /// Expands wildcard locales into specific locales
+  /// based on the provided lists of languages and countries.
+  List<I18nLocale> expandLocales({
+    required Set<String> anyLanguages,
+    required Set<String> anyCountries,
+  }) {
+    final List<String> languages;
+    if (languageIsWildcard) {
+      languages = language == 'any'
+          ? anyLanguages.toList()
+          : language.split(',').map((s) => s.trim()).toList();
+    } else {
+      languages = [language];
+    }
+
+    final List<String?> countries;
+    if (countryIsWildcard) {
+      countries = country == 'any'
+          ? anyCountries.toList()
+          : country!.split(',').map((s) => s.trim()).toList();
+    } else {
+      countries = [country];
+    }
+
+    final result = <I18nLocale>[];
+    for (final languageRaw in languages) {
+      final parsedLanguage = I18nLocale.tryFromString(languageRaw);
+      for (final c in countries) {
+        result.add(I18nLocale(
+          language: parsedLanguage?.language ?? languageRaw,
+          script: parsedLanguage?.script ?? script,
+          country: parsedLanguage?.country ?? c,
+          generatedFromWildcard: true,
+        ));
+      }
+    }
+
+    return result;
   }
 
   @override
@@ -78,5 +119,56 @@ class I18nLocale {
       country: country,
       countryIsWildcard: match.group(5) != null,
     );
+  }
+}
+
+extension I18nLocaleListExtension on List<I18nLocale> {
+  Set<String> getDistinctLanguageCodes() {
+    final anyLanguages = <String>{};
+
+    for (final locale in this) {
+      if (locale.languageIsWildcard) {
+        if (locale.language != 'any') {
+          // Language (e.g. [de,fr-FR]) may contain country,
+          // we need to parse it to get the language part only
+          final languages = locale.language
+              .split(',')
+              .map((s) => I18nLocale.tryFromString(s)?.language)
+              .nonNulls;
+          anyLanguages.addAll(languages);
+        }
+      } else {
+        anyLanguages.add(locale.language);
+      }
+    }
+
+    return anyLanguages;
+  }
+
+  Set<String> getDistinctCountryCodes() {
+    final anyCountries = <String>{};
+
+    for (final locale in this) {
+      if (locale.languageIsWildcard && locale.language != 'any') {
+        // Language (e.g. [de,fr-FR]) may contain country,
+        // we need to parse it to get the country part only
+        final languages = locale.language
+            .split(',')
+            .map((s) => I18nLocale.tryFromString(s)?.country)
+            .nonNulls;
+        anyCountries.addAll(languages);
+      }
+
+      if (locale.countryIsWildcard) {
+        if (locale.country != 'any') {
+          final countries = locale.country!.split(',').map((s) => s.trim());
+          anyCountries.addAll(countries);
+        }
+      } else if (locale.country != null) {
+        anyCountries.add(locale.country!);
+      }
+    }
+
+    return anyCountries;
   }
 }

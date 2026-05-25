@@ -28,6 +28,10 @@ Future<void> apply({
     fileCollection: fileCollection,
   );
 
+  translationMap.prepareForAnalysis(
+    baseLocale: fileCollection.config.baseLocale,
+  );
+
   await applyTranslationsForOneLocale(
     fileCollection: fileCollection,
     applyLocale: locale,

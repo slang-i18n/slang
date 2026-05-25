@@ -403,7 +403,8 @@ Future<void> _addEntry({
 
   for (final resolvedFile in resolvedFiles) {
     final file = resolvedFile.file;
-    if (locale != null && file.locale != locale) {
+    if ((locale != null && file.locale != locale) ||
+        (locale == null && file.locale.isWildcard)) {
       continue;
     }
 

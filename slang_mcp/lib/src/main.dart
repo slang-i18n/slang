@@ -209,6 +209,9 @@ Future<Map<String, dynamic>> getMissingTranslationsMap() async {
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
   );
+  translationMap.prepareForAnalysis(
+    baseLocale: fileCollection.config.baseLocale,
+  );
   final translationModelList = TranslationModelListBuilder.build(
     fileCollection.config,
     translationMap,

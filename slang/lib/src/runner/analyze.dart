@@ -55,6 +55,8 @@ Future<void> runAnalyzeTranslations({
     fileCollection: fileCollection,
   );
 
+  translationMap.prepareForAnalysis(baseLocale: rawConfig.baseLocale);
+
   // build translation model
   final translationModelList = TranslationModelListBuilder.build(
     rawConfig,

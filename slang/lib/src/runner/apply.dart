@@ -43,6 +43,8 @@ Future<void> runApplyTranslations({
     fileCollection: fileCollection,
   );
 
+  translationMap.prepareForAnalysis(baseLocale: rawConfig.baseLocale);
+
   log.info('Looking for missing translations files in $outDir');
   final files =
       Directory(outDir).listSync(recursive: true).whereType<File>().toList();
@@ -141,10 +143,24 @@ Future<void> applyTranslationsForOneLocale({
   required FlatNamespaceMap baseTranslations,
   required FlatNamespaceMap newTranslations,
 }) async {
+  final locales =
+      (await TranslationMapBuilder.build(fileCollection: fileCollection))
+          .getLocales();
+  final anyLanguages = locales.getDistinctLanguageCodes();
+  final anyCountries = locales.getDistinctCountryCodes();
+
   // flat namespace -> file
   final fileMap = <String, TranslationFile>{
     for (final file in fileCollection.files)
-      if (file.locale == applyLocale) file.namespace: file,
+      if (file.locale == applyLocale ||
+          (file.locale.isWildcard &&
+              file.locale
+                  .expandLocales(
+                    anyLanguages: anyLanguages,
+                    anyCountries: anyCountries,
+                  )
+                  .contains(applyLocale)))
+        file.namespace: file
   };
 
   if (fileMap.isEmpty) {
