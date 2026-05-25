@@ -65,10 +65,16 @@ class TranslationMap {
     }
 
     final anyLanguages = _internalMap.keys
-        .where((l) =>
-            !l.languageIsWildcard && l.script == null && l.country == null)
+        .where((l) => !l.languageIsWildcard)
         .map((l) => l.language)
-        .toList();
+        .toSet();
+
+    for (final wildcard in wildcards) {
+      if (wildcard.languageIsWildcard && wildcard.language != 'any') {
+        final languages = wildcard.language.split(',').map((s) => s.trim());
+        anyLanguages.addAll(languages);
+      }
+    }
 
     for (final wildcard in wildcards) {
       final translations = _internalMap.remove(wildcard)!;

@@ -248,7 +248,29 @@ void main() {
       });
     });
 
-    test('should expand comma-separated wildcard locales', () {
+    test('should expand comma-separated wildcard languages', () {
+      final map = TranslationMap.fromMap({
+        I18nLocale.fromString('[de,en, fr]'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+
+      map.finalize();
+
+      expect(map.getInternalMap(), {
+        I18nLocale.fromString('de'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('en'): {
+          '_default': {'hi': 'Hi'},
+        },
+        I18nLocale.fromString('fr'): {
+          '_default': {'hi': 'Hi'},
+        },
+      });
+    });
+
+    test('should expand comma-separated wildcard language with country', () {
       final map = TranslationMap.fromMap({
         I18nLocale.fromString('[de,en, fr]-US'): {
           '_default': {'hi': 'Hi'},
@@ -270,7 +292,7 @@ void main() {
       });
     });
 
-    test('should expand [any] using plain-language locales', () {
+    test('should expand [any]', () {
       final map = TranslationMap.fromMap({
         I18nLocale.fromString('de'): {
           '_default': {'hi': 'Hallo'},
@@ -302,6 +324,9 @@ void main() {
           '_default': {'currency': 'USD'},
         },
         I18nLocale.fromString('en-US'): {
+          '_default': {'currency': 'USD'},
+        },
+        I18nLocale.fromString('fr-US'): {
           '_default': {'currency': 'USD'},
         },
       });
