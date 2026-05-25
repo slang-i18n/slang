@@ -156,7 +156,7 @@ class _Translations$onboarding$pages$0$de extends Translations$onboarding$pages$
 
 	// Translations
 	@override String get title => 'Erste Seite';
-	@override String? get content => 'Erster Seiteninhalt';
+	@override String get content => 'Erster Seiteninhalt';
 }
 
 // Path: onboarding.pages.1
@@ -177,7 +177,7 @@ class _Translations$onboarding$modifierPages$0$de extends Translations$onboardin
 
 	// Translations
 	@override String get title => 'Erste Modifier Seite';
-	@override String? get content => 'Erster Seiteninhalt';
+	@override String get content => 'Erster Seiteninhalt';
 }
 
 // Path: onboarding.modifierPages.1

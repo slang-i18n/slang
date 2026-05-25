@@ -406,7 +406,7 @@ void _generateClass(
     // even if this attribute exist, it has to satisfy the same signature as
     // specified in the interface
     // this error seems to occur when using in combination with "extends"
-    final optional = localeData.fallbackLocale.fallback &&
+    final optional = localeData.constructorVisibility == CodeVisibility.public &&
             node.interface?.attributes.any((attribute) =>
                     attribute.optional && attribute.attributeName == key) ==
                 true
