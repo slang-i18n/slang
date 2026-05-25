@@ -1,3 +1,9 @@
+## 4.15.0
+
+- feat: Region Extensions, `de-CH` will fall back to `de` before falling back to the base locale
+- feat: Wildcard Locales, `[any]-DE.json` will spread to all existing language codes, useful to set a currency for a region without managing every combination of language and region (e.g. `en-DE`, `fr-DE`, `de-DE`)
+- feat: add Arabic plural resolver
+
 ## 4.14.0
 
 - feat: allow nested namespaces

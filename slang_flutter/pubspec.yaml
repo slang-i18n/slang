@@ -1,6 +1,6 @@
 name: slang_flutter
 description: Flutter support for slang. This library provides helpful Flutter API.
-version: 4.14.0
+version: 4.15.0
 repository: https://codeberg.org/Tienisto/slang
 
 environment:
@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   # Use a tight version to ensure that all features are available
-  slang: '>=4.14.0 <4.15.0'
+  slang: '>=4.15.0 <4.16.0'
 
 dev_dependencies:
   intl: any
