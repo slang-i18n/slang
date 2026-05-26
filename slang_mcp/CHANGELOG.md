@@ -1,3 +1,7 @@
+## 0.1.4
+
+- deps: bump `slang` to `4.15.0` to support region extensions
+
 ## 0.1.3
 
 - feat: allow specifying `@@notes` in translation files to give LLMs more context
