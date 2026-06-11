@@ -176,6 +176,106 @@ void main() {
       expect((result['a'] as Map).keys.toList(), ['y', 'x', 'z', '0']);
     });
 
+    test('preserve order keeps old order and appends new keys', () {
+      final result = applyMapRecursive(
+        baseMap: {
+          'c1': 'cc',
+          'd4': 'dd',
+          'a2': 'aa',
+          'b3': 'bb',
+        },
+        newMap: {'d4': 'D'},
+        oldMap: {'c1': 'C', 'a2': 'A', 'b3': 'B'},
+        preserveOrder: true,
+      );
+      expect(result, {
+        'c1': 'C',
+        'a2': 'A',
+        'b3': 'B',
+        'd4': 'D',
+      });
+      expect(result.keys.toList(), ['c1', 'a2', 'b3', 'd4']);
+    });
+
+    test('preserve order does not reorder existing keys when newMap is empty',
+        () {
+      // Without preserveOrder this would be reordered to the base order.
+      final result = applyMapRecursive(
+        baseMap: {
+          'c': 'cc',
+          'a': 'aa',
+          'b': 'bb',
+        },
+        newMap: {},
+        oldMap: {
+          'b': 'B',
+          'a': 'A',
+          'c': 'C',
+        },
+        preserveOrder: true,
+      );
+      expect(result.keys.toList(), ['b', 'a', 'c']);
+    });
+
+    test('preserve order keeps nested order and appends new keys', () {
+      final result = applyMapRecursive(
+        baseMap: {
+          'c': 'cc',
+          'a': {
+            'w': 'ww',
+            'y': 'yy',
+            'x': 'xx',
+            'z': 'zz',
+          },
+          'b': 'bb',
+        },
+        newMap: {
+          'a': {'x': 'X'}
+        },
+        oldMap: {
+          'c': 'C',
+          'a': {
+            'z': 'Z',
+            'y': 'Y',
+          },
+          'b': 'B',
+        },
+        preserveOrder: true,
+      );
+      expect(result.keys.toList(), ['c', 'a', 'b']);
+      expect((result['a'] as Map).keys.toList(), ['z', 'y', 'x']);
+    });
+
+    test('preserve order appends keys unknown in base locale last', () {
+      // 'd' exists in the target file but not in the base locale (stale key).
+      // It is ordered after the keys that exist in the base locale.
+      final result = applyMapRecursive(
+        baseMap: {
+          'c': 'cc',
+          'a': 'aa',
+          'b': 'bb',
+        },
+        newMap: {'b': 'B'},
+        oldMap: {
+          'a': 'A',
+          'd': 'D',
+          'c': 'C',
+        },
+        preserveOrder: true,
+      );
+      expect(result.keys.toList(), ['a', 'c', 'b', 'd']);
+    });
+
+    test('preserve order still applies base modifier', () {
+      final result = applyMapRecursive(
+        baseMap: {'a(param=arg0)': 'base'},
+        newMap: {'a': 'new'},
+        oldMap: {'a': 'old'},
+        preserveOrder: true,
+      );
+      expect(result, {'a(param=arg0)': 'new'});
+    });
+
     test('ignore new modifier', () {
       final result = applyMapRecursive(
         baseMap: {},

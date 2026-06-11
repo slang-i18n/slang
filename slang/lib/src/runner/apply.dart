@@ -24,11 +24,14 @@ Future<void> runApplyTranslations({
   final rawConfig = fileCollection.config;
   String? outDir;
   List<I18nLocale>? targetLocales; // only this locale will be considered
+  bool preserveOrder = false;
   for (final a in arguments) {
     if (a.startsWith('--outdir=')) {
       outDir = a.substring(9);
     } else if (a.startsWith('--locale=')) {
       targetLocales = [I18nLocale.fromString(a.substring(9))];
+    } else if (a == '--preserve-order') {
+      preserveOrder = true;
     }
   }
 
@@ -128,6 +131,7 @@ Future<void> runApplyTranslations({
       newTranslations: missingTranslations.flatten(
         namespaces: namespaces,
       ),
+      preserveOrder: preserveOrder,
     );
   }
 }
@@ -142,6 +146,7 @@ Future<void> applyTranslationsForOneLocale({
   required I18nLocale applyLocale,
   required FlatNamespaceMap baseTranslations,
   required FlatNamespaceMap newTranslations,
+  bool preserveOrder = false,
 }) async {
   final locales =
       (await TranslationMapBuilder.build(fileCollection: fileCollection))
@@ -178,6 +183,7 @@ Future<void> applyTranslationsForOneLocale({
       baseTranslations: baseTranslationsEntry ?? {},
       newTranslations: newTranslationsEntry,
       destinationFile: entry.value,
+      preserveOrder: preserveOrder,
     );
   }
 }
@@ -194,6 +200,7 @@ Future<void> _applyTranslationsForFile({
   required Map<String, dynamic> baseTranslations,
   required Map<String, dynamic> newTranslations,
   required TranslationFile destinationFile,
+  bool preserveOrder = false,
 }) async {
   final existingFile = destinationFile;
   final fileType = _supportedFiles.firstWhereOrNull(
@@ -208,6 +215,7 @@ Future<void> _applyTranslationsForFile({
     baseMap: baseTranslations,
     newMap: newTranslations,
     oldMap: parsedContent,
+    preserveOrder: preserveOrder,
   );
 
   FileUtils.writeFileOfType(
@@ -231,7 +239,16 @@ Map<String, dynamic> applyMapRecursive({
   required Map<String, dynamic> baseMap,
   required Map<String, dynamic> newMap,
   required Map<String, dynamic> oldMap,
+  bool preserveOrder = false,
 }) {
+  if (preserveOrder) {
+    // The base map dictates the order of the result.
+    // To preserve the existing order of the destination file, we reorder the
+    // base map to follow the order of the old map. New keys (not in the old
+    // map) keep their relative base order and are therefore appended last.
+    baseMap = _reorderByReference(baseMap, oldMap);
+  }
+
   final resultMap = <String, dynamic>{};
   final resultKeys = <String>{}; // keys without modifiers
 
@@ -284,6 +301,7 @@ Map<String, dynamic> applyMapRecursive({
             : throw 'In the base translations, "$key" is not a map.',
         newMap: newEntry ?? {},
         oldMap: oldMap[key] ?? {},
+        preserveOrder: preserveOrder,
       );
     }
 
@@ -356,6 +374,35 @@ Map<String, dynamic> applyMapRecursive({
   }
 
   return resultMap;
+}
+
+/// Returns a copy of [map] with its entries reordered to follow the key order
+/// of [reference]. Keys are matched ignoring modifiers.
+///
+/// Keys that are present in [reference] come first (in [reference]'s order),
+/// followed by the remaining keys of [map] in their original order.
+Map<String, dynamic> _reorderByReference(
+  Map<String, dynamic> map,
+  Map<String, dynamic> reference,
+) {
+  final referenceOrder = <String, int>{};
+  for (final key in reference.keys) {
+    referenceOrder[key.withoutModifiers] = referenceOrder.length;
+  }
+
+  final entries = map.entries.toList();
+
+  // Stable sort so that keys missing in [reference] keep their original order.
+  mergeSort(entries, compare: (a, b) {
+    final aIndex = referenceOrder[a.key.withoutModifiers];
+    final bIndex = referenceOrder[b.key.withoutModifiers];
+    if (aIndex == null && bIndex == null) return 0;
+    if (aIndex == null) return 1; // unknown keys go last
+    if (bIndex == null) return -1;
+    return aIndex.compareTo(bIndex);
+  });
+
+  return Map.fromEntries(entries);
 }
 
 class FileTypeNotSupportedError extends UnsupportedError {

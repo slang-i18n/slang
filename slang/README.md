@@ -1836,13 +1836,14 @@ It reads the `_missing_translations` file and adds the translations to the origi
 Currently, only JSON and YAML are supported.
 
 ```sh
-dart run slang apply [--locale=fr-FR] [--outdir=assets/i18n]
+dart run slang apply [--locale=fr-FR] [--outdir=assets/i18n] [--preserve-order]
 ```
 
-| Argument            | Usage                                                  |
-|---------------------|--------------------------------------------------------|
-| `--locale=<locale>` | Apply only one specific locale                         |
-| `--outdir=<dir>`    | Path of analysis output (`input_directory` by default) |
+| Argument            | Usage                                                                    |
+|---------------------|--------------------------------------------------------------------------|
+| `--locale=<locale>` | Apply only one specific locale                                           |
+| `--outdir=<dir>`    | Path of analysis output (`input_directory` by default)                   |
+| `--preserve-order`  | Keep the existing key order of the target files and append new keys last |
 
 ### ➤ WIP Operations
 
