@@ -16,8 +16,10 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
   /// Returns the locale of the device.
   /// Fallbacks to base locale.
   E findDeviceLocale() {
-    final Locale deviceLocale =
-        WidgetsBinding.instance.platformDispatcher.locale;
+    final deviceLocale = basicLocaleListResolution(
+      WidgetsBinding.instance.platformDispatcher.locales,
+      supportedLocales,
+    );
     return parseLocaleParts(
       languageCode: deviceLocale.languageCode,
       scriptCode: deviceLocale.scriptCode,
@@ -125,18 +127,16 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
       return;
     }
 
-    // [updateState] will be called by these setLocale methods internally.
-    if (locales.isEmpty) {
-      widget.settings.setLocale(
-        widget.settings.utils.baseLocale,
-        listenToDeviceLocale: true, // keep listening to it
-      );
-    } else {
-      widget.settings.setLocaleRaw(
-        locales.first.toLanguageTag(),
-        listenToDeviceLocale: true, // keep listening to it
-      );
-    }
+    final resolved = basicLocaleListResolution(
+      locales,
+      widget.settings.utils.supportedLocales,
+    );
+
+    // [updateState] will be called by setLocaleRaw internally.
+    widget.settings.setLocaleRaw(
+      resolved.toLanguageTag(),
+      listenToDeviceLocale: true, // keep listening to it
+    );
   }
 
   /// Updates the provider state.
