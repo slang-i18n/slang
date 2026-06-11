@@ -1,3 +1,9 @@
+## 4.16.0
+
+- feat: respect all locale preferences of the device instead of only the first locale
+- feat: add `--preserve-order` flag to `slang apply`
+- fix: compilation error when using region extension as a super set of the parent locale
+
 ## 4.15.0
 
 - feat: Region Extensions, `de-CH` will fall back to `de` before falling back to the base locale
