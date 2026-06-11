@@ -68,6 +68,14 @@ ${!config.format.enabled ? '// dart format off' : ''}
 
   queue.add(ClassTask(localeData.root));
 
+  // Paths of all object nodes that exist in the fallback locale.
+  // Used to determine whether a class should extend the fallback class or the base class.
+  final fallbackObjectNodes = localeData.base
+      ? const <String>{}
+      : _collectObjectNodes(
+          localeData.fallbackData!.root,
+        );
+
   // only for the first class
   bool root = true;
 
@@ -82,6 +90,7 @@ ${!config.format.enabled ? '// dart format off' : ''}
       task.node,
       root,
       allTranslations,
+      fallbackObjectNodes,
     );
 
     root = false;
@@ -95,6 +104,27 @@ ${!config.format.enabled ? '// dart format off' : ''}
   return buffer.toString();
 }
 
+Set<String> _collectObjectNodes(
+  ObjectNode node,
+) {
+  final paths = <String>{};
+
+  void collect(ObjectNode node) {
+    for (final value in node.entries.values) {
+      if (value is ObjectNode) {
+        paths.add(value.path);
+        if (!value.isMap) {
+          collect(value);
+        }
+      }
+    }
+  }
+
+  collect(node);
+
+  return paths;
+}
+
 /// generates a class and all of its members of ONE locale
 /// adds subclasses to the queue
 void _generateClass(
@@ -105,6 +135,7 @@ void _generateClass(
   ObjectNode node,
   bool root,
   List<I18nData> allTranslations,
+  Set<String> fallbackObjectNodes,
 ) {
   buffer.writeln();
 
@@ -177,7 +208,11 @@ void _generateClass(
           visibility: CodeVisibility.public,
           prefix: config.className,
           path: node.path,
-          locale: localeData.fallbackLocale.locale,
+          locale: localeData.fallbackLocale.locale == config.baseLocale
+              ? localeData.fallbackLocale.locale
+              : fallbackObjectNodes.contains(node.path) == true
+                  ? localeData.fallbackLocale.locale
+                  : config.baseLocale,
         )
     };
     if (localeData.fallbackLocale.fallback) {

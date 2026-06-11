@@ -1,0 +1,10 @@
+{
+  "greet": "Hello",
+  "onlyInEn": "Only in English",
+  "parent": {
+    "child": "I am a child",
+    "parent2": {
+      "child2": "I am a child of parent2"
+    }
+  }
+}

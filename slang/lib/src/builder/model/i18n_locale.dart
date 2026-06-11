@@ -2,6 +2,12 @@ import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/string_extensions.dart';
 
+typedef I18nLocaleComparator = int Function(
+  I18nLocale a,
+  I18nLocale b,
+  I18nLocale baseLocale,
+);
+
 /// own Locale type to decouple from dart:ui package
 class I18nLocale {
   static const String undefinedLanguage = 'und';
@@ -83,6 +89,21 @@ class I18nLocale {
     return result;
   }
 
+  bool hasParentLocale(List<I18nLocale> allLocales) {
+    return allLocales.any((l) =>
+        l != this &&
+        l.language == language &&
+        l.script == null &&
+        l.country == null);
+  }
+
+  bool hasChildLocales(List<I18nLocale> allLocales) {
+    return allLocales.any((l) =>
+        l != this &&
+        l.language == language &&
+        (l.script != null || l.country != null));
+  }
+
   @override
   bool operator ==(Object other) {
     return other is I18nLocale &&
@@ -120,6 +141,30 @@ class I18nLocale {
       countryIsWildcard: match.group(5) != null,
     );
   }
+
+  /// sorts base locale first, then language-only locales alphabetically,
+  /// then the rest alphabetically
+  static I18nLocaleComparator generationComparator = (
+    I18nLocale a,
+    I18nLocale b,
+    I18nLocale baseLocale,
+  ) {
+    // base locale always comes first
+    final aBase = a == baseLocale;
+    final bBase = b == baseLocale;
+    if (aBase != bBase) {
+      return aBase ? -1 : 1;
+    }
+
+    // language-only locales (no script, no country) come before the rest
+    final aLanguageOnly = a.script == null && a.country == null;
+    final bLanguageOnly = b.script == null && b.country == null;
+    if (aLanguageOnly != bLanguageOnly) {
+      return aLanguageOnly ? -1 : 1;
+    }
+
+    return a.languageTag.compareTo(b.languageTag);
+  };
 }
 
 extension I18nLocaleListExtension on List<I18nLocale> {

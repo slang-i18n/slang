@@ -1,0 +1,80 @@
+///
+/// Generated file. Do not edit.
+///
+// coverage:ignore-file
+// ignore_for_file: type=lint, unused_import
+// dart format off
+
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:slang/generated.dart';
+import 'translations.cgm.dart';
+import 'translations_de.g.dart';
+
+// Path: <root>
+class TranslationsDeDe extends TranslationsDe with BaseTranslations<AppLocale, Translations> {
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	TranslationsDeDe({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver, TranslationMetadata<AppLocale, Translations>? meta})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = meta ?? TranslationMetadata(
+		    locale: AppLocale.deDe,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ),
+		  super(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver) {
+		super.$meta.setFlatMapFunction($meta.getTranslation); // copy base translations to super.$meta
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <de-DE>.
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
+
+	/// Access flat map
+	@override dynamic operator[](String key) => $meta.getTranslation(key) ?? super.$meta.getTranslation(key);
+
+	late final TranslationsDeDe _root = this; // ignore: unused_field
+
+	@override 
+	TranslationsDeDe $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsDeDe(meta: meta ?? this.$meta);
+
+	// Translations
+	@override late final _Translations$parent$de_DE parent = _Translations$parent$de_DE._(_root);
+}
+
+// Path: parent
+class _Translations$parent$de_DE extends Translations$parent$de {
+	_Translations$parent$de_DE._(TranslationsDeDe root) : this._root = root, super.internal(root);
+
+	final TranslationsDeDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get child => 'Ich bin ein Kind (de-DE)';
+	@override late final _Translations$parent$parent2$de_DE parent2 = _Translations$parent$parent2$de_DE._(_root);
+}
+
+// Path: parent.parent2
+class _Translations$parent$parent2$de_DE extends Translations$parent$parent2$en {
+	_Translations$parent$parent2$de_DE._(TranslationsDeDe root) : this._root = root, super.internal(root);
+
+	final TranslationsDeDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get child2 => 'Ich bin ein Kind von parent2 (de-DE)';
+}
+
+/// The flat map containing all translations for locale <de-DE>.
+/// Only for edge cases! For simple maps, use the map function of this library.
+///
+/// The Dart AOT compiler has issues with very large switch statements,
+/// so the map is split into smaller functions (512 entries each).
+extension on TranslationsDeDe {
+	dynamic _flatMapFunction(String path) {
+		return switch (path) {
+			'parent.child' => 'Ich bin ein Kind (de-DE)',
+			'parent.parent2.child2' => 'Ich bin ein Kind von parent2 (de-DE)',
+			_ => null,
+		};
+	}
+}

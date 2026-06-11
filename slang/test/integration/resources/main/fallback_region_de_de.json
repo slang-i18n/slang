@@ -1,0 +1,8 @@
+{
+  "parent": {
+    "child": "Ich bin ein Kind (de-DE)",
+    "parent2": {
+      "child2": "Ich bin ein Kind von parent2 (de-DE)"
+    }
+  }
+}

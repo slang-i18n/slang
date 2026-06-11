@@ -1,11 +1,11 @@
+import 'package:slang/src/builder/builder/translation_model_builder.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/node.dart';
+import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
-
-typedef I18nDataComparator = int Function(I18nData a, I18nData b);
 
 class FallbackLocale {
   /// Usually the base locale.
@@ -26,21 +26,34 @@ class FallbackLocale {
 }
 
 /// represents one locale and its localized strings
-class I18nData {
+class I18nData implements BuildModelResult {
   final bool base; // whether or not this is the base locale
   final I18nLocale locale; // the locale (the part after the underscore)
   final FallbackLocale fallbackLocale;
+  final I18nData? fallbackData; // the actual fallback data, null if no fallback
   final CodeVisibility classVisibility;
   final CodeVisibility constructorVisibility;
+
+  @override
   final ObjectNode root; // the actual strings
+
+  @override
+  late final flatMap = root.toFlatMap();
+
+  @override
   final List<PopulatedContextType> contexts; // detected context types
+
+  @override
   final List<Interface> interfaces; // detected interfaces
+
+  @override
   final Map<String, String> types; // detected types, values are rendered as is
 
   I18nData({
     required this.base,
     required this.locale,
     required this.fallbackLocale,
+    required this.fallbackData,
     required this.classVisibility,
     required this.constructorVisibility,
     required this.root,
@@ -48,17 +61,6 @@ class I18nData {
     required this.interfaces,
     required this.types,
   });
-
-  /// sorts base locale first, then alphabetically
-  static I18nDataComparator generationComparator = (I18nData a, I18nData b) {
-    if (!a.base && !b.base) {
-      return a.locale.languageTag.compareTo(b.locale.languageTag);
-    } else if (!a.base && b.base) {
-      return 1; // move non-base to the right
-    } else {
-      return -1; // move base to the left
-    }
-  };
 
   /// Gets the node for a given path
   Node? getNodeByPath(String path) {

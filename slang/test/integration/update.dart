@@ -25,6 +25,9 @@ void main() {
   final simple = loadResource('main/json_simple.json');
   final fallbackEn = loadResource('main/fallback_en.json');
   final fallbackDe = loadResource('main/fallback_de.json');
+  final fallbackRegionEn = loadResource('main/fallback_region_en.json');
+  final fallbackRegionDe = loadResource('main/fallback_region_de.json');
+  final fallbackRegionDeDe = loadResource('main/fallback_region_de_de.json');
   final buildConfig =
       RawConfigBuilder.fromYaml(loadResource('main/build_config.yaml'))!;
   generateMainIntegration(buildConfig, en, de);
@@ -33,6 +36,12 @@ void main() {
   generateTranslationOverrides(buildConfig, en, de);
   generateFallbackBaseLocale(buildConfig, en, de);
   generateFallbackBaseLocaleSpecial(buildConfig, fallbackEn, fallbackDe);
+  generateFallbackRegion(
+    buildConfig,
+    fallbackRegionEn,
+    fallbackRegionDe,
+    fallbackRegionDeDe,
+  );
   generateObfuscation(buildConfig, en, de);
   generateRichText();
 
@@ -221,6 +230,53 @@ void generateFallbackBaseLocaleSpecial(
   _write(
     path: 'main/_expected_fallback_base_locale_special_de',
     content: result.translations[I18nLocale.fromString('de')]!,
+  );
+}
+
+void generateFallbackRegion(
+  RawConfig buildConfig,
+  String en,
+  String de,
+  String deDe,
+) {
+  final result = _generate(
+    rawConfig: buildConfig.copyWith(
+      fallbackStrategy: FallbackStrategy.baseLocale,
+    ),
+    baseName: 'translations',
+    translationMap: TranslationMap()
+      ..addTranslations(
+        locale: I18nLocale.fromString('en'),
+        translations: JsonDecoder().decode(en),
+      )
+      ..addTranslations(
+        locale: I18nLocale.fromString('de'),
+        translations: JsonDecoder().decode(de),
+      )
+      ..addTranslations(
+        locale: I18nLocale.fromString('de-DE'),
+        translations: JsonDecoder().decode(deDe),
+      ),
+  );
+
+  _write(
+    path: 'main/_expected_fallback_region_main',
+    content: result.main,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_region_en',
+    content: result.translations[I18nLocale.fromString('en')]!,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_region_de',
+    content: result.translations[I18nLocale.fromString('de')]!,
+  );
+
+  _write(
+    path: 'main/_expected_fallback_region_de_de',
+    content: result.translations[I18nLocale.fromString('de-DE')]!,
   );
 }
 

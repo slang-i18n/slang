@@ -1,18 +1,40 @@
 import 'package:slang/src/builder/builder/build_model_config_builder.dart';
 import 'package:slang/src/builder/builder/translation_model_builder.dart';
+import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/raw_config.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:test/test.dart';
 
 final _locale = I18nLocale(language: 'en');
 
+BuildModelResult _build({
+  required I18nLocale locale,
+  required BuildModelConfig buildConfig,
+  required Map<String, dynamic> map,
+  BuildModelResult? baseData,
+  bool handleLinks = true,
+  bool handleTypes = true,
+  bool shouldEscapeText = true,
+}) {
+  return TranslationModelBuilder.build(
+    buildConfig: buildConfig,
+    locale: locale,
+    map: ExpandedNamespaceMap(map),
+    baseData: baseData,
+    handleLinks: handleLinks,
+    handleTypes: handleTypes,
+    shouldEscapeText: shouldEscapeText,
+  );
+}
+
 void main() {
   test('1 StringTextNode', () {
-    final result = TranslationModelBuilder.build(
+    final result = _build(
       buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
       locale: _locale,
       map: {
@@ -25,7 +47,7 @@ void main() {
 
   group('ObjectNode', () {
     test('Should not generate empty ObjectNodes', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -41,7 +63,7 @@ void main() {
 
   group('Recasing', () {
     test('keyCase=snake and keyMapCase=camel', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(
           maps: ['my_map'],
           keyCase: CaseStyle.snake,
@@ -57,7 +79,7 @@ void main() {
     });
 
     test('keyCase=snake and keyMapCase=null', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(
           maps: ['my_map'],
           keyCase: CaseStyle.snake,
@@ -74,7 +96,7 @@ void main() {
 
   group('Linked Translations', () {
     test('one link no parameters', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -88,7 +110,7 @@ void main() {
     });
 
     test('should keep non-link parameter type', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -103,7 +125,7 @@ void main() {
     });
 
     test('one link 2 parameters straight', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -117,7 +139,7 @@ void main() {
     });
 
     test('linked translations with parameters recursive', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -133,7 +155,7 @@ void main() {
     });
 
     test('linked translation with plural', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -151,7 +173,7 @@ void main() {
     });
 
     test('linked translation with plural and custom number type', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -169,7 +191,7 @@ void main() {
     });
 
     test('linked translation with context', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
           ContextType(
             enumName: 'GenderCon',
@@ -195,7 +217,7 @@ void main() {
 
   group('Context Type', () {
     test('Should not include context type if values are unspecified', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(contexts: [
           ContextType(
             enumName: 'GenderCon',
@@ -215,7 +237,7 @@ void main() {
 
   group('Interface', () {
     test('empty lists should take generic type of interface', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(interfaces: [
           InterfaceConfig(
             name: 'MyInterface',
@@ -267,7 +289,7 @@ void main() {
     });
 
     test('Should handle nested interfaces specified via modifier', () {
-      final resultUsingModifiers = TranslationModelBuilder.build(
+      final resultUsingModifiers = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         map: {
           'myContainer(interface=MyInterface)': {
@@ -298,7 +320,7 @@ void main() {
     });
 
     test('Should handle nested interface specified via config', () {
-      final resultUsingConfig = TranslationModelBuilder.build(
+      final resultUsingConfig = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(
           interfaces: [
             InterfaceConfig(
@@ -347,7 +369,7 @@ void main() {
 
   group('Sanitization', () {
     test('Should sanitize reserved keyword', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -360,7 +382,7 @@ void main() {
     });
 
     test('Should not sanitize keys in maps', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -376,7 +398,7 @@ void main() {
     });
 
     test('Should add quotations for keys with special characters in maps', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
         locale: _locale,
         map: {
@@ -399,7 +421,7 @@ void main() {
   group('Fallback', () {
     test('base_locale_empty_string: Do not remove empty strings in base locale',
         () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig
             .copyWith(
               fallbackStrategy: FallbackStrategy.baseLocaleEmptyString,
@@ -414,7 +436,7 @@ void main() {
     });
 
     test('Should fallback context type cases', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig
             .copyWith(
               fallbackStrategy: FallbackStrategy.baseLocale,
@@ -427,7 +449,7 @@ void main() {
             'c': 'C',
           }
         },
-        baseData: TranslationModelBuilder.build(
+        baseData: _build(
           buildConfig: RawConfig.defaultConfig.copyWith(
             contexts: [
               ContextType(
@@ -461,7 +483,7 @@ void main() {
     });
 
     test('Should not fallback map entry by default', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig
             .copyWith(
               fallbackStrategy: FallbackStrategy.baseLocale,
@@ -474,7 +496,7 @@ void main() {
             'c': 'C',
           }
         },
-        baseData: TranslationModelBuilder.build(
+        baseData: _build(
           buildConfig: RawConfig.defaultConfig.copyWith().toBuildModelConfig(),
           locale: _locale,
           map: {
@@ -499,7 +521,7 @@ void main() {
     });
 
     test('Should fallback map entry when fallback modifier is added', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig
             .copyWith(
               fallbackStrategy: FallbackStrategy.baseLocale,
@@ -512,7 +534,7 @@ void main() {
             'c': 'C',
           }
         },
-        baseData: TranslationModelBuilder.build(
+        baseData: _build(
           buildConfig: RawConfig.defaultConfig.copyWith().toBuildModelConfig(),
           locale: _locale,
           map: {
@@ -538,7 +560,7 @@ void main() {
     });
 
     test('Should respect base_locale_empty_string in fallback map', () {
-      final result = TranslationModelBuilder.build(
+      final result = _build(
         buildConfig: RawConfig.defaultConfig
             .copyWith(
               fallbackStrategy: FallbackStrategy.baseLocaleEmptyString,
@@ -551,7 +573,7 @@ void main() {
             'c': '',
           }
         },
-        baseData: TranslationModelBuilder.build(
+        baseData: _build(
           buildConfig: RawConfig.defaultConfig.copyWith().toBuildModelConfig(),
           locale: _locale,
           map: {

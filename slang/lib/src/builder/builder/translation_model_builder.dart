@@ -5,16 +5,19 @@ import 'package:slang/src/builder/builder/text/l10n_parser.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/context_type.dart';
 import 'package:slang/src/builder/model/enums.dart';
+import 'package:slang/src/builder/model/i18n_data.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/interface.dart';
 import 'package:slang/src/builder/model/node.dart';
 import 'package:slang/src/builder/model/pluralization.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/builder/utils/reserved_keyword_sanitizer.dart';
 
 class BuildModelResult {
   final ObjectNode root; // the actual strings
+  late final flatMap = root.toFlatMap();
   final List<Interface> interfaces; // detected interfaces
   final List<PopulatedContextType> contexts; // detected context types
   final Map<String, String> types; // detected types, values are rendered as is
@@ -54,7 +57,7 @@ class TranslationModelBuilder {
   static BuildModelResult build({
     required I18nLocale locale,
     required BuildModelConfig buildConfig,
-    required Map<String, dynamic> map,
+    required ExpandedNamespaceMap map,
     BuildModelResult? baseData,
     bool handleLinks = true,
     bool handleTypes = true,
@@ -262,6 +265,49 @@ class TranslationModelBuilder {
           entry.key: entry.value.implementation,
       },
     );
+  }
+
+  static FallbackLocale getFallbackLocale({
+    required FallbackStrategy fallbackStrategy,
+    required I18nLocale locale,
+    required I18nLocale baseLocale,
+    required List<I18nLocale> locales,
+  }) {
+    final defaultFallback = switch (fallbackStrategy) {
+      FallbackStrategy.none => false,
+      FallbackStrategy.baseLocale ||
+      FallbackStrategy.baseLocaleEmptyString =>
+        true,
+    };
+    final FallbackLocale? fallbackLocale;
+    if (locale == baseLocale) {
+      fallbackLocale = FallbackLocale(
+        locale: baseLocale,
+        fallback: false,
+      );
+    } else if (locale.country == null && locale.script == null) {
+      // e.g. "de" only inherits the base locale like "en"
+      fallbackLocale = FallbackLocale(
+        locale: baseLocale,
+        fallback: defaultFallback,
+      );
+    } else {
+      // e.g. "de-CH" inherits "de" if it exists, otherwise the base locale
+      // If "de" exists, it will **always** inherit it.
+      if (locale.hasParentLocale(locales)) {
+        fallbackLocale = FallbackLocale(
+          locale: I18nLocale(language: locale.language),
+          fallback: true,
+        );
+      } else {
+        fallbackLocale = FallbackLocale(
+          locale: baseLocale,
+          fallback: defaultFallback,
+        );
+      }
+    }
+
+    return fallbackLocale;
   }
 }
 

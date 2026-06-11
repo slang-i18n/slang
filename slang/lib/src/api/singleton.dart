@@ -7,6 +7,7 @@ import 'package:slang/src/builder/decoder/base_decoder.dart';
 import 'package:slang/src/builder/model/build_model_config.dart';
 import 'package:slang/src/builder/model/enums.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
+import 'package:slang/src/builder/model/translation_map.dart';
 import 'package:slang/src/builder/utils/map_utils.dart';
 import 'package:slang/src/builder/utils/node_utils.dart';
 import 'package:slang/src/builder/utils/regex_utils.dart';
@@ -191,7 +192,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
       ordinalResolver: ordinalResolver,
     );
     return locale.buildSync(
-      overrides: buildResult.root.toFlatMap(),
+      overrides: buildResult.flatMap,
       cardinalResolver: cardinalResolver,
       ordinalResolver: ordinalResolver,
     );
@@ -225,7 +226,7 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
 
     return TranslationModelBuilder.build(
       buildConfig: buildConfig!,
-      map: digestedMap,
+      map: ExpandedNamespaceMap(digestedMap),
       handleLinks: false,
       handleTypes: false,
       shouldEscapeText: false,

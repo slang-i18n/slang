@@ -18,121 +18,63 @@ class TranslationModelListBuilder {
   ) {
     final buildConfig = rawConfig.toBuildModelConfig();
 
-    final baseEntry = translationMap.getInternalMap().entries.firstWhere(
-          (entry) => entry.key == rawConfig.baseLocale,
-          orElse: () => throw Exception('Base locale not found'),
-        );
+    final queue = translationMap.getInternalMap().entries.toList();
+    queue.sort((a, b) =>
+        I18nLocale.generationComparator(a.key, b.key, rawConfig.baseLocale));
 
-    // Create the base data first.
-    final namespaces = baseEntry.value;
-    final baseResult = TranslationModelBuilder.build(
-      buildConfig: buildConfig,
-      map: rawConfig.namespaces ? namespaces.expand() : namespaces.values.first,
-      locale: baseEntry.key,
-    );
-
-    return translationMap.getInternalMap().entries.map((localeEntry) {
+    final existingResults = <I18nLocale, I18nData>{};
+    return queue.map((localeEntry) {
       final locale = localeEntry.key;
       final namespaces = localeEntry.value;
       final base = locale == rawConfig.baseLocale;
 
       final hasChildLocales =
-          _hasChildLocales(locale, translationMap.getLocales());
+          locale.hasChildLocales(translationMap.getLocales());
 
-      if (base) {
-        // Use the already computed base data
-        return I18nData(
-          base: true,
-          locale: locale,
-          fallbackLocale: FallbackLocale(
-            locale: rawConfig.baseLocale,
-            fallback: false,
-          ),
-          classVisibility: CodeVisibility.public,
-          constructorVisibility:
-              buildConfig.fallbackStrategy == FallbackStrategy.baseLocale ||
-                      buildConfig.fallbackStrategy ==
-                          FallbackStrategy.baseLocaleEmptyString ||
-                      hasChildLocales
-                  ? CodeVisibility.public
-                  : CodeVisibility.private,
-          root: baseResult.root,
-          contexts: baseResult.contexts,
-          interfaces: baseResult.interfaces,
-          types: baseResult.types,
-        );
-      } else {
-        final defaultFallback = switch (buildConfig.fallbackStrategy) {
-          FallbackStrategy.none => false,
-          FallbackStrategy.baseLocale ||
-          FallbackStrategy.baseLocaleEmptyString =>
-            true,
-        };
-        final FallbackLocale? fallbackLocale;
-        if (locale.country == null && locale.script == null) {
-          // e.g. "de" only inherits the base locale like "en"
-          fallbackLocale = FallbackLocale(
-            locale: rawConfig.baseLocale,
-            fallback: defaultFallback,
-          );
-        } else {
-          // e.g. "de-CH" inherits "de" if it exists, otherwise the base locale
-          // If "de" exists, it will **always** inherit it.
-          if (_hasParentLocale(locale, translationMap.getLocales())) {
-            fallbackLocale = FallbackLocale(
-              locale: I18nLocale(language: locale.language),
-              fallback: true,
-            );
-          } else {
-            fallbackLocale = FallbackLocale(
-              locale: rawConfig.baseLocale,
-              fallback: defaultFallback,
-            );
-          }
-        }
+      final result = TranslationModelBuilder.build(
+        buildConfig: buildConfig,
+        map: rawConfig.namespaces
+            ? namespaces.expand()
+            : ExpandedNamespaceMap(namespaces.values.first),
+        baseData: existingResults[rawConfig.baseLocale],
+        locale: locale,
+      );
 
-        final result = TranslationModelBuilder.build(
-          buildConfig: buildConfig,
-          map: rawConfig.namespaces
-              ? namespaces.expand()
-              : namespaces.values.first,
-          baseData: baseResult,
-          locale: locale,
-        );
+      final fallbackLocale = TranslationModelBuilder.getFallbackLocale(
+        fallbackStrategy: buildConfig.fallbackStrategy,
+        locale: locale,
+        baseLocale: rawConfig.baseLocale,
+        locales: translationMap.getLocales(),
+      );
 
-        return I18nData(
-          base: false,
-          locale: locale,
-          fallbackLocale: fallbackLocale,
-          classVisibility:
-              rawConfig.translationClassVisibility == CodeVisibility.public ||
-                      hasChildLocales
-                  ? CodeVisibility.public
-                  : CodeVisibility.private,
-          constructorVisibility:
-              hasChildLocales ? CodeVisibility.public : CodeVisibility.private,
-          root: result.root,
-          contexts: result.contexts,
-          interfaces: result.interfaces,
-          types: result.types,
-        );
-      }
-    }).toList()
-      ..sort(I18nData.generationComparator);
+      final data = I18nData(
+        base: base,
+        locale: locale,
+        fallbackLocale: fallbackLocale,
+        fallbackData: existingResults[fallbackLocale.locale],
+        classVisibility: base
+            ? CodeVisibility.public
+            : rawConfig.translationClassVisibility == CodeVisibility.public ||
+                    hasChildLocales
+                ? CodeVisibility.public
+                : CodeVisibility.private,
+        constructorVisibility: (base &&
+                    (buildConfig.fallbackStrategy ==
+                            FallbackStrategy.baseLocale ||
+                        buildConfig.fallbackStrategy ==
+                            FallbackStrategy.baseLocaleEmptyString)) ||
+                hasChildLocales
+            ? CodeVisibility.public
+            : CodeVisibility.private,
+        root: result.root,
+        contexts: result.contexts,
+        interfaces: result.interfaces,
+        types: result.types,
+      );
+
+      existingResults[locale] = data;
+
+      return data;
+    }).toList();
   }
-}
-
-bool _hasParentLocale(I18nLocale locale, List<I18nLocale> allLocales) {
-  return allLocales.any((l) =>
-      l != locale &&
-      l.language == locale.language &&
-      l.script == null &&
-      l.country == null);
-}
-
-bool _hasChildLocales(I18nLocale locale, List<I18nLocale> allLocales) {
-  return allLocales.any((l) =>
-      l != locale &&
-      l.language == locale.language &&
-      (l.script != null || l.country != null));
 }

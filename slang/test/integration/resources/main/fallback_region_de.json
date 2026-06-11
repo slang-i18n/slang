@@ -1,0 +1,6 @@
+{
+  "greet": "Hallo",
+  "parent": {
+    "child": "Ich bin ein Kind (DE)"
+  }
+}
