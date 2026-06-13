@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:slang/src/builder/builder/translation_map_builder.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 import 'package:slang/src/builder/model/slang_file_collection.dart';
 import 'package:slang/src/utils/log.dart' as log;
 
-void runConfigure(
+Future<void> runConfigure(
   SlangFileCollection fileCollection, {
   List<String>? arguments,
-}) {
-  final locales = getLocales(fileCollection);
+}) async {
+  final locales = await getLocales(fileCollection);
   final sourceDirs = parseSourceDirs(arguments);
   final plistPaths = getPlistPaths(sourceDirs);
 
@@ -21,17 +22,21 @@ void runConfigure(
       continue;
     }
 
-    final updated =
-        updatePlist(locales: locales, content: file.readAsStringSync());
+    final updated = updatePlist(
+      locales: locales,
+      content: file.readAsStringSync(),
+    );
     file.writeAsStringSync(updated);
     log.info('Updated: $path');
   }
 }
 
 final _plistRegex = RegExp(
-    r'<key>CFBundleLocalizations</key>\s*<array>(.*?)</array>',
-    dotAll: true);
+  r'<key>CFBundleLocalizations</key>\s*<array>(.*?)</array>',
+  dotAll: true,
+);
 
+/// Updates the Info.plist content with the given locales.
 String updatePlist({
   required Set<I18nLocale> locales,
   required String content,
@@ -70,11 +75,14 @@ String updatePlist({
   }
 }
 
-Set<I18nLocale> getLocales(SlangFileCollection fileCollection) {
-  final locales = <I18nLocale>[];
-  for (final file in fileCollection.files) {
-    locales.add(file.locale);
-  }
+/// Returns a sorted set of locales found in the given file collection.
+Future<Set<I18nLocale>> getLocales(SlangFileCollection fileCollection) async {
+  final translationMap = await TranslationMapBuilder.build(
+    fileCollection: fileCollection,
+  );
+
+  final locales = translationMap.getLocales();
+
   locales.sort((a, b) => a.languageTag.compareTo(b.languageTag));
   return locales.toSet();
 }

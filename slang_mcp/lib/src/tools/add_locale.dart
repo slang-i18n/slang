@@ -117,7 +117,7 @@ Future<void> addLocale({
   await generateTranslations(
     fileCollection: finalFileCollection,
   );
-  runConfigure(finalFileCollection);
+  await runConfigure(finalFileCollection);
 }
 
 void _createFile({
