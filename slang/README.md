@@ -120,6 +120,7 @@ dart run slang migrate arb src.arb dest.json # migrate arb to json
 - [Further Reading](#further-reading)
 - [Ecosystem](#ecosystem)
 - [Slang in production](#slang-in-production)
+- [AI Agent Skill](#ai-agent-skill)
 - [Slang ports](#slang-ports)
 
 ## Getting Started
@@ -2338,6 +2339,39 @@ Open source:
 - [Flutter Advanced Boilerplate (boilerplate project)](https://github.com/fikretsengul/flutter_advanced_boilerplate)
 
 Feel free to extend this list :)
+
+## AI Agent Skill
+
+Slang includes an **official AI agent skill** that helps LLMs (Claude Code,
+OpenCode, and compatible agents) implement and manage internationalization with
+Slang correctly. The skill provides step-by-step setup workflows, configuration
+guidance, anti-pattern detection, and reference documentation for all Slang
+features.
+
+### Why an AI agent skill?
+
+Setting up i18n involves many decisions — choosing between `build_runner` and
+standalone generation, configuring fallback strategies, wiring
+`TranslationProvider`, running `slang configure`, and integrating with monorepo
+tooling. The Slang skill encodes years of best practices into a format AI agents
+can follow precisely, eliminating common mistakes:
+
+- Correct file naming and directory conventions
+- Proper generation path selection (`build.yaml` vs `slang.yaml`)
+- Complete platform configuration (iOS `CFBundleLocalizations`, Android `configChanges`)
+- Correct string interpolation and plural syntax
+- Melos/monorepo integration patterns
+- Anti-pattern awareness (hallucinated APIs, missing `configure` steps)
+
+### Installation
+
+```bash
+npx skills add slang-i18n/slang
+```
+
+This installs the skill to your project's `.agents/skills/slang/` directory,
+making it available whenever you ask your AI agent to handle translations or
+i18n tasks.
 
 ## Slang ports
 
