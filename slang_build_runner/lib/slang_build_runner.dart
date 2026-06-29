@@ -48,6 +48,11 @@ class I18nBuilder implements Builder {
     // STEP 1: determine base name and output file name / path
 
     final assets = await buildStep.findAssets(findAssetsPattern).toList();
+
+    if (assets.isEmpty) {
+      throw 'Could not find any files matching "${findAssetsPattern.pattern}" in package "${buildStep.inputId.package}".';
+    }
+
     final files = assets.map((f) {
       return PlainTranslationFile(
         path: f.path,
