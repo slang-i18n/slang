@@ -1,3 +1,9 @@
+## 4.17.0
+
+- feat: replaced internal basicLocaleListResolution with custom (simpler) implementation
+- feat: `slang_build_runner` only applies to direct dependent
+- fix: respect wildcards when running `slang configure`
+
 ## 4.16.0
 
 - feat: respect all locale preferences of the device instead of only the first locale
