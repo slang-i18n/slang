@@ -5,9 +5,9 @@ import 'dart:io';
 /// Usage: fvm dart run release.dart
 ///
 /// Steps:
-///  1. Validate that slang, slang_flutter and slang_build_runner share the same
-///     version and that slang_flutter / slang_build_runner declare the correct
-///     constraint on slang.
+///  1. Sync slang_flutter / slang_build_runner to slang's version: whenever they
+///     differ from slang, update their pubspec version, their slang constraint
+///     and the first CHANGELOG heading.
 ///  2. Temporarily point `origin` at GitHub, push the new tag, then restore the
 ///     Codeberg remote.
 const _githubRemote = 'git@github.com:slang-i18n/slang.git';
@@ -21,19 +21,32 @@ void main() {
   final expectedConstraint = _expectedConstraint(version);
   print('expected slang constraint: $expectedConstraint');
 
+  bool changed = false;
   for (final pkg in ['slang_flutter', 'slang_build_runner']) {
-    final pkgVersion = _readVersion('$pkg/pubspec.yaml');
+    final pubspec = '$pkg/pubspec.yaml';
+
+    final pkgVersion = _readVersion(pubspec);
     if (pkgVersion != version) {
-      throw '$pkg version is $pkgVersion but expected $version';
+      print('$pkg: version $pkgVersion -> $version');
+      _setVersion(pubspec, version);
+      _setChangelogVersion('$pkg/CHANGELOG.md', version);
+      changed = true;
     }
 
-    final constraint = _readSlangConstraint('$pkg/pubspec.yaml');
+    final constraint = _readSlangConstraint(pubspec);
     if (constraint != expectedConstraint) {
-      throw '$pkg has slang constraint "$constraint" but expected "$expectedConstraint"';
+      print('$pkg: slang constraint "$constraint" -> "$expectedConstraint"');
+      _setSlangConstraint(pubspec, expectedConstraint);
+      changed = true;
     }
   }
 
-  print('All versions and constraints are valid.');
+  if (changed) {
+    print('Updated versions and/or constraints. Please commit the changes and re-run the script.');
+    return;
+  }
+
+  print('All versions and constraints are in sync.');
 
   final tag = 'v$version';
 
@@ -64,6 +77,15 @@ String _readVersion(String pubspecPath) {
   return match.group(1)!;
 }
 
+void _setVersion(String pubspecPath, String version) {
+  final file = File(pubspecPath);
+  final content = file.readAsStringSync();
+  if (!_versionRegex.hasMatch(content)) {
+    throw 'Could not find version in $pubspecPath';
+  }
+  file.writeAsStringSync(content.replaceFirst(_versionRegex, 'version: $version'));
+}
+
 final _slangConstraintRegex = RegExp(
   r"^  slang: '(.+)'$",
   multiLine: true,
@@ -76,6 +98,38 @@ String _readSlangConstraint(String pubspecPath) {
     throw 'Could not find slang dependency in $pubspecPath';
   }
   return match.group(1)!;
+}
+
+void _setSlangConstraint(String pubspecPath, String constraint) {
+  final file = File(pubspecPath);
+  final content = file.readAsStringSync();
+  if (!_slangConstraintRegex.hasMatch(content)) {
+    throw 'Could not find slang dependency in $pubspecPath';
+  }
+  file.writeAsStringSync(
+    content.replaceFirst(_slangConstraintRegex, "  slang: '$constraint'"),
+  );
+}
+
+final _changelogHeadingRegex = RegExp(
+  r'^## \S+$',
+  multiLine: true,
+);
+
+/// Replaces the changelog's first `## <version>` heading with [version].
+///
+/// Sub-package changelogs only point to the slang changelog, so a single
+/// heading is kept up to date rather than accumulating entries.
+void _setChangelogVersion(String changelogPath, String version) {
+  final file = File(changelogPath);
+  final content = file.readAsStringSync();
+  if (!_changelogHeadingRegex.hasMatch(content)) {
+    throw 'Could not find a version heading in $changelogPath';
+  }
+  file.writeAsStringSync(
+    content.replaceFirst(_changelogHeadingRegex, '## $version'),
+  );
+  print('$changelogPath: set heading to $version');
 }
 
 /// For version 1.2.3 the expected constraint is ">=1.2.3 <1.3.0".
