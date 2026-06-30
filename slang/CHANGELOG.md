@@ -1,3 +1,8 @@
+## 4.18.0
+
+- feat: add `slang_build_runner:legacy` to restore old `build_runner` behaviour avoiding `Asset already exists` errors
+- fix: `AppLocaleUtils.parse` (and `LocaleSettings.setLocaleRaw`) ignored the country code of plain `language-COUNTRY` tags (e.g. `en-US`, `en-GB`)
+
 ## 4.17.0
 
 - feat: replaced internal basicLocaleListResolution with custom (simpler) implementation
