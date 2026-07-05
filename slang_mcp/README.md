@@ -44,6 +44,20 @@ dart pub global activate slang_mcp
 ```
 
 Register the MCP server in your LLM tooling.
+Add `slang_mcp` to `.mcp.json` located in the project root.
+
+```json5
+// .mcp.json
+{
+  "mcpServers": {
+    "slang_mcp": {
+      "command": "slang_mcp"
+    }
+  }
+}
+```
+
+You can also install it via the `claude mcp add` command.
 
 Note: The working directory should be your Flutter app
 where the `build.yaml` / `slang.yaml` file is located.
