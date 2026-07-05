@@ -140,4 +140,49 @@ void main() {
       );
     });
   });
+
+  group('parse', () {
+    final enGB = FakeAppLocale(languageCode: 'en', countryCode: 'GB');
+    final enIN = FakeAppLocale(languageCode: 'en', countryCode: 'IN');
+    final enUS = FakeAppLocale(languageCode: 'en', countryCode: 'US');
+    final zhMY = FakeAppLocale(languageCode: 'zh', countryCode: 'MY');
+    final zhHantTW = FakeAppLocale(
+      languageCode: 'zh',
+      scriptCode: 'Hant',
+      countryCode: 'TW',
+    );
+
+    final utils = AppLocaleUtils(
+      baseLocale: zhMY,
+      locales: [
+        enGB,
+        enIN,
+        enUS,
+        zhCN,
+        zhMY,
+        zhHantTW,
+      ],
+    );
+
+    test('should honor country code with dash separator', () {
+      expect(utils.parse('en-US'), enUS);
+      expect(utils.parse('en-IN'), enIN);
+    });
+
+    test('should honor country code with underscore separator', () {
+      expect(utils.parse('en_US'), enUS);
+    });
+
+    test('should honor script and country code', () {
+      expect(utils.parse('zh-Hant-TW'), zhHantTW);
+    });
+
+    test('should match language only when no country code', () {
+      expect(utils.parse('en'), enGB);
+    });
+
+    test('should fallback to base locale when no match', () {
+      expect(utils.parse('fr-FR'), zhMY);
+    });
+  });
 }

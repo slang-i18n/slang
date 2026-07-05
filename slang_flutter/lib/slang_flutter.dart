@@ -16,15 +16,29 @@ extension ExtAppLocaleUtils<E extends BaseAppLocale<E, T>,
   /// Returns the locale of the device.
   /// Fallbacks to base locale.
   E findDeviceLocale() {
-    final deviceLocale = basicLocaleListResolution(
+    return resolveLocaleList(
       WidgetsBinding.instance.platformDispatcher.locales,
-      supportedLocales,
     );
-    return parseLocaleParts(
-      languageCode: deviceLocale.languageCode,
-      scriptCode: deviceLocale.scriptCode,
-      countryCode: deviceLocale.countryCode,
-    );
+  }
+
+  /// Resolves the best matching locale from a list of [preferredLocales]
+  /// (e.g. the device locales sorted by preference).
+  E resolveLocaleList(List<Locale> preferredLocales) {
+    for (final locale in preferredLocales) {
+      final tag = locale.toLanguageTag();
+      final resolved = parse(tag);
+
+      if (resolved != baseLocale) {
+        // a non-base locale is always an actual match
+        return resolved;
+      }
+
+      if (locale.languageCode == baseLocale.languageCode) {
+        // the base locale was matched on purpose (same language)
+        return resolved;
+      }
+    }
+    return baseLocale;
   }
 
   /// Gets supported locales (as Locale objects) with base locale sorted first.
@@ -127,14 +141,11 @@ class _TranslationProviderState<E extends BaseAppLocale<E, T>,
       return;
     }
 
-    final resolved = basicLocaleListResolution(
-      locales,
-      widget.settings.utils.supportedLocales,
-    );
+    final resolved = widget.settings.utils.resolveLocaleList(locales);
 
-    // [updateState] will be called by setLocaleRaw internally.
-    widget.settings.setLocaleRaw(
-      resolved.toLanguageTag(),
+    // [updateState] will be called by setLocale internally.
+    widget.settings.setLocale(
+      resolved,
       listenToDeviceLocale: true, // keep listening to it
     );
   }

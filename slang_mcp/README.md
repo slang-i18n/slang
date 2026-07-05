@@ -59,7 +59,7 @@ claude mcp add --transport stdio slang_mcp -- slang_mcp
 | Tool                       | Input                    | Description                                                                               |
 |----------------------------|--------------------------|-------------------------------------------------------------------------------------------|
 | `get-locales`              | -                        | Gets the list of locales in the project                                                   |
-| `get-base-translations`    | -                        | Gets the translations of the base locale                                                  |
+| `get-translations`         | `locale`, `path`         | Gets translations of a locale (defaults to base); `path` scopes to a subset               |
 | `get-missing-translations` | -                        | Gets translations that exist in the base locale but not in secondary locales              |
 | `get-wip-translations`     | -                        | Gets WIP translations found in source code that should be translated                      |
 | `apply-wip-translations`   | -                        | Applies WIP translations from source code to translation files and regenerates the output |

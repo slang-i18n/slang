@@ -44,8 +44,8 @@ extension AppLocaleUtilsExt<E extends BaseAppLocale<E, T>,
 
     return parseLocaleParts(
       languageCode: match.group(1)!,
-      scriptCode: match.group(2),
-      countryCode: match.group(3),
+      scriptCode: match.group(3),
+      countryCode: match.group(4),
     );
   }
 

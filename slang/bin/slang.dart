@@ -166,7 +166,7 @@ void main(List<String> arguments) async {
       await watchTranslations(fileCollection.config);
       break;
     case RunnerMode.configure:
-      runConfigure(
+      await runConfigure(
         fileCollection,
         arguments: filteredArguments,
       );

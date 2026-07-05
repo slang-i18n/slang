@@ -1,3 +1,7 @@
+## 0.2.0
+
+- feat: change `get-base-translations` to a more general `get-translations`
+
 ## 0.1.4
 
 - deps: bump `slang` to `4.15.0` to support region extensions

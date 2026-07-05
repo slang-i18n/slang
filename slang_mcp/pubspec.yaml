@@ -1,6 +1,6 @@
 name: slang_mcp
 description: The MCP server for slang to allow working with LLMs more efficiently.
-version: 0.1.4
+version: 0.2.0
 repository: https://codeberg.org/Tienisto/slang
 
 environment:
@@ -11,7 +11,7 @@ executables:
 
 dependencies:
   mcp_dart: ^2.0.0
-  slang: '>=4.15.0 <5.0.0'
+  slang: '>=4.17.0 <5.0.0'
 
 dev_dependencies:
   lints: ^6.0.0

@@ -15,6 +15,9 @@ import 'package:slang/src/builder/builder/translation_model_list_builder.dart';
 import 'package:slang/src/builder/model/i18n_locale.dart';
 
 // ignore: implementation_imports
+import 'package:slang/src/builder/utils/map_utils.dart';
+
+// ignore: implementation_imports
 import 'package:slang/src/runner/analyze.dart';
 
 // ignore: implementation_imports
@@ -59,14 +62,34 @@ void main(List<String> arguments) async {
   );
 
   server.registerTool(
-    'get-base-translations',
-    description: 'Gets the translations of the base locale.',
+    'get-translations',
+    description:
+        'Gets the translations of the given locale. Defaults to the base locale if no locale is provided.',
+    inputSchema: ToolInputSchema(
+      properties: {
+        'locale': JsonSchema.string(
+          description:
+              'Locale identifier (e.g., en, de, fr-CA). Defaults to the base locale.',
+        ),
+        'path': JsonSchema.string(
+          description:
+              'Optional dot-separated path to a subset of translations (e.g., "login.button"). Returns all translations if omitted.',
+        ),
+      },
+    ),
     outputSchema: JsonSchema.object(
       description:
-          '''A nested map containing the missing translation keys and their corresponding base locale strings.''',
+          '''A nested map containing the translation keys and their corresponding strings.''',
     ),
     callback: (args, extra) async {
-      return CallToolResult.fromStructuredContent(await getBaseTranslations());
+      final locale = args['locale'] as String?;
+      final path = args['path'] as String?;
+      final result = await getTranslations(locale: locale, path: path);
+      // A path may resolve to a leaf (e.g. a string) or a list, which is not
+      // a valid structured content map, so wrap it in an object.
+      return CallToolResult.fromStructuredContent(
+        result is Map<String, dynamic> ? result : {'value': result},
+      );
     },
   );
 
@@ -189,17 +212,29 @@ Future<Map<String, dynamic>> getLocales() async {
   };
 }
 
-Future<dynamic> getBaseTranslations() async {
+Future<dynamic> getTranslations({String? locale, String? path}) async {
   final fileCollection = SlangFileCollectionBuilder.readFromFileSystem(
     verbose: false,
   );
   final translationMap = await TranslationMapBuilder.build(
     fileCollection: fileCollection,
   );
-  final translations = translationMap[fileCollection.config.baseLocale]!;
-  return fileCollection.config.namespaces
+  final targetLocale = locale != null
+      ? I18nLocale.fromString(locale)
+      : fileCollection.config.baseLocale;
+  final translations = translationMap[targetLocale];
+  if (translations == null) {
+    throw ArgumentError('Locale "${targetLocale.languageTag}" not found.');
+  }
+  final result = fileCollection.config.namespaces
       ? translations
       : translations.values.first;
+
+  if (path != null) {
+    return MapUtils.getValueAtPath(map: result, path: path);
+  }
+
+  return result;
 }
 
 Future<Map<String, dynamic>> getMissingTranslationsMap() async {
@@ -271,8 +306,13 @@ Future<void> _runCli(List<String> arguments) async {
     'get-locales': () async {
       return encoder.convert(await getLocales());
     },
-    'get-base-translations': () async {
-      return encoder.convert(await getBaseTranslations());
+    'get-translations': () async {
+      final locale = arguments.length > 1 ? arguments[1] : null;
+      final path = arguments.length > 2 ? arguments[2] : null;
+      return encoder.convert(await getTranslations(
+        locale: locale,
+        path: path,
+      ));
     },
     'get-missing-translations': () async {
       return encoder.convert(await getMissingTranslationsMap());

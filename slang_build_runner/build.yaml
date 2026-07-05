@@ -4,9 +4,16 @@ builders:
     import: 'package:slang_build_runner/slang_build_runner.dart'
     builder_factories: [ 'i18nBuilder' ]
     build_extensions: { '$lib$': [ '_slang_temp.json' ] }
-    auto_apply: root_package
+    auto_apply: dependents
     build_to: cache
     applies_builders: [":slang_fan_out"]
+
+  legacy:
+    import: 'package:slang_build_runner/slang_build_runner.dart'
+    builder_factories: [ 'i18nLegacyBuilder' ]
+    build_extensions: { '$lib$': [ '.g.dart' ] }
+    auto_apply: none
+    build_to: source
 
 post_process_builders:
   slang_fan_out:

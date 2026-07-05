@@ -5,32 +5,51 @@ import 'package:slang/src/builder/utils/regex_utils.dart';
 import 'package:slang/src/runner/configure.dart';
 import 'package:test/test.dart';
 
+TranslationFile _file(String locale, [String content = '']) {
+  return TranslationFile(
+    path: '',
+    locale: I18nLocale.fromString(locale),
+    namespace: RegexUtils.defaultNamespace,
+    read: () async => content,
+  );
+}
+
 void main() {
   group('getLocales', () {
-    test('Should return sorted locale list', () {
-      file(String locale) => TranslationFile(
-            path: '',
-            locale: I18nLocale(language: locale),
-            namespace: RegexUtils.defaultNamespace,
-            read: () async => '',
-          );
-
-      final locales = getLocales(SlangFileCollection(
+    test('Should return sorted locale list', () async {
+      final locales = await getLocales(SlangFileCollection(
         config: RawConfig.defaultConfig,
         files: [
-          file('en'),
-          file('zh'),
-          file('de'),
-          file('de'),
-          file('fr-FR'),
+          _file('en'),
+          _file('zh'),
+          _file('de'),
+          _file('de'),
+          _file('fr-FR'),
         ],
       ));
 
       expect(locales, [
-        I18nLocale(language: 'de'),
-        I18nLocale(language: 'en'),
-        I18nLocale(language: 'fr-FR'),
-        I18nLocale(language: 'zh'),
+        I18nLocale.fromString('de'),
+        I18nLocale.fromString('en'),
+        I18nLocale.fromString('fr-FR'),
+        I18nLocale.fromString('zh'),
+      ]);
+    });
+
+    test('Should return locales within compact csv', () async {
+      final locales = await getLocales(SlangFileCollection(
+        config: RawConfig.defaultConfig.copyWith(
+          inputFilePattern: '.csv',
+        ),
+        files: [
+          _file('en', 'key,en,de,fr\nhello,Hello,Hallo,Bonjour'),
+        ],
+      ));
+
+      expect(locales, [
+        I18nLocale.fromString('de'),
+        I18nLocale.fromString('en'),
+        I18nLocale.fromString('fr'),
       ]);
     });
   });
@@ -38,9 +57,9 @@ void main() {
   group('updatePlist', () {
     test('Should adapt tab style', () {
       final locales = {
-        I18nLocale(language: 'de'),
-        I18nLocale(language: 'en'),
-        I18nLocale(language: 'fr-FR'),
+        I18nLocale.fromString('de'),
+        I18nLocale.fromString('en'),
+        I18nLocale.fromString('fr-FR'),
       };
 
       final content = '''
@@ -61,7 +80,10 @@ lol<key>b</key>
 -=-</array>
 </dict>''';
 
-      final result = updatePlist(locales: locales, content: content);
+      final result = updatePlist(
+        locales: locales,
+        content: content,
+      );
       expect(result, expected);
     });
   });

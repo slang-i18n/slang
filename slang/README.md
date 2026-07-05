@@ -715,7 +715,7 @@ String c = t['myPath.anotherPath'](name: 'Tom'); // with arguments
 
 ### ➤ Changing Locale
 
-If you use the built-in `LocaleSettings` solution, then it is quite easy to change the locale.
+If you use the built-in `LocaleSettings` solution, changing the locale is straightforward.
 
 | Method                           | Description                           | Platform      |
 |----------------------------------|---------------------------------------|---------------|
@@ -2285,6 +2285,25 @@ When you call `AppLocale.<locale>.build()`, there are no side effects.
 
 Furthermore, the first method returns the instance managed by this library.
 The second one always returns a new instance.
+
+**I get an `Asset already exists` error when building**
+
+The default `build_runner` builder writes assets via build_runner's asset writer, which can cause this error in some setups.
+
+Opt into the `legacy` builder to write files directly to disk instead.
+
+```yaml
+# build.yaml
+targets:
+  $default:
+    builders:
+      slang_build_runner:
+        enabled: false
+      slang_build_runner:legacy:
+        enabled: true
+        options:
+          base_locale: en
+```
 
 ## Further Reading
 
