@@ -202,6 +202,17 @@ final Map<String, _Resolvers> _resolverMap = {
     },
     ordinal: (n, {zero, one, two, few, many, other}) => other!,
   ),
+  // Portuguese
+  'pt': _Resolvers(
+    cardinal: (n, {zero, one, two, few, many, other}) {
+      final i = n.toInt();
+
+      if (i == 0 || i == 1) return one ?? other!;
+
+      return other!;
+    },
+    ordinal: (n, {zero, one, two, few, many, other}) => other!,
+  ),
   // Russian
   'ru': _Resolvers(
     cardinal: (n, {zero, one, two, few, many, other}) {
