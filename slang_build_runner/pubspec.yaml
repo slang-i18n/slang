@@ -16,3 +16,20 @@ dependencies:
 
 dev_dependencies:
   lints: any
+
+dependency_overrides:
+  build:
+    git:
+      url: https://github.com/dart-lang/build.git
+      ref: refs/pull/5016/head
+      path: build
+  build_config:
+    git:
+      url: https://github.com/dart-lang/build.git
+      ref: refs/pull/5016/head
+      path: build_config
+  build_runner:
+    git:
+      url: https://github.com/dart-lang/build.git
+      ref: refs/pull/5016/head
+      path: build_runner

@@ -15,7 +15,7 @@ class RawConfig {
   static const String? defaultInputDirectory = null;
   static const String defaultInputFilePattern = '.i18n.json';
   static const String? defaultOutputDirectory = null;
-  static const String defaultOutputFileName = 'strings.g.dart';
+  static const String defaultOutputFileName = 'strings.slang.dart';
   static const bool defaultLazy = true;
   static const bool defaultLocaleHandling = true;
   static const bool defaultFlutterIntegration = true;
