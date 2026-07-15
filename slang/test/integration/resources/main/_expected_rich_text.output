@@ -5,7 +5,7 @@
 // ignore_for_file: type=lint, unused_import
 // dart format off
 
-part of 'strings.g.dart';
+part of 'strings.slang.dart';
 
 // Path: <root>
 typedef TranslationsEn = Translations; // ignore: unused_element
