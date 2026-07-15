@@ -17,8 +17,8 @@ import 'package:slang/secret.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'translations_de.g.dart' deferred as l_de;
-part 'translations_en.g.dart';
+import 'translations_de.cgm.dart' deferred as l_de;
+part 'translations_en.cgm.dart';
 
 /// Supported locales.
 ///

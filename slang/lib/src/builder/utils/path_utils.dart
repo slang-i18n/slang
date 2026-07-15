@@ -20,6 +20,17 @@ class PathUtils {
     return fileName.substring(firstDot + 1);
   }
 
+  /// converts /some/path/file.slang.dart to slang.dart
+  /// (everything after the first dot; complements [getFileNameNoExtension])
+  static String getFullFileExtension(String path) {
+    final fileName = getFileName(path);
+    final firstDot = fileName.indexOf('.');
+    if (firstDot == -1) {
+      return '';
+    }
+    return fileName.substring(firstDot + 1);
+  }
+
   /// converts /a/b/file.json to [a, b, file.json]
   static List<String> getPathSegments(String path) {
     return path
@@ -180,8 +191,9 @@ class BuildResultPaths {
     required I18nLocale locale,
   }) {
     final fileNameNoExtension = PathUtils.getFileNameNoExtension(outputPath);
+    final extension = PathUtils.getFullFileExtension(outputPath);
     final localeExt = locale.languageTag.replaceAll('-', '_');
-    final fileName = '${fileNameNoExtension}_$localeExt.g.dart';
+    final fileName = '${fileNameNoExtension}_$localeExt.$extension';
     return PathUtils.replaceFileName(
       path: outputPath,
       newFileName: fileName,
@@ -193,7 +205,8 @@ class BuildResultPaths {
     required String outputPath,
   }) {
     final fileNameNoExtension = PathUtils.getFileNameNoExtension(outputPath);
-    final fileName = '${fileNameNoExtension}_map.g.dart';
+    final extension = PathUtils.getFullFileExtension(outputPath);
+    final fileName = '${fileNameNoExtension}_map.$extension';
     return PathUtils.replaceFileName(
       path: outputPath,
       newFileName: fileName,

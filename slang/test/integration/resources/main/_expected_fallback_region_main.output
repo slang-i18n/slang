@@ -16,9 +16,9 @@ import 'package:slang/generated.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
-import 'translations_de.g.dart' deferred as l_de;
-import 'translations_de_DE.g.dart' deferred as l_de_DE;
-part 'translations_en.g.dart';
+import 'translations_de.cgm.dart' deferred as l_de;
+import 'translations_de_DE.cgm.dart' deferred as l_de_DE;
+part 'translations_en.cgm.dart';
 
 /// Supported locales.
 ///

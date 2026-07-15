@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:slang/generated.dart';
 import 'translations.cgm.dart';
-import 'translations_de.g.dart';
+import 'translations_de.cgm.dart';
 
 // Path: <root>
 class TranslationsDeDe extends TranslationsDe with BaseTranslations<AppLocale, Translations> {

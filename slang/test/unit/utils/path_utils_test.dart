@@ -76,4 +76,38 @@ void main() {
       );
     });
   });
+
+  group('BuildResultPaths.localePath', () {
+    String f(String outputPath) => BuildResultPaths.localePath(
+          outputPath: outputPath,
+          locale: I18nLocale(language: 'en', country: 'US'),
+        );
+
+    test('default .g.dart extension', () {
+      expect(f('lib/gen/strings.g.dart'), 'lib/gen/strings_en_US.g.dart');
+    });
+
+    test('preserves custom multi-part extension', () {
+      expect(
+        f('lib/gen/translations.slang.dart'),
+        'lib/gen/translations_en_US.slang.dart',
+      );
+    });
+  });
+
+  group('BuildResultPaths.flatMapPath', () {
+    String f(String outputPath) =>
+        BuildResultPaths.flatMapPath(outputPath: outputPath);
+
+    test('default .g.dart extension', () {
+      expect(f('lib/gen/strings.g.dart'), 'lib/gen/strings_map.g.dart');
+    });
+
+    test('preserves custom multi-part extension', () {
+      expect(
+        f('lib/gen/translations.slang.dart'),
+        'lib/gen/translations_map.slang.dart',
+      );
+    });
+  });
 }
