@@ -146,6 +146,24 @@ final Map<String, _Resolvers> _resolverMap = {
       return other!;
     },
   ),
+  // Hebrew
+  'he': _Resolvers(
+    cardinal: (n, {zero, one, two, few, many, other}) {
+      final i = n.toInt();
+      final v = i == n ? 0 : n.toString().split('.')[1].length;
+
+      if ((i == 1 && v == 0) || (i == 0 && v != 0)) {
+        return one ?? other!;
+      }
+      if (i == 2 && v == 0) {
+        return two ?? other!;
+      }
+      return other!;
+    },
+    ordinal: (n, {zero, one, two, few, many, other}) {
+      return other!;
+    },
+  ),
   // Italian
   'it': _Resolvers(
     cardinal: (n, {zero, one, two, few, many, other}) {
