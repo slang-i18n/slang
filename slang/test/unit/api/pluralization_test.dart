@@ -38,10 +38,19 @@ void main() {
             two: 'שתי דקות',
             other: '$n דקות',
           );
+      String days(num n) => cardinal(
+            n,
+            one: 'יום',
+            two: 'יומיים',
+            other: '$n ימים',
+          );
 
       expect(minutes(1), 'דקה');
       expect(minutes(2), 'שתי דקות');
       expect(minutes(3), '3 דקות');
+      expect(days(1), 'יום');
+      expect(days(2), 'יומיים');
+      expect(days(3), '3 ימים');
     });
 
     test('always selects other for ordinals', () {
