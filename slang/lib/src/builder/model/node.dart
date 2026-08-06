@@ -459,7 +459,9 @@ class StringTextNode extends TextNode {
     final parsedResult = _parseInterpolation(
       locale: locale,
       types: types,
-      raw: shouldEscape ? _escapeContent(anchoredRaw, interpolation) : anchoredRaw,
+      raw: shouldEscape
+          ? _escapeContent(anchoredRaw, interpolation)
+          : anchoredRaw,
       interpolation: interpolation,
       defaultType: 'Object',
       paramCase: paramCase,
@@ -586,7 +588,9 @@ class RichTextNode extends TextNode {
     final rawParsedResult = _parseInterpolation(
       locale: locale,
       types: types,
-      raw: shouldEscape ? _escapeContent(anchoredRaw, interpolation) : anchoredRaw,
+      raw: shouldEscape
+          ? _escapeContent(anchoredRaw, interpolation)
+          : anchoredRaw,
       interpolation: interpolation,
       defaultType: 'ignored',
       // types are ignored
@@ -852,9 +856,8 @@ String resolveRelativeLinks(String raw, String linkAnchor) {
       return match.group(0)!;
     }
 
-    final resolved = linkAnchor.isEmpty
-        ? linkedPath.substring(1)
-        : '$linkAnchor$linkedPath';
+    final resolved =
+        linkAnchor.isEmpty ? linkedPath.substring(1) : '$linkAnchor$linkedPath';
     return match.group(2) != null ? '@:{$resolved}' : '@:$resolved';
   });
 }

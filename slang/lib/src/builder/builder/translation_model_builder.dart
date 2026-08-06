@@ -548,7 +548,8 @@ Map<String, Node> _parseMapNode({
           digestedMap = digestedMap.map((cKey, cValue) {
             final hasRelativeLinks = RegexUtils.linkedRegex
                 .allMatches(cValue.raw)
-                .any((match) => (match.group(1) ?? match.group(2))!.startsWith('.'));
+                .any((match) =>
+                    (match.group(1) ?? match.group(2))!.startsWith('.'));
             if (!hasRelativeLinks) {
               return MapEntry(cKey, cValue);
             }
