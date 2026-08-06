@@ -268,7 +268,7 @@ void main() {
         final test = r'@:.c @:a @:hi @:wow. @:nice.cool';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content,
-            r'@:.c ${_root.a} ${_root.hi} ${_root.wow}. ${_root.nice.cool}');
+            r'${_root.c} ${_root.a} ${_root.hi} ${_root.wow}. ${_root.nice.cool}');
         expect(node.params, <String>{});
       });
 
@@ -276,7 +276,7 @@ void main() {
         final test = r'@:.c@:{a}@:{hi}@:wow. @:{nice.cool} @:nice.cool';
         final node = textNode(test, StringInterpolation.dart);
         expect(node.content,
-            r'@:.c${_root.a}${_root.hi}${_root.wow}. ${_root.nice.cool} ${_root.nice.cool}');
+            r'${_root.c}${_root.a}${_root.hi}${_root.wow}. ${_root.nice.cool} ${_root.nice.cool}');
         expect(node.params, <String>{});
       });
 

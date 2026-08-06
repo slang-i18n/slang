@@ -85,12 +85,12 @@ class I18nData implements BuildModelResult {
     }
 
     return switch (foundNode) {
-      TextNode textNode => '${textNode.raw.digest(this)}',
+      TextNode textNode => '${textNode.digest(this)}',
       PluralNode pluralNode => pluralNode.quantities.entries
-          .map((e) => '(${e.key.name}) {${e.value.raw.digest(this)}}')
+          .map((e) => '(${e.key.name}) {${e.value.digest(this)}}')
           .join(' '),
       ContextNode contextNode => contextNode.entries.entries
-          .map((e) => '(${e.key}) {${e.value.raw.digest(this)}}')
+          .map((e) => '(${e.key}) {${e.value.digest(this)}}')
           .join(' '),
       _ =>
         throw 'Unsupported node type for documentation: ${foundNode.runtimeType}',
@@ -100,9 +100,11 @@ class I18nData implements BuildModelResult {
 
 final _whitespaceRegex = RegExp(r'\s+');
 
-extension on String {
+extension on TextNode {
   String? digest(I18nData data) {
-    return replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    // resolve relative links first so that the lookup works on absolute paths
+    return resolveRelativeLinks(raw, effectiveLinkAnchor)
+        .replaceAllMapped(RegexUtils.linkedRegex, (match) {
       final linkedPath = (match.group(1) ?? match.group(2))!;
       return data.getAutodoc(linkedPath, null) ?? match.group(0)!;
     }).replaceAll(_whitespaceRegex, ' ');

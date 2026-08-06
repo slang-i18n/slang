@@ -377,6 +377,17 @@ abstract class TextNode extends Node implements LeafNode {
   final StringInterpolation interpolation;
   final CaseStyle? paramCase;
 
+  /// The absolute path prefix against which relative links (`@:.key`)
+  /// are resolved. If null, the parent path of [path] is used.
+  ///
+  /// Quantities of plural / context nodes use the path of the scope
+  /// containing the plural / context node instead
+  /// (set in TranslationModelBuilder).
+  final String? linkAnchor;
+
+  /// The anchor actually used to resolve relative links.
+  String get effectiveLinkAnchor => linkAnchor ?? _parentPath(path);
+
   TextNode({
     required super.path,
     required super.rawPath,
@@ -389,6 +400,7 @@ abstract class TextNode extends Node implements LeafNode {
     required this.handleTypes,
     required this.interpolation,
     required this.paramCase,
+    this.linkAnchor,
   });
 
   /// Updates [content], [params] and [paramTypeMap]
@@ -402,6 +414,7 @@ abstract class TextNode extends Node implements LeafNode {
   TextNode clone({
     required bool keepParent,
     I18nLocale? locale,
+    String? linkAnchor,
   });
 }
 
@@ -439,12 +452,14 @@ class StringTextNode extends TextNode {
     required super.handleTypes,
     required super.interpolation,
     required super.paramCase,
+    super.linkAnchor,
     Map<String, Set<String>>? linkParamMap,
   }) {
+    final anchoredRaw = resolveRelativeLinks(raw, effectiveLinkAnchor);
     final parsedResult = _parseInterpolation(
       locale: locale,
       types: types,
-      raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
+      raw: shouldEscape ? _escapeContent(anchoredRaw, interpolation) : anchoredRaw,
       interpolation: interpolation,
       defaultType: 'Object',
       paramCase: paramCase,
@@ -487,6 +502,7 @@ class StringTextNode extends TextNode {
       handleTypes: handleTypes,
       interpolation: interpolation,
       paramCase: paramCase,
+      linkAnchor: linkAnchor,
       linkParamMap: linkParamMap,
     );
 
@@ -503,7 +519,11 @@ class StringTextNode extends TextNode {
   }
 
   @override
-  StringTextNode clone({required bool keepParent, I18nLocale? locale}) {
+  StringTextNode clone({
+    required bool keepParent,
+    I18nLocale? locale,
+    String? linkAnchor,
+  }) {
     final node = StringTextNode(
       path: path,
       rawPath: rawPath,
@@ -516,6 +536,7 @@ class StringTextNode extends TextNode {
       handleTypes: handleTypes,
       interpolation: interpolation,
       paramCase: paramCase,
+      linkAnchor: linkAnchor ?? this.linkAnchor,
     );
 
     if (keepParent && parent != null) {
@@ -558,12 +579,14 @@ class RichTextNode extends TextNode {
     required super.handleTypes,
     required super.interpolation,
     required super.paramCase,
+    super.linkAnchor,
     Map<String, Set<String>>? linkParamMap,
   }) {
+    final anchoredRaw = resolveRelativeLinks(raw, effectiveLinkAnchor);
     final rawParsedResult = _parseInterpolation(
       locale: locale,
       types: types,
-      raw: shouldEscape ? _escapeContent(raw, interpolation) : raw,
+      raw: shouldEscape ? _escapeContent(anchoredRaw, interpolation) : anchoredRaw,
       interpolation: interpolation,
       defaultType: 'ignored',
       // types are ignored
@@ -648,6 +671,7 @@ class RichTextNode extends TextNode {
       handleTypes: handleTypes,
       interpolation: interpolation,
       paramCase: paramCase,
+      linkAnchor: linkAnchor,
       linkParamMap: linkParamMap,
     );
 
@@ -655,7 +679,11 @@ class RichTextNode extends TextNode {
   }
 
   @override
-  RichTextNode clone({required bool keepParent, I18nLocale? locale}) {
+  RichTextNode clone({
+    required bool keepParent,
+    I18nLocale? locale,
+    String? linkAnchor,
+  }) {
     final node = RichTextNode(
       path: path,
       rawPath: rawPath,
@@ -668,6 +696,7 @@ class RichTextNode extends TextNode {
       handleTypes: handleTypes,
       interpolation: interpolation,
       paramCase: paramCase,
+      linkAnchor: linkAnchor ?? this.linkAnchor,
     );
 
     if (keepParent && parent != null) {
@@ -803,6 +832,31 @@ _ParseInterpolationResult _parseInterpolation({
     params: params,
     formats: formats,
   );
+}
+
+/// Returns the path of the parent scope of [path],
+/// e.g. `a.b` for `a.b.c`, or an empty string for a top-level path.
+String _parentPath(String path) {
+  final index = path.lastIndexOf('.');
+  return index == -1 ? '' : path.substring(0, index);
+}
+
+/// Replaces relative links (e.g. `@:.sibling`) with their absolute versions
+/// (e.g. `@:a.b.sibling` for the anchor `a.b`)
+/// so that all subsequent steps only deal with absolute links.
+String resolveRelativeLinks(String raw, String linkAnchor) {
+  return raw.replaceAllMapped(RegexUtils.linkedRegex, (match) {
+    final linkedPath = (match.group(1) ?? match.group(2))!;
+    if (!linkedPath.startsWith('.')) {
+      // already absolute
+      return match.group(0)!;
+    }
+
+    final resolved = linkAnchor.isEmpty
+        ? linkedPath.substring(1)
+        : '$linkAnchor$linkedPath';
+    return match.group(2) != null ? '@:{$resolved}' : '@:$resolved';
+  });
 }
 
 class _ParseLinksResult {

@@ -190,6 +190,133 @@ void main() {
       expect(textNode.content, r'Hello ${_root.a(n: n, p1: p1)}');
     });
 
+    test('relative link to sibling', () {
+      final result = _build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'group': {
+            'a': 'A',
+            'b': 'Hello @:.a',
+          },
+        },
+      );
+      final groupNode = result.root.entries['group'] as ObjectNode;
+      final textNode = groupNode.entries['b'] as StringTextNode;
+      expect(textNode.links, {'group.a'});
+      expect(textNode.content, r'Hello ${_root.group.a}');
+    });
+
+    test('relative link on root level', () {
+      final result = _build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'a': 'A',
+          'b': 'Hello @:.a',
+        },
+      );
+      final textNode = result.root.entries['b'] as StringTextNode;
+      expect(textNode.links, {'a'});
+      expect(textNode.content, r'Hello ${_root.a}');
+    });
+
+    test('relative link with brackets', () {
+      final result = _build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'group': {
+            'a': 'A',
+            'b': 'Hello @:{.a}s',
+          },
+        },
+      );
+      final groupNode = result.root.entries['group'] as ObjectNode;
+      final textNode = groupNode.entries['b'] as StringTextNode;
+      expect(textNode.content, r'Hello ${_root.group.a}s');
+    });
+
+    test('relative link with parameters', () {
+      final result = _build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'group': {
+            'a': r'A $p1',
+            'b': 'Hello @:.a',
+          },
+        },
+      );
+      final groupNode = result.root.entries['group'] as ObjectNode;
+      final textNode = groupNode.entries['b'] as StringTextNode;
+      expect(textNode.params, {'p1'});
+      expect(textNode.content, r'Hello ${_root.group.a(p1: p1)}');
+    });
+
+    test('relative link to plural sibling', () {
+      final result = _build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'group': {
+            'a': {
+              'one': 'ONE',
+              'other': 'OTHER',
+            },
+            'b': 'Hello @:.a',
+          },
+        },
+      );
+      final groupNode = result.root.entries['group'] as ObjectNode;
+      final textNode = groupNode.entries['b'] as StringTextNode;
+      expect(textNode.params, {'n'});
+      expect(textNode.content, r'Hello ${_root.group.a(n: n)}');
+    });
+
+    test('relative link inside plural quantity', () {
+      // The anchor of a quantity is the scope containing the plural node,
+      // not the plural node itself.
+      final result = _build(
+        buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+        locale: _locale,
+        map: {
+          'group': {
+            'unit': 'UNIT',
+            'a': {
+              'one': 'ONE @:.unit',
+              'other': 'OTHER @:.unit',
+            },
+          },
+        },
+      );
+      final groupNode = result.root.entries['group'] as ObjectNode;
+      final pluralNode = groupNode.entries['a'] as PluralNode;
+      for (final quantity in pluralNode.quantities.values) {
+        expect(quantity.links, {'group.unit'});
+      }
+      expect((pluralNode.quantities.values.first as StringTextNode).content,
+          r'ONE ${_root.group.unit}');
+    });
+
+    test('relative link to undefined sibling should throw', () {
+      expect(
+        () => _build(
+          buildConfig: RawConfig.defaultConfig.toBuildModelConfig(),
+          locale: _locale,
+          map: {
+            'group': {
+              'a': 'A',
+              'b': 'Hello @:.c',
+            },
+          },
+        ),
+        throwsA(
+          '"group.b" in <en> is linked to "group.c" but "group.c" is undefined.',
+        ),
+      );
+    });
+
     test('linked translation with context', () {
       final result = _build(
         buildConfig: RawConfig.defaultConfig.copyWith(contexts: [

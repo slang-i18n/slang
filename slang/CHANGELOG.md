@@ -1,3 +1,7 @@
+## Unreleased
+
+- feat: add relative linked translations (`@:.sibling` resolves against the siblings of the current translation)
+
 ## 4.18.0
 
 - feat: add `slang_build_runner:legacy` to restore old `build_runner` behaviour avoiding `Asset already exists` errors

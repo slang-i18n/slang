@@ -6,10 +6,11 @@ class RegexUtils {
       RegExp(r'(?<!\\)\$(?:([\w]+)|\{(.+?)\})');
 
   /// matches @:translation.key or @:{translation.key}, but not \@:translation.key
+  /// a single leading dot marks a relative link: @:.key or @:{.key}
   /// 1 = argument of @:translation.key
   /// 2 = argument of @:{translation.key}
   static final RegExp linkedRegex = RegExp(
-    r'(?<!\\)@:(?:(\w[\w|.]*\w|\w)|\{(\w[\w|.]*\w|\w)\})',
+    r'(?<!\\)@:(?:(\.?\w[\w|.]*\w|\.?\w)|\{(\.?\w[\w|.]*\w|\.?\w)\})',
   );
 
   /// matches $hello, $ but not \$

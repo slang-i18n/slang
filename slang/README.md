@@ -753,6 +753,29 @@ String s = t.introduce(firstName: 'Tom', age: 27); // Hello, my name is Tom and 
 
 If namespaces are used, then it has to be specified in the path too.
 
+To avoid repeating long paths, you can use a **relative** path by adding a single dot after `@:`.
+The link is then resolved against the siblings of the current translation.
+
+```json
+{
+  "remainingTime": {
+    "minutesUnit(plural, param=m)": {
+      "other": "{m}m"
+    },
+    "hoursUnit(plural, param=h)": {
+      "other": "{h}h"
+    },
+    "hours": "@:.hoursUnit @:.minutesUnit"
+  }
+}
+```
+
+```dart
+String s = t.remainingTime.hours(h: 2, m: 30); // 2h 30m
+```
+
+Inside plurals or contexts, relative links are resolved against the scope containing the plural / context node, so `@:.minutesUnit` inside `hoursUnit` still refers to `remainingTime.minutesUnit`.
+
 [RichTexts](#-richtext) can also contain links! But only [RichTexts](#-richtext) can link to [RichTexts](#-richtext).
 
 Optionally, you can escape linked translations by surrounding the path with `{}`:
