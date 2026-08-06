@@ -1,6 +1,7 @@
-## Unreleased
+## 4.19.0
 
 - feat: add relative linked translations (`@:.sibling` resolves against the siblings of the current translation)
+- feat: add Hebraic plural resolver
 
 ## 4.18.0
 
