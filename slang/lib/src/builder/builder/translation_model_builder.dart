@@ -546,7 +546,10 @@ Map<String, Node> _parseMapNode({
           // are resolved against the scope containing the plural / context
           // node, so they need to be rebuilt with the correct anchor.
           digestedMap = digestedMap.map((cKey, cValue) {
-            if (!_hasRelativeLinks(cValue.raw)) {
+            final hasRelativeLinks = RegexUtils.linkedRegex
+                .allMatches(cValue.raw)
+                .any((match) => (match.group(1) ?? match.group(2))!.startsWith('.'));
+            if (!hasRelativeLinks) {
               return MapEntry(cKey, cValue);
             }
             final anchored = cValue.clone(
@@ -653,13 +656,6 @@ Map<String, Node> _parseMapNode({
   });
 
   return resultNodeTree;
-}
-
-/// True if [raw] contains at least one relative link, e.g. `@:.sibling`.
-bool _hasRelativeLinks(String raw) {
-  return RegexUtils.linkedRegex
-      .allMatches(raw)
-      .any((match) => (match.group(1) ?? match.group(2))!.startsWith('.'));
 }
 
 /// Quotes the key if
